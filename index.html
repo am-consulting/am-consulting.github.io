@@ -1,4 +1,5 @@
-﻿<!DOCTYPE html>
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="utf-8">
@@ -7,13 +8,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="description" content="">
 <meta name="author" content="">
-<link href='https://fonts.googleapis.com/css?family=Roboto+Condensed' rel='stylesheet' type='text/css'>
+
+<link href="http://fonts.googleapis.com/css?family=Roboto+Condensed" rel="stylesheet" type="text/css">
 <link href="components/bootplus.css" rel="stylesheet">
 <style>
 body {
-	font-family: 'Roboto Condensed', sans-serif;
-	font-size: 100%;
-	padding-top: 60px;
+  font-family: 'Roboto Condensed', sans-serif;
+  font-size: 100%;
+  padding-top: 60px;
 }
 </style>
 <script>
@@ -21,7 +23,7 @@ body {
 (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
 m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
 })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
-ga('create', '', 'auto');
+ga('create', 'UA-3077339-2', 'auto');
 ga('send', 'pageview');
 </script>
 <!-- google analyticsの下に置くこと-->
@@ -32,7 +34,7 @@ ga('send', 'pageview');
 <link rel="apple-touch-icon-precomposed" sizes="114x114" href="components/apple-touch-icon-114-precomposed.png">
 <link rel="apple-touch-icon-precomposed" sizes="72x72"   href="components/apple-touch-icon-72-precomposed.png">
 <link rel="apple-touch-icon-precomposed" sizes="52x52"   href="components/apple-touch-icon-57-precomposed.png">
-<link rel="shortcut icon" href="favicon.png">
+<link rel="shortcut icon" href="components/favicon.png">
 </head>
 <body>
 <div class="navbar navbar-fixed-top">
@@ -43,17 +45,125 @@ ga('send', 'pageview');
 	</div>
 </div>
 <div class="container">
-	<div id="container" style="width:100%">
-	
-	</div>
-	<div class="footer" align="center">
-		<p>SaECaNet - Knowledge Vault</p>
-	</div>
-	<div class="footer" align="center">
-		<p><a href="http://www.saecanet.com/subfolder/disclaimer.html" target="_blank">Disclaimer</a></p>
-		<p><a href="http://am-consulting.co.jp" target="_blank">Asset Management Consulting Corporation</p>
-		<p><a href="http://www.saecanet.com" target="_blank">SaECaNet - Science and Engineering Cafe on the Net</p>
-	</div>
+<link href="http://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<link href="http://cdn.datatables.net/plug-ins/1.10.12/features/searchHighlight/dataTables.searchHighlight.css" rel="stylesheet">
+<script src="http://cdn.datatables.net/plug-ins/1.10.12/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
+<script src="http://bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+	$('#amcc_knowledgevault').dataTable({
+		"lengthMenu":[[20,10,-1],[20,10,"All"]],
+		"order":[[0,"asc"]],
+		"searching":true,
+		"columnDefs":[{"width":"3%","targets":0},{"width":"20%","targets":1},{"width":"3%","targets":4}],
+		"language":{"decimal":".","thousands":","},
+		"searchHighlight": true,
+	});
+  $('input.global_filter').on( 'keyup click', function () {
+    filterGlobal();
+  });
+  $('input.column_filter').on( 'keyup click', function () {
+    filterColumn( $(this).parents('tr').attr('data-column') );
+  });
+});
+</script>
+<div id="container" style="width:100%">
+<div align="center"><b>正規表現対応フィルターボックス</b></div>  
+<table width="100%" cellpadding="2" cellspacing="0">
+<thead>
+<tr>
+<th width="15%" style="text-align:right">Target</th>
+<th width="75%" style="text-align:center">Search text</th>
+<th style="text-align:center">Regex</th>
+</tr>
+</thead>
+<tbody>  
+<tr id="filter_col2" data-column="1">
+<td align="right">Category</td>
+<td align="right"><input type="text" class="column_filter" id="col1_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col1_regex" checked="checked"></td>
+</tr>
+     
+<tr id="filter_col3" data-column="2">
+<td align="right">Topic</td>
+<td align="right"><input type="text" class="column_filter" id="col2_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col2_regex" checked="checked"></td>
+</tr>
+     
+<tr id="filter_col4" data-column="3">
+<td align="right">Keyword</td>
+<td align="right"><input type="text" class="column_filter" id="col3_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col3_regex" checked="checked"></td>
+</tr>
+     
+</tbody>
+</table>
+<hr>
+<script>
+function filterGlobal () {
+  $('#amcc_knowledgevault').DataTable().search(
+  $('#global_filter').val(),
+  $('#global_regex').prop('checked'),
+  $('#global_smart').prop('checked')
+  ).draw();
+}
+function filterColumn ( i ) {
+  $('#amcc_knowledgevault').DataTable().column( i ).search(
+  $('#col'+i+'_filter').val(),
+  $('#col'+i+'_regex').prop('checked'),
+  $('#col'+i+'_smart').prop('checked')
+  ).draw();
+}
+</script> 
+<div style="overflow-x:scroll;">
+<table id="amcc_knowledgevault" width="100%" class="display compact" style="font-size:12px;">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> No. </th>
+   <th style="text-align:left;"> Category </th>
+   <th style="text-align:left;"> Topic </th>
+   <th style="text-align:left;"> Keyword </th>
+   <th style="text-align:left;"> URL </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 学術論文紹介 </td>
+   <td style="text-align:left;"> 福島第一原子力発電所事故による避難後の生活習慣病について、川内村における長期フォローアップの後ろ向き研究 </td>
+   <td style="text-align:left;"> 福島第一原子力発電所事故,避難,生活習慣病,川内村,後ろ向き研究 </td>
+   <td style="text-align:left;"> <a href="https://github.com/am-consulting/knowledgeVault/blob/master/20160714-01-introduction-of-academic-paper.md" target="_blank">Link</a> </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 学術論文紹介 </td>
+   <td style="text-align:left;"> 除染後の福島県における残留線量の評価 </td>
+   <td style="text-align:left;"> 福島第一原子力発電所事故,追加被曝線量,年間1ミリシーベルト,1時間あたり0.23マイクロシーベルト,セシウム137,屋内作業員,年金生活者,屋外作業員 </td>
+   <td style="text-align:left;"> <a href="https://github.com/am-consulting/knowledgeVault/blob/master/20160715-01-introduction-of-academic-paper.md" target="_blank">Link</a> </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 統計データ </td>
+   <td style="text-align:left;"> 平成28年1月1日住民基本台帳 都道府県別人口 </td>
+   <td style="text-align:left;"> 住民基本台帳,人口,2016年 </td>
+   <td style="text-align:left;"> <a href="http://knowledgevault.saecanet.com/20160715-01-R-code-datatables.html" target="_blank">Link</a> </td>
+  </tr>
+</tbody>
+</table>
+</div> 
+</div>
+<hr>
+<div class="footer" align="center">
+	<p>SaECaNet - Knowledge Vault</p>
+</div>
+<div class="footer" align="center">
+	<p><a href="https://github.com/am-consulting/knowledgeVault/blob/master/README.md" target="_blank">特記事項</a></p>
+	<p><a href="http://www.saecanet.com/subfolder/disclaimer.html" target="_blank">Disclaimer</a></p>
+	<p><a href="http://am-consulting.co.jp" target="_blank">Asset Management Consulting Corporation</p>
+	<p><a href="http://www.saecanet.com" target="_blank">SaECaNet - Science and Engineering Cafe on the Net</p>
+</div>
 </div>	
 </body>
 </html>
