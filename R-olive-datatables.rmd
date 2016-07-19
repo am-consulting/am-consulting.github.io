@@ -1,0 +1,62 @@
+---
+title: "平成28年1月1日住民基本台帳人口"
+author: "Asset Management Consulting Corporation / アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+---
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-"平成28年1月1日住民基本台帳人口・世帯数、平成27年（1月1日から同年12月31日まで）人口動態（都道府県別）（総計）"
+dataSource<-"総務省"
+notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+paste("Data Source:",dataSource)
+paste("作成日:",Sys.time())
+paste("特記:",notes)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+  "clipboard",
+  header = T,
+  sep = "\t",
+  stringsAsFactor = F,
+  na.strings = c("na", "", "-"),
+  check.names = F
+  )
+  
+  dataSet <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F)
+  
+  funDataTable <- function() {
+    DT::datatable(
+      dataSet,
+      options = list(
+        search.regex = T,
+        paging = T,
+        autoWidth = T,
+        info = T,
+        lengthChange = T,
+        ordering = T,
+        searching = T,
+        scrollX = T,
+        lengthMenu = list(c(20, -1, 10, 1), c("20", "All", "10", 1)),
+        orderClasses = T,
+        order = list(list(0, "asc"))
+        ),
+      rownames = F,
+      caption = paste(dataTitle, dataSource),
+      class = "display compact"
+    )
+  }
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funDataTable()
+```

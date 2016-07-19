@@ -1,0 +1,248 @@
+---
+title: "日本のマネタリーベース"
+author: "Asset Management Consulting Corporation / アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+---
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-"日本のマネタリーベース"
+dataSource<-"日本銀行"
+notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+paste("Data Source:",dataSource)
+paste("作成日:",Sys.time())
+paste("特記:",notes)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(dtables)
+library(lubridate)
+library(ggplot2)
+library(scales)
+library(reshape)
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+highestAuthority()
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+iii <- 1
+highestData <- switch (iii,
+                       get(titleAbb[1]),
+                       get(titleAbb[2]),
+                       get(titleAbb[3]),
+                       get(titleAbb[4]))
+
+FUN <- function(x) {
+  highestData[which(highestData[1] <= x &
+                      highestData[2] >= x, arr.ind = F), 3]
+}
+
+tmp <-
+  read.table(
+    "clipboard",
+    header = T,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("na", "", "-"),
+    check.names = F
+  )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet <- na.omit(tmp)
+dataSet <- tail(dataSet,12*20)
+dataSet[, 1] <- as.Date(dataSet[, 1])
+dataSet <-
+  data.frame(dataSet, apply(dataSet[1], 1, FUN), check.names = F)
+colnames(dataSet)[3] <- indextitle[iii]
+dateFormat = "%Y-%m-%d"
+if (length(unique(day(dataSet[, 1]))) == 1) {
+  dateFormat = "%Y-%m"
+}
+if (length(unique(month(dataSet[, 1]))) == 1) {
+  dateFormat = "%Y"
+}
+chartTitle <-
+  paste(colnames(dataSet)[2],
+        format(dataSet[1, 1], dateFormat),
+        "-",
+        format(dataSet[nrow(dataSet), 1], dateFormat))
+borderdate <- max(highestData[1, 1], dataSet[1, 1])
+```
+
+```{r,warning=F,error=F,message=F,echo=F}    
+funPlotTimeSeries <- function() {
+  dataSet <- na.omit(subset(dataSet, borderdate <= dataSet[, 1]))
+  colnames(dataSet)[2] <- "value"
+  for (rrrUL in seq(1, nrow(highestData), by = 1)) {
+    if (highestData[rrrUL, 1] <= borderdate &
+    borderdate <= highestData[rrrUL, 2]) {
+    break
+    }
+  }
+  for (rrrLL in seq(rrrUL, nrow(highestData), by = 1)) {
+    if (highestData[rrrLL, 1] <= dataSet[nrow(dataSet), 1] & dataSet[nrow(dataSet), 1] <= highestData[rrrLL, 2]) {
+      break
+    }
+  }
+  segmentData <- highestData[c(rrrUL:rrrLL),]
+  segmentData[1, 1] <- borderdate
+  segmentData[nrow(segmentData), 2] <- dataSet[nrow(dataSet), 1]
+  x0 <-
+    segmentData[, 1][seq(1, length(segmentData[, 1]), by = 2)]
+  x1 <-
+    segmentData[, 2][seq(1, length(segmentData[, 2]), by = 2)]
+  y0 <- min(dataSet[, 2])
+  if (length((dataSet$value)[dataSet$value < 0]) != 0 & length((dataSet$value)[0 < dataSet$value]) != 0) {
+    level.type <- 2
+  } else{
+    level.type <- 1
+  }
+  if (0 < y0 & level.type == 2) {
+    y0 <- 0
+  }
+  y1 <- max(dataSet[, 2])
+  shade <- data.frame(x0, x1, y0, y1)
+  value.y <- (max(dataSet[, 2]) + min(dataSet[, 2])) / 2
+  
+  g1 <- ggplot()
+  g1 <- g1 + geom_rect(
+    data = shade,
+    aes(
+      xmin = x0,
+      xmax = x1,
+      ymin = y0,
+      ymax = y1
+    ),
+    fill = 'gray80',
+    alpha = 0.5
+  )
+  g1 <- g1 + geom_segment(
+    data = segmentData,
+    aes(
+      x = segmentData[, 1],
+      xend = segmentData[, 2],
+      y = value.y,
+      yend = value.y,
+      colour = segmentData[, 3]
+    ),
+    size = 8
+  )
+  if (level.type == 1) {
+    g1 <- g1 + geom_line(data = dataSet, aes(x = dataSet[, 1], y = dataSet[, 2]))
+  } else{
+    g1 <- g1 + geom_bar(
+      data = dataSet,
+      aes(x = dataSet[, 1], y = dataSet[, 2]),
+      stat = "identity",
+      position = "identity",
+      fill = "blue",
+      alpha = 0.5
+    )
+  }
+  g1 <- g1 + geom_smooth(
+    data = dataSet,
+    aes(x = dataSet[, 1], y = dataSet[, 2]),
+    method = loess,
+    color = "red"
+  )
+  g1 <- g1 + ggtitle(chartTitle)
+  g1 <- g1 + xlab("")
+  g1 <- g1 + ylab("")
+  g1 <- g1 + theme(axis.text = element_text(size = 12, face = "plain"))
+  g1 <- g1 + theme(axis.title = element_text(size = 12, face = "plain"))
+  g1 <- g1 + theme(title = element_text(size = 12, face = "plain"))
+  g1 <- g1 + theme(legend.position = "right")
+  g1 <- g1 + theme(legend.text = element_text(
+  colour = "black",
+  size = 12,
+  face = "plain"
+  ))
+  g1 <- g1 + theme(legend.title = element_text(
+  colour = "white",
+  size = 0,
+  face = "plain"
+  ))
+  g1 <- g1 + scale_x_date(labels = date_format(dateFormat))
+  g1 <- g1 + scale_y_continuous(labels = comma)
+  print(g1)
+  }
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotBoxplot <- function() {
+  par(mar = c(5, 4, 3, 3))
+  subset(dataSet, borderdate <= dataSet[, 1])
+  boxplotData <- dataSet[, c(2, 3)]
+  colnames(boxplotData)[2] <- "Person"
+  boxplotData <- melt(boxplotData, id = "Person")
+  boxplotData <- boxplotData[, -2]
+  boxplotData[, 2] <- as.numeric(boxplotData[, 2])
+  colnames(boxplotData)[1] <- "variable"
+  g2 <- ggplot(data = boxplotData, aes(x = variable, y = value))
+  g2 <- g2 + geom_boxplot(lwd = 1)
+  g2 <- g2 + ggtitle(chartTitle)
+  g2 <- g2 + theme(axis.text.x = element_text(
+  size = 13,
+  angle = 90,
+  hjust = 1,
+  vjust = 0.5,
+  face = "plain"
+  ))
+  g2 <- g2 + theme(axis.text.y = element_text(size = 12, face = "plain"))
+  g2 <- g2 + theme(axis.title = element_text(size = 12, face = "plain"))
+  g2 <- g2 + theme(title = element_text(size = 12, face = "plain"))
+  g2 <- g2 + xlab("")
+  g2 <- g2 + ylab("")
+  g2 <- g2 + scale_y_continuous(labels = comma)
+  print(g2)
+  }
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
+dataSet0[,2]<-format(dataSet0[,2],dateFormat)
+
+funDataTable <- function() {
+  DT::datatable(
+    dataSet0,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = T,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
+      orderClasses = T,
+      order = list(list(0, "desc"))
+      ),
+    rownames = F,
+    caption = paste(dataTitle, dataSource),
+    class = "display compact"
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funPlotTimeSeries()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funPlotBoxplot()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funDataTable()
+```
