@@ -1,5 +1,5 @@
 ---
-title: "日本のマネタリーベース"
+title: "建設総合統計 2016年5月分"
 author: "Asset Management Consulting Corporation / アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -9,8 +9,8 @@ output:
 ---
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"日本のマネタリーベース"
-dataSource<-"日本銀行"
+dataTitle<-"建設総合統計 2016年5月分"
+dataSource<-"国土交通省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
