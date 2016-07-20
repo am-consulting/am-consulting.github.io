@@ -1,5 +1,5 @@
 ---
-title: "平成27年定期健康診断実施結果(業種別)"
+title: "家計消費指数(平成22年基準) 1世帯当たり品目別支出金額 2人以上の世帯･勤労者世帯 2016年5月"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -11,12 +11,13 @@ output:
 ```{r,warning=F,error=F,message=F,echo=F}
 library(DT)
 library(lubridate)
+library(googleVis)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-dataTitle<-"平成27年定期健康診断実施結果(業種別)"
-dataSource<-"厚生労働省"
+dataTitle<-"家計消費指数(平成22年基準) 1世帯当たり品目別支出金額 2人以上の世帯･勤労者世帯 2016年5月"
+dataSource<-"総務省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -75,10 +76,19 @@ tmp <-
       class = "display compact"
     )
   }
+  
+  fungvisTable <- function(obj) {
+    PopTable <- gvisTable(      obj, 
+      options = list(width = 2000, height = "automatic",  page = "enable" ,  pageSize=30)
+    )
+    plot(PopTable,tag="chart")
+  }  
 ```
-
+<hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-funDataTable(obj = dataSetDT, append = "単位:人、%")
+#funDataTable(obj = dataSetDT, append = "単位:円 *印は合成金額")
+cat(paste(dataTitle,", 単位:円 *印は合成金額"))
+fungvisTable(obj = dataSetDT)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
