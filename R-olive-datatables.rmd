@@ -1,5 +1,5 @@
 ---
-title: "人口推計 2016年2月1日現在"
+title: "平成27年定期健康診断実施結果(業種別)"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -15,8 +15,8 @@ library(lubridate)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-dataTitle<-"人口推計 2016年2月1日現在"
-dataSource<-"総務省"
+dataTitle<-"平成27年定期健康診断実施結果(業種別)"
+dataSource<-"厚生労働省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -78,7 +78,7 @@ tmp <-
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-funDataTable(obj = dataSetDT, append = "単位:千人")
+funDataTable(obj = dataSetDT, append = "単位:人、%")
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
