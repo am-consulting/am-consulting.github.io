@@ -1,5 +1,5 @@
 ---
-title: "報告省令レート時系列推移-2016年8月分-日本円、中国元、ポンド、ユーロ、豪ドル"
+title: "人口推計 2016年2月1日現在"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -14,9 +14,9 @@ library(lubridate)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-timeSeries<-1 # 1 or 0
-dataTitle<-"報告省令レート時系列推移-2016年8月分-日本円、中国元、ポンド、ユーロ、豪ドル"
-dataSource<-"日本銀行"
+timeSeries<-0 # 1 or 0
+dataTitle<-"人口推計 2016年2月1日現在"
+dataSource<-"総務省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -66,9 +66,9 @@ tmp <-
         ordering = T,
         searching = T,
         scrollX = T,
-        lengthMenu = list(c(20, -1, 10, 1), c("20", "All", "10", 1)),
+        lengthMenu = list(c(25, -1, 10, 1), c("25", "All", "10", 1)),
         orderClasses = T,
-        order = list(list(0, "desc"))
+        order = list(list(0, "asc"))
         ),
       rownames = F,
       caption = paste(dataTitle, " , ", append),
@@ -78,7 +78,7 @@ tmp <-
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-funDataTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = "単位:千人")
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
