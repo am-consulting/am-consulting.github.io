@@ -1,6 +1,6 @@
 ---
-title: "平成28年1月1日住民基本台帳人口"
-author: "Asset Management Consulting Corporation / アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+title: "報告省令レート時系列推移-2016年8月分-日本円、中国元、ポンド、ユーロ、豪ドル"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
     fig_height: 10
@@ -10,11 +10,13 @@ output:
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(DT)
+library(lubridate)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"平成28年1月1日住民基本台帳人口・世帯数、平成27年（1月1日から同年12月31日まで）人口動態（都道府県別）（総計）"
-dataSource<-"総務省"
+timeSeries<-1 # 1 or 0
+dataTitle<-"報告省令レート時系列推移-2016年8月分-日本円、中国元、ポンド、ユーロ、豪ドル"
+dataSource<-"日本銀行"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -32,11 +34,29 @@ tmp <-
   check.names = F
   )
   
-  dataSet <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F)
-  
-  funDataTable <- function() {
+  if(timeSeries==0){
+    dataSet <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F)
+    dataFormat <- 0
+  }else{
+    dataSet <- tmp
+    dataSet[,1] <- as.Date(dataSet[,1])
+    dataFormat <- "%Y-%m"
+    if (1 < unique(day(dataSet[, 1]))) {
+      dataFormat <- "%Y-%m-%d"
+    }
+  }
+
+  if (dataFormat != 0) {
+    dataSet[, 1] <- format(dataSet[, 1], dataFormat)
+    dataSetDT <- dataSet
+    dataSetDT0<-data.frame(Date=dataSetDT[-1,1],  round(diff(as.matrix(dataSetDT[,-1]))/as.matrix(dataSetDT[-nrow(dataSetDT),-1])*100,2),check.names = F)
+  } else{
+    dataSetDT <- dataSet
+  }
+
+  funDataTable <- function(obj,append="") {
     DT::datatable(
-      dataSet,
+      obj,
       options = list(
         search.regex = T,
         paging = T,
@@ -48,15 +68,21 @@ tmp <-
         scrollX = T,
         lengthMenu = list(c(20, -1, 10, 1), c("20", "All", "10", 1)),
         orderClasses = T,
-        order = list(list(0, "asc"))
+        order = list(list(0, "desc"))
         ),
       rownames = F,
-      caption = paste(dataTitle, dataSource),
+      caption = paste(dataTitle, " , ", append),
       class = "display compact"
     )
   }
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-funDataTable()
+funDataTable(obj = dataSetDT)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+if (dataFormat != 0) {
+funDataTable(obj = dataSetDT0, append = "前月比(%)")
+}
 ```
