@@ -1,5 +1,5 @@
 ---
-title: "家計消費指数(平成22年基準) 1世帯当たり品目別支出金額 2人以上の世帯･勤労者世帯 2016年5月"
+title: "平成28年1-6月犯罪統計 刑法犯 認知件数"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -16,8 +16,8 @@ library(googleVis)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-dataTitle<-"家計消費指数(平成22年基準) 1世帯当たり品目別支出金額 2人以上の世帯･勤労者世帯 2016年5月"
-dataSource<-"総務省"
+dataTitle<-"平成28年1-6月犯罪統計 刑法犯 認知件数"
+dataSource<-"警察庁"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -72,7 +72,7 @@ tmp <-
         order = list(list(0, "asc"))
         ),
       rownames = F,
-      caption = paste(dataTitle, " , ", append),
+      caption = paste(dataTitle, append),
       class = "display compact"
     )
   }
@@ -86,13 +86,15 @@ tmp <-
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-#funDataTable(obj = dataSetDT, append = "単位:円 *印は合成金額")
-cat(paste(dataTitle,", 単位:円 *印は合成金額"))
+appendTitle<-""
+#funDataTable(obj = dataSetDT, append = appendTitle)
+cat(paste(dataTitle,appendTitle))
 fungvisTable(obj = dataSetDT)
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if (dataFormat != 0) {
+cat("<hr>")  
 funDataTable(obj = dataSetDT0, append = "前月比(%)")
 }
 ```
