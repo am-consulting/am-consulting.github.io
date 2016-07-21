@@ -1,0 +1,167 @@
+---
+title: "日本の雇用失業率、欠員率およびその差 2016年5月分 季節調整値"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+---
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-"日本の雇用失業率、欠員率およびその差 2016年5月分 季節調整値"
+dataSource<-"総務省、厚生労働省"
+notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+paste("Data Source:",dataSource)
+paste("作成日:",Sys.time())
+paste("特記:",notes)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(lubridate)
+library(ggplot2)
+library(scales)
+library(reshape)
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+highestAuthority()
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+iii <- 1
+highestData <- switch (iii,
+                       get(titleAbb[1]),
+                       get(titleAbb[2]),
+                       get(titleAbb[3]),
+                       get(titleAbb[4]))
+
+FUN <- function(x) {
+  highestData[which(highestData[1] <= x &
+                      highestData[2] >= x, arr.ind = F), 3]
+}
+
+tmp <-
+  read.table(
+    "clipboard",
+    header = T,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("na", "", "-"),
+    check.names = F
+  )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet <- na.omit(tmp)
+#dataSet <- tail(dataSet,12*20)
+dataSet[, 1] <- as.Date(dataSet[, 1])
+dataSet <-
+  data.frame(dataSet, apply(dataSet[1], 1, FUN), check.names = F)
+colnames(dataSet)[ncol(dataSet)] <- indextitle[iii]
+dateFormat = "%Y-%m-%d"
+if (length(unique(day(dataSet[, 1]))) == 1) {
+  dateFormat = "%Y-%m"
+}
+if (length(unique(month(dataSet[, 1]))) == 1) {
+  dateFormat = "%Y"
+}
+borderdate <- max(highestData[1, 1], dataSet[1, 1])
+```
+
+```{r,warning=F,error=F,message=F,echo=F}    
+funPlotTimeSeries <- function() {
+chartTtpe<-1  
+lineColor<-c("blue","red")
+mainTitle<-paste(colnames(dataSet)[2],"×",colnames(dataSet)[3])
+maxValue<-max(dataSet[,2],dataSet[,3])
+minValue<-min(dataSet[,2],dataSet[,3])
+#par(mar=c(7,7,7,7))
+plot(
+  dataSet[, 1],
+  dataSet[, 2],
+  type = "l",
+  family = "Meiryo",
+  col = lineColor[1],
+  xlab = "" ,
+  ylab = "" ,
+  panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ) ,
+  xaxt = "n",
+  ylim = c(minValue, maxValue),
+  main = mainTitle,
+  cex.axis = 1,
+  cex.lab = 1,
+  cex.main = 1
+  )
+if(chartTtpe==1){
+lines(
+  dataSet[, 1],
+  dataSet[, 3],
+  col = lineColor[2]
+)
+}else{  
+par(new=T)
+plot(
+  dataSet[,1],
+  dataSet[,3],
+  col=lineColor[2],
+  type="l",
+  family="Meiryo" ,
+  xlab="" ,
+  ylab="" ,
+  panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T) ,
+  xaxt="n",
+  yaxt="n",
+  cex.axis=1,cex.lab=1,cex.main=1
+)    
+axis(4,cex.axis=1,cex.lab=1)
+mtext(colnames(dataSet)[2],side=2,line=3.2,cex=1)
+mtext(colnames(dataSet)[3],side=4,line=3.2,cex=1)
+}
+legend("topleft",col=lineColor,lty=1,legend=c(colnames(dataSet)[2],colnames(dataSet)[3]),cex=1)
+axis.Date(side=1,at=dataSet[,1],format=dateFormat,padj=1,cex.axis=1.0)  
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet0<-dataSet
+dataSet0[,1]<-format(dataSet0[,1],dateFormat)
+funDataTable <- function() {
+  DT::datatable(
+    dataSet0,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = T,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
+      orderClasses = T,
+      order = list(list(0, "desc"))
+      ),
+    rownames = F,
+    caption = paste(dataTitle, dataSource),
+    class = "display compact"
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funPlotTimeSeries()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funDataTable()
+```

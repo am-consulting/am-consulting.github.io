@@ -1,0 +1,61 @@
+```{r}
+tmp <-
+  read.table(
+  "clipboard",
+  header = TRUE,
+  sep = "\t",
+  stringsAsFactor = F,
+  na.strings = c("NA", "-", "－", "… ", ".", ""),
+  check.names = FALSE
+  )
+  tmp[, 1] <- as.Date(tmp[, 1])
+  tmp01 <- na.omit(tmp)
+```
+
+```{r}
+tmp <-
+  read.table(
+  "clipboard",
+  header = TRUE,
+  sep = "\t",
+  stringsAsFactor = F,
+  na.strings = c("NA", "-", "－", "… ", ".", ""),
+  check.names = FALSE
+  )
+  tmp[, 1] <- as.Date(tmp[, 1])
+  tmp02 <- na.omit(tmp)
+```
+
+```{r}
+tmp <- merge(tmp01, tmp02, by = "Date")
+head(tmp, 1)
+```
+
+```{r}
+# free
+tmp0 <-
+data.frame(tmp, round((tmp[, 2] - tmp[, 3]) / (tmp[, 5] + tmp[, 2] - tmp[, 3]) * 100, 2), check.names = F)
+colnames(tmp0)[ncol(tmp0)] <- "欠員率(季節調整値、%)"
+head(tmp0, 1)
+tmp1 <- tmp0[, c(1, 4, 6)]
+head(tmp1, 1)
+tmp2 <- data.frame(tmp1, round(tmp1[, 2] - tmp1[, 3],2), check.names = F)
+colnames(tmp2)[ncol(tmp2)] <- "雇用失業率-欠員率(季節調整値、%)"
+head(tmp2, 1)
+# free
+```
+
+```{r}
+username <- Sys.info()['user']
+pathOutput <-
+paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
+setwd(pathOutput)
+write.csv(
+  tmp2,
+  "tmp2.csv",
+  row.names = F,
+  append = F,
+  quote = F,
+  fileEncoding = "cp932" # cp932 UTF-8
+) #col.names=Tを付けると日本語が文字化けする
+```
