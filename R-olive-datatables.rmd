@@ -1,5 +1,5 @@
 ---
-title: "平成28年1-6月犯罪統計 刑法犯 認知件数"
+title: "2016年7月 第24回参議院議員通常選挙結果 都道府県別党派別得票数(比例代表) 得票率(%)"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -16,8 +16,8 @@ library(googleVis)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-dataTitle<-"平成28年1-6月犯罪統計 刑法犯 認知件数"
-dataSource<-"警察庁"
+dataTitle<-"2016年7月 第24回参議院議員通常選挙結果 都道府県別党派別得票数(比例代表) 得票率(%)"
+dataSource<-"総務省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -34,7 +34,7 @@ tmp <-
   na.strings = c("na", "", "-"),
   check.names = F
   )
-  
+  tmp <- data.frame(tmp,tmp[,1,drop=F],check.names = F)
   if(timeSeries==0){
     dataSet <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F)
     dataFormat <- 0
