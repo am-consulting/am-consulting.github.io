@@ -35,12 +35,12 @@ head(tmp, 1)
 # free
 tmp0 <-
 data.frame(tmp, round((tmp[, 2] - tmp[, 3]) / (tmp[, 5] + tmp[, 2] - tmp[, 3]) * 100, 2), check.names = F)
-colnames(tmp0)[ncol(tmp0)] <- "欠員率(季節調整値、%)"
+colnames(tmp0)[ncol(tmp0)] <- "欠員率(%)"
 head(tmp0, 1)
 tmp1 <- tmp0[, c(1, 4, 6)]
 head(tmp1, 1)
 tmp2 <- data.frame(tmp1, round(tmp1[, 2] - tmp1[, 3],2), check.names = F)
-colnames(tmp2)[ncol(tmp2)] <- "雇用失業率-欠員率(季節調整値、%)"
+colnames(tmp2)[ncol(tmp2)] <- "雇用失業率-欠員率(%)"
 head(tmp2, 1)
 # free
 ```
