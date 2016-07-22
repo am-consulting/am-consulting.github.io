@@ -1,5 +1,5 @@
 ---
-title: "全産業活動指数 季節調整済指数 2016年5月分"
+title: "季節調整済賃金指数-実質賃金指数-現金給与総額-事業所規模5人以上-就業形態計-調査産業計 2016年5月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -9,8 +9,8 @@ output:
 ---
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"全産業活動指数 季節調整済指数 2016年5月分"
-dataSource<-"経済産業省"
+dataTitle<-"季節調整済賃金指数-実質賃金指数-現金給与総額-事業所規模5人以上-就業形態計-調査産業計 2016年5月分"
+dataSource<-"厚生労働省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -208,8 +208,11 @@ funPlotBoxplot <- function() {
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
-dataSet0[,2]<-format(dataSet0[,2],dateFormat)
+dataSet0 <- dataSet
+dataSet0[,1]<-format(dataSet0[,1],dateFormat)
+colnames(dataSet0)[2]<-"実質賃金指数"
+#dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
+#dataSet0[,2]<-format(dataSet0[,2],dateFormat)
 
 funDataTable <- function() {
   DT::datatable(
