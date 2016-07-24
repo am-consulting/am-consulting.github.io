@@ -1,0 +1,249 @@
+---
+title: "自己回帰実数和分移動平均モデル(ARFIMAモデル)による為替レート予測検証-日本円/米ドル"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 10
+    keep_md: no
+---
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-"自己回帰実数和分移動平均モデル(ARFIMAモデル)による為替レート予測検証-日本円/米ドル"
+dataSource<-"OANDA Corporation - https://www.oanda.com/"
+notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+paste("Raw Data Source:",dataSource)
+paste("作成日:",Sys.time())
+paste("特記:",notes)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+#resultList01<-lapply(names(arfimaResult), function(x01) c(x01, arfimaResult[[x01]]))
+#resultList02<-lapply(names(forecastResult), function(x02) c(x02, forecastResult[[x02]]))
+library(forecast)
+library(tseries)
+library(RCurl)
+library(nortest)
+library(DT)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importFXRateBygetFX.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+
+#colnames(origData)
+obj <- 2 # 2 3 4 5 6
+ci <- c(80, 95)
+forecastLength <- 10
+duration <- c(30, 90, 120, 150)
+durationType <- 4
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funPlot01 <- function(){
+  subtitle <<- paste(x[1, 1], " - ", x[nrow(x), 1])
+  plot(
+    x[, 1],
+    x[, 2],
+    type = "o",
+    xlab = colnames(x)[1],
+    ylab = colnames(x)[2],
+    col="blue",
+    panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+    ),
+    xaxt = "n",
+    main = paste(colnames(x)[2], "\n", subtitle),
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1
+    )
+  axis.Date(
+    side = 1,
+    at = x[, 1],
+    format = "%Y-%m-%d",
+    padj = 1,
+    cex.axis = 1
+    )
+  mtext(capture.output(adf.test(x[, 2]))[2],
+        side = 1,
+        padj = -12)
+  mtext(paste("Level:", capture.output(adf.test(x[, 2]))[5]),
+        side = 1,
+        padj = -10)
+  mtext(paste("1st diff:", capture.output(adf.test(diff(x[, 2])))[5]),
+        side = 1,
+        padj = -8)
+  cat("<hr>")
+  cat("ARFIMAモデルでフィットさせた後の残差の正規性検定")
+  arfimaResult <<- arfima(x[, 2])
+  forecastResult <<-
+  forecast(arfimaResult, h = forecastLength, level = ci)
+  qqnorm(arfimaResult$residuals,
+    panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ))
+  qqline(arfimaResult$residuals, col = "red")
+  mtext(
+    paste(ad.test(x[, 2])$method, " p-value:", ad.test(x[, 2])$p.value,"\nARFIMA Model d:",arfimaResult$d),
+    side = 1,
+    padj = -2
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funPlot02<-function(){
+  #print(dataSet01)
+  subtitle <- paste(x[1,1]," - ",x[nrow(x),1])
+  yRange<-c(min(dataSet01[,-1]),max(dataSet01[,-1]))  
+  plot(
+    dataSet01[, 1],
+    dataSet01[, 2],
+    type = "o",
+    ylim = yRange,
+    xlab = colnames(dataSet01)[1],
+    ylab = colnames(dataSet01)[2],
+    panel.first = grid(
+      nx = NULL,
+      ny = NULL,
+      lty = 2,
+      equilogs = T
+    ),
+    xaxt = "n",
+    main = paste(
+      colnames(dataSet01)[2],
+      "\nARFIMA(x) Duration of x:",
+      subtitle,
+      "\nARFIMA Model d:",
+      arfimaResult$d
+    ),
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1
+  )
+  legend("topleft", legend = colnames(x)[2], col = "black", lty = 1,pch =1)
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function() {
+  dataSet01[,-1]<-round(dataSet01[,-1],3)
+  DT::datatable(
+    dataSet01,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = T,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
+      orderClasses = T,
+      order = list(list(0, "desc")),
+      columnDefs = list(list(width = '10%', targets = c(0)))
+      ),
+    rownames = F,
+#    caption = paste(subtitle,"のデータにARFIMAモデルを適用し妥当性を検証"),
+    class = "display compact"
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# validation
+x0 <- tail(origData[, c(1, obj)], duration[durationType] + forecastLength)
+x <- head(x0, nrow(x0) - forecastLength)
+funPlot01()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+# validation
+dataSet01<-data.frame(
+  tail(x0, forecastLength),
+  forecastResult$mean,   
+  forecastResult$lower[,1],
+  forecastResult$upper[,1], 
+  forecastResult$lower[,2],
+  forecastResult$upper[,2], 
+  check.names = F
+)
+colnames(dataSet01)[3:7]<-c(
+  "Mean",
+  paste("lower-",ci[1],"%",sep=""),
+  paste("Upper-",ci[1],"%",sep=""),
+  paste("lower-",ci[2],"%",sep=""),
+  paste("Upper-",ci[2],"%",sep="")
+)
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+funPlot02()
+lines(dataSet01[,1],dataSet01[,3],type="o",col="blue")
+lines(dataSet01[,1],dataSet01[,4],type="o",col="red")
+lines(dataSet01[,1],dataSet01[,5],type="o",col="red")
+lines(dataSet01[,1],dataSet01[,6],type="o",col="red",lty=2)
+lines(dataSet01[,1],dataSet01[,7],type="o",col="red",lty=2)
+axis.Date(
+  side = 1,
+  at = dataSet01[, 1],
+  format = "%Y-%m-%d",
+  padj = 1,
+  cex.axis = 1
+)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# validation
+funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# forecast
+x <- tail(origData[,c(1,obj)],duration[durationType])
+funPlot01()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet01<-data.frame(
+  c(1:forecastLength),
+  forecastResult$mean,   
+  forecastResult$lower[,1],
+  forecastResult$upper[,1], 
+  forecastResult$lower[,2],
+  forecastResult$upper[,2], 
+  check.names = F
+)
+colnames(dataSet01)[1:6]<-c(
+  "営業日後",
+  "Mean",
+  paste("lower-",ci[1],"%",sep=""),
+  paste("Upper-",ci[1],"%",sep=""),
+  paste("lower-",ci[2],"%",sep=""),
+  paste("Upper-",ci[2],"%",sep="")
+)
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+funPlot02()
+lines(dataSet01[,1],dataSet01[,3],type="o",col="red")
+lines(dataSet01[,1],dataSet01[,4],type="o",col="red")
+lines(dataSet01[,1],dataSet01[,5],type="o",col="red",lty=2)
+lines(dataSet01[,1],dataSet01[,6],type="o",col="red",lty=2)
+text(dataSet01[,1],dataSet01[,2],labels = dataSet01[,2],srt=90)
+axis(side=1,at = dataSet01[, 1])
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# validation
+funDataTable()
+```
