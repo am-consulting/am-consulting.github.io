@@ -1,0 +1,1948 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
+.dataTables_filter input {width: 50%;}
+</style>
+</head>
+<body>
+<!----> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<link  href="http://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<link  href="http://knowledgevault.saecanet.com/components/pace.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/pace.min.js"></script>
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
+table{width:100%;border-collapse:collapse;padding:0;border-spacing:1;margin-left:auto;margin-right:auto;font-size:100%;}
+tr, td, th{white-space: nowrap;}
+td.highlight{font-weight:plain;color:red;}
+</style>
+<div align="right">作成日時:2016-07-25 15:24:24</div><hr>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+$('#amcc_superSimpleTable1469427864').dataTable({
+"lengthMenu":[[20,10,-1],[20,10,"All"]],
+"order":[[0,"desc"]],
+"searching":true,
+"columnDefs":[{"width":"5%","targets":0}],
+"language":{"decimal":".","thousands":","},
+initComplete: function () {
+this.api().columns().every( function () {
+var column = this;
+var select = $('<select><option value=""></option></select>')
+.appendTo( $(column.footer()).empty() )
+.on( 'change', function () {
+var val = $.fn.dataTable.util.escapeRegex(
+$(this).val()
+);
+column
+.search( val ? '^'+val+'$' : '', true, false )
+.draw();
+} );
+column.data().unique().sort().each( function ( d, j ) {
+select.append( '<option value="'+d+'">'+d+'</option>' )
+} );
+} );
+}
+,
+createdRow:function(row,data,index){
+  if ( data[0].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(0).addClass('highlight');
+ }
+ if ( data[1].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(1).addClass('highlight');
+ }
+ if ( data[2].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(2).addClass('highlight');
+ }
+ if ( data[3].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(3).addClass('highlight');
+ }
+ if ( data[4].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(4).addClass('highlight');
+ }
+ if ( data[5].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(5).addClass('highlight');
+ }
+ if ( data[6].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(6).addClass('highlight');
+ }
+ }}) 
+$('#amcc_superSimpleTable1469427864').dataTable();
+$('input.global_filter').on( 'keyup click', function () {
+filterGlobal();
+});
+$('input.column_filter').on( 'keyup click', function () {
+filterColumn( $(this).parents('tr').attr('data-column') );
+}); });</script>
+
+ <div align="center"><b> 日本の実質輸出入動向 2016年6月分-国･地域別実質輸出指数 </b><br>データ出所: 日本銀行 </div> -9999は「データなし」または「データ欠損」または「NA」を意味します<hr> 
+<b>正規表現対応フィルターボックス</b>  
+<table width="100%">
+<thead>
+<tr>
+<th width="15%" style="text-align:center">Target</th>
+<th width="75%" style="text-align:center">Search text</th>
+<th style="text-align:center">Regex</th>
+</tr>
+</thead>
+<tbody>  
+<tr id="filter_col1" data-column="0">
+<td>Date</td>
+<td align="center"><input type="text" class="column_filter" id="col0_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col0_regex" checked="checked"></td>
+</tr> 
+<tr id="filter_col2" data-column="1">
+<td>実質輸出-米国</td>
+<td align="center"><input type="text" class="column_filter" id="col1_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col1_regex" checked="checked"></td>
+</tr> 
+<tr id="filter_col3" data-column="2">
+<td>実質輸出-ＥＵ</td>
+<td align="center"><input type="text" class="column_filter" id="col2_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col2_regex" checked="checked"></td>
+</tr> 
+<tr id="filter_col4" data-column="3">
+<td>実質輸出-中国</td>
+<td align="center"><input type="text" class="column_filter" id="col3_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col3_regex" checked="checked"></td>
+</tr> 
+<tr id="filter_col5" data-column="4">
+<td>実質輸出-ＮＩＥｓ</td>
+<td align="center"><input type="text" class="column_filter" id="col4_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col4_regex" checked="checked"></td>
+</tr> 
+<tr id="filter_col6" data-column="5">
+<td>実質輸出-ＡＳＥＡＮ４</td>
+<td align="center"><input type="text" class="column_filter" id="col5_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col5_regex" checked="checked"></td>
+</tr> 
+<tr id="filter_col7" data-column="6">
+<td>実質輸出-その他</td>
+<td align="center"><input type="text" class="column_filter" id="col6_filter" style="width:100%"></td>
+<td align="center"><input type="checkbox" class="column_filter" id="col6_regex" checked="checked"></td>
+</tr> </tbody></table><hr> 
+<script>
+function filterGlobal () {
+$('#amcc_superSimpleTable1469427864').DataTable().search(
+$('#global_filter').val(),
+$('#global_regex').prop('checked'),
+$('#global_smart').prop('checked')
+).draw();
+}
+function filterColumn ( i ) {
+$('#amcc_superSimpleTable1469427864').DataTable().column( i ).search(
+$('#col'+i+'_filter').val(),
+$('#col'+i+'_regex').prop('checked'),
+$('#col'+i+'_smart').prop('checked')
+).draw();
+}
+</script> <div style="overflow-x:scroll;">
+ <table id="amcc_superSimpleTable1469427864" width="100%" class="display compact">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> Date </th>
+   <th style="text-align:left;"> 実質輸出-米国 </th>
+   <th style="text-align:right;"> 実質輸出-ＥＵ </th>
+   <th style="text-align:right;"> 実質輸出-中国 </th>
+   <th style="text-align:right;"> 実質輸出-ＮＩＥｓ </th>
+   <th style="text-align:right;"> 実質輸出-ＡＳＥＡＮ４ </th>
+   <th style="text-align:left;"> 実質輸出-その他 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 2000-01 </td>
+   <td style="text-align:left;"> 114.20087 </td>
+   <td style="text-align:right;"> 88.77660 </td>
+   <td style="text-align:right;"> 17.76310 </td>
+   <td style="text-align:right;"> 61.57856 </td>
+   <td style="text-align:right;"> 55.13602 </td>
+   <td style="text-align:left;"> 52.47530 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-02 </td>
+   <td style="text-align:left;"> 115.37037 </td>
+   <td style="text-align:right;"> 86.84636 </td>
+   <td style="text-align:right;"> 19.87342 </td>
+   <td style="text-align:right;"> 61.37995 </td>
+   <td style="text-align:right;"> 53.28837 </td>
+   <td style="text-align:left;"> 51.46025 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-03 </td>
+   <td style="text-align:left;"> 117.30299 </td>
+   <td style="text-align:right;"> 87.36125 </td>
+   <td style="text-align:right;"> 20.67228 </td>
+   <td style="text-align:right;"> 61.82544 </td>
+   <td style="text-align:right;"> 56.57900 </td>
+   <td style="text-align:left;"> 49.26781 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-04 </td>
+   <td style="text-align:left;"> 125.00766 </td>
+   <td style="text-align:right;"> 90.01405 </td>
+   <td style="text-align:right;"> 20.51864 </td>
+   <td style="text-align:right;"> 64.05974 </td>
+   <td style="text-align:right;"> 58.67948 </td>
+   <td style="text-align:left;"> 50.66549 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-05 </td>
+   <td style="text-align:left;"> 120.45495 </td>
+   <td style="text-align:right;"> 85.90416 </td>
+   <td style="text-align:right;"> 21.30066 </td>
+   <td style="text-align:right;"> 63.53502 </td>
+   <td style="text-align:right;"> 57.92693 </td>
+   <td style="text-align:left;"> 48.52105 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-06 </td>
+   <td style="text-align:left;"> 118.78652 </td>
+   <td style="text-align:right;"> 87.52805 </td>
+   <td style="text-align:right;"> 22.92951 </td>
+   <td style="text-align:right;"> 65.16363 </td>
+   <td style="text-align:right;"> 61.40986 </td>
+   <td style="text-align:left;"> 51.81344 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-07 </td>
+   <td style="text-align:left;"> 120.00629 </td>
+   <td style="text-align:right;"> 87.83623 </td>
+   <td style="text-align:right;"> 23.48455 </td>
+   <td style="text-align:right;"> 64.84761 </td>
+   <td style="text-align:right;"> 60.72844 </td>
+   <td style="text-align:left;"> 49.06400 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-08 </td>
+   <td style="text-align:left;"> 124.80197 </td>
+   <td style="text-align:right;"> 88.54809 </td>
+   <td style="text-align:right;"> 24.03521 </td>
+   <td style="text-align:right;"> 67.48383 </td>
+   <td style="text-align:right;"> 60.66917 </td>
+   <td style="text-align:left;"> 49.90440 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-09 </td>
+   <td style="text-align:left;"> 121.79922 </td>
+   <td style="text-align:right;"> 85.30709 </td>
+   <td style="text-align:right;"> 24.17236 </td>
+   <td style="text-align:right;"> 63.44039 </td>
+   <td style="text-align:right;"> 60.26962 </td>
+   <td style="text-align:left;"> 54.61012 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-10 </td>
+   <td style="text-align:left;"> 126.65693 </td>
+   <td style="text-align:right;"> 84.60794 </td>
+   <td style="text-align:right;"> 25.33785 </td>
+   <td style="text-align:right;"> 65.63094 </td>
+   <td style="text-align:right;"> 60.25339 </td>
+   <td style="text-align:left;"> 51.46348 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-11 </td>
+   <td style="text-align:left;"> 124.06456 </td>
+   <td style="text-align:right;"> 82.22826 </td>
+   <td style="text-align:right;"> 25.14907 </td>
+   <td style="text-align:right;"> 65.02130 </td>
+   <td style="text-align:right;"> 61.23337 </td>
+   <td style="text-align:left;"> 47.91077 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2000-12 </td>
+   <td style="text-align:left;"> 124.27083 </td>
+   <td style="text-align:right;"> 83.75672 </td>
+   <td style="text-align:right;"> 25.15188 </td>
+   <td style="text-align:right;"> 60.18892 </td>
+   <td style="text-align:right;"> 57.90760 </td>
+   <td style="text-align:left;"> 47.51777 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-01 </td>
+   <td style="text-align:left;"> 120.26855 </td>
+   <td style="text-align:right;"> 83.33559 </td>
+   <td style="text-align:right;"> 25.04030 </td>
+   <td style="text-align:right;"> 55.90868 </td>
+   <td style="text-align:right;"> 58.03967 </td>
+   <td style="text-align:left;"> 46.78286 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-02 </td>
+   <td style="text-align:left;"> 123.60345 </td>
+   <td style="text-align:right;"> 88.42924 </td>
+   <td style="text-align:right;"> 27.00891 </td>
+   <td style="text-align:right;"> 59.58179 </td>
+   <td style="text-align:right;"> 59.56942 </td>
+   <td style="text-align:left;"> 47.92957 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-03 </td>
+   <td style="text-align:left;"> 119.13608 </td>
+   <td style="text-align:right;"> 85.96433 </td>
+   <td style="text-align:right;"> 25.05194 </td>
+   <td style="text-align:right;"> 56.93543 </td>
+   <td style="text-align:right;"> 56.89490 </td>
+   <td style="text-align:left;"> 51.04800 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-04 </td>
+   <td style="text-align:left;"> 121.08607 </td>
+   <td style="text-align:right;"> 82.85581 </td>
+   <td style="text-align:right;"> 25.35162 </td>
+   <td style="text-align:right;"> 55.77848 </td>
+   <td style="text-align:right;"> 54.29491 </td>
+   <td style="text-align:left;"> 49.38226 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-05 </td>
+   <td style="text-align:left;"> 110.81693 </td>
+   <td style="text-align:right;"> 79.13615 </td>
+   <td style="text-align:right;"> 26.10277 </td>
+   <td style="text-align:right;"> 54.14884 </td>
+   <td style="text-align:right;"> 53.96215 </td>
+   <td style="text-align:left;"> 49.70492 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-06 </td>
+   <td style="text-align:left;"> 113.43832 </td>
+   <td style="text-align:right;"> 77.31383 </td>
+   <td style="text-align:right;"> 25.07076 </td>
+   <td style="text-align:right;"> 52.92979 </td>
+   <td style="text-align:right;"> 53.03822 </td>
+   <td style="text-align:left;"> 49.00173 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-07 </td>
+   <td style="text-align:left;"> 116.91192 </td>
+   <td style="text-align:right;"> 75.44437 </td>
+   <td style="text-align:right;"> 25.09548 </td>
+   <td style="text-align:right;"> 52.92892 </td>
+   <td style="text-align:right;"> 52.17311 </td>
+   <td style="text-align:left;"> 50.98142 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-08 </td>
+   <td style="text-align:left;"> 116.65857 </td>
+   <td style="text-align:right;"> 76.00259 </td>
+   <td style="text-align:right;"> 25.56930 </td>
+   <td style="text-align:right;"> 53.33257 </td>
+   <td style="text-align:right;"> 53.48639 </td>
+   <td style="text-align:left;"> 50.88650 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-09 </td>
+   <td style="text-align:left;"> 110.05512 </td>
+   <td style="text-align:right;"> 78.00182 </td>
+   <td style="text-align:right;"> 25.27882 </td>
+   <td style="text-align:right;"> 54.74300 </td>
+   <td style="text-align:right;"> 53.16823 </td>
+   <td style="text-align:left;"> 54.10344 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-10 </td>
+   <td style="text-align:left;"> 113.94717 </td>
+   <td style="text-align:right;"> 79.11018 </td>
+   <td style="text-align:right;"> 26.45244 </td>
+   <td style="text-align:right;"> 53.01505 </td>
+   <td style="text-align:right;"> 52.85300 </td>
+   <td style="text-align:left;"> 49.02574 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-11 </td>
+   <td style="text-align:left;"> 108.11698 </td>
+   <td style="text-align:right;"> 75.53694 </td>
+   <td style="text-align:right;"> 26.65286 </td>
+   <td style="text-align:right;"> 52.28136 </td>
+   <td style="text-align:right;"> 52.26379 </td>
+   <td style="text-align:left;"> 50.32390 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2001-12 </td>
+   <td style="text-align:left;"> 104.24411 </td>
+   <td style="text-align:right;"> 73.55576 </td>
+   <td style="text-align:right;"> 25.63607 </td>
+   <td style="text-align:right;"> 52.02392 </td>
+   <td style="text-align:right;"> 53.86665 </td>
+   <td style="text-align:left;"> 47.36925 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-01 </td>
+   <td style="text-align:left;"> 114.86650 </td>
+   <td style="text-align:right;"> 71.15717 </td>
+   <td style="text-align:right;"> 30.45458 </td>
+   <td style="text-align:right;"> 55.27058 </td>
+   <td style="text-align:right;"> 53.76848 </td>
+   <td style="text-align:left;"> 48.82006 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-02 </td>
+   <td style="text-align:left;"> 118.04592 </td>
+   <td style="text-align:right;"> 74.19206 </td>
+   <td style="text-align:right;"> 27.37366 </td>
+   <td style="text-align:right;"> 54.58927 </td>
+   <td style="text-align:right;"> 56.11620 </td>
+   <td style="text-align:left;"> 50.90227 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-03 </td>
+   <td style="text-align:left;"> 120.55185 </td>
+   <td style="text-align:right;"> 76.59401 </td>
+   <td style="text-align:right;"> 30.13028 </td>
+   <td style="text-align:right;"> 57.50939 </td>
+   <td style="text-align:right;"> 56.24176 </td>
+   <td style="text-align:left;"> 51.91279 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-04 </td>
+   <td style="text-align:left;"> 114.15048 </td>
+   <td style="text-align:right;"> 75.79801 </td>
+   <td style="text-align:right;"> 31.27194 </td>
+   <td style="text-align:right;"> 59.80917 </td>
+   <td style="text-align:right;"> 57.44202 </td>
+   <td style="text-align:left;"> 50.99089 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-05 </td>
+   <td style="text-align:left;"> 115.48197 </td>
+   <td style="text-align:right;"> 75.93005 </td>
+   <td style="text-align:right;"> 33.03366 </td>
+   <td style="text-align:right;"> 62.41237 </td>
+   <td style="text-align:right;"> 59.80054 </td>
+   <td style="text-align:left;"> 53.46123 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-06 </td>
+   <td style="text-align:left;"> 116.74818 </td>
+   <td style="text-align:right;"> 81.95286 </td>
+   <td style="text-align:right;"> 33.77944 </td>
+   <td style="text-align:right;"> 63.86652 </td>
+   <td style="text-align:right;"> 60.15013 </td>
+   <td style="text-align:left;"> 52.81260 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-07 </td>
+   <td style="text-align:left;"> 116.56411 </td>
+   <td style="text-align:right;"> 82.44657 </td>
+   <td style="text-align:right;"> 36.63037 </td>
+   <td style="text-align:right;"> 63.27604 </td>
+   <td style="text-align:right;"> 59.22959 </td>
+   <td style="text-align:left;"> 52.03340 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-08 </td>
+   <td style="text-align:left;"> 114.11279 </td>
+   <td style="text-align:right;"> 81.48405 </td>
+   <td style="text-align:right;"> 35.35088 </td>
+   <td style="text-align:right;"> 62.40981 </td>
+   <td style="text-align:right;"> 64.10759 </td>
+   <td style="text-align:left;"> 51.17326 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-09 </td>
+   <td style="text-align:left;"> 116.57299 </td>
+   <td style="text-align:right;"> 80.60590 </td>
+   <td style="text-align:right;"> 34.39872 </td>
+   <td style="text-align:right;"> 64.33932 </td>
+   <td style="text-align:right;"> 59.14207 </td>
+   <td style="text-align:left;"> 50.85340 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-10 </td>
+   <td style="text-align:left;"> 110.37037 </td>
+   <td style="text-align:right;"> 81.29867 </td>
+   <td style="text-align:right;"> 35.08318 </td>
+   <td style="text-align:right;"> 63.17541 </td>
+   <td style="text-align:right;"> 63.41090 </td>
+   <td style="text-align:left;"> 51.79752 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-11 </td>
+   <td style="text-align:left;"> 124.18353 </td>
+   <td style="text-align:right;"> 84.61370 </td>
+   <td style="text-align:right;"> 36.16081 </td>
+   <td style="text-align:right;"> 64.44516 </td>
+   <td style="text-align:right;"> 59.13037 </td>
+   <td style="text-align:left;"> 54.25550 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2002-12 </td>
+   <td style="text-align:left;"> 115.39432 </td>
+   <td style="text-align:right;"> 81.77502 </td>
+   <td style="text-align:right;"> 37.14893 </td>
+   <td style="text-align:right;"> 66.62807 </td>
+   <td style="text-align:right;"> 62.23509 </td>
+   <td style="text-align:left;"> 52.31946 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-01 </td>
+   <td style="text-align:left;"> 113.01457 </td>
+   <td style="text-align:right;"> 88.51504 </td>
+   <td style="text-align:right;"> 37.94244 </td>
+   <td style="text-align:right;"> 64.26778 </td>
+   <td style="text-align:right;"> 62.79895 </td>
+   <td style="text-align:left;"> 50.93730 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-02 </td>
+   <td style="text-align:left;"> 107.17213 </td>
+   <td style="text-align:right;"> 88.36943 </td>
+   <td style="text-align:right;"> 45.73544 </td>
+   <td style="text-align:right;"> 69.65347 </td>
+   <td style="text-align:right;"> 60.90039 </td>
+   <td style="text-align:left;"> 53.05292 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-03 </td>
+   <td style="text-align:left;"> 108.91306 </td>
+   <td style="text-align:right;"> 88.71813 </td>
+   <td style="text-align:right;"> 42.28877 </td>
+   <td style="text-align:right;"> 67.07363 </td>
+   <td style="text-align:right;"> 61.79216 </td>
+   <td style="text-align:left;"> 51.82031 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-04 </td>
+   <td style="text-align:left;"> 107.90448 </td>
+   <td style="text-align:right;"> 87.38263 </td>
+   <td style="text-align:right;"> 43.03142 </td>
+   <td style="text-align:right;"> 63.69307 </td>
+   <td style="text-align:right;"> 62.82172 </td>
+   <td style="text-align:left;"> 53.50293 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-05 </td>
+   <td style="text-align:left;"> 111.08423 </td>
+   <td style="text-align:right;"> 86.90588 </td>
+   <td style="text-align:right;"> 42.05320 </td>
+   <td style="text-align:right;"> 64.92676 </td>
+   <td style="text-align:right;"> 62.53792 </td>
+   <td style="text-align:left;"> 52.80139 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-06 </td>
+   <td style="text-align:left;"> 102.86342 </td>
+   <td style="text-align:right;"> 86.43906 </td>
+   <td style="text-align:right;"> 41.68781 </td>
+   <td style="text-align:right;"> 65.90856 </td>
+   <td style="text-align:right;"> 61.71788 </td>
+   <td style="text-align:left;"> 53.56541 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-07 </td>
+   <td style="text-align:left;"> 105.81949 </td>
+   <td style="text-align:right;"> 88.47501 </td>
+   <td style="text-align:right;"> 44.21104 </td>
+   <td style="text-align:right;"> 67.50849 </td>
+   <td style="text-align:right;"> 64.14227 </td>
+   <td style="text-align:left;"> 53.01696 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-08 </td>
+   <td style="text-align:left;"> 106.99117 </td>
+   <td style="text-align:right;"> 88.05479 </td>
+   <td style="text-align:right;"> 46.19231 </td>
+   <td style="text-align:right;"> 70.49407 </td>
+   <td style="text-align:right;"> 64.38311 </td>
+   <td style="text-align:left;"> 54.71660 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-09 </td>
+   <td style="text-align:left;"> 109.60441 </td>
+   <td style="text-align:right;"> 90.59300 </td>
+   <td style="text-align:right;"> 48.05556 </td>
+   <td style="text-align:right;"> 68.98323 </td>
+   <td style="text-align:right;"> 69.57935 </td>
+   <td style="text-align:left;"> 59.60566 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-10 </td>
+   <td style="text-align:left;"> 108.78147 </td>
+   <td style="text-align:right;"> 91.27766 </td>
+   <td style="text-align:right;"> 47.65373 </td>
+   <td style="text-align:right;"> 76.19882 </td>
+   <td style="text-align:right;"> 67.38430 </td>
+   <td style="text-align:left;"> 56.03683 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-11 </td>
+   <td style="text-align:left;"> 107.06377 </td>
+   <td style="text-align:right;"> 92.64843 </td>
+   <td style="text-align:right;"> 48.79649 </td>
+   <td style="text-align:right;"> 77.35270 </td>
+   <td style="text-align:right;"> 68.77599 </td>
+   <td style="text-align:left;"> 56.94341 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2003-12 </td>
+   <td style="text-align:left;"> 110.72807 </td>
+   <td style="text-align:right;"> 95.43965 </td>
+   <td style="text-align:right;"> 52.03729 </td>
+   <td style="text-align:right;"> 80.81118 </td>
+   <td style="text-align:right;"> 69.86955 </td>
+   <td style="text-align:left;"> 58.77229 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-01 </td>
+   <td style="text-align:left;"> 109.65861 </td>
+   <td style="text-align:right;"> 99.50084 </td>
+   <td style="text-align:right;"> 52.65821 </td>
+   <td style="text-align:right;"> 78.63852 </td>
+   <td style="text-align:right;"> 73.99910 </td>
+   <td style="text-align:left;"> 60.14645 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-02 </td>
+   <td style="text-align:left;"> 108.37319 </td>
+   <td style="text-align:right;"> 97.29581 </td>
+   <td style="text-align:right;"> 54.20894 </td>
+   <td style="text-align:right;"> 82.80816 </td>
+   <td style="text-align:right;"> 67.86133 </td>
+   <td style="text-align:left;"> 63.55922 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-03 </td>
+   <td style="text-align:left;"> 109.81321 </td>
+   <td style="text-align:right;"> 100.83900 </td>
+   <td style="text-align:right;"> 51.35881 </td>
+   <td style="text-align:right;"> 80.18688 </td>
+   <td style="text-align:right;"> 70.51866 </td>
+   <td style="text-align:left;"> 56.54140 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-04 </td>
+   <td style="text-align:left;"> 111.03561 </td>
+   <td style="text-align:right;"> 95.25344 </td>
+   <td style="text-align:right;"> 53.81248 </td>
+   <td style="text-align:right;"> 82.81068 </td>
+   <td style="text-align:right;"> 71.03154 </td>
+   <td style="text-align:left;"> 63.05250 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-05 </td>
+   <td style="text-align:left;"> 113.95080 </td>
+   <td style="text-align:right;"> 104.96243 </td>
+   <td style="text-align:right;"> 54.85585 </td>
+   <td style="text-align:right;"> 82.53011 </td>
+   <td style="text-align:right;"> 70.66804 </td>
+   <td style="text-align:left;"> 62.10426 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-06 </td>
+   <td style="text-align:left;"> 117.63887 </td>
+   <td style="text-align:right;"> 104.98951 </td>
+   <td style="text-align:right;"> 56.09034 </td>
+   <td style="text-align:right;"> 81.92081 </td>
+   <td style="text-align:right;"> 72.40005 </td>
+   <td style="text-align:left;"> 60.20329 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-07 </td>
+   <td style="text-align:left;"> 113.39778 </td>
+   <td style="text-align:right;"> 103.82452 </td>
+   <td style="text-align:right;"> 54.86618 </td>
+   <td style="text-align:right;"> 84.43308 </td>
+   <td style="text-align:right;"> 71.59073 </td>
+   <td style="text-align:left;"> 59.57536 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-08 </td>
+   <td style="text-align:left;"> 112.93043 </td>
+   <td style="text-align:right;"> 107.05492 </td>
+   <td style="text-align:right;"> 53.17827 </td>
+   <td style="text-align:right;"> 82.51658 </td>
+   <td style="text-align:right;"> 70.64867 </td>
+   <td style="text-align:left;"> 59.31638 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-09 </td>
+   <td style="text-align:left;"> 113.95496 </td>
+   <td style="text-align:right;"> 101.09758 </td>
+   <td style="text-align:right;"> 54.41733 </td>
+   <td style="text-align:right;"> 81.89565 </td>
+   <td style="text-align:right;"> 72.82969 </td>
+   <td style="text-align:left;"> 59.89367 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-10 </td>
+   <td style="text-align:left;"> 112.63675 </td>
+   <td style="text-align:right;"> 105.73657 </td>
+   <td style="text-align:right;"> 55.90300 </td>
+   <td style="text-align:right;"> 82.02986 </td>
+   <td style="text-align:right;"> 71.74458 </td>
+   <td style="text-align:left;"> 65.20433 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-11 </td>
+   <td style="text-align:left;"> 116.09319 </td>
+   <td style="text-align:right;"> 110.79068 </td>
+   <td style="text-align:right;"> 56.69386 </td>
+   <td style="text-align:right;"> 83.58541 </td>
+   <td style="text-align:right;"> 75.16119 </td>
+   <td style="text-align:left;"> 64.12717 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2004-12 </td>
+   <td style="text-align:left;"> 114.06500 </td>
+   <td style="text-align:right;"> 106.75613 </td>
+   <td style="text-align:right;"> 53.68236 </td>
+   <td style="text-align:right;"> 82.17217 </td>
+   <td style="text-align:right;"> 71.92782 </td>
+   <td style="text-align:left;"> 64.14545 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-01 </td>
+   <td style="text-align:left;"> 112.07730 </td>
+   <td style="text-align:right;"> 100.88907 </td>
+   <td style="text-align:right;"> 58.22877 </td>
+   <td style="text-align:right;"> 85.94437 </td>
+   <td style="text-align:right;"> 71.22352 </td>
+   <td style="text-align:left;"> 62.44811 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-02 </td>
+   <td style="text-align:left;"> 118.67447 </td>
+   <td style="text-align:right;"> 102.65716 </td>
+   <td style="text-align:right;"> 51.39344 </td>
+   <td style="text-align:right;"> 80.92503 </td>
+   <td style="text-align:right;"> 74.19095 </td>
+   <td style="text-align:left;"> 63.21257 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-03 </td>
+   <td style="text-align:left;"> 119.05205 </td>
+   <td style="text-align:right;"> 104.36861 </td>
+   <td style="text-align:right;"> 53.38529 </td>
+   <td style="text-align:right;"> 82.74373 </td>
+   <td style="text-align:right;"> 74.39647 </td>
+   <td style="text-align:left;"> 63.66141 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-04 </td>
+   <td style="text-align:left;"> 119.07076 </td>
+   <td style="text-align:right;"> 107.10315 </td>
+   <td style="text-align:right;"> 54.32939 </td>
+   <td style="text-align:right;"> 85.10505 </td>
+   <td style="text-align:right;"> 78.84329 </td>
+   <td style="text-align:left;"> 65.61324 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-05 </td>
+   <td style="text-align:left;"> 122.25574 </td>
+   <td style="text-align:right;"> 105.44787 </td>
+   <td style="text-align:right;"> 56.25543 </td>
+   <td style="text-align:right;"> 85.71244 </td>
+   <td style="text-align:right;"> 74.35787 </td>
+   <td style="text-align:left;"> 65.90991 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-06 </td>
+   <td style="text-align:left;"> 123.33682 </td>
+   <td style="text-align:right;"> 99.52358 </td>
+   <td style="text-align:right;"> 56.47613 </td>
+   <td style="text-align:right;"> 84.44789 </td>
+   <td style="text-align:right;"> 76.25196 </td>
+   <td style="text-align:left;"> 67.87192 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-07 </td>
+   <td style="text-align:left;"> 120.47076 </td>
+   <td style="text-align:right;"> 106.31132 </td>
+   <td style="text-align:right;"> 58.71395 </td>
+   <td style="text-align:right;"> 84.08309 </td>
+   <td style="text-align:right;"> 74.98323 </td>
+   <td style="text-align:left;"> 68.23866 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-08 </td>
+   <td style="text-align:left;"> 120.06385 </td>
+   <td style="text-align:right;"> 103.47342 </td>
+   <td style="text-align:right;"> 59.89516 </td>
+   <td style="text-align:right;"> 85.75523 </td>
+   <td style="text-align:right;"> 72.21808 </td>
+   <td style="text-align:left;"> 68.92470 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-09 </td>
+   <td style="text-align:left;"> 120.06356 </td>
+   <td style="text-align:right;"> 105.86493 </td>
+   <td style="text-align:right;"> 62.12619 </td>
+   <td style="text-align:right;"> 89.70727 </td>
+   <td style="text-align:right;"> 73.13360 </td>
+   <td style="text-align:left;"> 71.17744 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-10 </td>
+   <td style="text-align:left;"> 124.44729 </td>
+   <td style="text-align:right;"> 107.46237 </td>
+   <td style="text-align:right;"> 62.66861 </td>
+   <td style="text-align:right;"> 88.65759 </td>
+   <td style="text-align:right;"> 72.73656 </td>
+   <td style="text-align:left;"> 73.34877 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-11 </td>
+   <td style="text-align:left;"> 128.60548 </td>
+   <td style="text-align:right;"> 108.06892 </td>
+   <td style="text-align:right;"> 64.34395 </td>
+   <td style="text-align:right;"> 87.31408 </td>
+   <td style="text-align:right;"> 74.40806 </td>
+   <td style="text-align:left;"> 71.86696 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2005-12 </td>
+   <td style="text-align:left;"> 128.91090 </td>
+   <td style="text-align:right;"> 110.38024 </td>
+   <td style="text-align:right;"> 64.03499 </td>
+   <td style="text-align:right;"> 87.94824 </td>
+   <td style="text-align:right;"> 73.42354 </td>
+   <td style="text-align:left;"> 73.32231 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-01 </td>
+   <td style="text-align:left;"> 133.84841 </td>
+   <td style="text-align:right;"> 113.92178 </td>
+   <td style="text-align:right;"> 59.03631 </td>
+   <td style="text-align:right;"> 85.27450 </td>
+   <td style="text-align:right;"> 74.24434 </td>
+   <td style="text-align:left;"> 75.42788 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-02 </td>
+   <td style="text-align:left;"> 128.83883 </td>
+   <td style="text-align:right;"> 109.96038 </td>
+   <td style="text-align:right;"> 68.69157 </td>
+   <td style="text-align:right;"> 92.22955 </td>
+   <td style="text-align:right;"> 74.14040 </td>
+   <td style="text-align:left;"> 77.81833 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-03 </td>
+   <td style="text-align:left;"> 131.40391 </td>
+   <td style="text-align:right;"> 111.89133 </td>
+   <td style="text-align:right;"> 67.82162 </td>
+   <td style="text-align:right;"> 90.34556 </td>
+   <td style="text-align:right;"> 74.37119 </td>
+   <td style="text-align:left;"> 79.03984 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-04 </td>
+   <td style="text-align:left;"> 136.90928 </td>
+   <td style="text-align:right;"> 115.03551 </td>
+   <td style="text-align:right;"> 65.27723 </td>
+   <td style="text-align:right;"> 89.30721 </td>
+   <td style="text-align:right;"> 71.77736 </td>
+   <td style="text-align:left;"> 79.33404 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-05 </td>
+   <td style="text-align:left;"> 141.86230 </td>
+   <td style="text-align:right;"> 118.42033 </td>
+   <td style="text-align:right;"> 67.70934 </td>
+   <td style="text-align:right;"> 91.70766 </td>
+   <td style="text-align:right;"> 72.48474 </td>
+   <td style="text-align:left;"> 83.74805 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-06 </td>
+   <td style="text-align:left;"> 128.10060 </td>
+   <td style="text-align:right;"> 120.08281 </td>
+   <td style="text-align:right;"> 68.56965 </td>
+   <td style="text-align:right;"> 92.44386 </td>
+   <td style="text-align:right;"> 72.17218 </td>
+   <td style="text-align:left;"> 79.12937 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-07 </td>
+   <td style="text-align:left;"> 137.07197 </td>
+   <td style="text-align:right;"> 119.33634 </td>
+   <td style="text-align:right;"> 69.08845 </td>
+   <td style="text-align:right;"> 91.80245 </td>
+   <td style="text-align:right;"> 74.98405 </td>
+   <td style="text-align:left;"> 83.48372 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-08 </td>
+   <td style="text-align:left;"> 137.31650 </td>
+   <td style="text-align:right;"> 117.61057 </td>
+   <td style="text-align:right;"> 68.53422 </td>
+   <td style="text-align:right;"> 89.35526 </td>
+   <td style="text-align:right;"> 76.38256 </td>
+   <td style="text-align:left;"> 85.00523 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-09 </td>
+   <td style="text-align:left;"> 136.81960 </td>
+   <td style="text-align:right;"> 114.85028 </td>
+   <td style="text-align:right;"> 69.23043 </td>
+   <td style="text-align:right;"> 90.97088 </td>
+   <td style="text-align:right;"> 73.76276 </td>
+   <td style="text-align:left;"> 80.31494 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-10 </td>
+   <td style="text-align:left;"> 137.44537 </td>
+   <td style="text-align:right;"> 114.60797 </td>
+   <td style="text-align:right;"> 71.67739 </td>
+   <td style="text-align:right;"> 92.14774 </td>
+   <td style="text-align:right;"> 76.33820 </td>
+   <td style="text-align:left;"> 81.48817 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-11 </td>
+   <td style="text-align:left;"> 137.34632 </td>
+   <td style="text-align:right;"> 122.76227 </td>
+   <td style="text-align:right;"> 74.57470 </td>
+   <td style="text-align:right;"> 91.81631 </td>
+   <td style="text-align:right;"> 74.42311 </td>
+   <td style="text-align:left;"> 88.63107 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2006-12 </td>
+   <td style="text-align:left;"> 131.98692 </td>
+   <td style="text-align:right;"> 122.96699 </td>
+   <td style="text-align:right;"> 74.37885 </td>
+   <td style="text-align:right;"> 91.09211 </td>
+   <td style="text-align:right;"> 75.39493 </td>
+   <td style="text-align:left;"> 86.22515 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-01 </td>
+   <td style="text-align:left;"> 134.57147 </td>
+   <td style="text-align:right;"> 122.55620 </td>
+   <td style="text-align:right;"> 81.27052 </td>
+   <td style="text-align:right;"> 95.78128 </td>
+   <td style="text-align:right;"> 77.40645 </td>
+   <td style="text-align:left;"> 88.09223 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-02 </td>
+   <td style="text-align:left;"> 136.39406 </td>
+   <td style="text-align:right;"> 128.94375 </td>
+   <td style="text-align:right;"> 73.05080 </td>
+   <td style="text-align:right;"> 92.46646 </td>
+   <td style="text-align:right;"> 79.51005 </td>
+   <td style="text-align:left;"> 88.26332 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-03 </td>
+   <td style="text-align:left;"> 134.70562 </td>
+   <td style="text-align:right;"> 129.70434 </td>
+   <td style="text-align:right;"> 77.05131 </td>
+   <td style="text-align:right;"> 95.06880 </td>
+   <td style="text-align:right;"> 79.69739 </td>
+   <td style="text-align:left;"> 90.14564 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-04 </td>
+   <td style="text-align:left;"> 132.18674 </td>
+   <td style="text-align:right;"> 130.78603 </td>
+   <td style="text-align:right;"> 76.21890 </td>
+   <td style="text-align:right;"> 96.21909 </td>
+   <td style="text-align:right;"> 81.73143 </td>
+   <td style="text-align:left;"> 91.84419 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-05 </td>
+   <td style="text-align:left;"> 130.56081 </td>
+   <td style="text-align:right;"> 129.17291 </td>
+   <td style="text-align:right;"> 77.23728 </td>
+   <td style="text-align:right;"> 95.03887 </td>
+   <td style="text-align:right;"> 78.99063 </td>
+   <td style="text-align:left;"> 95.86036 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-06 </td>
+   <td style="text-align:left;"> 129.74639 </td>
+   <td style="text-align:right;"> 134.21650 </td>
+   <td style="text-align:right;"> 79.14495 </td>
+   <td style="text-align:right;"> 94.44582 </td>
+   <td style="text-align:right;"> 83.79733 </td>
+   <td style="text-align:left;"> 96.19293 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-07 </td>
+   <td style="text-align:left;"> 134.47560 </td>
+   <td style="text-align:right;"> 130.78913 </td>
+   <td style="text-align:right;"> 79.42651 </td>
+   <td style="text-align:right;"> 94.66683 </td>
+   <td style="text-align:right;"> 80.96289 </td>
+   <td style="text-align:left;"> 96.15329 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-08 </td>
+   <td style="text-align:left;"> 141.63366 </td>
+   <td style="text-align:right;"> 135.15128 </td>
+   <td style="text-align:right;"> 84.25413 </td>
+   <td style="text-align:right;"> 98.17716 </td>
+   <td style="text-align:right;"> 83.84474 </td>
+   <td style="text-align:left;"> 104.61161 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-09 </td>
+   <td style="text-align:left;"> 131.33881 </td>
+   <td style="text-align:right;"> 137.02660 </td>
+   <td style="text-align:right;"> 84.49879 </td>
+   <td style="text-align:right;"> 96.46611 </td>
+   <td style="text-align:right;"> 86.43745 </td>
+   <td style="text-align:left;"> 98.34102 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-10 </td>
+   <td style="text-align:left;"> 132.55423 </td>
+   <td style="text-align:right;"> 140.87451 </td>
+   <td style="text-align:right;"> 82.99056 </td>
+   <td style="text-align:right;"> 96.42743 </td>
+   <td style="text-align:right;"> 84.90587 </td>
+   <td style="text-align:left;"> 106.42901 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-11 </td>
+   <td style="text-align:left;"> 129.65104 </td>
+   <td style="text-align:right;"> 134.28007 </td>
+   <td style="text-align:right;"> 86.87291 </td>
+   <td style="text-align:right;"> 100.96712 </td>
+   <td style="text-align:right;"> 87.75603 </td>
+   <td style="text-align:left;"> 114.20018 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2007-12 </td>
+   <td style="text-align:left;"> 133.77912 </td>
+   <td style="text-align:right;"> 135.61346 </td>
+   <td style="text-align:right;"> 84.95461 </td>
+   <td style="text-align:right;"> 100.15457 </td>
+   <td style="text-align:right;"> 91.68575 </td>
+   <td style="text-align:left;"> 109.11674 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-01 </td>
+   <td style="text-align:left;"> 137.60569 </td>
+   <td style="text-align:right;"> 143.18564 </td>
+   <td style="text-align:right;"> 88.59614 </td>
+   <td style="text-align:right;"> 104.44967 </td>
+   <td style="text-align:right;"> 90.11623 </td>
+   <td style="text-align:left;"> 112.71395 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-02 </td>
+   <td style="text-align:left;"> 129.31179 </td>
+   <td style="text-align:right;"> 139.27569 </td>
+   <td style="text-align:right;"> 85.15426 </td>
+   <td style="text-align:right;"> 102.20750 </td>
+   <td style="text-align:right;"> 89.70177 </td>
+   <td style="text-align:left;"> 108.98913 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-03 </td>
+   <td style="text-align:left;"> 136.53998 </td>
+   <td style="text-align:right;"> 155.02257 </td>
+   <td style="text-align:right;"> 88.26551 </td>
+   <td style="text-align:right;"> 103.78534 </td>
+   <td style="text-align:right;"> 92.17903 </td>
+   <td style="text-align:left;"> 117.56913 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-04 </td>
+   <td style="text-align:left;"> 125.82505 </td>
+   <td style="text-align:right;"> 138.10064 </td>
+   <td style="text-align:right;"> 87.30659 </td>
+   <td style="text-align:right;"> 98.15673 </td>
+   <td style="text-align:right;"> 90.16458 </td>
+   <td style="text-align:left;"> 112.91106 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-05 </td>
+   <td style="text-align:left;"> 125.04278 </td>
+   <td style="text-align:right;"> 134.22350 </td>
+   <td style="text-align:right;"> 91.01985 </td>
+   <td style="text-align:right;"> 100.17733 </td>
+   <td style="text-align:right;"> 91.06064 </td>
+   <td style="text-align:left;"> 115.73533 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-06 </td>
+   <td style="text-align:left;"> 119.30914 </td>
+   <td style="text-align:right;"> 133.21047 </td>
+   <td style="text-align:right;"> 89.43853 </td>
+   <td style="text-align:right;"> 98.32593 </td>
+   <td style="text-align:right;"> 89.93464 </td>
+   <td style="text-align:left;"> 115.69242 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-07 </td>
+   <td style="text-align:left;"> 117.96418 </td>
+   <td style="text-align:right;"> 135.69417 </td>
+   <td style="text-align:right;"> 89.76067 </td>
+   <td style="text-align:right;"> 99.72567 </td>
+   <td style="text-align:right;"> 89.31364 </td>
+   <td style="text-align:left;"> 118.31589 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-08 </td>
+   <td style="text-align:left;"> 113.66005 </td>
+   <td style="text-align:right;"> 133.26102 </td>
+   <td style="text-align:right;"> 93.20359 </td>
+   <td style="text-align:right;"> 100.86319 </td>
+   <td style="text-align:right;"> 93.22274 </td>
+   <td style="text-align:left;"> 116.68177 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-09 </td>
+   <td style="text-align:left;"> 119.03298 </td>
+   <td style="text-align:right;"> 127.88969 </td>
+   <td style="text-align:right;"> 85.38609 </td>
+   <td style="text-align:right;"> 97.72425 </td>
+   <td style="text-align:right;"> 90.34139 </td>
+   <td style="text-align:left;"> 118.72693 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-10 </td>
+   <td style="text-align:left;"> 114.38227 </td>
+   <td style="text-align:right;"> 123.41286 </td>
+   <td style="text-align:right;"> 88.40581 </td>
+   <td style="text-align:right;"> 93.28581 </td>
+   <td style="text-align:right;"> 91.88754 </td>
+   <td style="text-align:left;"> 120.37848 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-11 </td>
+   <td style="text-align:left;"> 104.39888 </td>
+   <td style="text-align:right;"> 109.46701 </td>
+   <td style="text-align:right;"> 77.12662 </td>
+   <td style="text-align:right;"> 79.95822 </td>
+   <td style="text-align:right;"> 85.29246 </td>
+   <td style="text-align:left;"> 109.22182 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2008-12 </td>
+   <td style="text-align:left;"> 100.85554 </td>
+   <td style="text-align:right;"> 94.91924 </td>
+   <td style="text-align:right;"> 64.00141 </td>
+   <td style="text-align:right;"> 72.29896 </td>
+   <td style="text-align:right;"> 71.07106 </td>
+   <td style="text-align:left;"> 97.39695 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-01 </td>
+   <td style="text-align:left;"> 72.69606 </td>
+   <td style="text-align:right;"> 85.92371 </td>
+   <td style="text-align:right;"> 56.52444 </td>
+   <td style="text-align:right;"> 59.20423 </td>
+   <td style="text-align:right;"> 59.26376 </td>
+   <td style="text-align:left;"> 82.21554 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-02 </td>
+   <td style="text-align:left;"> 65.11146 </td>
+   <td style="text-align:right;"> 77.21906 </td>
+   <td style="text-align:right;"> 62.23487 </td>
+   <td style="text-align:right;"> 65.04838 </td>
+   <td style="text-align:right;"> 50.46114 </td>
+   <td style="text-align:left;"> 72.54204 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-03 </td>
+   <td style="text-align:left;"> 71.24045 </td>
+   <td style="text-align:right;"> 74.58027 </td>
+   <td style="text-align:right;"> 67.01563 </td>
+   <td style="text-align:right;"> 66.20127 </td>
+   <td style="text-align:right;"> 55.75922 </td>
+   <td style="text-align:left;"> 67.14857 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-04 </td>
+   <td style="text-align:left;"> 70.91197 </td>
+   <td style="text-align:right;"> 80.78530 </td>
+   <td style="text-align:right;"> 71.55928 </td>
+   <td style="text-align:right;"> 72.69882 </td>
+   <td style="text-align:right;"> 54.89893 </td>
+   <td style="text-align:left;"> 69.69979 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-05 </td>
+   <td style="text-align:left;"> 78.33535 </td>
+   <td style="text-align:right;"> 82.42597 </td>
+   <td style="text-align:right;"> 77.01535 </td>
+   <td style="text-align:right;"> 75.73748 </td>
+   <td style="text-align:right;"> 62.40897 </td>
+   <td style="text-align:left;"> 67.31750 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-06 </td>
+   <td style="text-align:left;"> 79.73806 </td>
+   <td style="text-align:right;"> 86.80970 </td>
+   <td style="text-align:right;"> 78.74745 </td>
+   <td style="text-align:right;"> 77.72063 </td>
+   <td style="text-align:right;"> 67.71051 </td>
+   <td style="text-align:left;"> 73.94350 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-07 </td>
+   <td style="text-align:left;"> 79.42379 </td>
+   <td style="text-align:right;"> 82.92646 </td>
+   <td style="text-align:right;"> 78.96384 </td>
+   <td style="text-align:right;"> 82.10614 </td>
+   <td style="text-align:right;"> 73.76089 </td>
+   <td style="text-align:left;"> 77.81876 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-08 </td>
+   <td style="text-align:left;"> 84.61242 </td>
+   <td style="text-align:right;"> 83.32373 </td>
+   <td style="text-align:right;"> 80.63214 </td>
+   <td style="text-align:right;"> 83.60908 </td>
+   <td style="text-align:right;"> 75.48216 </td>
+   <td style="text-align:left;"> 75.86046 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-09 </td>
+   <td style="text-align:left;"> 88.65099 </td>
+   <td style="text-align:right;"> 86.49639 </td>
+   <td style="text-align:right;"> 86.09961 </td>
+   <td style="text-align:right;"> 88.06451 </td>
+   <td style="text-align:right;"> 77.73323 </td>
+   <td style="text-align:left;"> 79.66132 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-10 </td>
+   <td style="text-align:left;"> 89.18177 </td>
+   <td style="text-align:right;"> 93.91507 </td>
+   <td style="text-align:right;"> 84.49166 </td>
+   <td style="text-align:right;"> 90.74738 </td>
+   <td style="text-align:right;"> 84.01642 </td>
+   <td style="text-align:left;"> 86.03258 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-11 </td>
+   <td style="text-align:left;"> 98.76065 </td>
+   <td style="text-align:right;"> 95.97404 </td>
+   <td style="text-align:right;"> 88.64530 </td>
+   <td style="text-align:right;"> 92.28021 </td>
+   <td style="text-align:right;"> 88.74417 </td>
+   <td style="text-align:left;"> 88.69891 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2009-12 </td>
+   <td style="text-align:left;"> 90.49393 </td>
+   <td style="text-align:right;"> 93.75689 </td>
+   <td style="text-align:right;"> 91.06698 </td>
+   <td style="text-align:right;"> 91.70716 </td>
+   <td style="text-align:right;"> 89.81433 </td>
+   <td style="text-align:left;"> 93.15381 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-01 </td>
+   <td style="text-align:left;"> 90.74413 </td>
+   <td style="text-align:right;"> 93.67212 </td>
+   <td style="text-align:right;"> 100.00554 </td>
+   <td style="text-align:right;"> 96.31057 </td>
+   <td style="text-align:right;"> 92.64960 </td>
+   <td style="text-align:left;"> 98.03180 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-02 </td>
+   <td style="text-align:left;"> 97.46880 </td>
+   <td style="text-align:right;"> 91.40938 </td>
+   <td style="text-align:right;"> 88.84972 </td>
+   <td style="text-align:right;"> 97.32329 </td>
+   <td style="text-align:right;"> 92.66859 </td>
+   <td style="text-align:left;"> 96.26344 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-03 </td>
+   <td style="text-align:left;"> 94.03077 </td>
+   <td style="text-align:right;"> 96.36633 </td>
+   <td style="text-align:right;"> 96.22412 </td>
+   <td style="text-align:right;"> 99.85458 </td>
+   <td style="text-align:right;"> 95.39068 </td>
+   <td style="text-align:left;"> 96.87246 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-04 </td>
+   <td style="text-align:left;"> 96.97936 </td>
+   <td style="text-align:right;"> 99.28068 </td>
+   <td style="text-align:right;"> 100.27613 </td>
+   <td style="text-align:right;"> 100.36130 </td>
+   <td style="text-align:right;"> 96.80930 </td>
+   <td style="text-align:left;"> 102.06114 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-05 </td>
+   <td style="text-align:left;"> 97.61604 </td>
+   <td style="text-align:right;"> 103.35985 </td>
+   <td style="text-align:right;"> 98.08377 </td>
+   <td style="text-align:right;"> 100.72164 </td>
+   <td style="text-align:right;"> 104.23584 </td>
+   <td style="text-align:left;"> 102.47042 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-06 </td>
+   <td style="text-align:left;"> 100.00082 </td>
+   <td style="text-align:right;"> 97.30575 </td>
+   <td style="text-align:right;"> 95.25774 </td>
+   <td style="text-align:right;"> 100.26990 </td>
+   <td style="text-align:right;"> 102.71933 </td>
+   <td style="text-align:left;"> 103.11423 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-07 </td>
+   <td style="text-align:left;"> 106.91457 </td>
+   <td style="text-align:right;"> 99.71563 </td>
+   <td style="text-align:right;"> 99.65401 </td>
+   <td style="text-align:right;"> 100.26988 </td>
+   <td style="text-align:right;"> 103.38655 </td>
+   <td style="text-align:left;"> 103.85475 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-08 </td>
+   <td style="text-align:left;"> 98.94603 </td>
+   <td style="text-align:right;"> 102.63995 </td>
+   <td style="text-align:right;"> 100.28108 </td>
+   <td style="text-align:right;"> 101.11015 </td>
+   <td style="text-align:right;"> 100.88920 </td>
+   <td style="text-align:left;"> 94.75915 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-09 </td>
+   <td style="text-align:left;"> 102.32957 </td>
+   <td style="text-align:right;"> 99.74459 </td>
+   <td style="text-align:right;"> 97.46843 </td>
+   <td style="text-align:right;"> 99.46711 </td>
+   <td style="text-align:right;"> 102.18752 </td>
+   <td style="text-align:left;"> 101.50435 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-10 </td>
+   <td style="text-align:left;"> 103.38127 </td>
+   <td style="text-align:right;"> 100.62144 </td>
+   <td style="text-align:right;"> 106.07293 </td>
+   <td style="text-align:right;"> 100.42183 </td>
+   <td style="text-align:right;"> 103.08630 </td>
+   <td style="text-align:left;"> 99.15111 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-11 </td>
+   <td style="text-align:left;"> 105.11480 </td>
+   <td style="text-align:right;"> 110.70923 </td>
+   <td style="text-align:right;"> 106.24921 </td>
+   <td style="text-align:right;"> 101.52598 </td>
+   <td style="text-align:right;"> 101.70186 </td>
+   <td style="text-align:left;"> 98.90839 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2010-12 </td>
+   <td style="text-align:left;"> 106.47383 </td>
+   <td style="text-align:right;"> 105.17505 </td>
+   <td style="text-align:right;"> 111.57730 </td>
+   <td style="text-align:right;"> 102.36378 </td>
+   <td style="text-align:right;"> 104.27523 </td>
+   <td style="text-align:left;"> 103.00876 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-01 </td>
+   <td style="text-align:left;"> 103.31669 </td>
+   <td style="text-align:right;"> 101.03928 </td>
+   <td style="text-align:right;"> 107.77447 </td>
+   <td style="text-align:right;"> 99.97113 </td>
+   <td style="text-align:right;"> 103.85598 </td>
+   <td style="text-align:left;"> 102.77429 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-02 </td>
+   <td style="text-align:left;"> 102.67747 </td>
+   <td style="text-align:right;"> 107.64911 </td>
+   <td style="text-align:right;"> 117.48733 </td>
+   <td style="text-align:right;"> 100.26280 </td>
+   <td style="text-align:right;"> 100.93798 </td>
+   <td style="text-align:left;"> 102.74034 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-03 </td>
+   <td style="text-align:left;"> 92.27580 </td>
+   <td style="text-align:right;"> 102.87073 </td>
+   <td style="text-align:right;"> 101.29938 </td>
+   <td style="text-align:right;"> 95.66774 </td>
+   <td style="text-align:right;"> 93.57424 </td>
+   <td style="text-align:left;"> 90.93924 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-04 </td>
+   <td style="text-align:left;"> 76.44254 </td>
+   <td style="text-align:right;"> 91.73765 </td>
+   <td style="text-align:right;"> 96.51728 </td>
+   <td style="text-align:right;"> 93.28662 </td>
+   <td style="text-align:right;"> 94.03841 </td>
+   <td style="text-align:left;"> 83.01330 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-05 </td>
+   <td style="text-align:left;"> 86.74127 </td>
+   <td style="text-align:right;"> 99.17477 </td>
+   <td style="text-align:right;"> 94.69045 </td>
+   <td style="text-align:right;"> 95.33386 </td>
+   <td style="text-align:right;"> 95.93307 </td>
+   <td style="text-align:left;"> 92.20506 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-06 </td>
+   <td style="text-align:left;"> 95.08928 </td>
+   <td style="text-align:right;"> 108.13592 </td>
+   <td style="text-align:right;"> 98.70250 </td>
+   <td style="text-align:right;"> 97.44555 </td>
+   <td style="text-align:right;"> 99.15894 </td>
+   <td style="text-align:left;"> 103.58107 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-07 </td>
+   <td style="text-align:left;"> 101.88149 </td>
+   <td style="text-align:right;"> 108.73323 </td>
+   <td style="text-align:right;"> 102.47218 </td>
+   <td style="text-align:right;"> 97.69532 </td>
+   <td style="text-align:right;"> 103.22741 </td>
+   <td style="text-align:left;"> 100.48091 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-08 </td>
+   <td style="text-align:left;"> 102.02246 </td>
+   <td style="text-align:right;"> 108.07347 </td>
+   <td style="text-align:right;"> 99.96093 </td>
+   <td style="text-align:right;"> 96.11365 </td>
+   <td style="text-align:right;"> 101.88249 </td>
+   <td style="text-align:left;"> 104.52643 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-09 </td>
+   <td style="text-align:left;"> 105.35690 </td>
+   <td style="text-align:right;"> 107.80415 </td>
+   <td style="text-align:right;"> 102.64849 </td>
+   <td style="text-align:right;"> 93.37602 </td>
+   <td style="text-align:right;"> 112.51026 </td>
+   <td style="text-align:left;"> 111.79109 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-10 </td>
+   <td style="text-align:left;"> 107.24973 </td>
+   <td style="text-align:right;"> 104.62005 </td>
+   <td style="text-align:right;"> 100.34563 </td>
+   <td style="text-align:right;"> 93.56613 </td>
+   <td style="text-align:right;"> 104.46486 </td>
+   <td style="text-align:left;"> 107.08294 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-11 </td>
+   <td style="text-align:left;"> 108.90496 </td>
+   <td style="text-align:right;"> 106.11802 </td>
+   <td style="text-align:right;"> 98.58347 </td>
+   <td style="text-align:right;"> 90.44534 </td>
+   <td style="text-align:right;"> 96.58735 </td>
+   <td style="text-align:left;"> 105.76305 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2011-12 </td>
+   <td style="text-align:left;"> 113.61560 </td>
+   <td style="text-align:right;"> 94.29354 </td>
+   <td style="text-align:right;"> 98.11618 </td>
+   <td style="text-align:right;"> 92.75708 </td>
+   <td style="text-align:right;"> 99.54804 </td>
+   <td style="text-align:left;"> 106.28533 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-01 </td>
+   <td style="text-align:left;"> 112.19300 </td>
+   <td style="text-align:right;"> 99.92195 </td>
+   <td style="text-align:right;"> 92.58887 </td>
+   <td style="text-align:right;"> 90.25386 </td>
+   <td style="text-align:right;"> 109.49163 </td>
+   <td style="text-align:left;"> 105.40700 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-02 </td>
+   <td style="text-align:left;"> 112.77949 </td>
+   <td style="text-align:right;"> 95.40433 </td>
+   <td style="text-align:right;"> 102.13878 </td>
+   <td style="text-align:right;"> 91.13629 </td>
+   <td style="text-align:right;"> 108.54504 </td>
+   <td style="text-align:left;"> 107.42142 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-03 </td>
+   <td style="text-align:left;"> 113.55831 </td>
+   <td style="text-align:right;"> 92.60036 </td>
+   <td style="text-align:right;"> 96.99058 </td>
+   <td style="text-align:right;"> 91.35182 </td>
+   <td style="text-align:right;"> 115.18043 </td>
+   <td style="text-align:left;"> 106.90182 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-04 </td>
+   <td style="text-align:left;"> 116.63718 </td>
+   <td style="text-align:right;"> 98.36949 </td>
+   <td style="text-align:right;"> 97.12600 </td>
+   <td style="text-align:right;"> 92.46789 </td>
+   <td style="text-align:right;"> 117.30742 </td>
+   <td style="text-align:left;"> 106.68627 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-05 </td>
+   <td style="text-align:left;"> 118.00207 </td>
+   <td style="text-align:right;"> 96.66644 </td>
+   <td style="text-align:right;"> 96.50076 </td>
+   <td style="text-align:right;"> 91.85904 </td>
+   <td style="text-align:right;"> 116.88727 </td>
+   <td style="text-align:left;"> 107.32784 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-06 </td>
+   <td style="text-align:left;"> 112.73046 </td>
+   <td style="text-align:right;"> 87.04228 </td>
+   <td style="text-align:right;"> 96.76931 </td>
+   <td style="text-align:right;"> 92.54095 </td>
+   <td style="text-align:right;"> 115.86461 </td>
+   <td style="text-align:left;"> 108.68160 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-07 </td>
+   <td style="text-align:left;"> 114.02373 </td>
+   <td style="text-align:right;"> 88.33905 </td>
+   <td style="text-align:right;"> 97.27858 </td>
+   <td style="text-align:right;"> 91.69240 </td>
+   <td style="text-align:right;"> 115.34075 </td>
+   <td style="text-align:left;"> 101.04729 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-08 </td>
+   <td style="text-align:left;"> 113.73435 </td>
+   <td style="text-align:right;"> 84.39695 </td>
+   <td style="text-align:right;"> 92.69357 </td>
+   <td style="text-align:right;"> 89.46831 </td>
+   <td style="text-align:right;"> 110.52690 </td>
+   <td style="text-align:left;"> 102.98711 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-09 </td>
+   <td style="text-align:left;"> 110.37531 </td>
+   <td style="text-align:right;"> 87.72420 </td>
+   <td style="text-align:right;"> 92.77110 </td>
+   <td style="text-align:right;"> 90.25411 </td>
+   <td style="text-align:right;"> 115.31811 </td>
+   <td style="text-align:left;"> 95.67271 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-10 </td>
+   <td style="text-align:left;"> 108.22331 </td>
+   <td style="text-align:right;"> 82.54064 </td>
+   <td style="text-align:right;"> 87.13632 </td>
+   <td style="text-align:right;"> 89.05136 </td>
+   <td style="text-align:right;"> 112.82652 </td>
+   <td style="text-align:left;"> 94.91620 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-11 </td>
+   <td style="text-align:left;"> 108.40886 </td>
+   <td style="text-align:right;"> 83.54331 </td>
+   <td style="text-align:right;"> 83.64832 </td>
+   <td style="text-align:right;"> 88.79673 </td>
+   <td style="text-align:right;"> 109.71347 </td>
+   <td style="text-align:left;"> 96.99996 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2012-12 </td>
+   <td style="text-align:left;"> 111.18832 </td>
+   <td style="text-align:right;"> 84.22700 </td>
+   <td style="text-align:right;"> 82.72956 </td>
+   <td style="text-align:right;"> 90.07084 </td>
+   <td style="text-align:right;"> 107.97297 </td>
+   <td style="text-align:left;"> 96.02738 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-01 </td>
+   <td style="text-align:left;"> 109.35687 </td>
+   <td style="text-align:right;"> 84.18237 </td>
+   <td style="text-align:right;"> 84.67962 </td>
+   <td style="text-align:right;"> 91.00001 </td>
+   <td style="text-align:right;"> 105.34757 </td>
+   <td style="text-align:left;"> 97.62846 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-02 </td>
+   <td style="text-align:left;"> 113.70642 </td>
+   <td style="text-align:right;"> 83.04839 </td>
+   <td style="text-align:right;"> 82.29558 </td>
+   <td style="text-align:right;"> 86.01196 </td>
+   <td style="text-align:right;"> 106.91513 </td>
+   <td style="text-align:left;"> 96.65712 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-03 </td>
+   <td style="text-align:left;"> 114.16699 </td>
+   <td style="text-align:right;"> 83.33747 </td>
+   <td style="text-align:right;"> 91.02382 </td>
+   <td style="text-align:right;"> 90.41699 </td>
+   <td style="text-align:right;"> 107.37978 </td>
+   <td style="text-align:left;"> 100.05521 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-04 </td>
+   <td style="text-align:left;"> 119.08070 </td>
+   <td style="text-align:right;"> 85.82336 </td>
+   <td style="text-align:right;"> 88.06806 </td>
+   <td style="text-align:right;"> 91.48413 </td>
+   <td style="text-align:right;"> 105.33475 </td>
+   <td style="text-align:left;"> 93.09061 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-05 </td>
+   <td style="text-align:left;"> 117.56649 </td>
+   <td style="text-align:right;"> 80.23168 </td>
+   <td style="text-align:right;"> 91.49963 </td>
+   <td style="text-align:right;"> 94.63435 </td>
+   <td style="text-align:right;"> 103.49344 </td>
+   <td style="text-align:left;"> 102.28015 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-06 </td>
+   <td style="text-align:left;"> 119.09132 </td>
+   <td style="text-align:right;"> 86.59755 </td>
+   <td style="text-align:right;"> 93.09384 </td>
+   <td style="text-align:right;"> 93.00664 </td>
+   <td style="text-align:right;"> 110.25617 </td>
+   <td style="text-align:left;"> 100.15693 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-07 </td>
+   <td style="text-align:left;"> 114.86462 </td>
+   <td style="text-align:right;"> 86.82590 </td>
+   <td style="text-align:right;"> 90.30874 </td>
+   <td style="text-align:right;"> 87.70691 </td>
+   <td style="text-align:right;"> 100.28597 </td>
+   <td style="text-align:left;"> 98.12072 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-08 </td>
+   <td style="text-align:left;"> 122.61707 </td>
+   <td style="text-align:right;"> 88.76565 </td>
+   <td style="text-align:right;"> 95.36647 </td>
+   <td style="text-align:right;"> 91.56956 </td>
+   <td style="text-align:right;"> 104.11022 </td>
+   <td style="text-align:left;"> 99.11575 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-09 </td>
+   <td style="text-align:left;"> 118.13829 </td>
+   <td style="text-align:right;"> 91.53311 </td>
+   <td style="text-align:right;"> 93.08520 </td>
+   <td style="text-align:right;"> 89.68040 </td>
+   <td style="text-align:right;"> 99.58886 </td>
+   <td style="text-align:left;"> 94.81851 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-10 </td>
+   <td style="text-align:left;"> 118.99918 </td>
+   <td style="text-align:right;"> 90.95070 </td>
+   <td style="text-align:right;"> 92.32687 </td>
+   <td style="text-align:right;"> 88.70998 </td>
+   <td style="text-align:right;"> 100.93563 </td>
+   <td style="text-align:left;"> 97.50239 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-11 </td>
+   <td style="text-align:left;"> 116.71679 </td>
+   <td style="text-align:right;"> 89.09271 </td>
+   <td style="text-align:right;"> 97.65837 </td>
+   <td style="text-align:right;"> 90.85953 </td>
+   <td style="text-align:right;"> 100.95033 </td>
+   <td style="text-align:left;"> 95.91066 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2013-12 </td>
+   <td style="text-align:left;"> 113.50977 </td>
+   <td style="text-align:right;"> 93.88669 </td>
+   <td style="text-align:right;"> 99.91884 </td>
+   <td style="text-align:right;"> 89.16158 </td>
+   <td style="text-align:right;"> 101.30347 </td>
+   <td style="text-align:left;"> 93.55554 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-01 </td>
+   <td style="text-align:left;"> 118.64834 </td>
+   <td style="text-align:right;"> 91.29054 </td>
+   <td style="text-align:right;"> 88.03054 </td>
+   <td style="text-align:right;"> 84.56053 </td>
+   <td style="text-align:right;"> 97.67575 </td>
+   <td style="text-align:left;"> 93.54369 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-02 </td>
+   <td style="text-align:left;"> 115.19850 </td>
+   <td style="text-align:right;"> 91.01214 </td>
+   <td style="text-align:right;"> 102.03252 </td>
+   <td style="text-align:right;"> 94.66398 </td>
+   <td style="text-align:right;"> 95.38978 </td>
+   <td style="text-align:left;"> 96.85596 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-03 </td>
+   <td style="text-align:left;"> 115.80560 </td>
+   <td style="text-align:right;"> 91.87782 </td>
+   <td style="text-align:right;"> 93.74767 </td>
+   <td style="text-align:right;"> 92.92010 </td>
+   <td style="text-align:right;"> 99.11037 </td>
+   <td style="text-align:left;"> 96.07253 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-04 </td>
+   <td style="text-align:left;"> 116.67485 </td>
+   <td style="text-align:right;"> 92.61934 </td>
+   <td style="text-align:right;"> 94.14103 </td>
+   <td style="text-align:right;"> 90.07758 </td>
+   <td style="text-align:right;"> 100.79813 </td>
+   <td style="text-align:left;"> 98.12835 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-05 </td>
+   <td style="text-align:left;"> 115.82948 </td>
+   <td style="text-align:right;"> 92.59737 </td>
+   <td style="text-align:right;"> 93.86231 </td>
+   <td style="text-align:right;"> 90.02786 </td>
+   <td style="text-align:right;"> 98.69033 </td>
+   <td style="text-align:left;"> 97.30937 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-06 </td>
+   <td style="text-align:left;"> 115.94960 </td>
+   <td style="text-align:right;"> 92.64511 </td>
+   <td style="text-align:right;"> 94.16373 </td>
+   <td style="text-align:right;"> 88.93487 </td>
+   <td style="text-align:right;"> 100.14043 </td>
+   <td style="text-align:left;"> 97.36327 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-07 </td>
+   <td style="text-align:left;"> 115.92376 </td>
+   <td style="text-align:right;"> 93.15667 </td>
+   <td style="text-align:right;"> 92.98931 </td>
+   <td style="text-align:right;"> 92.46015 </td>
+   <td style="text-align:right;"> 97.42599 </td>
+   <td style="text-align:left;"> 101.72726 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-08 </td>
+   <td style="text-align:left;"> 117.61894 </td>
+   <td style="text-align:right;"> 94.06345 </td>
+   <td style="text-align:right;"> 96.18554 </td>
+   <td style="text-align:right;"> 91.28768 </td>
+   <td style="text-align:right;"> 99.70975 </td>
+   <td style="text-align:left;"> 96.06338 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-09 </td>
+   <td style="text-align:left;"> 117.91989 </td>
+   <td style="text-align:right;"> 89.38087 </td>
+   <td style="text-align:right;"> 96.45290 </td>
+   <td style="text-align:right;"> 92.66498 </td>
+   <td style="text-align:right;"> 99.54473 </td>
+   <td style="text-align:left;"> 101.27504 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-10 </td>
+   <td style="text-align:left;"> 122.17477 </td>
+   <td style="text-align:right;"> 91.23957 </td>
+   <td style="text-align:right;"> 95.61649 </td>
+   <td style="text-align:right;"> 96.80788 </td>
+   <td style="text-align:right;"> 98.36496 </td>
+   <td style="text-align:left;"> 105.47715 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-11 </td>
+   <td style="text-align:left;"> 122.77385 </td>
+   <td style="text-align:right;"> 86.26235 </td>
+   <td style="text-align:right;"> 96.41485 </td>
+   <td style="text-align:right;"> 96.61285 </td>
+   <td style="text-align:right;"> 99.12946 </td>
+   <td style="text-align:left;"> 96.82566 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2014-12 </td>
+   <td style="text-align:left;"> 131.31731 </td>
+   <td style="text-align:right;"> 93.82673 </td>
+   <td style="text-align:right;"> 96.75649 </td>
+   <td style="text-align:right;"> 96.78731 </td>
+   <td style="text-align:right;"> 100.48117 </td>
+   <td style="text-align:left;"> 102.17743 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-01 </td>
+   <td style="text-align:left;"> 132.21193 </td>
+   <td style="text-align:right;"> 94.92308 </td>
+   <td style="text-align:right;"> 104.81916 </td>
+   <td style="text-align:right;"> 104.84448 </td>
+   <td style="text-align:right;"> 104.02221 </td>
+   <td style="text-align:left;"> 103.05045 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-02 </td>
+   <td style="text-align:left;"> 127.09015 </td>
+   <td style="text-align:right;"> 89.99885 </td>
+   <td style="text-align:right;"> 84.29149 </td>
+   <td style="text-align:right;"> 95.67228 </td>
+   <td style="text-align:right;"> 104.46341 </td>
+   <td style="text-align:left;"> 98.96787 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-03 </td>
+   <td style="text-align:left;"> 132.35017 </td>
+   <td style="text-align:right;"> 95.19028 </td>
+   <td style="text-align:right;"> 94.18100 </td>
+   <td style="text-align:right;"> 94.11771 </td>
+   <td style="text-align:right;"> 102.38491 </td>
+   <td style="text-align:left;"> 99.05475 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-04 </td>
+   <td style="text-align:left;"> 134.73866 </td>
+   <td style="text-align:right;"> 89.66795 </td>
+   <td style="text-align:right;"> 93.75508 </td>
+   <td style="text-align:right;"> 95.37582 </td>
+   <td style="text-align:right;"> 94.79723 </td>
+   <td style="text-align:left;"> 104.39292 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-05 </td>
+   <td style="text-align:left;"> 123.58901 </td>
+   <td style="text-align:right;"> 90.95556 </td>
+   <td style="text-align:right;"> 93.60992 </td>
+   <td style="text-align:right;"> 95.14221 </td>
+   <td style="text-align:right;"> 95.49582 </td>
+   <td style="text-align:left;"> 93.20109 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-06 </td>
+   <td style="text-align:left;"> 126.45967 </td>
+   <td style="text-align:right;"> 94.10036 </td>
+   <td style="text-align:right;"> 92.02918 </td>
+   <td style="text-align:right;"> 96.45224 </td>
+   <td style="text-align:right;"> 90.79229 </td>
+   <td style="text-align:left;"> 94.60776 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-07 </td>
+   <td style="text-align:left;"> 127.01897 </td>
+   <td style="text-align:right;"> 94.77625 </td>
+   <td style="text-align:right;"> 91.92595 </td>
+   <td style="text-align:right;"> 92.16154 </td>
+   <td style="text-align:right;"> 97.92850 </td>
+   <td style="text-align:left;"> 99.52281 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-08 </td>
+   <td style="text-align:left;"> 125.84704 </td>
+   <td style="text-align:right;"> 92.18172 </td>
+   <td style="text-align:right;"> 89.22951 </td>
+   <td style="text-align:right;"> 94.48654 </td>
+   <td style="text-align:right;"> 95.28188 </td>
+   <td style="text-align:left;"> 98.69642 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-09 </td>
+   <td style="text-align:left;"> 129.13811 </td>
+   <td style="text-align:right;"> 92.92695 </td>
+   <td style="text-align:right;"> 93.45076 </td>
+   <td style="text-align:right;"> 97.23983 </td>
+   <td style="text-align:right;"> 95.28395 </td>
+   <td style="text-align:left;"> 96.72073 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-10 </td>
+   <td style="text-align:left;"> 130.33367 </td>
+   <td style="text-align:right;"> 96.68555 </td>
+   <td style="text-align:right;"> 94.70793 </td>
+   <td style="text-align:right;"> 96.31562 </td>
+   <td style="text-align:right;"> 96.01966 </td>
+   <td style="text-align:left;"> 96.94975 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-11 </td>
+   <td style="text-align:left;"> 130.08093 </td>
+   <td style="text-align:right;"> 100.05913 </td>
+   <td style="text-align:right;"> 94.32043 </td>
+   <td style="text-align:right;"> 93.40670 </td>
+   <td style="text-align:right;"> 99.70301 </td>
+   <td style="text-align:left;"> 101.48093 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2015-12 </td>
+   <td style="text-align:left;"> 132.37449 </td>
+   <td style="text-align:right;"> 99.02741 </td>
+   <td style="text-align:right;"> 93.62505 </td>
+   <td style="text-align:right;"> 92.10027 </td>
+   <td style="text-align:right;"> 94.12347 </td>
+   <td style="text-align:left;"> 95.70043 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2016-01 </td>
+   <td style="text-align:left;"> 132.34800 </td>
+   <td style="text-align:right;"> 98.05616 </td>
+   <td style="text-align:right;"> 94.67525 </td>
+   <td style="text-align:right;"> 94.03428 </td>
+   <td style="text-align:right;"> 96.28357 </td>
+   <td style="text-align:left;"> 95.55438 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2016-02 </td>
+   <td style="text-align:left;"> 132.42010 </td>
+   <td style="text-align:right;"> 103.45001 </td>
+   <td style="text-align:right;"> 94.24911 </td>
+   <td style="text-align:right;"> 92.75476 </td>
+   <td style="text-align:right;"> 96.31332 </td>
+   <td style="text-align:left;"> 95.91000 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2016-03 </td>
+   <td style="text-align:left;"> 132.66462 </td>
+   <td style="text-align:right;"> 111.65483 </td>
+   <td style="text-align:right;"> 93.14032 </td>
+   <td style="text-align:right;"> 93.66500 </td>
+   <td style="text-align:right;"> 94.28769 </td>
+   <td style="text-align:left;"> 96.35053 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2016-04 </td>
+   <td style="text-align:left;"> 131.35863 </td>
+   <td style="text-align:right;"> 107.73978 </td>
+   <td style="text-align:right;"> 96.49340 </td>
+   <td style="text-align:right;"> 92.63518 </td>
+   <td style="text-align:right;"> 96.42627 </td>
+   <td style="text-align:left;"> 97.44635 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2016-05 </td>
+   <td style="text-align:left;"> 127.49903 </td>
+   <td style="text-align:right;"> 102.34595 </td>
+   <td style="text-align:right;"> 91.77895 </td>
+   <td style="text-align:right;"> 97.76473 </td>
+   <td style="text-align:right;"> 97.61050 </td>
+   <td style="text-align:left;"> 94.47172 </td>
+  </tr>
+</tbody>
+ <tfoot>
+  <tr>
+   <th style="text-align:right;"> Date </th>
+   <th style="text-align:left;"> 実質輸出-米国 </th>
+   <th style="text-align:right;"> 実質輸出-ＥＵ </th>
+   <th style="text-align:right;"> 実質輸出-中国 </th>
+   <th style="text-align:right;"> 実質輸出-ＮＩＥｓ </th>
+   <th style="text-align:right;"> 実質輸出-ＡＳＥＡＮ４ </th>
+   <th style="text-align:left;"> 実質輸出-その他 </th>
+  </tr>
+ </tfoot> </table> </div>
+ Powered by<br>-DataTables( http://datatables.net/ )<br>-jQuery( https://jquery.com )<br>-PACE( http://github.hubspot.com/pace/docs/welcome/ )  
+<!---->
+<hr>
+<div align="center"><a href="http://am-consulting.co.jp" target="_blank">アセット・マネジメント・コンサルティング株式会社</a></div>
+</body>
+</html>
