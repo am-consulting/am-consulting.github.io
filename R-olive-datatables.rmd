@@ -1,5 +1,6 @@
 ---
-title: "2016年7月 第24回参議院議員通常選挙結果 都道府県別党派別得票数(比例代表) 得票率(%)"
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title: "出入国管理統計 出入(帰)国者数 速報値 月次 2016年6月"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -9,6 +10,7 @@ output:
 ---
 
 ```{r,warning=F,error=F,message=F,echo=F}
+# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
 library(DT)
 library(lubridate)
 library(googleVis)
@@ -16,8 +18,8 @@ library(googleVis)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-dataTitle<-"2016年7月 第24回参議院議員通常選挙結果 都道府県別党派別得票数(比例代表) 得票率(%)"
-dataSource<-"総務省"
+dataTitle<-"出入国管理統計 出入(帰)国者数 速報値 月次 2016年6月"
+dataSource<-"法務省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
