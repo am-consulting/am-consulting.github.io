@@ -1,5 +1,6 @@
 ---
-title: "日本の雇用失業率、欠員率およびその差 2016年5月分 季節調整値"
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title: "日本の実質輸出入動向 2016年6月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -9,8 +10,8 @@ output:
 ---
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"日本の雇用失業率、欠員率およびその差 2016年5月分 季節調整値"
-dataSource<-"総務省、厚生労働省"
+dataTitle<-"日本の実質輸出入動向 2016年6月分"
+dataSource<-"日本銀行"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
