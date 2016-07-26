@@ -1,5 +1,6 @@
 ---
-title: "季節調整済賃金指数-実質賃金指数-現金給与総額-事業所規模5人以上-就業形態計-調査産業計 2016年5月分"
+knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title: "消費税を除く企業向けサービス価格指数 2016年6月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -9,9 +10,10 @@ output:
 ---
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"季節調整済賃金指数-実質賃金指数-現金給与総額-事業所規模5人以上-就業形態計-調査産業計 2016年5月分"
-dataSource<-"厚生労働省"
+dataTitle<-"消費税を除く企業向けサービス価格指数 2016年6月分"
+dataSource<-"日本銀行"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+dataTail<-0 
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
 paste("特記:",notes)
@@ -58,7 +60,10 @@ tmp <-
 
 ```{r,warning=F,error=F,message=F,echo=F}
 dataSet <- na.omit(tmp)
-dataSet <- tail(dataSet,12*20)
+if(dataTail!=0){
+dataSet <- tail(dataSet,dataTail)
+}
+bufColnames<-colnames(dataSet)[2]
 dataSet[, 1] <- as.Date(dataSet[, 1])
 dataSet <-
   data.frame(dataSet, apply(dataSet[1], 1, FUN), check.names = F)
@@ -210,7 +215,7 @@ funPlotBoxplot <- function() {
 ```{r,warning=F,error=F,message=F,echo=F}
 dataSet0 <- dataSet
 dataSet0[,1]<-format(dataSet0[,1],dateFormat)
-colnames(dataSet0)[2]<-"実質賃金指数"
+colnames(dataSet0)[2]<-bufColnames
 #dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
 #dataSet0[,2]<-format(dataSet0[,2],dateFormat)
 
