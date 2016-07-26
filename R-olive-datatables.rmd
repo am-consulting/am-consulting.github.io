@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title: "出入国管理統計 出入(帰)国者数 速報値 月次 2016年6月"
+title: "消費税を除く企業向けサービス価格指数 2016年6月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -17,9 +17,9 @@ library(googleVis)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-timeSeries<-0 # 1 or 0
-dataTitle<-"出入国管理統計 出入(帰)国者数 速報値 月次 2016年6月"
-dataSource<-"法務省"
+timeSeries<-1 # 1 or 0
+dataTitle<-"消費税を除く企業向けサービス価格指数 2016年6月分"
+dataSource<-"日本銀行"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 paste("Data Source:",dataSource)
 paste("作成日:",Sys.time())
@@ -36,8 +36,8 @@ tmp <-
   na.strings = c("na", "", "-"),
   check.names = F
   )
-  tmp <- data.frame(tmp,tmp[,1,drop=F],check.names = F)
   if(timeSeries==0){
+    tmp <- data.frame(tmp,tmp[,1,drop=F],check.names = F)
     dataSet <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F)
     dataFormat <- 0
   }else{
@@ -53,6 +53,8 @@ tmp <-
     dataSet[, 1] <- format(dataSet[, 1], dataFormat)
     dataSetDT <- dataSet
     dataSetDT0<-data.frame(Date=dataSetDT[-1,1],  round(diff(as.matrix(dataSetDT[,-1]))/as.matrix(dataSetDT[-nrow(dataSetDT),-1])*100,2),check.names = F)
+    dataSetDT <- na.omit(data.frame(dataSetDT,dataSetDT[,1,drop=F],check.names = F))
+    dataSetDT0 <- na.omit(data.frame(dataSetDT0,dataSetDT0[,1,drop=F],check.names = F))
   } else{
     dataSetDT <- dataSet
   }
@@ -69,9 +71,11 @@ tmp <-
         ordering = T,
         searching = T,
         scrollX = T,
-        lengthMenu = list(c(25, -1, 10, 1), c("25", "All", "10", 1)),
+#        lengthMenu = list(c(25, -1, 10, 1), c("25", "All", "10", "1")),
+        lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
         orderClasses = T,
-        order = list(list(0, "asc"))
+        order = list(list(0, "desc")),
+        columnDefs = list(list(width = c('8%'), targets = c(0,ncol(obj)-1)))
         ),
       rownames = F,
       caption = paste(dataTitle, append),
@@ -89,9 +93,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-""
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste(dataTitle,appendTitle))
-fungvisTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = appendTitle)
+#cat(paste(dataTitle,appendTitle))
+#fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
