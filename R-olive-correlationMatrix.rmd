@@ -1,0 +1,182 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title : "実効為替レート分析 2016年06月分"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+
+Execution
+-
+```{r,message=F,error=F,warning=F,echo=F}
+options("getSymbols.warning4.0"=F)
+library(PerformanceAnalytics)
+library(tseries)
+library(googleVis)
+library(RCurl)
+library(gdata)
+dataSet<-list()
+perl <- gdata:::findPerl("perl")
+funWithPERL <- function(dataURL) {
+  buf <<-
+    read.xls(
+      dataURL,
+      perl = perl,
+      check.names = F,
+      header = F,
+      stringsAsFactors = FALSE
+    )
+}
+```
+
+```{r,message=F,error=F,warning=F,echo=F}
+# Import BIS Effective exchange rate indices
+BIS<-1
+if(BIS==1){
+  dataURL<-"http://www.bis.org/statistics/eer/narrow1607.xlsx"
+  funWithPERL(dataURL)
+  dataTitle0<-paste(buf[1,1],buf[2,1],buf[3,1],sep = "-")
+  tmp0<-buf
+  colnames(tmp0)<-tmp0[4,]
+  tmp0<-tmp0[-c(1:5),]
+  tmp0[,-1]<-apply(tmp0[,-1],2,as.numeric)
+  tmp0[,1]<-as.Date(paste(substring(tmp0[,1],4,7),substring(tmp0[,1],1,2),"01",sep="-"))
+  colnames(tmp0)[1]<-"Date"
+  tmp1<-tmp0[,c(1,2,5,8,11,16,26,27)]
+  dataSet[[1]]<-tmp1
+  dataSet[[2]]<-data.frame(tmp1[-1,1,drop=F],diff(as.matrix(tmp1[,-1])),check.names = F)
+  dateFormat<-"%Y-%m"
+}  
+# Import BIS Effective exchange rate indices
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-"実効為替レート分析 2016年06月分"
+dataSource<-"Bank for International Settlements"
+notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+dataTail<-0 
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",dataTitle0,"\n"))
+```
+
+```{r,message=F,error=F,warning=F,echo=F}
+funPlotTimeSeries<-function(){
+  tmp0<-dataSet[[iii]]
+  par(mfrow=c(ceiling((ncol(tmp0)-1)/2),2), oma=c(3,4,5,3), mar=c(3,4,4,4))
+  for(sss in 2:(ncol(tmp0))){
+    tmp1<-tmp0[,c(1,sss)]
+    adfResult<-adf.test(tmp1[,2])
+    plot(
+      x=tmp1[,1],
+      y=tmp1[,2],
+      type="l",
+      main=paste(colnames(tmp1)[2],"\np=",round(adfResult$p.value,3)),
+      xlab="",
+      ylab=colnames(tmp1)[2],
+      xaxt="n",
+      panel.first = grid(
+        nx = NULL,
+        ny = NULL,
+        lty = 2,
+        equilogs = T
+      ),
+      cex.axis = 1.2,
+      cex.lab = 1.2,
+      cex.main = 1.7
+    )
+    axis.Date(
+      side=1,
+      at=tmp1[,1],
+      format=dateFormat,
+      padj=1,
+      cex.axis=1.2
+    ) 
+  }
+  if(iii==1){
+    title(main = list(paste("\n","Level plot with ", adfResult$method, sep=""), cex = 1.7),outer=T)
+  }else{
+    title(main = list(paste("\n","1st Difference plot with ", adfResult$method, sep=""), cex = 1.7),outer=T)
+  }
+  
+  tableData<-tmp0
+  tableData[,1]<-format(tableData[,1],dateFormat)
+  gTable<-gvisTable(tableData, options = list(width = 2000, height = "automatic",  page = "enable" ))
+  print(gTable,tag="chart")  
+
+}
+```
+
+Time Series Plot
+-
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=10}
+iii<-1
+funPlotTimeSeries()
+```
+<hr size="5">
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=10}
+iii<-2
+funPlotTimeSeries()
+```
+
+Correlation
+-
+```{r,message=F,error=F,warning=F,echo=F}
+correlationMethod<- c("pearson", "kendall", "spearman")
+selectedMethod<-3
+funCorrelation<-function(){
+  tmp0<-tail(dataSet[[iii]],tailNumber)
+  tmp1<-tmp0[,-1]
+  chart.Correlation(
+    tmp1,
+    method=correlationMethod[selectedMethod],
+    main=paste(
+      "Correlation By",
+      correlationMethod[selectedMethod],
+      "-",
+      appendText,
+      "- Period:",
+      format(tmp0[1,1],dateFormat),
+      "-",
+      format(tmp0[nrow(tmp0),1],dateFormat)
+    ),
+    cex.main = 1.2
+  )
+  resultCorrelation<-round(cor(tmp1,method=correlationMethod[selectedMethod]),3)
+  resultCorrelation<-
+    data.frame(Response=row.names(resultCorrelation),resultCorrelation,row.names=NULL,check.names = F)
+  gTable<-gvisTable(resultCorrelation, options = list(width = 2000, height = "automatic",  page = "enable" ))
+  print(gTable,tag="chart")
+  cat("\n\n\n")
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=10}
+iii<-1
+tailNumber<-12*3
+appendText<-"Level"
+funCorrelation()
+```
+<hr size="5">
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=10}
+iii<-2
+tailNumber<-12*3
+appendText<-"1st Diffrence"
+funCorrelation()
+```
+
+Data Source/Reference
+-
+- Bank for International Settlements (BIS) http://www.bis.org/
