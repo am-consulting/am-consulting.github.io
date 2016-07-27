@@ -1,13 +1,15 @@
 ---
-knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title: "日本の実質輸出入動向 2016年6月分"
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title : "全国企業倒産状況 2016年06月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
     fig_height: 5
     fig_width: 10
     keep_md: no
+    md_extensions: -ascii_identifiers 
 ---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle<-"日本の実質輸出入動向 2016年6月分"
