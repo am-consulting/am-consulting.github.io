@@ -1,0 +1,136 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title : "平成27年簡易生命表-女"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+options(scipen=9999)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+dataTitle <- "平成27年簡易生命表-女"
+dataSource <- '厚生労働省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+    'clipboard',
+    header = T,
+    sep = '\t',
+    stringsAsFactor = F,
+    na.strings = c('na', '', '-'),
+    check.names = F
+  )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet<-tmp
+lineColor<-c('blue','red')
+funPlot <- function() {
+par(mar=c(5,5,3,5))
+plot(
+  dataSet[, objX],
+  dataSet[, objY1],
+  type = 'o',
+  family = 'Meiryo',
+  col = lineColor[1],
+  xlab = colnames(dataSet)[objX] ,
+  ylab = colnames(dataSet)[objY1] ,
+  panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ) ,
+  cex.axis = 1,
+  cex.lab = 1,
+  cex.main = 1,
+  log = 'y'
+  )
+if(chartType==1 | chartType==2){  
+if(chartType==1){
+lines(
+  dataSet[, objX],
+  dataSet[, objY2],
+  col = lineColor[2]
+)
+}else if(chartType==2){  
+par(new=T)
+plot(
+  dataSet[, objX],
+  dataSet[, objY2],
+  col=lineColor[2],
+  type='o',
+  family='Meiryo' ,
+  xlab='' ,
+  ylab='' ,
+  panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T) ,
+  xaxt='n',
+  yaxt='n',
+  cex.axis=1,cex.lab=1,cex.main=1
+)    
+axis(4,cex.axis=1,cex.lab=1)
+mtext(colnames(dataSet)[objY2],side=4,line=3.0,cex=1)
+}
+legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[objY1],colnames(dataSet)[objY2]),cex=1,pch  = 1,bty='n')
+}
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet0<-dataSet
+funDataTable <- function() {
+  DT::datatable(
+    dataSet0,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = T,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
+      orderClasses = T,
+      order = list(list(0, orderType)),
+      columnDefs = list(
+        list(width = c('10%'), targets = c(0)),
+        list(width = c('10%'), targets = c(1)),
+        list(width = c('40%'), targets = c(2)),
+        list(width = c('40%'), targets = c(3))
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle, dataSource,sep=' - '),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=8,fig.width=10}
+objX<-1
+objY1<-2
+objY2<-3
+chartType<-2
+funPlot()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+orderType<-'asc'
+funDataTable()
+```
