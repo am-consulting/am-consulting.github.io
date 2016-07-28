@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "平成27年簡易生命表-女"
+title : "都道府県別預金･現金･貸出金 2016年6月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -14,8 +14,8 @@ output:
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 options(scipen=9999)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
-dataTitle <- "平成27年簡易生命表-女"
-dataSource <- '厚生労働省'
+dataTitle <- "都道府県別預金･現金･貸出金 2016年6月分"
+dataSource <- '日本銀行'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 cat(paste("Title :",dataTitle,"\n"))
@@ -38,9 +38,8 @@ tmp <-
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-dataSet<-tmp
-lineColor<-c('blue','red')
 funPlot <- function() {
+lineColor<-c('blue','red')
 par(mar=c(5,5,3,5))
 plot(
   dataSet[, objX],
@@ -92,7 +91,6 @@ legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[objY1],colnames(
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-dataSet0<-dataSet
 funDataTable <- function() {
   DT::datatable(
     dataSet0,
@@ -107,13 +105,14 @@ funDataTable <- function() {
       scrollX = T,
       lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
       orderClasses = T,
-      order = list(list(0, orderType)),
-      columnDefs = list(
-        list(width = c('10%'), targets = c(0)),
-        list(width = c('10%'), targets = c(1)),
-        list(width = c('40%'), targets = c(2)),
-        list(width = c('40%'), targets = c(3))
-        )
+      order = list(list(0, orderType))
+      # ,
+      # columnDefs = list(
+      #   list(width = c('10%'), targets = c(0)),
+      #   list(width = c('10%'), targets = c(1)),
+      #   list(width = c('40%'), targets = c(2)),
+      #   list(width = c('40%'), targets = c(3))
+      #   )
       ),
     rownames = F,
     caption = paste(dataTitle, dataSource,sep=' - '),
@@ -122,12 +121,42 @@ funDataTable <- function() {
 }
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+funBarPlot<-function(){
+maxValue<-ceiling(max(dataSet[,objY1]))
+par(mar=c(5,8,3,2))
+barplot(
+  dataSet[,objY1],
+  names.arg = dataSet[,objX],
+  beside = F,
+  horiz = T, 
+  las=1,
+  xlab = colnames(dataSet)[objY1],
+  main=paste(dataTitle,dataSource,colnames(dataSet)[objY1],sep=" - "),
+  family = 'Meiryo'
+)
+abline(v=c(seq(0,maxValue,ablineStep)),lty=2, col = 'grey')
+}
+```
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=8,fig.width=10}
+dataSet<-tmp
+dataSet0<-dataSet
 objX<-1
 objY1<-2
 objY2<-3
 chartType<-2
-funPlot()
+#funPlot()
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=10}
+dataSet<-tmp[-nrow(tmp),]
+dataSet0<-data.frame(ID=seq(1,nrow(tmp)), tmp,check.names = F)
+objX<-1
+ablineStep<-10
+for(objY1 in 2:ncol(dataSet)){
+funBarPlot()
+}  
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
