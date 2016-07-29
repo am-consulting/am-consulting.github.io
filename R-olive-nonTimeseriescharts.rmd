@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "都道府県別預金･現金･貸出金 2016年6月分"
+title : "GPIF 平成27年度業務概況書"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -14,12 +14,13 @@ output:
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 options(scipen=9999)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
-dataTitle <- "都道府県別預金･現金･貸出金 2016年6月分"
-dataSource <- '日本銀行'
+dataTitle <- "平成27年度業務概況書 収益率、収益額、運用手数料等"
+dataSource <- '年金積立金管理運用独立行政法人'
+dataSource0 <- 'http://www.gpif.go.jp/operation/state/pdf/h27_q4.pdf'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 cat(paste("Title :",dataTitle,"\n"))
-cat(paste("Data Source :",dataSource,"\n"))
+cat(paste("Data Source :",dataSource,dataSource0,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
 cat(paste("特記 :",notes,"\n"))
@@ -124,18 +125,20 @@ funDataTable <- function() {
 ```{r,warning=F,error=F,message=F,echo=F}
 funBarPlot<-function(){
 maxValue<-ceiling(max(dataSet[,objY1]))
-par(mar=c(5,8,3,2))
+minValue<-min(0,ceiling(min(dataSet[,objY1])))
+par(mar=c(5,8,5,2))
 barplot(
   dataSet[,objY1],
   names.arg = dataSet[,objX],
   beside = F,
-  horiz = T, 
+  horiz = horizType, 
   las=1,
   xlab = colnames(dataSet)[objY1],
-  main=paste(dataTitle,dataSource,colnames(dataSet)[objY1],sep=" - "),
+  ylab = colnames(dataSet)[objX],
+  main=paste(dataTitle,dataSource,colnames(dataSet)[objY1],sep="\n"),
   family = 'Meiryo'
 )
-abline(v=c(seq(0,maxValue,ablineStep)),lty=2, col = 'grey')
+abline(v=c(seq(minValue,maxValue,ablineStep)),lty=2, col = 'grey')
 }
 ```
 
@@ -149,17 +152,25 @@ chartType<-2
 #funPlot()
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=7,fig.width=10}
+needID<-0
 dataSet<-tmp[-nrow(tmp),]
+dataSet<-tmp
+if(needID==1){
 dataSet0<-data.frame(ID=seq(1,nrow(tmp)), tmp,check.names = F)
+}else{
+dataSet0<-tmp
+}  
 objX<-1
-ablineStep<-10
+ablineSteps<-c(1,10000,10,10000)
+horizType<-'T'
 for(objY1 in 2:ncol(dataSet)){
+ablineStep<-ablineSteps[objY1-1]
 funBarPlot()
 }  
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-orderType<-'asc'
+orderType<-'desc'
 funDataTable()
 ```
