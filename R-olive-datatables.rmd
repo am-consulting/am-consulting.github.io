@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '完全失業率 2016年06月分'
+title : '外国為替平衡操作の実施状況 2016年07月分'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -10,6 +10,7 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 
 ```{r,warning=F,error=F,message=F,echo=F}
 # Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
@@ -19,11 +20,14 @@ library(googleVis)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-timeSeries<-1 # 1 or 0
+timeSeries<-0 # 1 or 0
+needID<-0
+needAtag<-4
 pp<-1
-dataTitle<-"完全失業率 季節調整値 男女計 年齢階級別 2016年06月分"
-dataSource<-"総務省"
+dataTitle<-"外国為替平衡操作の実施状況 2016年07月分"
+dataSource<-"財務省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
+notes0<-"表中、-9999はNAを意味します"
 dataTail<-0 
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 cat(paste("Title :",dataTitle,"\n"))
@@ -31,6 +35,7 @@ cat(paste("Raw Data Source :",dataSource,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
 cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",notes0,"\n"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -45,7 +50,14 @@ tmp <-
   )
   if(timeSeries==0){
     tmp <- data.frame(tmp,tmp[,1,drop=F],check.names = F)
+    if(needID!=0){
     dataSet <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F)
+    }else{
+    dataSet <- tmp
+    }
+    if(needAtag!=0){
+    dataSet[,needAtag]<-paste0('<a href=\"',dataSet[,needAtag],'\" target=\"_blank\">Link</a>')
+    }
     dataFormat <- 0
   }else{
     dataSet <- tmp
@@ -61,9 +73,13 @@ tmp <-
     dataSetDT <- dataSet
     
     if(pp==0){
-    dataSetDT0<-data.frame(Date=dataSetDT[-1,1],  round(diff(as.matrix(dataSetDT[,-1]))/as.matrix(dataSetDT[-nrow(dataSetDT),-1])*100,2),check.names = F)
+    dataSetDT0<-data.frame(
+      Date=dataSetDT[-1,1],  
+      round(diff(as.matrix(dataSetDT[,-1]))/as.matrix(dataSetDT[-nrow(dataSetDT),-1])*100,2),check.names = F)
     }else if(pp==1){
-    dataSetDT0<-data.frame(Date=dataSetDT[-1,1],  round(diff(as.matrix(dataSetDT[,-1])),10),check.names = F)
+    dataSetDT0<-data.frame(
+      Date=dataSetDT[-1,1],  
+      round(diff(as.matrix(dataSetDT[,-1])),10),check.names = F)
     }
     dataSetDT <- na.omit(data.frame(dataSetDT,dataSetDT[,1,drop=F],check.names = F))
     dataSetDT0 <- na.omit(data.frame(dataSetDT0,dataSetDT0[,1,drop=F],check.names = F))
@@ -87,7 +103,8 @@ tmp <-
         lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
         orderClasses = T,
         order = list(list(0, "desc")),
-        columnDefs = list(list(width = c('8%'), targets = c(0,ncol(obj)-1)))
+#        columnDefs = list(list(width = c('8%'), targets = c(0,ncol(obj)-1)))
+        columnDefs = list(list(width = c('8%','15%'), targets = c(0,1)))
         ),
       rownames = F,
       caption = paste(dataTitle, append),
@@ -105,9 +122,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-""
-funDataTable(obj = dataSetDT, append = appendTitle)
-#cat(paste(dataTitle,appendTitle))
-#fungvisTable(obj = dataSetDT)
+#funDataTable(obj = dataSetDT, append = appendTitle)
+cat(paste(dataTitle,appendTitle))
+fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
