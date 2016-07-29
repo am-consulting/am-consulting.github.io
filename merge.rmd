@@ -46,13 +46,14 @@ head(tmp2, 1)
 ```
 
 ```{r}
+dataSet<-tmp # tmp , tmp0 , tmp1 , tmp2
 username <- Sys.info()['user']
 pathOutput <-
 paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
 setwd(pathOutput)
 write.csv(
-  tmp2,
-  "tmp2.csv",
+  dataSet,
+  "dataSet.csv",
   row.names = F,
   append = F,
   quote = F,

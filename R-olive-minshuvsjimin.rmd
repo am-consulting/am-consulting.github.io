@@ -1,21 +1,28 @@
 ---
-knit: (function(inputFile, encoding) {rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title: "景気動向指数 2016年5月分"
-author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+title : '完全失業率と有効求人倍率 2016年06月分'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
-    fig_height: 8
+    fig_height: 10
     fig_width: 10
     keep_md: no
+    md_extensions: -ascii_identifiers 
 ---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"景気動向指数 2016年5月分\n第3次産業活動指数(対事業所サービス業)(平成22年=100) , 常用雇用指数(調査産業計)(前年同月比)(%)"
-dataSource<-"内閣府"
+dataTitle<-'完全失業率×有効求人倍率 2016年6月分'
+dataTitle0<-'民主党政権時と第二次安倍政権以降の比較'
+dataSource<-"総務省、厚生労働省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
-paste("Raw Data Source:",dataSource)
-paste("作成日:",Sys.time())
-paste("特記:",notes)
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title :",dataTitle,dataTitle0,"\n"))
+cat(paste("Raw Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -67,16 +74,20 @@ g<-g+theme(axis.text.x=element_text(angle=0,family="Meiryo"))
 g<-g+theme(axis.text.y=element_text(angle=90,family="Meiryo"))
 #g<-g+geom_line(aes(x=c(minPoint,maxPoint),y=c(minPoint,maxPoint)),color="black")
 g<-g+geom_text(data=dataset,aes(x=dataset[ ,2],y=dataset[ ,3],label=dataset$Number)              ,vjust=0,hjust=2,family="Meiryo")
-g<-g+geom_text(data=dataset,aes(x=dataset[1,2],y=dataset[1,3],label=format(dataset[1,1],"%Y-%m")),vjust=1,hjust=0,family="Meiryo")
-g<-g+geom_text(data=dataset,aes(x=dataset[nrow(dataset),2],y=dataset[nrow(dataset),3],label=format(dataset[nrow(dataset),1],"%Y-%m")),vjust=0,hjust=0,family="Meiryo")
+g<-g+geom_text(data=dataset,aes(x=dataset[1,2],y=dataset[1,3],label=format(dataset[1,1],"%Y-%m")),vjust=1,hjust=startHjust,family="Meiryo",size= 10)
+g<-g+geom_text(data=dataset,aes(x=dataset[nrow(dataset),2],y=dataset[nrow(dataset),3],label=format(dataset[nrow(dataset),1],"%Y-%m")),vjust=0,hjust=endHjust,family="Meiryo",size= 10)
 buf<-subset(dataset,dataset[,1]==as.Date("2012/12/1"))
-g<-g+geom_text(data=buf,aes(x=buf[1,2],y=buf[1,3],label=format(as.Date("2012/12/1"),"%Y-%m")),vjust=1,hjust=0,family="Meiryo")
+g<-g+geom_text(data=buf,aes(x=buf[1,2],y=buf[1,3],label=format(as.Date("2012/12/1"),"%Y-%m")),vjust=1,hjust=midHjust,family="Meiryo",size= 10)
 g<-g+geom_path(data=dataset,aes(x=dataset[,2],y=dataset[,3]),color=dataset$color)
 print(g)
 }
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# 1 左 , 0 右
+startHjust<-1
+endHjust  <-0
+midHjust  <-0
 funPlot()
 ```
 <hr>
