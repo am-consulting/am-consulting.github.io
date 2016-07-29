@@ -14,12 +14,13 @@ output:
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 options(scipen=9999)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
-dataTitle <- "平成27年度業務概況書 収益率、収益額、運用手数料等"
+dataTitle <- "平成27年度業務概況書 運用受託機関等別実績収益率"
+dataTitle0 <- "運用実績(直近3年) 2013年4月~2016年3月"
 dataSource <- '年金積立金管理運用独立行政法人'
 dataSource0 <- 'http://www.gpif.go.jp/operation/state/pdf/h27_q4.pdf'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Title :",dataTitle,dataTitle0,"\n"))
 cat(paste("Data Source :",dataSource,dataSource0,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
@@ -116,7 +117,7 @@ funDataTable <- function() {
       #   )
       ),
     rownames = F,
-    caption = paste(dataTitle, dataSource,sep=' - '),
+    caption = paste(dataTitle, dataTitle0, dataSource, dataSource0,sep=' - '),
     class = 'display compact'
   )
 }
@@ -124,9 +125,9 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,echo=F}
 funBarPlot<-function(){
-maxValue<-ceiling(max(dataSet[,objY1]))
-minValue<-min(0,ceiling(min(dataSet[,objY1])))
-par(mar=c(5,8,5,2))
+maxValue<-max(dataSet[,objY1])
+minValue<-min(0,min(dataSet[,objY1]))
+par(mar=c(5,25,7,2))
 barplot(
   dataSet[,objY1],
   names.arg = dataSet[,objX],
@@ -134,8 +135,8 @@ barplot(
   horiz = horizType, 
   las=1,
   xlab = colnames(dataSet)[objY1],
-  ylab = colnames(dataSet)[objX],
-  main=paste(dataTitle,dataSource,colnames(dataSet)[objY1],sep="\n"),
+  ylab = ylabText,
+  main=paste(dataTitle,dataTitle0,dataSource,colnames(dataSet)[objY1],sep="\n"),
   family = 'Meiryo'
 )
 abline(v=c(seq(minValue,maxValue,ablineStep)),lty=2, col = 'grey')
@@ -152,17 +153,19 @@ chartType<-2
 #funPlot()
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=7,fig.width=10}
-needID<-0
-dataSet<-tmp[-nrow(tmp),]
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=12,fig.width=10}
+ylabText<-"" # colnames(dataSet)[objX]
+needID<-1
+#dataSet<-tmp[-nrow(tmp),]
 dataSet<-tmp
+dataSet<-dataSet[order(seq(nrow(dataSet),1)),]
 if(needID==1){
 dataSet0<-data.frame(ID=seq(1,nrow(tmp)), tmp,check.names = F)
 }else{
 dataSet0<-tmp
 }  
 objX<-1
-ablineSteps<-c(1,10000,10,10000)
+ablineSteps<-c(1,1,0.1,10000)
 horizType<-'T'
 for(objY1 in 2:ncol(dataSet)){
 ablineStep<-ablineSteps[objY1-1]
@@ -171,6 +174,6 @@ funBarPlot()
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-orderType<-'desc'
+orderType<-'asc'
 funDataTable()
 ```
