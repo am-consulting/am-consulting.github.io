@@ -1,7 +1,8 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "全国企業倒産状況 2016年06月分"
-author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+
+title : '完全失業率 2016年06月分'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
     fig_height: 5
@@ -12,12 +13,13 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"全国企業倒産状況 2016年06月分"
-dataSource<-"株式会社 東京商工リサーチ"
+dataTitle<-"完全失業率 季節調整値 男女計 総数 2016年06月分"
+dataTitle0<-'歴代政権毎の時系列推移'
+dataSource<-"総務省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 dataTail<-0 
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Title :",dataTitle,dataTitle0,"\n"))
 cat(paste("Raw Data Source :",dataSource,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
