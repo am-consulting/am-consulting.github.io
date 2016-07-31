@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '外国為替平衡操作の実施状況 2016年07月分'
+title : '農業就業人口'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -21,11 +21,11 @@ library(googleVis)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-needID<-0
-needAtag<-4
+needID<-1
+needAtag<-0
 pp<-1
-dataTitle<-"外国為替平衡操作の実施状況 2016年07月分"
-dataSource<-"財務省"
+dataTitle<-"平成28年農業構造動態調査(平成28年2月1日現在) 農業就業人口(自営農業に主として従事した世帯員数)"
+dataSource<-"農林水産省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 notes0<-"表中、-9999はNAを意味します"
 dataTail<-0 
@@ -100,11 +100,12 @@ tmp <-
         searching = T,
         scrollX = T,
 #        lengthMenu = list(c(25, -1, 10, 1), c("25", "All", "10", "1")),
-        lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
+        lengthMenu = list(c(-1, 1), c("All", "1")),
         orderClasses = T,
-        order = list(list(0, "desc")),
+        order = list(list(0, "asc"))
+#        ,
 #        columnDefs = list(list(width = c('8%'), targets = c(0,ncol(obj)-1)))
-        columnDefs = list(list(width = c('8%','15%'), targets = c(0,1)))
+#        columnDefs = list(list(width = c('8%','15%'), targets = c(0,1)))
         ),
       rownames = F,
       caption = paste(dataTitle, append),
@@ -122,9 +123,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-""
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste(dataTitle,appendTitle))
-fungvisTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = appendTitle)
+#cat(paste(dataTitle,appendTitle))
+#fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
