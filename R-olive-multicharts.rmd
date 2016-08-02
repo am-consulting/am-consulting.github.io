@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "全国企業倒産状況 2016年06月分"
+title : "日本のマネタリーベース 2016年07月分"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -12,12 +12,17 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"日本の実質輸出入動向 2016年6月分"
-dataSource<-"日本銀行"
-notes<-"複数のワードで検索する際は半角スペースで区切ってください"
-paste("Data Source:",dataSource)
-paste("作成日:",Sys.time())
-paste("特記:",notes)
+dataTitle<-'日本のマネタリーベース平均残高、日銀当座預金残高 2016年7月分'
+dataSource<-'日本銀行'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-"表中、-9999はNAを意味します"
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Raw Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",notes0,"\n"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -28,7 +33,7 @@ library(reshape)
 library(RCurl)
 script <-
   getURL(
-    "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r",
+    'https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r',
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
@@ -50,11 +55,11 @@ FUN <- function(x) {
 
 tmp <-
   read.table(
-    "clipboard",
+    'clipboard',
     header = T,
-    sep = "\t",
+    sep = '\t',
     stringsAsFactor = F,
-    na.strings = c("na", "", "-"),
+    na.strings = c('na', '', '-'),
     check.names = F
   )
 ```
@@ -66,71 +71,72 @@ dataSet[, 1] <- as.Date(dataSet[, 1])
 dataSet <-
   data.frame(dataSet, apply(dataSet[1], 1, FUN), check.names = F)
 colnames(dataSet)[ncol(dataSet)] <- indextitle[iii]
-dateFormat = "%Y-%m-%d"
+dateFormat = '%Y-%m-%d'
 if (length(unique(day(dataSet[, 1]))) == 1) {
-  dateFormat = "%Y-%m"
+  dateFormat = '%Y-%m'
 }
 if (length(unique(month(dataSet[, 1]))) == 1) {
-  dateFormat = "%Y"
+  dateFormat = '%Y'
 }
 borderdate <- max(highestData[1, 1], dataSet[1, 1])
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}    
+```{r,warning=F,error=F,message=F,echo=F} 
 funPlotTimeSeries <- function() {
-chartTtpe<-1  
-lineColor<-c("blue","red")
-mainTitle<-paste(colnames(dataSet)[2],"×",colnames(dataSet)[3])
-maxValue<-max(dataSet[,2],dataSet[,3])
-minValue<-min(dataSet[,2],dataSet[,3])
-#par(mar=c(7,7,7,7))
+mainTitle<-paste(colnames(dataSet)[obj01],'×',colnames(dataSet)[obj02])
+maxValue<-max(dataSet[,obj01],dataSet[,obj02])
+minValue<-min(dataSet[,obj01],dataSet[,obj02])
+par(mar=c(3,5,3,5))
 plot(
   dataSet[, 1],
-  dataSet[, 2],
-  type = "l",
-  family = "Meiryo",
+  dataSet[, obj01],
+  type = seriesType01,
+  family = 'Meiryo',
   col = lineColor[1],
-  xlab = "" ,
-  ylab = "" ,
+  xlab = '' ,
+  ylab = '' ,
   panel.first = grid(
     nx = NULL,
     ny = NULL,
     lty = 2,
     equilogs = T
   ) ,
-  xaxt = "n",
-  ylim = c(minValue, maxValue),
+  xaxt = 'n',
+  ylim = if(needYlim == 1){c(minValue, maxValue)},
   main = mainTitle,
   cex.axis = 1,
   cex.lab = 1,
-  cex.main = 1
+  cex.main = 1,
+  lwd = obj01lwd
   )
 if(chartTtpe==1){
 lines(
   dataSet[, 1],
-  dataSet[, 3],
-  col = lineColor[2]
+  dataSet[, obj02],
+  col = lineColor[2],
+  lwd = obj02lwd
 )
 }else{  
 par(new=T)
 plot(
   dataSet[,1],
-  dataSet[,3],
+  dataSet[,obj02],
   col=lineColor[2],
-  type="l",
-  family="Meiryo" ,
-  xlab="" ,
-  ylab="" ,
+  type=seriesType02,
+  family='Meiryo' ,
+  xlab='' ,
+  ylab='' ,
   panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T) ,
-  xaxt="n",
-  yaxt="n",
-  cex.axis=1,cex.lab=1,cex.main=1
+  xaxt='n',
+  yaxt='n',
+  cex.axis=1,cex.lab=1,cex.main=1,
+  lwd = obj02lwd
 )    
 axis(4,cex.axis=1,cex.lab=1)
-mtext(colnames(dataSet)[2],side=2,line=3.2,cex=1)
-mtext(colnames(dataSet)[3],side=4,line=3.2,cex=1)
+mtext(colnames(dataSet)[obj01],side=2,line=3.2,cex=1)
+mtext(colnames(dataSet)[obj02],side=4,line=3.2,cex=1)
 }
-legend("topleft",col=lineColor,lty=1,legend=c(colnames(dataSet)[2],colnames(dataSet)[3]),cex=1)
+legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1)
 axis.Date(side=1,at=dataSet[,1],format=dateFormat,padj=1,cex.axis=1.0)  
 }
 ```
@@ -150,18 +156,27 @@ funDataTable <- function() {
       ordering = T,
       searching = T,
       scrollX = T,
-      lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
+      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
       orderClasses = T,
-      order = list(list(0, "desc"))
+      order = list(list(0, 'desc'))
       ),
     rownames = F,
     caption = paste(dataTitle, dataSource),
-    class = "display compact"
+    class = 'display compact'
   )
 }
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+lineColor<-c('red','blue')
+needYlim<-0
+chartTtpe<-2
+seriesType01<-'h'
+seriesType02<-'l'
+obj01<-3
+obj02<-2
+obj01lwd<-1
+obj02lwd<-2
 funPlotTimeSeries()
 ```
 <hr>
