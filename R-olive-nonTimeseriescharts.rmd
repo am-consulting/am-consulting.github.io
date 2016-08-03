@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "GPIF 平成27年度業務概況書"
+title : "産業別雇用者数"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -9,15 +9,15 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+#<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 options(scipen=9999)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
-dataTitle <- "平成27年度業務概況書 運用受託機関等別実績収益率"
-dataTitle0 <- "運用実績(直近3年) 2013年4月~2016年3月"
-dataSource <- '年金積立金管理運用独立行政法人'
-dataSource0 <- 'http://www.gpif.go.jp/operation/state/pdf/h27_q4.pdf'
+dataTitle <- '労働統計要覧-労働力-産業別雇用者数-2015年'
+dataTitle0 <- ''
+dataSource <- '厚生労働省'
+dataSource0 <- ''
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 cat(paste("Title :",dataTitle,dataTitle0,"\n"))
@@ -99,7 +99,7 @@ funDataTable <- function() {
     options = list(
       search.regex = T,
       paging = T,
-      autoWidth = T,
+      autoWidth = F,
       info = T,
       lengthChange = T,
       ordering = T,
@@ -117,7 +117,7 @@ funDataTable <- function() {
       #   )
       ),
     rownames = F,
-    caption = paste(dataTitle, dataTitle0, dataSource, dataSource0,sep=' - '),
+    caption = paste(dataTitle, dataTitle0, dataSource, dataSource0),
     class = 'display compact'
   )
 }
@@ -127,7 +127,7 @@ funDataTable <- function() {
 funBarPlot<-function(){
 maxValue<-max(dataSet[,objY1])
 minValue<-min(0,min(dataSet[,objY1]))
-par(mar=c(5,25,7,2))
+par(mar=c(5,plotSpace,7,2))
 barplot(
   dataSet[,objY1],
   names.arg = dataSet[,objX],
@@ -153,11 +153,17 @@ chartType<-2
 #funPlot()
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=12,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=8,fig.width=10}
 ylabText<-"" # colnames(dataSet)[objX]
 needID<-1
-#dataSet<-tmp[-nrow(tmp),]
-dataSet<-tmp
+removeRow<-3
+plotSpace<-15
+switch (removeRow,
+  dataSet<-tmp[-nrow(tmp),],
+  dataSet<-tmp[-1,],
+  dataSet<-tmp[-c(1,3),],
+  dataSet<-tmp
+)
 dataSet<-dataSet[order(seq(nrow(dataSet),1)),]
 if(needID==1){
 dataSet0<-data.frame(ID=seq(1,nrow(tmp)), tmp,check.names = F)
@@ -165,14 +171,15 @@ dataSet0<-data.frame(ID=seq(1,nrow(tmp)), tmp,check.names = F)
 dataSet0<-tmp
 }  
 objX<-1
-ablineSteps<-c(1,1,0.1,10000)
+ablineSteps<-c(100,1,0.1,10000)
 horizType<-'T'
 for(objY1 in 2:ncol(dataSet)){
 ablineStep<-ablineSteps[objY1-1]
 funBarPlot()
+cat('<hr>')
 }  
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 orderType<-'asc'
 funDataTable()
