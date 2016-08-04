@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '2016年東京都知事選挙'
+title : '有効求人倍率'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -20,13 +20,13 @@ library(googleVis)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-timeSeries<-0 # 1 or 0
-needID<-1
+timeSeries<-1 # 1 or 0
+needID<-0
 needAtag<-0
 needAdd<-1
 pp<-1
-dataTitle<-'東京都知事選挙(2016年7月31日執行) 投開票結果 候補者別得票率(得票数100万票以上の候補者のみ。敬称略)'
-dataSource<-'東京都選挙管理委員会'
+dataTitle<-'都道府県別 有効求人倍率 2016年6月分 パート含む 季節調整値'
+dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -94,19 +94,19 @@ tmp <-
       options = list(
         search.regex = T,
         paging = T,
-        autoWidth = F,
+        autoWidth = T,
         info = T,
         lengthChange = T,
         ordering = T,
         searching = T,
         scrollX = T,
-        lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
+        lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
         orderClasses = T,
-        order = list(list(0, 'asc')),
+        order = list(list(0, 'desc')),
         columnDefs = list(
-          list(width = '5%', targets = 0),
-          list(width = '15%', targets = 1),
-          list(width = '15%', targets = ncol(obj)-1)
+          list(width = '25%', targets = 0),
+#          list(width = '15%', targets = 1),
+          list(width = '25%', targets = ncol(obj)-1)
           )
         ),
       rownames = F,
