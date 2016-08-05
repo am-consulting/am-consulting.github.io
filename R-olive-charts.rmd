@@ -1,21 +1,28 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '有効求人倍率 2016年06月分'
+title : '株式時価総額'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
-    fig_height: 5
-    fig_width: 10
+    fig_height: 7
+    fig_width: 14
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1400px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"有効求人倍率 含パート 季節調整値 2016年6月分"
+dataTitle<-"株式時価総額(単位:兆円) 2016年7月分"
 dataTitle0<-'歴代政権毎の時系列推移'
-dataSource<-"厚生労働省"
+dataSource<-"株式会社日本取引所グループ"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 dataTail<-0 
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -24,6 +31,10 @@ cat(paste("Raw Data Source :",dataSource,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
 cat(paste("特記 :",notes,"\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+loadTMP <- 2
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -53,7 +64,10 @@ FUN <- function(x) {
   highestData[which(highestData[1] <= x &
                       highestData[2] >= x, arr.ind = F), 3]
 }
+```
 
+```{r,warning=F,error=F,message=F,echo=F}
+if(loadTMP==1){
 tmp <-
   read.table(
     "clipboard",
@@ -63,7 +77,21 @@ tmp <-
     na.strings = c("na", "", "-"),
     check.names = F
   )
-tmp<-tmp[order(tmp[,1],decreasing = F),]
+tmp <- tmp[order(tmp[,1],decreasing = F),]
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+if(loadTMP==2){
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importMarketCapitalization.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+tmp <- MarketCapitalization[,1:2]
+}
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
