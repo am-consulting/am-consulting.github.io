@@ -1,28 +1,28 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '消費活動指数'
+title : '株式平均利回り'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
     fig_height: 6
-    fig_width: 14
+    fig_width: 12
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1400px;
+	max-width: 1200px;
 	margin-left: auto;
 	margin-right: auto;
 }
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"消費活動指数 実質消費活動指数(旅行収支調整済、2010=100) 2016年6月分"
+dataTitle<-"株式平均利回り 第一部 加重平均利回り 2016年7月分"
 dataTitle0<-'歴代政権毎の時系列推移'
-dataSource<-"日本銀行"
+dataSource<-"株式会社日本取引所グループ"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 dataTail<-0 
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -34,7 +34,7 @@ cat(paste("特記 :",notes,"\n"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-loadTMP <- 1
+loadTMP <- 4
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -104,6 +104,21 @@ script <-
   )
 eval(parse(text = script))
 tmp <- MonthlyTradingVolumeValue
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+if(loadTMP==4){
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importAverageYield.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+tmp <- AverageYield
+tmp<-tmp[,c(1,4)]
+colnames(tmp)[2]<-paste('第一部',colnames(tmp)[2])
 }
 ```
 
