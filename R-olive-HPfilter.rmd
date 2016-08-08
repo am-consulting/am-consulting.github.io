@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'国際収支 貿易収支 輸入 2016年6月分'
+dataTitle<-'国際収支 貿易収支 輸出 2016年6月分'
 dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -201,7 +201,7 @@ funDataTable <- function() {
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-obj01<-3
+obj01<-2
 dataFreq<-12
 
 filterType<-1 # 1(trend) or any integer(cycle) 
