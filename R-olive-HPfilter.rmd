@@ -1,0 +1,230 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title : "国際収支"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-'国際収支 貿易収支 輸入 2016年6月分'
+dataSource<-'日本銀行'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-"表中、-9999はNAを意味します"
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Raw Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",notes0,"\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+loadTMP <- 1
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(lubridate)
+#library(scales)
+#library(reshape)
+library(mFilter)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+if(loadTMP==1){
+tmp <-
+  read.table(
+    'clipboard',
+    header = T,
+    sep = '\t',
+    stringsAsFactor = F,
+    na.strings = c('na', '', '-'),
+    check.names = F
+  )
+tmp[,1] <- as.Date(tmp[,1])
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dateFormat = "%Y-%m-%d"
+if (length(unique(day(tmp[, 1]))) == 1) {
+  dateFormat = "%Y-%m"
+}
+if (length(unique(month(tmp[, 1]))) == 1) {
+  dateFormat = "%Y"
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotTimeSeries <- function() {
+# 前処理
+tmp0 <- na.omit(tmp[,c(1,obj01)])
+dataType<-'Level'
+if(LN==1){
+  tmp0 <- data.frame(tmp0[,1,drop=F],log(tmp0[,2,drop=F]),check.names = F)
+  dataType <- 'Natural Logarithm'
+}
+dataType<<-dataType
+tsData <- ts(tmp0[,2] , frequency = dataFreq , start=c(year(tmp0[1,1]),month(tmp0[1,1])))
+tsDataHPfilter <- hpfilter(tsData) 
+tsDataBKfilter <- bkfilter(tsData)
+tsDataCFfilter <- cffilter(tsData , root=T)
+if(filterType==1){
+  HP<-tsDataHPfilter$trend
+  BK<-tsDataBKfilter$trend
+  CF<-tsDataCFfilter$trend
+  mainTitle<-'Filter - Trend Component -'
+}else{
+  HP<-tsDataHPfilter$cycle
+  BK<-tsDataBKfilter$cycle
+  CF<-tsDataCFfilter$cycle
+  mainTitle<-'Filter - Cycle Component -'
+}
+tmp0<-data.frame(tmp0,HP,BK=BK,CF=CF,check.names = F)
+colnames(tmp0)[3:5]<-c('HP Filter','BK Filter','CF Filter')
+tmp0<<-tmp0
+
+# plot trend
+if(filterType==1){
+par(mar=c(4,6,4,2))
+plot(
+  x=tmp0[,1],
+  y=tmp0[,2],
+  col=1, 
+  main=paste("Raw Data -",dataType,'\n',colnames(tmp0)[2]),
+  type = 'l',
+  xlab='', 
+  ylab=paste(colnames(tmp0)[2],'\n',dataType), 
+  xaxt = 'n',
+  lwd=1,
+  panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ),
+  family = 'Meiryo'
+)
+lines(tmp0[,1],HP,col=2, lwd=1)
+axis.Date(side=1,at=tmp0[,1],format=dateFormat,padj=1,cex.axis=1.0) 
+legend(
+  "topleft",
+  legend=c('Raw Data',"Hodrick-Prescott filter"),
+  col=1:2, 
+  lty=rep(1,2), 
+  ncol=1, 
+  lwd=1
+)
+}
+
+# plot cycle
+par(mar=c(4,6,4,2))
+maxY<-max(HP,na.omit(BK),CF)
+minY<-min(HP,na.omit(BK),CF)
+plot(
+  x=tmp0[,1],
+  HP, 
+  col=1, 
+  main=paste(mainTitle,dataType,'\n',colnames(tmp0)[2]),
+  type = 'l',
+  xlab='', 
+  ylab=paste(colnames(tmp0)[2],'\n',dataType), 
+  xaxt = 'n',
+  lwd=1,
+  panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ),
+  family = 'Meiryo',
+  ylim = c(minY,maxY)
+)
+lines(tmp0[,1],BK,col=2, lwd=1)
+lines(tmp0[,1],CF,col=3, lwd=1)
+axis.Date(side=1,at=tmp0[,1],format=dateFormat,padj=1,cex.axis=1.0) 
+legend(
+  "topleft",
+  legend=c("Hodrick-Prescott filter", "Baxter-King Filter","Christiano-Fitzgerald Filter"),
+  col=1:3, 
+  lty=rep(1,3), 
+  ncol=1, 
+  lwd=1
+)
+}
+```
+Hodrick–Prescott filter - https://en.wikipedia.org/wiki/Hodrick%E2%80%93Prescott_filter<br>
+Baxter-King Filter - http://www.gla.ac.uk/media/media_219052_en.pdf<br>
+Christiano-Fitzgerald Filter - https://www.oecd.org/std/leading-indicators/41520591.pdf
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function() {
+  dataSet0[,1]<-format(dataSet0[,1],dateFormat)
+  DT::datatable(
+    dataSet0,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(
+        list(width = '10%', targets = 0)#,
+#        list(width = '25%', targets = 3)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle, dataSource, '-', dataType),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj01<-3
+dataFreq<-12
+
+filterType<-1 # 1(trend) or any integer(cycle) 
+LN<-0 # 1 or any integer
+cat('<hr>')
+funPlotTimeSeries()
+dataSet0<-tmp0
+funDataTable()
+
+filterType<-0 # 1(trend) or any integer(cycle) 
+LN<-0 # 1 or any integer
+cat('<hr>')
+funPlotTimeSeries()
+
+filterType<-1 # 1(trend) or any integer(cycle) 
+LN<-1 # 1 or any integer
+cat('<hr>')
+funPlotTimeSeries()
+dataSet0<-tmp0
+funDataTable()
+
+filterType<-0 # 1(trend) or any integer(cycle) 
+LN<-1 # 1 or any integer
+cat('<hr>')
+funPlotTimeSeries()
+```
