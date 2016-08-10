@@ -1,0 +1,182 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+title : 'PER･PBR'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-'規模別･業種別PER･PBR(連結･単体) 市場一部 2016年7月分'
+dataSource<-'株式会社日本取引所グループ'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-'表中、-9999はNAを意味します'
+dataTail<-0 
+Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+tmp <-
+  read.table(
+  'clipboard',
+  header = F,
+  sep = '\t',
+  stringsAsFactor = F,
+  na.strings = c('na', '', '-'),
+  check.names = F,
+  encoding = 'utf-8'
+)
+tmp0<-tmp
+tmp0[,1]<-gsub('?','',gsub('','', tmp0[,1]),fixed = T)
+tmp0[,-1]<-apply(apply(tmp0[,-1,drop=F],2,function(x){gsub(',','',x)}),2,as.numeric)
+tmp0<-data.frame(tmp0,tmp0[,3]*tmp0[,4],tmp0[,7]*tmp0[,8])
+colnames(tmp0)<-c(
+  '種別',
+  '会社数',
+  '単純-PER',
+  '単純-PBR',
+  '単純-1株当たり当期純利益(円)',
+  '単純-1株当たり純資産(円)',
+  '加重-PER',
+  '加重-PBR',
+  '加重-親会社株主に帰属する当期純利益合計(億円)',
+  '加重-純資産合計(億円)',
+  '単純-PER×PBR',
+  '加重-PER×PBR'
+)
+dataSet <- data.frame()
+tmp1<-tmp0[-c(1:7),]
+obj<-2
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-1
+dataSet[rrr,1]<-'最多会社数'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'最小会社数'
+dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,min(buf[,2])==buf[,2])[,2]
+obj<-3
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-rrr+1
+dataSet[rrr,1]<-'単純-最高PER'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'単純-最低PER'
+dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,min(buf[,2])==buf[,2])[,2]
+obj<-4
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-rrr+1
+dataSet[rrr,1]<-'単純-最高PBR'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'単純-最低PBR'
+dataSet[rrr,2]<-paste(as.vector(subset(buf,min(buf[,2])==buf[,2])[,1]),collapse = ',')
+dataSet[rrr,3]<-unique(subset(buf,min(buf[,2])==buf[,2])[,2])
+obj<-7
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-rrr+1
+dataSet[rrr,1]<-'加重-最高PER'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'加重-最低PER'
+dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,min(buf[,2])==buf[,2])[,2]
+obj<-8
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-rrr+1
+dataSet[rrr,1]<-'加重-最高PBR'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'加重-最低PBR'
+dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,min(buf[,2])==buf[,2])[,2]
+obj<-11
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-rrr+1
+dataSet[rrr,1]<-'単純-PER×PBR-最高'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'単純-PER×PBR-最低'
+dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,min(buf[,2])==buf[,2])[,2]
+obj<-12
+buf<-na.omit(tmp1[,c(1,obj)])
+rrr<-rrr+1
+dataSet[rrr,1]<-'加重-PER×PBR-最高'
+dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+rrr<-rrr+1
+dataSet[rrr,1]<-'加重-PER×PBR-最低'
+dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
+dataSet[rrr,3]<-subset(buf,min(buf[,2])==buf[,2])[,2]
+dataSet<-data.frame(seq(1,nrow(dataSet)),dataSet,check.names = F)
+colnames(dataSet)<-c('ID','項目','種別','数値')
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj,dataTitle='',append='') {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
+      orderClasses = T,
+      order = list(list(0, 'asc')),
+      columnDefs = list(
+        list(width = '5%' , targets = 0),
+        list(width = '20%', targets = 1)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle, append),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+append<-'業種別項目毎最高･最低値'
+funDataTable(obj = dataSet, dataTitle = dataTitle , append = append)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dataSet0<-data.frame(ID=seq(1,nrow(tmp0)),tmp0[,c(1,2,3,4,7,8,11,12)],check.names = F)
+funDataTable(obj = dataSet0, dataTitle = dataTitle)
+```
