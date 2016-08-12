@@ -1,0 +1,348 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+title : 'Lineage simulation(ver1.0.0)'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    keep_md: no
+    md_extensions: -ascii_identifiers
+    code_folding: hide
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,results='hold'}
+library(DT)
+library(lubridate)
+dataTitle <- '一組の夫婦の間に男子の誕生する確率そして一組の夫婦が授かる子供の人数に基づくシミュレーション'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+childrenN <- c(1, 2, 3, 4)
+probBoy <- c(0.45, 0.5, 0.55)
+```
+
+```{r,warning=F,error=F,message=F}
+simulation <-
+  function(fun_probBoy,
+           fun_probGirl,
+           fun_childrenN,
+           fun_generationN,
+           needGTable,
+           simN) {
+    cnt <- 0
+    for (test in 1:simN) {
+      gc();gc();
+      maleN <- 1
+      generation <- 0
+      buf <- data.frame()
+      while (maleN != 0) {
+        generation <- generation + 1
+        children <- sample(
+          c('Boy', 'Girl') ,
+          fun_childrenN * maleN ,
+          replace = T ,
+          prob = c(fun_probBoy, fun_probGirl)
+        )
+        maleN <- length(grep('Boy', children))
+        if (needGTable == 1) {
+          buf[generation, 1] <- generation
+          buf[generation, 2] <- maleN
+          buf[generation, 3] <- length(children) - maleN
+          buf[generation, 4] <- length(children)
+        }
+        if (fun_generationN == generation & maleN!=0) {
+          cnt <- cnt + 1
+          break
+        }
+      }
+      assign(paste0('generationTable',test), buf, envir = .GlobalEnv)
+    }
+    simulationResult <<-
+      paste0(cnt, '/', test, '=', round(cnt / test * 100, 2), '%')
+  }
+
+funDataTable <- function(obj,
+                         captionText = '',
+                         rowName = F) {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = F,
+      paging = F,
+      autoWidth = F,
+      info = F,
+      lengthChange = F,
+      ordering = F,
+      searching = F,
+      scrollX = F,
+      orderClasses = T
+    ),
+    rownames = rowName,
+    caption = captionText,
+    class = 'display compact'
+  )
+}
+
+resultOutput01 <- function() {
+  cat(
+    '1組の夫婦が生涯で授かる子供の人数を',
+    buf_childrenN,
+    '人、\n男子が誕生する確率を',
+    buf_probBoy * 100,
+    '%とし、\n以降同一条件のもと',
+    buf_generationN,
+    '世代連続で少なくとも1人は第0世代に連なる男子の系統の男子が存在している確率は\n',
+    buf_simN,
+    '回のシミュレーションの結果、',
+    simulationResult,
+    '\n(a/b=Z%.aは',
+    buf_generationN,
+    '世代連続で少なくとも1人は第0世代に連なる男子の系統の男子が存在した回数、bはシミュレーション総回数).'
+  )
+}
+
+resultOutput02 <- function() {
+  chkResult <- get(paste0('generationTable0', simuN))
+  generationResult <- nrow(chkResult)
+  if (chkResult[nrow(chkResult), 2] == 0) {
+    generationResult <- generationResult - 1
+  }
+  buf_captionText <<- paste(
+    '男子誕生確率(%):',
+    buf_probBoy * 100,
+    '、夫婦が授かる子どもの人数:',
+    buf_childrenN,
+    '、',
+    generationResult,
+    '世代目まで連続して少なくとも1人は第0世代に連なる男子の系統の男子が存在.'
+  )
+}
+```
+
+##シミュレーション前提
+
+1. 一夫一婦とし、授かる子供の人数と男子を授かる確率は世代や夫婦に依らず一組のシミュレーションにおいては一定とする。
+1. 最初の一組の夫婦を第0世代と名付ける。
+1. 第0世代に連なる男子の系統の男子が設定した世代まで継続するか否かをシミュレーション。
+
+##表の見方
+1. 例えば授かる子供の人数が4人の場合、第1世代の合計人数は第0世代が授かった子供の人数=4人となる。
+1. 次に男子を授かる確率に基づき男女の人数をシミュレーション。例えば男子の人数=2人、女子の人数=2人。
+1. 第2世代の合計人数は第1世代の"男子の人数"に、授かる子供の人数を乗じた人数となる。第1世代の男子の人数が2人の場合、合計人数は2×4=8人。
+1. 再び男子を授かる確率に基づき男女の人数をシミュレーション。例えば男子の人数=3人、女子の人数=5人。
+1. 以降の世代も同様とし、表中最下行の世代の男子の人数が0でない場合、設定した世代まで第0世代に連なる男子の系統の男子が継続したと判定。
+
+<hr>
+##シミュレーション例
+
+<h4><Font color="blue">Pattern Blue</font></h4>
+
+```{r,warning=F,error=F,message=F,results='hold'}
+buf_probBoy <- 0.5
+buf_probGirl <- (1 - buf_probBoy)
+buf_childrenN <- 4
+buf_generationN <- 10
+buf_simN <- 100
+# 以降各シミュレーションで共通。関数化その他でまとめること。
+simulation(
+  fun_probBoy = buf_probBoy ,
+  fun_probGirl = buf_probGirl ,
+  fun_childrenN = buf_childrenN ,
+  fun_generationN = buf_generationN ,
+  needGTable = 1 ,
+  simN = buf_simN
+)
+for (nnn in 1:buf_simN) {
+  buf <- get(paste0('generationTable', nnn))
+  colnames(buf) <- c('第X世代', '男子の人数', '女子の人数', '合計人数')
+  assign(paste0('generationTable0', nnn), buf)
+}
+simuN <- 1
+resultOutput01()
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- 50
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- buf_simN
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+# 以上各シミュレーションで共通。関数化その他でまとめること。
+```
+
+<h4><Font color="#622d18">Pattern Sepia</font></h4>
+
+```{r,warning=F,error=F,message=F,results='hold'}
+buf_probBoy <- 0.5
+buf_probGirl <- (1 - buf_probBoy)
+buf_childrenN <- 3
+buf_generationN <- 10
+buf_simN <- 100
+# 以降各シミュレーションで共通。関数化その他でまとめること。
+simulation(
+  fun_probBoy = buf_probBoy ,
+  fun_probGirl = buf_probGirl ,
+  fun_childrenN = buf_childrenN ,
+  fun_generationN = buf_generationN ,
+  needGTable = 1 ,
+  simN = buf_simN
+)
+for (nnn in 1:buf_simN) {
+  buf <- get(paste0('generationTable', nnn))
+  colnames(buf) <- c('第X世代', '男子の人数', '女子の人数', '合計人数')
+  assign(paste0('generationTable0', nnn), buf)
+}
+simuN <- 1
+resultOutput01()
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- 50
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- buf_simN
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+# 以上各シミュレーションで共通。関数化その他でまとめること。
+```
+
+
+<h4><Font color="orange">Pattern Orange</font></h4>
+
+```{r,warning=F,error=F,message=F,results='hold'}
+buf_probBoy <- 0.5
+buf_probGirl <- (1 - buf_probBoy)
+buf_childrenN <- 2
+buf_generationN <- 10
+buf_simN <- 100
+# 以降各シミュレーションで共通。関数化その他でまとめること。
+simulation(
+  fun_probBoy = buf_probBoy ,
+  fun_probGirl = buf_probGirl ,
+  fun_childrenN = buf_childrenN ,
+  fun_generationN = buf_generationN ,
+  needGTable = 1 ,
+  simN = buf_simN
+)
+for (nnn in 1:buf_simN) {
+  buf <- get(paste0('generationTable', nnn))
+  colnames(buf) <- c('第X世代', '男子の人数', '女子の人数', '合計人数')
+  assign(paste0('generationTable0', nnn), buf)
+}
+simuN <- 1
+resultOutput01()
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- 50
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- buf_simN
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+# 以上各シミュレーションで共通。関数化その他でまとめること。
+```
+
+<h4><Font color="red">Pattern Red</font></h4>
+
+```{r,warning=F,error=F,message=F,results='hold'}
+buf_probBoy <- 0.5
+buf_probGirl <- (1 - buf_probBoy)
+buf_childrenN <- 1
+buf_generationN <- 10
+buf_simN <- 100
+# 以降各シミュレーションで共通。関数化その他でまとめること。
+simulation(
+  fun_probBoy = buf_probBoy ,
+  fun_probGirl = buf_probGirl ,
+  fun_childrenN = buf_childrenN ,
+  fun_generationN = buf_generationN ,
+  needGTable = 1 ,
+  simN = buf_simN
+)
+for (nnn in 1:buf_simN) {
+  buf <- get(paste0('generationTable', nnn))
+  colnames(buf) <- c('第X世代', '男子の人数', '女子の人数', '合計人数')
+  assign(paste0('generationTable0', nnn), buf)
+}
+simuN <- 1
+resultOutput01()
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- 50
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+simuN <- buf_simN
+resultOutput02()
+cat('\n\nシミュレーションの結果.シミュレーション回数:', simuN, '回目')
+buf_DTobj <- get(paste0('generationTable0', simuN))
+funDataTable(obj = buf_DTobj, captionText = buf_captionText)
+# 以上各シミュレーションで共通。関数化その他でまとめること。
+```
+
+<hr>
+
+##男子誕生確率×授かる子供の人数のシミュレーション
+
+```{r,warning=F,error=F,message=F,results='asis'}
+resultTable <- data.frame()
+buf_generationN <- 10
+buf_simN <- 100
+for (ccc in 1:length(childrenN)) {
+  for (ppp in 1:length(probBoy)) {
+    gc()
+    gc()
+    buf_probGirl <- 1 - probBoy[ppp]
+    simulation(
+      fun_probBoy = probBoy[ppp] ,
+      fun_probGirl = buf_probGirl ,
+      fun_childrenN = childrenN[ccc] ,
+      fun_generationN = buf_generationN ,
+      needGTable = 0 ,
+      simN = buf_simN
+    )
+    resultTable[ppp, ccc] <- simulationResult
+  }
+}
+colnames(resultTable) <- paste('授かる子どもの数=', childrenN)
+rownames(resultTable) <- paste('男子が生まれる確率=', probBoy)
+
+buf_captionText <- paste(buf_simN,
+                         '回のシミュレーションの結果、',
+                         buf_generationN,
+                         '世代連続で少なくとも1人は第0世代に連なる男子の系統の男子が存在した回数の割合')
+funDataTable(obj = resultTable,
+             captionText = buf_captionText,
+             rowName = T)
+```
+<hr>
