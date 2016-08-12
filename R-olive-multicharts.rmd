@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "政府債務"
+title : "GDPギャップ"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,8 +19,8 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'政府債務のうち内国債の額(兆円)と内国債のうち日本銀行が保有する構成比 2016年6月分'
-dataSource<-'日本銀行'
+dataTitle<-'日本の名目GDPとGDPギャップ 2016年1-3月期'
+dataSource<-'内閣府'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -173,7 +173,7 @@ mtext(colnames(dataSet)[obj02],side=4,line=3.2,cex=1)
 }
 lo <- loess(dataSet[, obj02]~as.numeric(dataSet[, 1]))
 lines(dataSet[, 1] , predict(lo) , col=lineColor[2], lwd=2,lty=2)
-legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1)
+legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1,bty='n')
 axis.Date(side=1,at=dataSet[,1],format=dateFormat,padj=1,cex.axis=1.0)  
 }
 ```
@@ -213,7 +213,7 @@ lineColor<-c('red','blue')
 needYlim<-0
 chartTtpe<-2
 seriesType01<-'l'
-seriesType02<-'l'
+seriesType02<-'h'
 obj01<-2
 obj02<-3
 obj01lwd<-1
