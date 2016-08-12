@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'2015年基準と2010年基準での消費者物価指数の比較 - 食料(酒類を除く)及びエネルギーを除く総合(コアコアCPI)'
+dataTitle<-'2015年基準と2010年基準での消費者物価指数の比較 - 前年同月比(%) -総合(ヘッドライン)'
 dataSource<-'総務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
