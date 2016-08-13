@@ -12,6 +12,13 @@ output:
     md_extensions: -ascii_identifiers     
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle<-"自己回帰実数和分移動平均モデル(ARFIMAモデル)による為替レート予測検証-日本円/米ドル"
@@ -149,13 +156,13 @@ funDataTable <- function() {
   DT::datatable(
     dataSet01,
     options = list(
-      search.regex = T,
-      paging = T,
-      autoWidth = T,
-      info = T,
-      lengthChange = T,
+      search.regex = F,
+      paging = F,
+      autoWidth = F,
+      info = F,
+      lengthChange = F,
       ordering = T,
-      searching = T,
+      searching = F,
       scrollX = T,
       lengthMenu = list(c(10, -1, 1), c("10", "All", "1")),
       orderClasses = T,
@@ -163,7 +170,7 @@ funDataTable <- function() {
       columnDefs = list(list(width = '10%', targets = c(0)))
       ),
     rownames = F,
-#    caption = paste(subtitle,"のデータにARFIMAモデルを適用し妥当性を検証"),
+    caption = captionText,
     class = "display compact"
   )
 }
@@ -214,6 +221,7 @@ axis.Date(
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 # validation
+captionText<-paste(subtitle,'のデータにARFIMAモデルを適用し、',forecastLength,'営業日分の為替レートで検証')
 funDataTable()
 ```
 <hr>
@@ -255,5 +263,6 @@ axis(side=1,at = dataSet01[, 1])
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 # validation
+captionText<-paste(subtitle,'のデータにARFIMAモデルを適用し、',forecastLength,'営業日分の為替レートを予測')
 funDataTable()
 ```
