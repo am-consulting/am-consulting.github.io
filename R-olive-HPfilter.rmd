@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "労働力調査"
+title : "国内総生産"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,8 +19,8 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'労働力調査 非正規の職員･従業員の割合 四半期平均(%)'
-dataSource<-'総務省'
+dataTitle<-'国内総生産(支出側)-実質季節調整値(単位:10億円) 2016年4-6月期'
+dataSource<-'内閣府'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -105,7 +105,7 @@ plot(
   x=tmp0[,1],
   y=tmp0[,2],
   col=1, 
-  main=paste("Raw Data -",dataType,'\n',colnames(tmp0)[2]),
+  main=paste("Raw Data -",dataType,'\n',colnames(tmp0)[2],'\nSource:',dataSource),
   type = 'l',
   xlab='', 
   ylab=paste(colnames(tmp0)[2],'\n',dataType), 
@@ -123,7 +123,7 @@ lines(tmp0[,1],HP,col=2, lwd=1)
 axis.Date(side=1,at=tmp0[,1],format=dateFormat,padj=1,cex.axis=1.0) 
 legend(
   "topleft",
-  legend=c('Raw Data',"Hodrick-Prescott filter"),
+  legend=c('Raw Data',paste0('Hodrick-Prescott filter.λ=',tsDataHPfilter$lambda)),
   col=1:2, 
   lty=rep(1,2), 
   ncol=1, 
@@ -139,7 +139,7 @@ plot(
   x=tmp0[,1],
   HP, 
   col=1, 
-  main=paste(mainTitle,dataType,'\n',colnames(tmp0)[2]),
+  main=paste(mainTitle,dataType,'\n',colnames(tmp0)[2],'\nSource:',dataSource),
   type = 'l',
   xlab='', 
   ylab=paste(colnames(tmp0)[2],'\n',dataType), 
@@ -159,7 +159,7 @@ lines(tmp0[,1],CF,col=3, lwd=1)
 axis.Date(side=1,at=tmp0[,1],format=dateFormat,padj=1,cex.axis=1.0) 
 legend(
   "topleft",
-  legend=c("Hodrick-Prescott filter", "Baxter-King Filter","Christiano-Fitzgerald Filter"),
+  legend=c(paste0('Hodrick-Prescott filter.λ=',tsDataHPfilter$lambda), 'Baxter-King Filter','Christiano-Fitzgerald Filter'),
   col=1:3, 
   lty=rep(1,3), 
   ncol=1, 
@@ -201,7 +201,7 @@ funDataTable <- function() {
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-obj01<-3
+obj01<-2
 dataFreq<-4
 
 filterType<-1 # 1(trend) or any integer(cycle) 
