@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '貸出先別貸出金'
+title : '超過準備額'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -27,7 +27,7 @@ windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'貸出先別貸出金 総貸出 残高 銀行勘定、信託勘定、海外店勘定の合計(単位:億円) 国内銀行 2016年6月末および4~6月中'
+dataTitle<-'業態別の日銀当座預金残高(兆円) 2016年7月'
 dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
@@ -147,6 +147,7 @@ plotChunk01<-1
 plotChunk02<-1
 tableChunk01<-1
 tableChunk02<-1
+chunck02Append<-'前月比(%)'
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
@@ -162,7 +163,7 @@ for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
 if(plotChunk02==1){
 for(ppp in 1:ceiling((ncol(dataSet01P)-1)/plotBorder)){
   plotData[[ppp]]<-dataSet01P[,c(1,(2+plotBorder*(ppp-1)):(min(1+plotBorder*ppp,ncol(dataSet01P))))]
-  funTimeSeries(dataTS=plotData[[ppp]] ,lineType='h', rowN=2 , bigTitle=paste0(dataTitle,'-前期比(%)'))
+  funTimeSeries(dataTS=plotData[[ppp]] ,lineType='h', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck02Append))
 }
 }  
 ```
@@ -185,9 +186,9 @@ dataSetDT<<-buf0
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(tableChunk01==1){
 funTableReshape(obj=dataSet)
-appendTitle<- dataTitle
+appendTitle<- '原系列'
 #funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste0('<b>',appendTitle,'</b>'))  
+cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
 fungvisTable(obj = dataSetDT)
 }
 ```
@@ -195,7 +196,7 @@ fungvisTable(obj = dataSetDT)
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(tableChunk02==1){
 funTableReshape(obj=dataSet01P)
-appendTitle<-'前期比(%)'
+appendTitle<-chunck02Append
 #funDataTable(obj = dataSetDT, append = appendTitle)
 cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
 fungvisTable(obj = dataSetDT)
