@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '学校基本調査'
+title : '簡易生命表'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -11,6 +11,13 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
 
 ```{r,warning=F,error=F,message=F,echo=F}
 # Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
@@ -21,12 +28,12 @@ library(googleVis)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-needID<-1
+needID<-0
 needAtag<-0
 needAdd<-1
 pp<-1
-dataTitle<-'学校基本調査 2016年度(速報) 大学院専攻別卒業後の状況 2016年3月卒業'
-dataSource<-'文部科学省'
+dataTitle<-'簡易生命表 男 死亡率、生存率、累積生存率 2015年'
+dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -104,9 +111,9 @@ tmp <-
         orderClasses = T,
         order = list(list(0, 'asc')),
         columnDefs = list(
-          list(width = '5%', targets = 0),
-          list(width = '8%', targets = 1),
-          list(width = '8%', targets = ncol(obj)-1)
+          list(width = '10%', targets = 0),
+          list(width = '15%', targets = 1),
+          list(width = '10%', targets = ncol(obj)-1)
           )
         ),
       rownames = F,
