@@ -322,7 +322,7 @@ hist(
     '~',
     last(statDataSet[, 2]),
     '(',
-    last(statDataSet[, 2])-first(statDataSet[, 2]),
+    last(statDataSet[, 2])-first(statDataSet[, 2])+1,
     '日間)'
   ),
   xlab = paste0('1日当り', colnames(statDataSet)[1]),
@@ -370,7 +370,7 @@ statResultDF[1,4]<-paste0(statDataSet[buf,2]-cntMax,'~',statDataSet[buf,2]-1)
 # 1日当り最多入域数
 buf0<-subset(statDataSet,max(statDataSet[,1])==statDataSet)
 statResultDF[2,1]<-2
-statResultDF[2,2]<-'1日当り最多入域隻数'
+statResultDF[2,2]<-'1日当り最多入域隻'
 statResultDF[2,3]<-buf0[1,1]
 statResultDF[2,4]<-as.character(buf0[1,2])
 colnames(statResultDF)<-c('ID','項目','数値','備考')
