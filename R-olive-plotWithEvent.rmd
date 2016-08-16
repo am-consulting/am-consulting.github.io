@@ -1,0 +1,383 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+title : "尖閣諸島接近状況統計分析"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析'
+dataSource <- '海上保安庁 『尖閣諸島周辺海域における中国公船等の動向と我が国の対処』'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+library(scales)
+library(tseries)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+loadTMP <- 1
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+eventData<-c(
+'2012-09-11','日本-日本政府が魚釣島、北小島および南小島を国有化',
+'2012-11-08','中国-中国共産党、習近平党総書記選出',
+'2012-12-16','日本-第46回衆議院議員総選挙(自民党への政権交代)',
+'2013-01-20','米国-バラク・オバマ大統領就任(2期目)',
+'2013-07-21','日本-第23回参議院通常選挙',
+'2013-11-23','中国-尖閣諸島を含む上空を防空識別圏に設定',
+'2014-03-18','台湾-ひまわり学生運動',
+'2014-04-10','台湾-ひまわり学生運動',
+'2014-09-28','香港-雨傘革命(~2014/12/15)',
+'2014-12-14','日本-第47回衆議院議員総選挙',
+'2015-06-12','中国-中国株の大暴落',
+'2015-08-12','中国-天津浜海新区倉庫爆発事故',
+'2015-10-29','中国-一人っ子政策廃止決定',
+'2015-11-22','香港-第5回区議会選挙',
+'2016-01-16','台湾-中華民国総統選挙(当選:蔡英文)',
+'2016-05-20','台湾-蔡英文、中華民国総統就任',
+'2016-06-09','中国-尖閣沖接続水域に初めて軍艦侵入',
+'2016-07-10','日本-第24回参議院議員通常選挙'
+)
+
+eventDataDF <- data.frame()
+for (eee in seq(0, length(eventData) / 2 - 1, by = 1)) {
+  eventDataDF[eee + 1, 1] <- eventData[eee * 2 + 1]
+  eventDataDF[eee + 1, 2] <- eventData[eee * 2 + 2]
+}
+eventDataDF[, 1] <- as.Date(eventDataDF[, 1])
+eventDataDF[, 2] <- paste0(eventDataDF[, 1],':',eventDataDF[,2])
+colnames(eventDataDF) <- c('Date', 'Event')
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+if(loadTMP==1) {
+  tmp <-
+    read.table(
+      'clipboard',
+      header = T,
+      sep = '\t',
+      stringsAsFactor = F,
+      na.strings = c('na', '', '-'),
+      check.names = F
+    )
+  dataSet0 <- tmp
+  dataSet0[, 1] <- as.Date(dataSet0[, 1])
+}
+dataSet <- na.omit(dataSet0[,-3,drop=F])
+#dataSet <- dataSet0
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funbarPlot <- function() {
+  dataSet00 <- tail(dataSet, 10)
+  mainTitle <-
+    paste(title01, ':', first(dataSet00[, 1]), '-', last(dataSet00[, 1]))
+  labels <- c(colnames(dataSet00)[c(obj01, obj02)])
+  par(mar = c(5, 7, 7, 5),
+      family = 'Meiryo')
+  barplot(
+    t(dataSet00[, c(obj01, obj02)]),
+    names.arg = dataSet00[, 1],
+    main = mainTitle,
+    las = 1,
+    col = heat.colors(ncol(dataSet00) - 2),
+    horiz = T,
+    legend.text = labels,
+    args.legend = list(
+      x = max(dataSet00[, obj01] + dataSet00[, obj02]),
+      y = floor(nrow(dataSet00) / 2)
+    ),
+    ylim = c(0, nrow(dataSet00) + 0)
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,fig.height=5,fig.width=11} 
+title01 <- paste0('1日当り',colnames(dataSet)[2])
+obj01 <- 3
+obj02 <- 4
+funbarPlot()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+funBoxplot <- function() {
+  theme_set(theme_gray(base_family="Meiryo"))
+  if (boxType == 1) {
+    seasonData <-
+      data.frame(dataSet, aggreDate = month.abb[month(dataSet[, 1])], check.names = F)
+    seasonData$aggreDate <-
+      factor(seasonData$aggreDate, levels = month.abb)
+  }
+  if (boxType == 2) {
+    seasonData <-
+      data.frame(dataSet,
+                 aggreDate = day(dataSet[, 1]),
+                 check.names = F)
+    seasonData$aggreDate <-
+      factor(seasonData$aggreDate, levels = seq(1, 31))
+  }
+  if (boxType == 3) {
+    seasonData <-
+      data.frame(dataSet,
+                 aggreDate = year(dataSet[, 1]),
+                 check.names = F)
+    seasonData$aggreDate <-
+      factor(seasonData$aggreDate, levels = unique(seasonData$aggreDate))
+  }
+  g1 <-
+    ggplot(data = seasonData, aes(x = aggreDate, y = seasonData[, obj01]))
+  aggreTable <<-
+    aggregate(seasonData[, obj01],
+              by = list(Category = seasonData$aggreDate),
+              FUN = sum)
+  g1 <- g1 + geom_boxplot(lwd = 1)
+  g1 <- g1 + theme(plot.title = element_text(size = 15))
+  g1 <- g1 + theme(axis.title.x = element_text(size = 15))
+  g1 <- g1 + theme(axis.title.y = element_text(size = 15))
+  g1 <-
+    g1 + theme(axis.text.x = element_text(
+      size = 15,
+      angle = 0,
+      hjust = 0.5,
+      vjust = 0.5
+    ))
+  g1 <-
+    g1 + theme(axis.text.y = element_text(size = 15, angle = 0))
+  g1 <- g1 + ggtitle(paste(mainTitle))
+  g1 <- g1 + xlab("")
+  g1 <- g1 + ylab(title01)
+  print(g1)
+}    
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function() {
+  DT::datatable(
+    tableObj,
+    options = list(
+      paging = F,
+      autoWidth = F,
+      info = F,
+      lengthChange = F,
+      ordering = T,
+      searching = F,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
+      orderClasses = T,
+      order = list(list(0, 'asc')),
+      columnDefs = list(list(width = '5%', targets = 0))
+    ),
+    rownames = F,
+    caption = paste(dataTitle, '. Source:' , dataSource),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+obj01 <- 2
+title01 <- paste0('1日当り',colnames(dataSet)[obj01])
+mainTitle <-
+  paste(title01, ':', first(dataSet[, 1]), '-', last(dataSet[, 1]))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+boxType <- 1
+funBoxplot()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableObj <-
+  data.frame(ID = seq(1, nrow(aggreTable)), aggreTable, check.names = F)
+colnames(tableObj)[-1] <- c('カテゴリ:月', paste0(colnames(dataSet)[obj01],'(カテゴリ合計)'))
+funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+boxType <- 2
+funBoxplot()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableObj <-
+  data.frame(ID = seq(1, nrow(aggreTable)), aggreTable, check.names = F)
+colnames(tableObj)[-1] <- c('カテゴリ:日', paste0(colnames(dataSet)[obj01],'(カテゴリ合計)'))
+funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+boxType <- 3
+funBoxplot()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableObj <-
+  data.frame(ID = seq(1, nrow(aggreTable)), aggreTable, check.names = F)
+colnames(tableObj)[-1] <- c('カテゴリ:年', paste0(colnames(dataSet)[obj01],'(カテゴリ合計)'))
+funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+dataSet1 <- merge(dataSet, eventDataDF, all = T)
+funTimeSeries <- function() {
+  par(mar = c(3, 5, 3, 3),
+      family = 'Meiryo')
+  plot(
+    dataSet1[, 1],
+    dataSet1[, obj01],
+    type = 'h',
+    pch = 1,
+    lwd = 1,
+    family = 'Meiryo',
+    col = 'blue',
+    xlab = '' ,
+    ylab = paste0('1日当り',colnames(dataSet1)[obj01]) ,
+    panel.first = grid(
+      nx = NULL,
+      ny = NULL,
+      lty = 2,
+      equilogs = T
+    ) ,
+    xaxt = 'n',
+    main = paste(mainTitle, '\nSource:', dataSource),
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1,
+    ylim = c(0, 35)
+  )
+  axis.Date(
+    side = 1,
+    at = dataSet1[, 1],
+    format = '%Y-%m-%d',
+    padj = 1,
+    cex.axis = 1.0
+  )
+  text(
+    x = dataSet1[, 1],
+    y = max(na.omit(dataSet1[, obj01, drop = F])),
+    labels = dataSet1[, 5],
+    srt = 90,
+    pos = 4,
+    cex = 0.9,
+    offset = 0
+  )
+  par(new = T)
+  plot(
+    dataSet1[, 1],
+    dataSet1[, obj01],
+    type = 'p',
+    pch = 1,
+    xlab = "",
+    ylab = "",
+    xaxt = "n",
+    yaxt = "n",
+    col = 4  ,
+    ylim = c(0, 35)
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,fig.height=10,fig.width=11} 
+obj01 <- 2
+funTimeSeries()
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+statDataSet <- dataSet0[, c(obj01, 1), drop = F]
+statDataSet[which(is.na(statDataSet[, 1, drop = F])), 1] <- 0
+par(mfrow = c(1, 2),
+      family = 'Meiryo')
+# histogram
+hist(
+  statDataSet[, 1],
+  cex.axis = 1,
+  cex.lab = 1,
+  cex.main = 1,
+  main = paste0(
+    'ヒストグラム(左閉右開区間)-',
+    colnames(statDataSet)[1] ,
+    '\n' ,
+    first(statDataSet[, 2]),
+    '~',
+    last(statDataSet[, 2]),
+    '(',
+    last(statDataSet[, 2])-first(statDataSet[, 2]),
+    '日間)'
+  ),
+  xlab = paste0('1日当り', colnames(statDataSet)[1]),
+  col = 'grey',
+  right = F
+)
+# ACF
+confidenceInterval <- 0.95
+adfResult <- adf.test(statDataSet[, 1])
+acfResult <- acf(
+  statDataSet[, 1],
+  ci = confidenceInterval,
+  main = paste0(
+    '1日当り',
+    colnames(statDataSet)[1],
+    'の自己相関係数\nC.I=',
+    confidenceInterval,
+    ', 原データADF検定P値=',
+    adfResult$p.value,
+    '(lag=',
+    adfResult$parameter,
+    ')'
+  ),
+  xlab = paste0('Lag(日)')
+)
+# 最長連続入域(日)
+statResultDF<-data.frame()
+cnt <- 0
+cntMax<--10^100
+for (rrr in 1:nrow(statDataSet)) {
+  if (statDataSet[rrr, 1] != 0) {
+    cnt <- cnt + 1
+  } else{
+    if(cntMax<=cnt){
+      cntMax<-cnt
+    buf <- rrr
+      }
+    cnt <- 0
+  }
+}
+statResultDF[1,1]<-1
+statResultDF[1,2]<-'直近の最長連続入域日数'
+statResultDF[1,3]<-cntMax
+statResultDF[1,4]<-paste0(statDataSet[buf,2]-cntMax,'~',statDataSet[buf,2]-1)
+# 1日当り最多入域数
+buf0<-subset(statDataSet,max(statDataSet[,1])==statDataSet)
+statResultDF[2,1]<-2
+statResultDF[2,2]<-'1日当り最多入域隻数'
+statResultDF[2,3]<-buf0[1,1]
+statResultDF[2,4]<-as.character(buf0[1,2])
+colnames(statResultDF)<-c('ID','項目','数値','備考')
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableObj <-statResultDF
+funDataTable()
+```
+<hr>
