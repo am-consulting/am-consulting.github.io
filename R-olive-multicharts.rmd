@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "日米国債金利"
+title : "日米国債金利差"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'日米国債金利の比較-10年もの'
+dataTitle<-'日米国債金利差(10年もの)と米ドル/日本円為替レートの比較'
 dataSource<-'Federal Reserve Bank of St. Louis、財務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -102,7 +102,9 @@ script <-
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
-tmp<-bondInterestRateWithUSDJPY[,c(1,5,16)]
+tmp0<-bondInterestRateWithUSDJPY[,c(1,2,5,16)]
+tmp<-data.frame(tmp0[,1],tmp0[,2],tmp0[,3]-tmp0[,4],check.names = F)
+colnames(tmp)<-c(colnames(tmp0)[1],colnames(tmp0)[2],paste0(colnames(tmp0)[3],'-',colnames(tmp0)[4]))
 }
 ```
 
@@ -223,8 +225,8 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 lineColor<-c('red','blue')
-needYlim<-1
-chartTtpe<-1
+chartTtpe<-2
+if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'l'
 obj01<-2
