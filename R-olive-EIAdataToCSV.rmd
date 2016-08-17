@@ -10,6 +10,14 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
 
 ```{r,warning=F,error=F,message=F,echo=F}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
