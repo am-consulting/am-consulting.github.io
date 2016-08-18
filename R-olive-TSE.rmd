@@ -19,7 +19,7 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
 </style>
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- '投資部門別株式売買状況 二市場一･二部等 2016年8月第1週分'
+dataTitle <- '投資部門別株式売買状況 二市場一･二部等 2016年8月第2週分'
 dataSource <- '株式会社日本取引所グループ'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
