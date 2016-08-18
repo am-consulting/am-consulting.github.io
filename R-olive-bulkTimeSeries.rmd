@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '超過準備額'
+title : '実質輸出入動向'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -27,7 +27,7 @@ windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'業態別の日銀当座預金残高(兆円) 2016年7月'
+dataTitle<-'実質輸出入の動向 季節調整済、2010年＝100、2010年基準、実質輸出 2016年6月分'
 dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
@@ -77,6 +77,7 @@ dataSet12P<-data.frame(
   round(diff(as.matrix(dataSet[,-1]),lag = 12,differences = 1)/as.matrix(head(dataSet[,-1],nrow(dataSet)-12))*100,2),
   check.names = F
 )
+colnames(dataSet01P)<-colnames(dataSet01D)<-colnames(dataSet12P)<-colnames(dataSet)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -147,24 +148,35 @@ plotChunk01<-1
 plotChunk02<-1
 tableChunk01<-1
 tableChunk02<-1
+buf_dataSet<-dataSet
+chunck01Append<-'原系列'
 chunck02Append<-'前月比(%)'
+dataSet2<-dataSet01P
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
 if(plotChunk01==1){
 for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
-  plotData[[ppp]]<-dataSet[,c(1,(2+plotBorder*(ppp-1)):(min(1+plotBorder*ppp,ncol(dataSet))))]
-  funTimeSeries(dataTS=plotData[[ppp]] ,lineType='l', rowN=2 , bigTitle=dataTitle)
+  columnS<-(2+plotBorder*(ppp-1))
+  columnE<-(min(1+plotBorder*ppp,ncol(dataSet)))
+  plotData[[ppp]]<-dataSet[,c(1,columnS:columnE)]
+  colnames(plotData[[ppp]])<-colnames(dataSet)[c(1,columnS:columnE)]
+  funTimeSeries(dataTS=plotData[[ppp]] ,lineType='l', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck01Append))
 }
 }  
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
 if(plotChunk02==1){
-for(ppp in 1:ceiling((ncol(dataSet01P)-1)/plotBorder)){
-  plotData[[ppp]]<-dataSet01P[,c(1,(2+plotBorder*(ppp-1)):(min(1+plotBorder*ppp,ncol(dataSet01P))))]
+dataSet<-dataSet2  
+for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
+  columnS<-(2+plotBorder*(ppp-1))
+  columnE<-(min(1+plotBorder*ppp,ncol(dataSet)))
+  plotData[[ppp]]<-dataSet[,c(1,columnS:columnE)]
+  colnames(plotData[[ppp]])<-colnames(dataSet)[c(1,columnS:columnE)]
   funTimeSeries(dataTS=plotData[[ppp]] ,lineType='h', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck02Append))
 }
+dataSet<-buf_dataSet
 }  
 ```
 
@@ -186,19 +198,22 @@ dataSetDT<<-buf0
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(tableChunk01==1){
 funTableReshape(obj=dataSet)
-appendTitle<- '原系列'
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
-fungvisTable(obj = dataSetDT)
+appendTitle<- chunck01Append
+funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
+#cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
+#fungvisTable(obj = dataSetDT)
 }
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(tableChunk02==1){
-funTableReshape(obj=dataSet01P)
+dataSet<-dataSet2    
+funTableReshape(obj=dataSet)
+dataSet<-buf_dataSet
 appendTitle<-chunck02Append
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
-fungvisTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
+#DT:datatableの下にコードがあるとテーブルが表示されない
+#cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
+#fungvisTable(obj = dataSetDT)
 }
 ```
