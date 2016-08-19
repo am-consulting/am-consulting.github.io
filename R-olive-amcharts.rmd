@@ -1,0 +1,213 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+title : '全産業活動指数'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+library(lubridate)
+library(rAmCharts)
+library(googleVis)
+library(RColorBrewer)
+library(dplyr)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-'全産業活動指数 2016年6月分'
+dataSource<-'経済産業省'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-'表中、-9999はNAを意味します'
+dataTail<-0 
+Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+tmp <-
+  read.table(
+  'clipboard',
+  header = T,
+  sep = '\t',
+  stringsAsFactor = F,
+  na.strings = c('na', '', '-'),
+  check.names = F
+)
+dataSet <- tmp
+colnames(dataSet)[1] <- 'date'
+dataSet[,-1] <- apply(dataSet[,-1],2,as.numeric)
+dataSet[,1] <- as.POSIXct(dataSet[,1])
+dateFormat <- '%Y-%m'
+if (1 < unique(day(dataSet[, 1]))) {
+  dateFormat <- '%Y-%m-%d'
+}
+# scaling
+dataSetScale <-
+  data.frame(dataSet[, 1], apply(dataSet[, -1], 2, function(x)
+    scale(x, center = x[1], scale = T)), check.names = F) 
+# 前月比  
+dataSet01P<-data.frame(
+  Date=dataSet[-1,1],  
+  round(diff(as.matrix(dataSet[,-1]),lag = 1,differences = 1)/as.matrix(dataSet[-nrow(dataSet),-1])*100,2),
+  check.names = F
+)
+# 前月差  
+dataSet01D<-data.frame(
+  Date=dataSet[-1,1],  
+  diff(as.matrix(dataSet[,-1]),lag = 1,differences = 1),
+  check.names = F
+)
+# 前月同月比  
+dataSet12P<-data.frame(
+  Date=tail(dataSet[,1],nrow(dataSet)-12),  
+  round(diff(as.matrix(dataSet[,-1]),lag = 12,differences = 1)/as.matrix(head(dataSet[,-1],nrow(dataSet)-12))*100,2),
+  check.names = F
+)
+colnames(dataSet01P)<-colnames(dataSet01D)<-colnames(dataSet12P)<-colnames(dataSetScale)<-colnames(dataSet)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funBoxPlot <- function(obj, bigTitle = '') {
+  cat(paste0('<b>', bigTitle, '</b>'))
+  amBoxplot(obj[, -1], horiz = T)
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funTimeSeries <- function(obj, bigTitle = '') {
+  cat(paste0('<b>', bigTitle, '</b>'))
+  colnames(obj) <- gsub("\\W", "", colnames(obj))
+  amTimeSeries(
+    obj,
+    "date",
+    c(colnames(obj)[2:ncol(obj)]),
+    bullet = "round",
+    color = cols,
+    linetype = rep(1, ncol(obj)),
+    linewidth = rep(1, ncol(obj))
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
+funBoxPlot(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cols <- c(brewer.pal(12, "Paired"),brewer.pal(12, "Set3"))
+funTimeSeries(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funTimeSeries(obj = dataSetScale,bigTitle = paste(dataTitle,dateRange,' Center=First Value,Scale=SD. Powered By https://www.amcharts.com/'))
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj,dataTitle='',append='') {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
+      orderClasses = T,
+      order = list(list(0, 'asc')),
+      columnDefs = list(
+        list(width = '5%' , targets = 0),
+        list(width = '30%', targets = 1)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle, append),
+    class = 'display compact'
+  )
+}
+
+fungvisTable <- function(obj) {
+  PopTable <- gvisTable(      obj, 
+    options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=30)
+  )
+  plot(PopTable,tag='chart')
+}  
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
+tableChunk01<-1
+tableChunk02<-1
+buf_dataSet<-dataSet
+chunck01Append<-'原系列'
+chunck02Append<-'前月比(%)'
+dataSet2<-dataSet01P
+tableRange<-5
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+funTableReshape<-function(obj){
+buf<-tail(obj,tableRange)
+buf[,1]<-format(buf[,1],dateFormat)
+buf0<-t(buf)
+buf0<-data.frame(row.names(buf0),buf0,check.names = F,row.names = NULL,stringsAsFactors = F)
+colnames(buf0)<- unlist(buf0[1,])
+buf0<-buf0[-1,]
+buf0<-data.frame(ID=seq(1,nrow(buf0)),buf0,check.names = F)
+buf0[,-c(1:2)]<-apply(buf0[,-c(1:2),drop=F],2,as.numeric)
+colnames(buf0)[2]<-'項目'
+if(length(grep("報告省令レート",dataTitle))!=0){
+  buf0<-buf0[c(1,2,3,5,6,7,14,35,45,53,62),]
+  buf0[,1]<-seq(1,nrow(buf0))
+}
+dataSetDT<<-buf0
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+if(tableChunk01==1){
+funTableReshape(obj=dataSet)
+appendTitle<- chunck01Append
+funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
+#cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
+#fungvisTable(obj = dataSetDT)
+}
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+if(tableChunk02==1){
+dataSet<-dataSet2
+funTableReshape(obj=dataSet)
+dataSet<-buf_dataSet
+appendTitle<-chunck02Append
+funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
+#DT:datatableの下にコードがあるとテーブルが表示されない
+#cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))
+#fungvisTable(obj = dataSetDT)
+}
+```
