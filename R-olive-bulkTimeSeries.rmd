@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '鉱工業指数'
+title : '報告省令レート'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -24,11 +24,12 @@ library(DT)
 library(lubridate)
 library(googleVis)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'鉱工業指数 製造工業生産能力 稼働率指数 2016年6月分'
-dataSource<-'経済産業省'
+dataTitle<-'報告省令レートの時系列推移 2016年9月分'
+dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -97,7 +98,7 @@ for(ccc in 2:ncol(dataTS)){
     panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T) ,
     xaxt='n',
     main = paste(colnames(tmp0)[2],'\n',format(tmp0[1,1],dateFormat),'-',format(tmp0[nrow(tmp0),1],dateFormat)),
-    cex.axis=1.2,cex.lab=1,cex.main=1.2
+    cex.axis=1.2,cex.lab=1,cex.main=1.5
   )
   lo <- loess(tmp0[, 2]~as.numeric(tmp0[, 1]))
   lines(tmp0[, 1] , predict(lo) , col='red', lwd=1)  
@@ -143,7 +144,7 @@ fungvisTable <- function(obj) {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
 plotData<-list()
-plotBorder<-17
+plotBorder<-16
 plotChunk01<-1
 plotChunk02<-1
 tableChunk01<-1
@@ -152,6 +153,7 @@ buf_dataSet<-dataSet
 chunck01Append<-'原系列'
 chunck02Append<-'前月比(%)'
 dataSet2<-dataSet01P
+tableRange<-5
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
@@ -182,15 +184,19 @@ dataSet<-buf_dataSet
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 funTableReshape<-function(obj){
-buf<-tail(obj,5)
+buf<-tail(obj,tableRange)
 buf[,1]<-format(buf[,1],dateFormat)
 buf0<-t(buf)
-buf0<-data.frame(row.names(buf0),buf0,check.names = F,row.names = NULL)
+buf0<-data.frame(row.names(buf0),buf0,check.names = F,row.names = NULL,stringsAsFactors = F)
 colnames(buf0)<- unlist(buf0[1,])
 buf0<-buf0[-1,]
 buf0<-data.frame(ID=seq(1,nrow(buf0)),buf0,check.names = F)
-buf0[,-c(1:2)]<-apply(buf0[,-c(1:2)],2,as.numeric)
+buf0[,-c(1:2)]<-apply(buf0[,-c(1:2),drop=F],2,as.numeric)
 colnames(buf0)[2]<-'項目'
+if(length(grep("報告省令レート",dataTitle))!=0){
+  buf0<-buf0[c(1,2,3,5,6,7,14,35,45,53,62),]
+  buf0[,1]<-seq(1,nrow(buf0))
+}
 dataSetDT<<-buf0
 }
 ```
@@ -207,13 +213,13 @@ funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(tableChunk02==1){
-dataSet<-dataSet2    
+dataSet<-dataSet2
 funTableReshape(obj=dataSet)
 dataSet<-buf_dataSet
 appendTitle<-chunck02Append
 funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
 #DT:datatableの下にコードがあるとテーブルが表示されない
-#cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))  
+#cat(paste0('<b>',dataTitle,'-',appendTitle,'</b>'))
 #fungvisTable(obj = dataSetDT)
 }
 ```
