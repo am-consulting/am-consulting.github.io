@@ -6,7 +6,7 @@ title: "為替レート予測検証-日本円/米ドル"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 6
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers     
@@ -30,8 +30,9 @@ cat(paste("Title :",dataTitle,"\n"))
 cat(paste("Raw Data Source :",dataSource,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
-cat(paste("特記 :",notes,"\n"))
-cat(paste("特記 :",notes0,"\n"))
+# cat(paste("特記 :",notes,"\n"))
+# cat(paste("特記 :",notes0,"\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -48,18 +49,19 @@ script <-
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
+```
 
+```{r,warning=F,error=F,message=F,echo=F}
 #colnames(origData)
 obj <- 2 # 2 3 4 5 6
 ci <- c(80, 95)
 forecastLength <- 10
-duration <- c(30, 90, 120, 150)
-durationType <- 4
+duration <- c(30, 90, 180, 360, 720)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
 funPlot01 <- function(){
-  subtitle <<- paste(x[1, 1], " - ", x[nrow(x), 1])
+  par(family = 'Meiryo')
   plot(
     x[, 1],
     x[, 2],
@@ -119,7 +121,7 @@ funPlot01 <- function(){
 ```{r,warning=F,error=F,message=F,echo=F}
 funPlot02<-function(){
   #print(dataSet01)
-  subtitle <- paste(x[1,1]," - ",x[nrow(x),1])
+  par(family = 'Meiryo')
   yRange<-c(min(dataSet01[,-1]),max(dataSet01[,-1]))  
   plot(
     dataSet01[, 1],
@@ -144,9 +146,10 @@ funPlot02<-function(){
     ),
     cex.axis = 1,
     cex.lab = 1,
-    cex.main = 1
+    cex.main = 1,
+    col = 'blue'
   )
-  legend("topleft", legend = colnames(x)[2], col = "black", lty = 1,pch =1)
+  legend("topleft", legend = colnames(dataSet01)[2], col = "blue", lty = 1,pch =1)
 }
 ```
 
@@ -176,15 +179,9 @@ funDataTable <- function() {
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-# validation
-x0 <- tail(origData[, c(1, obj)], duration[durationType] + forecastLength)
-x <- head(x0, nrow(x0) - forecastLength)
-funPlot01()
-```
-<hr>
 ```{r,warning=F,error=F,message=F,echo=F}
 # validation
+fundataSetValidation <- function() {
 dataSet01<-data.frame(
   tail(x0, forecastLength),
   forecastResult$mean,   
@@ -201,11 +198,14 @@ colnames(dataSet01)[3:7]<-c(
   paste("lower-",ci[2],"%",sep=""),
   paste("Upper-",ci[2],"%",sep="")
 )
+dataSet01 <<- dataSet01
+}
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+funValidationPlot<-function(){
 funPlot02()
-lines(dataSet01[,1],dataSet01[,3],type="o",col="blue")
+lines(dataSet01[,1],dataSet01[,3],type="o",col="black")
 lines(dataSet01[,1],dataSet01[,4],type="o",col="red")
 lines(dataSet01[,1],dataSet01[,5],type="o",col="red")
 lines(dataSet01[,1],dataSet01[,6],type="o",col="red",lty=2)
@@ -217,21 +217,33 @@ axis.Date(
   padj = 1,
   cex.axis = 1
 )
+}
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 # validation
-captionText<-paste(subtitle,'のデータにARFIMAモデルを適用し、',forecastLength,'営業日分の為替レートで検証')
-funDataTable()
-```
-<hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-# forecast
-x <- tail(origData[,c(1,obj)],duration[durationType])
+for(durationType in 1:length(duration)){
+x0 <- tail(origData[, c(1, obj)], duration[durationType] + forecastLength)
+x <- head(x0, nrow(x0) - forecastLength)
+subtitle <- paste(x[1, 1], " - ", x[nrow(x), 1])
+cat('<h3>Pattern',durationType,':',subtitle,'の為替レートによる予測検証</h3>')
 funPlot01()
+fundataSetValidation()
+cat('<hr>')
+cat('ARFIMAによる予測と為替レートの検証')
+funValidationPlot()
+cat('<hr>')
+}
 ```
-<hr>
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# validation
+# captionText<-paste(subtitle,'のデータにARFIMAモデルを適用し、',forecastLength,'営業日分の為替レートで検証')
+# funDataTable()
+```
+
 ```{r,warning=F,error=F,message=F,echo=F}
+fundataSetForecast <- function() {
 dataSet01<-data.frame(
   c(1:forecastLength),
   forecastResult$mean,   
@@ -243,15 +255,18 @@ dataSet01<-data.frame(
 )
 colnames(dataSet01)[1:6]<-c(
   "営業日後",
-  "Mean",
+  "Forecast-Mean",
   paste("lower-",ci[1],"%",sep=""),
   paste("Upper-",ci[1],"%",sep=""),
   paste("lower-",ci[2],"%",sep=""),
   paste("Upper-",ci[2],"%",sep="")
 )
+dataSet01 <<- dataSet01
+}
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+funForecastPlot<-function(){
 funPlot02()
 lines(dataSet01[,1],dataSet01[,3],type="o",col="red")
 lines(dataSet01[,1],dataSet01[,4],type="o",col="red")
@@ -259,10 +274,27 @@ lines(dataSet01[,1],dataSet01[,5],type="o",col="red",lty=2)
 lines(dataSet01[,1],dataSet01[,6],type="o",col="red",lty=2)
 text(dataSet01[,1],dataSet01[,2],labels = dataSet01[,2],srt=90)
 axis(side=1,at = dataSet01[, 1])
+}
 ```
-<hr>
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# forecast
+for(durationType in 1:length(duration)){
+x <- tail(origData[,c(1,obj)],duration[durationType])
+subtitle <- paste(x[1, 1], " - ", x[nrow(x), 1])
+cat('<h3>Pattern',durationType,':',subtitle,'の為替レートによる予測</h3>')
+funPlot01()
+fundataSetForecast()
+dataSet01[,-1]<-round(dataSet01[,-1],3)
+cat('<hr>')
+cat('ARFIMAによる予測')
+funForecastPlot()
+cat('<hr>')
+}
+```
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 # validation
-captionText<-paste(subtitle,'のデータにARFIMAモデルを適用し、',forecastLength,'営業日分の為替レートを予測')
-funDataTable()
+# captionText<-paste(subtitle,'のデータにARFIMAモデルを適用し、',forecastLength,'営業日分の為替レートを予測')
+# funDataTable()
 ```
