@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '全産業活動指数'
+title : '漁業生産額'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -31,8 +31,8 @@ options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'全産業活動指数 2016年6月分'
-dataSource<-'経済産業省'
+dataTitle<-'漁業生産額 総生産額 1960年-2014年(年次データ)'
+dataSource<-'農林水産省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -60,8 +60,11 @@ colnames(dataSet)[1] <- 'date'
 dataSet[,-1] <- apply(dataSet[,-1],2,as.numeric)
 dataSet[,1] <- as.POSIXct(dataSet[,1])
 dateFormat <- '%Y-%m'
-if (1 < unique(day(dataSet[, 1]))) {
+if (1 < length(unique(day(dataSet[, 1])))) {
   dateFormat <- '%Y-%m-%d'
+}
+if (1 == length(unique(month(dataSet[, 1])))) {
+  dateFormat <- '%Y'
 }
 # scaling
 dataSetScale <-
@@ -105,8 +108,9 @@ funTimeSeries <- function(obj, bigTitle = '') {
     c(colnames(obj)[2:ncol(obj)]),
     bullet = "round",
     color = cols,
-    linetype = rep(1, ncol(obj)),
-    linewidth = rep(1, ncol(obj))
+    linetype = rep(0, ncol(obj)),
+    linewidth = rep(1, ncol(obj)),
+    maxSeries = maxseries
   )
 }
 ```
@@ -115,9 +119,16 @@ funTimeSeries <- function(obj, bigTitle = '') {
 dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
 funBoxPlot(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
 ```
-<hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
+
+```{r,warning=F,error=F,message=F,echo=F}
 cols <- c(brewer.pal(12, "Paired"),brewer.pal(12, "Set3"))
+maxseries <- 300
+if (length(unique(day(dataSet[, 1]))) != 1) {
+  maxseries <- as.numeric(dataSet[nrow(dataSet), 1] - dataSet[1, 1]) + 1
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
 funTimeSeries(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
 ```
 <hr>
@@ -165,7 +176,7 @@ tableChunk01<-1
 tableChunk02<-1
 buf_dataSet<-dataSet
 chunck01Append<-'原系列'
-chunck02Append<-'前月比(%)'
+chunck02Append<-'前年比(%)'
 dataSet2<-dataSet01P
 tableRange<-5
 ```
