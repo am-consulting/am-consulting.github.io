@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '訪日外国人調査'
+title : '財政投融資'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -13,7 +13,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1800px;
+	max-width: 1200px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -30,10 +30,10 @@ library(googleVis)
 timeSeries<-0 # 1 or 0
 needID<-1
 needAtag<-0
-needAdd<-1
+needAdd<-0
 pp<-1
-dataTitle<-'国籍･地域(21区分)別 都道府県別訪問率(単位:%) 観光･レジャー目的 複数回答 2016年4-6月期'
-dataSource<-'観光庁'
+dataTitle<-'財政投融資 2016年度 年度計画と前年度からの繰越の合計(単位:億円)'
+dataSource<-'財務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -132,9 +132,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-funDataTable(obj = dataSetDT, append = appendTitle)
-#cat(paste(dataTitle,appendTitle))
-#fungvisTable(obj = dataSetDT)
+#funDataTable(obj = dataSetDT, append = appendTitle)
+cat(paste(dataTitle,appendTitle))
+fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
