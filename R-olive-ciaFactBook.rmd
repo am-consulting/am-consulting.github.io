@@ -1,0 +1,148 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+
+title: "CIA Fact Book-Top10 Within Each Field(descending order)"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers  
+    toc: true
+    toc_float: true
+    number_sections: true
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1900px;
+	margin-left: auto;
+	margin-right: auto;
+}
+div.tocify {
+  width: 30%;
+  max-width: 300px;
+  max-height: 90%;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0("『ザ･ワールド･ファクトブック』(CIA)に基づく国力比較表(Top10) データ確認日:",Sys.Date())
+dataSource <- "Central Intelligence Agency( https://www.cia.gov/index.html )"
+notes <- "各フィールドのTop10(降順)を表示しています。"
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :',notes,'\n'))
+# cat(paste('特記 :',notes0,'\n'))
+windowsFonts(Meiryo = windowsFont('Meiryo'))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+library(ggplot2)
+library(RColorBrewer)
+library(scales)
+allData <- ''
+dataset <- list()
+sdataset <- list()
+username <- Sys.info()['user']
+pathOutput <-
+  paste('C:/Users/', username, '/Desktop/ciaFactbook/', sep = '')
+setwd(pathOutput)
+csvFileList <- list.files()
+for (lll in 1:length(csvFileList)) {
+    dataset[[lll]] <-
+      read.table(
+        file = paste(pathOutput, csvFileList[lll], sep = ''),
+        sep = ',',
+        header = T,
+        as.is = T,
+        skip = 0,
+        check.names = F,
+        stringsAsFactors = F
+      )
+    colnames(dataset[[lll]])[3] <-
+      paste(gsub('.csv', '', csvFileList[lll]),
+            '-',
+            colnames(dataset[[lll]])[3],
+            sep = '')
+    sdataset[[lll]] <- dataset[[lll]][, c(2, 3)]
+    print(head(sdataset[[lll]]))
+    print(tail(sdataset[[lll]]))
+    if (lll == 1) {
+      allData <-
+        sdataset[[lll]]
+    } else{
+      allData <- merge(allData, sdataset[[lll]], all = T,by = 'Country')
+    }
+}
+print(head(allData))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+theme_set(theme_gray(base_family = "Meiryo"))
+invClass <- brewer.pal(10, "Paired")
+funBarPlot <- function(iii) {
+  buf <- allData[, c(1, iii)]
+  buf0 <- head(buf[order(buf[, 2], na.last = NA, decreasing = T), ], 10)
+  buf0[, 1] <- ordered(buf0[, 1], levels = buf0[, 1][nrow(buf0):1])
+  cat(paste0('<h1>', colnames(buf0)[2], '</h1>'))
+  g1 <- ggplot()
+  g1 <-
+    g1 + geom_bar(
+      data = buf0,
+      aes(x = buf0[, 1], y = buf0[, 2]),
+      stat = "identity",
+      position = "identity",
+      fill = invClass,
+      alpha = 0.2,
+      color = "black"
+    )
+  g1 <- g1 + coord_flip()
+  g1 <-
+    g1 + geom_text(
+      data = buf0,
+      aes(
+        x = buf0[, 1],
+        y = buf0[, 2] / 2,
+        label = comma(buf0[, 2])
+      ),
+      angle = 0,
+      vjust = 0.5,
+      hjust = 0,
+      size = 4
+    )
+  g1 <- g1 + scale_y_continuous(labels = comma)
+  g1 <- g1 + theme(plot.title = element_text(size = 12))
+  g1 <- g1 + theme(axis.title.x = element_text(size = 12))
+  g1 <- g1 + theme(axis.title.y = element_text(size = 12))
+  g1 <-
+    g1 + theme(axis.text.x = element_text(
+      size = 12,
+      angle = 0,
+      hjust = 0.5,
+      vjust = 0.5
+    ))
+  g1 <-
+    g1 + theme(axis.text.y = element_text(
+      size = 12,
+      angle = 0,
+      hjust = 0.5,
+      vjust = 0.5
+    ))
+  g1 <- g1 + ylab(colnames(buf0)[2])
+  g1 <- g1 + xlab("")
+  print(g1)
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4,fig.width=10}
+for(iii in 2:ncol(allData)){
+funBarPlot(iii);cat("<hr>")
+}  
+```
