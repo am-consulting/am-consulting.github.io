@@ -20,7 +20,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"季節調整済賃金指数-現金給与総額-5人以上-就業形態計-調査産業計 2016年6月分"
+dataTitle<-"季節調整済常用雇用指数-5人以上-一般労働者-調査産業計 2016年6月分"
 dataTitle0<-'歴代政権毎の時系列推移'
 dataSource<-"厚生労働省"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
@@ -43,6 +43,9 @@ library(ggplot2)
 library(scales)
 library(reshape)
 library(RCurl)
+library(rAmCharts)
+library(dplyr)
+library(qpcR)
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r",
@@ -277,19 +280,13 @@ funPlotBoxplot <- function() {
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-dataSet0 <- dataSet
-dataSet0[,1]<-format(dataSet0[,1],dateFormat)
-colnames(dataSet0)[2]<-bufColnames
-#dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
-#dataSet0[,2]<-format(dataSet0[,2],dateFormat)
-
 funDataTable <- function() {
   DT::datatable(
     dataSet0,
     options = list(
       search.regex = T,
       paging = T,
-      autoWidth = T,
+      autoWidth = F,
       info = T,
       lengthChange = T,
       ordering = T,
@@ -300,20 +297,55 @@ funDataTable <- function() {
       order = list(list(0, "desc"))
       ),
     rownames = F,
-    caption = paste(dataTitle, dataSource),
+    caption = captionText,
     class = "display compact"
   )
 }
 ```
 
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
+  for (iii in 1:length(unique(obj[, 3]))) {
+    tmp0 <- subset(obj, obj[, 3] == unique(obj[, 3])[iii])
+    colnames(tmp0)[2] <- as.character(unique(obj[, 3])[iii])
+    tmp0 <- tmp0[, 2, drop = F]
+    if (iii == 1) {
+      bufAmcharts <- tmp0
+    } else{
+      bufAmcharts <- qpcR:::cbind.na(bufAmcharts, tmp0)
+    }
+  }
+  cat(paste0('<b>', bigTitle, '</b>'))
+  amBoxplot(bufAmcharts, horiz = T)
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F} 
+dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
+funPlotBoxplotAmcharts(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
+```
+<hr>  
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 funPlotTimeSeries()
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-funPlotBoxplot()
+#funPlotBoxplot()
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dataSet0 <- dataSet
+dataSet0[,1]<-format(dataSet0[,1],dateFormat)
+colnames(dataSet0)[2]<-bufColnames
+captionText<-paste(dataTitle, dataSource)
+#dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
+#dataSet0[,2]<-format(dataSet0[,2],dateFormat)
+funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dataSet0 <- highestData
+colnames(dataSet0)<-c('就任日','退任日又は現職',colnames(dataSet0)[3],'在任期間(日)')
+captionText<-'在任期間(但し現職含む)'
 funDataTable()
 ```
