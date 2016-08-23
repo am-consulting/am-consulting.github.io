@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "North America Rig Count"
+title : "毎月勤労統計調査"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,8 +19,8 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス 2016年8月19日分'
-dataSource<-'Baker Hughes'
+dataTitle<-'賃金指数-現金給与総額-5人以上-就業形態計-調査産業計 2016年6月分'
+dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -54,7 +54,7 @@ highestAuthority()
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-iii <- 3
+iii <- 1
 highestData <- switch (iii,
                        get(titleAbb[1]),
                        get(titleAbb[2]),
@@ -147,7 +147,7 @@ plot(
   ) ,
   xaxt = 'n',
   ylim = if(needYlim == 1){c(minValue, maxValue)},
-  main = paste(mainTitle,'\n',first(dataSet[,1]),'~',last(dataSet[,1]),'\nSource:',dataSource),
+  main = paste(mainTitle,'\n',format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat),'\nSource:',dataSource),
   cex.axis = 1,
   cex.lab = 1,
   cex.main = 1,
@@ -220,7 +220,7 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 lineColor<-c('red','blue')
-chartTtpe<-2
+chartTtpe<-1
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'l'
