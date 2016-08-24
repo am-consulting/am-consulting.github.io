@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:2016-08-18更新'
+dataTitle <- '中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:2016-08-24更新'
 dataSource <- '海上保安庁 『尖閣諸島周辺海域における中国公船等の動向と我が国の対処』'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 cat(paste("Title :", dataTitle, "\n"))
@@ -83,9 +83,42 @@ if(loadTMP==1) {
     )
   dataSet0 <- tmp
   dataSet0[, 1] <- as.Date(dataSet0[, 1])
+  dataSet <- na.omit(dataSet0[,-3,drop=F])
+  #dataSet <- dataSet0
+  # count part
+  cntDFday <- data.frame()
+  for (ddd in 1:31) {
+    buf00 <- subset(dataSet, day(dataSet[, 1]) == ddd)
+    cnt <- nrow(buf00)
+    total <- sum(buf00[, 2])
+    cntDFday[ddd, 1] <- ddd
+    cntDFday[ddd, 2] <- cnt
+    cntDFday[ddd, 3] <- total
+  }
+  colnames(cntDFday) <- c('ID', '入域日数計(日)', '入域計(隻)')
+  cntDFmonth <- data.frame()
+  for (ddd in 1:12) {
+    buf00 <- subset(dataSet, month(dataSet[, 1]) == ddd)
+    cnt <- nrow(buf00)
+    total <- sum(buf00[, 2])
+    cntDFmonth[ddd, 1] <- ddd
+    cntDFmonth[ddd, 2] <- cnt
+    cntDFmonth[ddd, 3] <- total
+  }
+  colnames(cntDFmonth) <- c('ID', '入域日数計(日)', '入域計(隻)')
+  cntDFyear <- data.frame()
+  for (ddd in 2012:2016) {
+    buf00 <- subset(dataSet, year(dataSet[, 1]) == ddd)
+    cnt <- nrow(buf00)
+    total <- sum(buf00[, 2])
+    ccc <- ddd - 2011
+    cntDFyear[ccc, 1] <- ccc
+    cntDFyear[ccc, 2] <- cnt
+    cntDFyear[ccc, 3] <- total
+  }
+  colnames(cntDFyear) <- c('ID', '入域日数計(日)', '入域計(隻)')
+  # count part
 }
-dataSet <- na.omit(dataSet0[,-3,drop=F])
-#dataSet <- dataSet0
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
@@ -213,6 +246,12 @@ funBoxplot()
 tableObj <-
   data.frame(ID = seq(1, nrow(aggreTable)), aggreTable, check.names = F)
 colnames(tableObj)[-1] <- c('カテゴリ:月', paste0(colnames(dataSet)[obj01],'(',dateRange,'におけるカテゴリ毎の合計)'))
+# 平均追加パート
+tableObj <- merge(tableObj, cntDFmonth, by = 'ID', all = T)
+tableObj$Average <- round(tableObj[, 3] / tableObj[, 4], 1)
+colnames(tableObj)[6] <- '入域日当り平均入域(隻)'
+tableObj <- tableObj[, -5]
+# 平均追加パート
 funDataTable()
 ```
 <hr>
@@ -225,6 +264,12 @@ funBoxplot()
 tableObj <-
   data.frame(ID = seq(1, nrow(aggreTable)), aggreTable, check.names = F)
 colnames(tableObj)[-1] <- c('カテゴリ:日', paste0(colnames(dataSet)[obj01],'(',dateRange,'におけるカテゴリ毎の合計)'))
+# 平均追加パート
+tableObj <- merge(tableObj, cntDFday, by = 'ID', all = T)
+tableObj$Average <- round(tableObj[, 3] / tableObj[, 4], 1)
+colnames(tableObj)[6] <- '入域日当り平均入域(隻)'
+tableObj <- tableObj[, -5]
+# 平均追加パート
 funDataTable()
 ```
 <hr>
@@ -237,6 +282,12 @@ funBoxplot()
 tableObj <-
   data.frame(ID = seq(1, nrow(aggreTable)), aggreTable, check.names = F)
 colnames(tableObj)[-1] <- c('カテゴリ:年', paste0(colnames(dataSet)[obj01],'(',dateRange,'におけるカテゴリ毎の合計)'))
+# 平均追加パート
+tableObj <- merge(tableObj, cntDFyear, by = 'ID', all = T)
+tableObj$Average <- round(tableObj[, 3] / tableObj[, 4], 1)
+colnames(tableObj)[6] <- '入域日当り平均入域(隻)'
+tableObj <- tableObj[, -5]
+# 平均追加パート
 funDataTable()
 ```
 <hr>
