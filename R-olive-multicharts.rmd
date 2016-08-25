@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "貸出金構成比"
+title : "企業向けサービス価格指数"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'国内銀行の資産と貸出金構成比(銀行勘定、月末) 2016年6月'
+dataTitle<-'企業向けサービス価格指数 2016年7月'
 dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -223,11 +223,12 @@ lineColor<-c('red','blue')
 chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
-seriesType02<-'l'
+seriesType02<-'h'
 obj01<-2
 obj02<-3
 obj01lwd<-1
 obj02lwd<-1
+needCCF<-0
 funPlotTimeSeries()
 ```
 <hr>
@@ -236,6 +237,7 @@ funDataTable()
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+if(needCCF!=0){
 par(mfrow = c(1, 2), family = 'Meiryo',oma=c(1,1,5,1))
 obj01 <- 2
 obj02 <- 3
@@ -249,4 +251,5 @@ ccf(
   main = '1st Difference'
 )
 mtext(paste(colnames(dataSet)[obj01], '×', colnames(dataSet)[obj02]),side = 3,outer = T)
+}
 ```
