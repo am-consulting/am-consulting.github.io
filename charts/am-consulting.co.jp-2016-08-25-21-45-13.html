@@ -1,0 +1,766 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+</head>
+<body>
+<!----> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<link  href="http://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<link  href="http://knowledgevault.saecanet.com/components/pace.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/pace.min.js"></script>
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
+.container{
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+table{border-collapse:collapse;padding:0;border-spacing:1;margin-left:auto;margin-right:auto;font-size:100%;}
+tr, td, th{white-space: nowrap;}
+td.highlight{font-weight:plain;color:red;}
+.dataTables_filter input {width: 50%;}
+</style>
+<div class="container">
+<div align="right">作成日時:2016-08-25 21:45:32</div><br>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+$('#amcc_superSimpleTable1472129113').dataTable({
+"lengthMenu":[[20,10,-1],[20,10,"All"]],
+"order":[[0,"asc"]],
+"searching":true,
+"columnDefs":[{"width":"5%","targets":0}],
+"language":{"decimal":".","thousands":","},
+initComplete: function () {
+this.api().columns().every( function () {
+var column = this;
+var select = $('<select><option value=""></option></select>')
+.appendTo( $(column.footer()).empty() )
+.on( 'change', function () {
+var val = $.fn.dataTable.util.escapeRegex(
+$(this).val()
+);
+column
+.search( val ? '^'+val+'$' : '', true, false )
+.draw();
+} );
+column.data().unique().sort().each( function ( d, j ) {
+select.append( '<option value="'+d+'">'+d+'</option>' )
+} );
+} );
+}
+,
+createdRow:function(row,data,index){
+  if ( data[0].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(0).addClass('highlight');
+ }
+ if ( data[1].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(1).addClass('highlight');
+ }
+ if ( data[2].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(2).addClass('highlight');
+ }
+ if ( data[3].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(3).addClass('highlight');
+ }
+ if ( data[4].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(4).addClass('highlight');
+ }
+ }})  });</script>
+
+ <div align="center"><b> 平成26年度国の財務書類(連結財務書類、財務省)、第130回事業年度(平成26年度、日本銀行)決算等について(財務諸表等)そしてその統合 </b><br>データ出所: 財務省、日本銀行 </div>    <div style="overflow-x:scroll;">
+ <table id="amcc_superSimpleTable1472129113" width="100%" class="display compact">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> ID </th>
+   <th style="text-align:left;"> 勘定科目 </th>
+   <th style="text-align:right;"> 金額(兆円) </th>
+   <th style="text-align:right;"> 国:1、日銀:2、統合:3 </th>
+   <th style="text-align:left;"> 分類 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 現金・預金 </td>
+   <td style="text-align:right;"> 73.0413 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 有価証券 </td>
+   <td style="text-align:right;"> 348.5348 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> たな卸資産 </td>
+   <td style="text-align:right;"> 5.2621 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> 未収金 </td>
+   <td style="text-align:right;"> 12.7129 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> 未収収益 </td>
+   <td style="text-align:right;"> 1.0685 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> 貸付金 </td>
+   <td style="text-align:right;"> 184.1094 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> 破産更生債権等 </td>
+   <td style="text-align:right;"> 0.8739 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:left;"> 割賦債権 </td>
+   <td style="text-align:right;"> 3.7439 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:left;"> その他の債権等 </td>
+   <td style="text-align:right;"> 17.9395 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:left;"> 貸倒引当金等 </td>
+   <td style="text-align:right;"> -3.9982 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 11 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_土地 </td>
+   <td style="text-align:right;"> 38.6009 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 12 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_立木竹 </td>
+   <td style="text-align:right;"> 3.6686 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_建物 </td>
+   <td style="text-align:right;"> 12.2399 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 14 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_工作物 </td>
+   <td style="text-align:right;"> 9.3243 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 15 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_機械器具 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_船舶 </td>
+   <td style="text-align:right;"> 1.7392 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 17 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_航空機 </td>
+   <td style="text-align:right;"> 0.6254 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:left;"> 有形固定資産_国有財産等_建設仮勘定 </td>
+   <td style="text-align:right;"> 2.9382 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:left;"> 有形固定資産_公共用財産_公共用財産用地 </td>
+   <td style="text-align:right;"> 48.3618 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:left;"> 有形固定資産_公共用財産_公共用財産施設 </td>
+   <td style="text-align:right;"> 141.5133 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 21 </td>
+   <td style="text-align:left;"> 有形固定資産_公共用財産_建設仮勘定 </td>
+   <td style="text-align:right;"> 3.0169 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 22 </td>
+   <td style="text-align:left;"> 有形固定資産_物品等 </td>
+   <td style="text-align:right;"> 5.9971 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 23 </td>
+   <td style="text-align:left;"> 有形固定資産_その他の固定資産 </td>
+   <td style="text-align:right;"> 0.0282 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 24 </td>
+   <td style="text-align:left;"> 無形固定資産 </td>
+   <td style="text-align:right;"> 1.2295 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 25 </td>
+   <td style="text-align:left;"> 出資金 </td>
+   <td style="text-align:right;"> 15.8549 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 26 </td>
+   <td style="text-align:left;"> 支払承諾見返等 </td>
+   <td style="text-align:right;"> 2.8919 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 27 </td>
+   <td style="text-align:left;"> その他の投資等 </td>
+   <td style="text-align:right;"> 0.7592 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 28 </td>
+   <td style="text-align:left;"> 資産の部合計:国 </td>
+   <td style="text-align:right;"> 932.0773 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:left;"> 金地金 </td>
+   <td style="text-align:right;"> 0.4413 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:left;"> 現金 </td>
+   <td style="text-align:right;"> 0.2442 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 31 </td>
+   <td style="text-align:left;"> 国債 </td>
+   <td style="text-align:right;"> 269.7921 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 32 </td>
+   <td style="text-align:left;"> コマーシャル・ペーパー等 </td>
+   <td style="text-align:right;"> 1.9790 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 33 </td>
+   <td style="text-align:left;"> 社債 </td>
+   <td style="text-align:right;"> 3.2431 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:left;"> 金銭の信託(信託財産株式) </td>
+   <td style="text-align:right;"> 1.3758 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 35 </td>
+   <td style="text-align:left;"> 金銭の信託(信託財産指数連動型上場投資信託) </td>
+   <td style="text-align:right;"> 4.4838 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 36 </td>
+   <td style="text-align:left;"> 金銭の信託(信託財産不動産投資信託) </td>
+   <td style="text-align:right;"> 0.2064 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 37 </td>
+   <td style="text-align:left;"> 貸出金_電子貸付 </td>
+   <td style="text-align:right;"> 34.0976 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 38 </td>
+   <td style="text-align:left;"> 外国為替_外貨預け金 </td>
+   <td style="text-align:right;"> 0.6887 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 39 </td>
+   <td style="text-align:left;"> 外国為替_外貨債権 </td>
+   <td style="text-align:right;"> 4.8254 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 40 </td>
+   <td style="text-align:left;"> 外国為替_外貨投資信託 </td>
+   <td style="text-align:right;"> 0.0610 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 41 </td>
+   <td style="text-align:left;"> 外国為替_外貨貸付金 </td>
+   <td style="text-align:right;"> 1.5373 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 42 </td>
+   <td style="text-align:left;"> 代理店勘定 </td>
+   <td style="text-align:right;"> 0.0231 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 43 </td>
+   <td style="text-align:left;"> その他資産_取立未済切手手形 </td>
+   <td style="text-align:right;"> 0.0002 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 44 </td>
+   <td style="text-align:left;"> その他資産_預貯金保険機構出資金 </td>
+   <td style="text-align:right;"> 0.0002 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 45 </td>
+   <td style="text-align:left;"> その他資産_国際金融機関出資 </td>
+   <td style="text-align:right;"> 0.0153 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 46 </td>
+   <td style="text-align:left;"> その他資産_政府勘定保管金 </td>
+   <td style="text-align:right;"> 0.0470 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 47 </td>
+   <td style="text-align:left;"> その他資産_未収利息 </td>
+   <td style="text-align:right;"> 0.3032 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 48 </td>
+   <td style="text-align:left;"> その他資産_その他の資産 </td>
+   <td style="text-align:right;"> 0.0279 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 49 </td>
+   <td style="text-align:left;"> 有形固定資産_建物 </td>
+   <td style="text-align:right;"> 0.0984 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 50 </td>
+   <td style="text-align:left;"> 有形固定資産_土地 </td>
+   <td style="text-align:right;"> 0.0827 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 51 </td>
+   <td style="text-align:left;"> 有形固定資産_リース資産 </td>
+   <td style="text-align:right;"> 0.0071 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 52 </td>
+   <td style="text-align:left;"> 有形固定資産_建設仮勘定 </td>
+   <td style="text-align:right;"> 0.0013 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 53 </td>
+   <td style="text-align:left;"> 有形固定資産_その他の有形固定資産 </td>
+   <td style="text-align:right;"> 0.0114 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 54 </td>
+   <td style="text-align:left;"> 無形固定資産_権利金 </td>
+   <td style="text-align:right;"> 0.0001 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 55 </td>
+   <td style="text-align:left;"> 資産の部合計:日本銀行 </td>
+   <td style="text-align:right;"> 323.5937 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 56 </td>
+   <td style="text-align:left;"> 資産の部合計:統合 </td>
+   <td style="text-align:right;"> 1,255.6710 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 57 </td>
+   <td style="text-align:left;"> 未払金 </td>
+   <td style="text-align:right;"> 15.5668 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 58 </td>
+   <td style="text-align:left;"> 未払費用 </td>
+   <td style="text-align:right;"> 2.8535 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 59 </td>
+   <td style="text-align:left;"> 保管金等 </td>
+   <td style="text-align:right;"> 3.0923 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 60 </td>
+   <td style="text-align:left;"> 賞与引当金 </td>
+   <td style="text-align:right;"> 0.5903 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 61 </td>
+   <td style="text-align:left;"> 政府短期証券 </td>
+   <td style="text-align:right;"> 96.4807 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 62 </td>
+   <td style="text-align:left;"> 公債 </td>
+   <td style="text-align:right;"> 715.9695 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 63 </td>
+   <td style="text-align:left;"> 独立行政法人等債券 </td>
+   <td style="text-align:right;"> 48.9636 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 64 </td>
+   <td style="text-align:left;"> 借入金 </td>
+   <td style="text-align:right;"> 36.0339 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 65 </td>
+   <td style="text-align:left;"> 預託金 </td>
+   <td style="text-align:right;"> 3.9813 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 66 </td>
+   <td style="text-align:left;"> 郵便貯金 </td>
+   <td style="text-align:right;"> 175.6996 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 67 </td>
+   <td style="text-align:left;"> 責任準備金 </td>
+   <td style="text-align:right;"> 103.3357 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 68 </td>
+   <td style="text-align:left;"> 公的年金預り金 </td>
+   <td style="text-align:right;"> 117.3481 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 69 </td>
+   <td style="text-align:left;"> 退職給付引当金 </td>
+   <td style="text-align:right;"> 13.2384 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 70 </td>
+   <td style="text-align:left;"> その他の引当金 </td>
+   <td style="text-align:right;"> 1.0869 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 71 </td>
+   <td style="text-align:left;"> 支払承諾等 </td>
+   <td style="text-align:right;"> 2.8919 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 72 </td>
+   <td style="text-align:left;"> その他の債務等 </td>
+   <td style="text-align:right;"> 34.3477 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 73 </td>
+   <td style="text-align:left;"> 負債の部合計:国 </td>
+   <td style="text-align:right;"> 1,371.4802 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 74 </td>
+   <td style="text-align:left;"> 発行銀行券 </td>
+   <td style="text-align:right;"> 89.6733 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 75 </td>
+   <td style="text-align:left;"> 預金_当座預金 </td>
+   <td style="text-align:right;"> 201.5564 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 76 </td>
+   <td style="text-align:left;"> 預金_その他預金 </td>
+   <td style="text-align:right;"> 4.5154 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 77 </td>
+   <td style="text-align:left;"> 政府預金_当座預金 </td>
+   <td style="text-align:right;"> 0.1500 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 78 </td>
+   <td style="text-align:left;"> 政府預金_国内指定預金 </td>
+   <td style="text-align:right;"> 1.3525 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 79 </td>
+   <td style="text-align:left;"> 政府預金_その他政府預金 </td>
+   <td style="text-align:right;"> 0.2916 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 80 </td>
+   <td style="text-align:left;"> 売現先勘定 </td>
+   <td style="text-align:right;"> 17.6083 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 81 </td>
+   <td style="text-align:left;"> その他負債_未払送金為替 </td>
+   <td style="text-align:right;"> 0.0064 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 82 </td>
+   <td style="text-align:left;"> その他負債_未払法人税等 </td>
+   <td style="text-align:right;"> 0.2795 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 83 </td>
+   <td style="text-align:left;"> その他負債_リース債務 </td>
+   <td style="text-align:right;"> 0.0075 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 84 </td>
+   <td style="text-align:left;"> その他負債_その他の負債 </td>
+   <td style="text-align:right;"> 0.0294 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 85 </td>
+   <td style="text-align:left;"> 退職給与引当金 </td>
+   <td style="text-align:right;"> 0.1985 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 86 </td>
+   <td style="text-align:left;"> 債権取引損失引当金 </td>
+   <td style="text-align:right;"> 2.2433 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 87 </td>
+   <td style="text-align:left;"> 外国為替等取引損失引当金 </td>
+   <td style="text-align:right;"> 1.7861 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 88 </td>
+   <td style="text-align:left;"> 負債の部合計:日本銀行 </td>
+   <td style="text-align:right;"> 319.6983 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 89 </td>
+   <td style="text-align:left;"> 負債の部合計:統合 </td>
+   <td style="text-align:right;"> 1,691.1785 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 負債の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 90 </td>
+   <td style="text-align:left;"> 資産・負債差額 </td>
+   <td style="text-align:right;"> -439.4029 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 純資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 91 </td>
+   <td style="text-align:left;"> 資本金 </td>
+   <td style="text-align:right;"> 0.0001 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 純資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 92 </td>
+   <td style="text-align:left;"> 法定準備金 </td>
+   <td style="text-align:right;"> 2.8863 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 純資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 93 </td>
+   <td style="text-align:left;"> 特別準備金 </td>
+   <td style="text-align:right;"> 0.0000 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 純資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 94 </td>
+   <td style="text-align:left;"> 当期剰余金 </td>
+   <td style="text-align:right;"> 1.0090 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 純資産の部 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 95 </td>
+   <td style="text-align:left;"> 純資産の部:統合 </td>
+   <td style="text-align:right;"> -435.5075 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 純資産の部 </td>
+  </tr>
+</tbody>
+ <tfoot>
+  <tr>
+   <th style="text-align:right;"> ID </th>
+   <th style="text-align:left;"> 勘定科目 </th>
+   <th style="text-align:right;"> 金額(兆円) </th>
+   <th style="text-align:right;"> 国:1、日銀:2、統合:3 </th>
+   <th style="text-align:left;"> 分類 </th>
+  </tr>
+ </tfoot> </table> </div>
+ Powered by<br>-DataTables( http://datatables.net/ )<br>-jQuery( https://jquery.com )<br>-PACE( http://github.hubspot.com/pace/docs/welcome/ )  
+<!---->
+<hr>
+<div align="center"><a href="http://am-consulting.co.jp" target="_blank">アセット・マネジメント・コンサルティング株式会社</a></div>
+</div>
+</body>
+</html>
