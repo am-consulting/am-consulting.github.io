@@ -27,7 +27,7 @@ tmp <-
 ```
 
 ```{r}
-tmp <- merge(tmp01, tmp02, by = "Date")
+tmp <- merge(tmp01, tmp02, by = "Date", all = T)
 head(tmp, 1)
 ```
 

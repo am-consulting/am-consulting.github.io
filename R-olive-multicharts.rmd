@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "消費者物価指数"
+title : "ETF買入結果"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,8 +19,8 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'2015年基準消費者物価指数 コアCPI、コアコアCPI 2016年7月'
-dataSource<-'総務省'
+dataTitle<-'指数連動型上場投資信託受益権(ETF)の買入と日経平均株価'
+dataSource<-'日本銀行、株式会社日本経済新聞社'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -75,7 +75,7 @@ tmp <-
     header = T,
     sep = '\t',
     stringsAsFactor = F,
-    na.strings = c('na', '', '-'),
+    na.strings = c('na', '', '-', 'NA'),
     check.names = F
   )
 }
@@ -111,7 +111,7 @@ colnames(tmp)<-c(colnames(tmp0)[1],colnames(tmp0)[2],paste0(colnames(tmp0)[3],'-
 
 ```{r,warning=F,error=F,message=F,echo=F}
 dataSet <- na.omit(tmp)
-#dataSet <- tail(dataSet,12*20)
+dataSet <- tmp[rowSums(is.na(tmp))!=(ncol(tmp)-1),]
 dataSet[, 1] <- as.Date(dataSet[, 1])
 dataSet <-
   data.frame(dataSet, apply(dataSet[1], 1, FUN), check.names = F)
@@ -153,8 +153,10 @@ plot(
   cex.main = 1,
   lwd = obj01lwd
   )
+if(needloess01==1){
 lo <- loess(dataSet[, obj01]~as.numeric(dataSet[, 1]))
 lines(dataSet[, 1] , predict(lo) , col=lineColor[1], lwd=2,lty=2)
+}
 if(chartTtpe==1){
 lines(
   dataSet[, 1],
@@ -181,16 +183,16 @@ axis(4,cex.axis=1,cex.lab=1)
 mtext(colnames(dataSet)[obj01],side=2,line=3.2,cex=1)
 mtext(colnames(dataSet)[obj02],side=4,line=3.2,cex=1)
 }
+if(needloess02==1){
 lo <- loess(dataSet[, obj02]~as.numeric(dataSet[, 1]))
 lines(dataSet[, 1] , predict(lo) , col=lineColor[2], lwd=2,lty=2)
+}
 legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1,bty='n')
 axis.Date(side=1,at=dataSet[,1],format=dateFormat,padj=1,cex.axis=1.0)  
 }
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-dataSet0<-dataSet
-dataSet0[,1]<-format(dataSet0[,1],dateFormat)
 funDataTable <- function() {
   DT::datatable(
     dataSet0,
@@ -220,16 +222,18 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 lineColor<-c('red','blue')
-chartTtpe<-1
+chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'h'
 obj01<-3
-obj02<-4
+obj02<-2
 obj01lwd<-1
 obj02lwd<-1
+needloess01<-1
+needloess02<-0
 needCCF<-0
-dataTail<-12*20
+dataTail<-12*20000
 bufdataSet<-dataSet
 dataSet<-tail(dataSet,dataTail)
 funPlotTimeSeries()
@@ -237,7 +241,12 @@ dataSet<-bufdataSet
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+bufdataSet<-dataSet
+dataSet0<-dataSet
+dataSet0[is.na(dataSet0)] <- ''
+dataSet0[,1]<-format(dataSet0[,1],dateFormat)
 funDataTable()
+dataSet<-bufdataSet
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
