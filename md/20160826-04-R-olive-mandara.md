@@ -10,9 +10,9 @@ published : true
 
 ##データテーブル･チャート
 [部位別都道府県別75歳未満年齢調整死亡率の時系列推移 期間:1995年~2014年 対象:全部位 性別:男女計](
-http://knowledgevault.saecanet.com/mandara_html/am-consulting.co.jp-20160826-01-mandara.html
+http://knowledgevault.saecanet.com/mandara_html/am-consulting.co.jp-20160826-02-mandara.html
 )
 
 <iframe src="
-http://knowledgevault.saecanet.com/mandara_html/am-consulting.co.jp-20160826-01-mandara.html
+http://knowledgevault.saecanet.com/mandara_html/am-consulting.co.jp-20160826-02-mandara.html
 " width="100%" height="850px"></iframe>
