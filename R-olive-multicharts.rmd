@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "ETF買入結果"
+title : "North America Rig Count"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,8 +19,8 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'指数連動型上場投資信託受益権(ETF)の買入と日経平均株価'
-dataSource<-'日本銀行、株式会社日本経済新聞社'
+dataTitle<-'North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス 2016年8月26日分'
+dataSource<-'Baker Hughes'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -54,7 +54,7 @@ highestAuthority()
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-iii <- 1
+iii <- 3
 highestData <- switch (iii,
                        get(titleAbb[1]),
                        get(titleAbb[2]),
@@ -225,13 +225,13 @@ lineColor<-c('red','blue')
 chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
-seriesType02<-'h'
-obj01<-3
-obj02<-2
+seriesType02<-'l'
+obj01<-2
+obj02<-3
 obj01lwd<-1
 obj02lwd<-1
 needloess01<-1
-needloess02<-0
+needloess02<-1
 needCCF<-0
 dataTail<-12*20000
 bufdataSet<-dataSet
@@ -241,12 +241,29 @@ dataSet<-bufdataSet
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-bufdataSet<-dataSet
-dataSet0<-dataSet
+cat('<b>原系列 / Original</b>')
+bufdataSet <- dataSet
+dataSet0 <- dataSet
 dataSet0[is.na(dataSet0)] <- ''
-dataSet0[,1]<-format(dataSet0[,1],dateFormat)
+dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
-dataSet<-bufdataSet
+dataSet <- bufdataSet
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cat('<b>1次階差 / 1st difference</b>')
+bufdataSet <- dataSet
+dataSet0 <- dataSet
+dataSet0 <-
+  data.frame(dataSet0[-1, 1],
+             diff(as.matrix(dataSet0[, -c(1, 4)]), differences = 1),
+             dataSet0[-1, 4],
+             check.names = F)
+colnames(dataSet0) <- colnames(dataSet)
+dataSet0[is.na(dataSet0)] <- ''
+dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
+funDataTable()
+dataSet <- bufdataSet
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
