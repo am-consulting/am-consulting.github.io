@@ -1,4 +1,41 @@
-```{r}
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+
+title : "CFTC Speculative Positions"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-'CFTC Speculative Positions / IMM･CFTC投機筋ポジション 2016年8月23日分'
+dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. Louis'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-"表中、-9999はNAを意味します"
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Raw Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",notes0,"\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=9999)
 library(RCurl)
@@ -15,82 +52,185 @@ for(iii in 1:length(dataset)){
 }
 ```
 
-```{r}
-username<-Sys.info()['user']
-pathOutput<-paste("C:/Users/",username,"/Desktop/charts/",sep="")
-setwd(pathOutput)
-htmlFile<-'cftc.html'
-for(iii in c(1,2,4)){
-  csvTitle <- substr(currency[iii],1,regexpr(" -",currency[iii])[1])
-  csvFile <- gsub(" ","",paste("IMMポジション.",csvTitle,".csv",sep=""))    
-  write.csv(dataset[[iii]],csvFile,row.names=F,append=F,quote=F,fileEncoding="UTF-8")
-  bufTable<-tail(dataset[[iii]][,1:4],10)
-  bufTable[,1]<-paste0("|",bufTable[,1],"|")
-  bufTable[,2]<-paste0(bufTable[,2],"|")
-  bufTable[,3]<-paste0(bufTable[,3],"|")
-  bufTable[,4]<-paste0(bufTable[,4],"|")
-  mdTable<- c('|-:|','-:|','-:|','-:|')
-  mdTableHead<-c(
-    paste0("|",colnames(bufTable)[1],"|"),   
-    paste0(colnames(bufTable)[2],"|"),   
-    paste0(colnames(bufTable)[3],"|"),   
-    paste0(colnames(bufTable)[4],"|")   
-  )  
-  bufTable0<-rbind(
-    mdTableHead,   
-    mdTable,
-    bufTable
+```{r,warning=F,error=F,message=F,echo=F}
+library(quantmod)
+library(DT)
+library(knitr)
+fredData <- list()
+cnt <- 0
+currencyFRED <-
+  c(
+    'DEXJPUS',    'USD/JPY',
+    'DEXUSEU',    'EUR/USD',
+    'DEXUSAL',    'AUD/USD',
+    'DEXUSUK',    'GBP/USD',
+    'DEXSZUS',    'USD/CHF',
+    'DEXUSNZ',    'NZD/USD',
+    'DEXCAUS',    'USD/CAD',
+    'GOLDAMGBD228NLBM',    'GOLD'
   )
-  cat('\n***\n',file=htmlFile,append=T)
-  write.table(bufTable0,file=htmlFile,append=T,row.names = F,col.names = F ,quote = F)
-  for(ccc in c(2,3,4)){
-    ST <- Sys.time()  
-    pngFile <- paste(
-      'am-consulting.co.jp-',
-      colnames(dataset[[iii]])[ccc],
-      ".png",
-      sep=""
+for (lll in seq(1, length(currencyFRED), by = 2)) {
+  cnt <- cnt + 1
+  tmp <- getSymbols(currencyFRED[lll], src = 'FRED', auto.assign = F)
+  tmp <-
+    data.frame(
+      Date = as.Date(index(tmp)),
+      tmp[, 1],
+      tmp[, 1],
+      check.names = F,
+      row.names = NULL
     )
-    png(file = pngFile , width = 1920 , height = 1080)
-    par(mar = c(5, 7, 8, 3), family = 'Meiryo')
-    if(ccc!=4){
-      barcolor<-'black'  
-    }else{
-      barcolor<-dataset[[iii]]$Col  
-    }
-    lo <- loess(dataset[[iii]][,ccc]~as.numeric(dataset[[iii]][,1]))
-    plot(
-      dataset[[iii]][,1],
-      dataset[[iii]][,ccc],
-      type = 'o',
-      cex = 1.5,
-      main = paste(colnames(dataset[[iii]])[ccc],'\n',dataset[[iii]][1,1],'~',dataset[[iii]][nrow(dataset[[iii]]),1]),
-      col = 'black', #barcolor,
-      ylab = dataset[[iii]][1,6],
-      xlab = '',
-      panel.first = grid(
-        nx = NULL,
-        ny = NULL,
-        lty = 2,
-        equilogs = T,
-        lwd = 2
-      ),
-      xaxt = "n",
-      cex.axis = 2.5,
-      cex.main = 4.0,
-      cex.lab = 2.5,
-      cex.sub =2.0
-    )
-    axis.Date(
-      side = 1,
-      at = dataset[[iii]][,1],
-      format = "%Y-%m-%d",
-      padj = 1,
-      cex.axis = 2.5
-    )
-    abline(h = 0, col = "red", lwd=4)
-    lines(dataset[[iii]][,1] , predict(lo) , col='blue', lwd=2)
-    dev.off()
-  }
+  colnames(tmp)[2] <- currencyFRED[lll + 1]
+  fredData[[cnt]] <- tmp
 }
 ```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotTimeSeries <- function() {
+  mainTitle <- paste(colnames(dataSet)[2], '×', colnames(dataSet)[3])
+  par(mar = c(3, 5, 4, 5), family = 'Meiryo')
+  plot(
+    dataSet[, 1],
+    dataSet[, 2],
+    type = 'h',
+    col = 'blue',
+    xlab = '' ,
+    ylab = '' ,
+    panel.first = grid(
+      nx = NULL,
+      ny = NULL,
+      lty = 2,
+      equilogs = T,
+      lwd = 2
+    ) ,
+    xaxt = 'n',
+    main = paste(
+      mainTitle,
+      '\n',
+      format(first(dataSet[, 1]), '%Y-%m-%d'),
+      '~',
+      format(last(dataSet[, 1]), '%Y-%m-%d'),
+      '\nSource:',
+      dataSource
+    ),
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1,
+    lwd = '1',
+    yaxs = "r"
+    )
+  par(new = T)
+  plot(
+    dataSet[, 1],
+    dataSet[, 3],
+    col = 'red',
+    type = 'l',
+    xlab = '' ,
+    ylab = '' ,
+    panel.first = grid(
+      nx = NULL,
+      ny = NULL,
+      lty = 3,
+      equilogs = T,
+      lwd = 2
+    ) ,
+    xaxt = 'n',
+    yaxt = 'n',
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1,
+    lwd = 2,
+    ylim = yaxisReverse,
+    yaxs = "r"
+  )
+  axis(4, cex.axis = 1, cex.lab = 1)
+  mtext(colnames(dataSet)[2],
+        side = 2,
+        line = 3.2,
+        cex = 1)
+  mtext(colnames(dataSet)[3],
+        side = 4,
+        line = 3.2,
+        cex = 1)
+  legend(
+    'topleft',
+    col = c('blue', 'red'),
+    lty = 1,
+    legend = c(colnames(dataSet)[2], colnames(dataSet)[3]),
+    cex = 1,
+    bty = 'n'
+  )
+  axis.Date(
+    side = 1,
+    at = dataSet[, 1],
+    format = '%Y-%m-%d',
+    padj = 1,
+    cex.axis = 1.0
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
+cftcOBJ <- c(1, 2, 3, 4, 5, 6, 7, 11)
+for (iii in 1:length(cftcOBJ)) {
+  buf <-
+    merge(dataset[[cftcOBJ[iii]]], fredData[[iii]], by = 'Date', all = T)
+  dataSet <- buf[, c(1, 4, 8)]
+  dataSet <-
+    tail(subset(dataSet, dataset[[iii]][1, 1] <= dataSet[, 1]), 800)
+  if (substr(colnames(dataSet)[3], 1, 3) == 'USD') {
+    yaxisReverse <- rev(range(na.omit(dataSet[, 3])))
+  } else{
+    yaxisReverse <- range(na.omit(dataSet[, 3]))
+  }
+  colnames(dataSet)[2] <-
+    paste0(colnames(dataSet)[2], '_CFTC positions')
+  funPlotTimeSeries()
+  cat('<hr>')
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj, append = '') {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(5, -1, 1), c(5, 'All', 1)),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(list(width = '10%', targets = 0))
+    ),
+    rownames = F,
+    caption = paste0(dataTitle, '. ', append),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+out = NULL
+for (iii in 1:length(dataset)) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h2>',dataset[[",
+      iii,
+      "]][1,5],'</h2>'))\n\n",
+      "funDataTable(obj = dataset[[",
+      iii,
+      "]][,1:4], append = dataset[[",
+      iii,
+      "]][1,6])\n\ncat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded)
+}
+```
+`r paste(knit(text = out), collapse = '\n')`
