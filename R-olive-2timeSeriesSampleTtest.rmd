@@ -2,7 +2,7 @@
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
 
-title : "過不足率"
+title : "消費者物価指数"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -21,8 +21,9 @@ output:
 }
 </style>
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '建設技能労働者過不足率_8職種計_全国_季節調整値 2016年7月'
-dataSource <- '国土交通省'
+dataTitle <- paste0('食料(酒類を除く)及びエネルギーを除く総合_前年同月比_東京都区部 2016年8月',
+                    ' - 民主党政権時と第二次安倍政権発足以降の比較')
+dataSource <- '総務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -41,12 +42,8 @@ library(nortest)
 library(coin)
 library(lubridate)
 library(DT)
-```
-
-```{r,warning=F,error=F,message=F,results='hide',echo=F}
-dfColnames <- c('Period1', 'Period2')
-dateRange01 <- as.Date(c('2009/9/1', '2012/12/1'))
-dateRange02 <- as.Date(c('2013/1/1', '2016/7/1'))
+library(tseries)
+library(lawstat)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
@@ -68,6 +65,12 @@ if (length(unique(day(tmp[, 1]))) == 1) {
 if (length(unique(month(tmp[, 1]))) == 1) {
   dateFormat = '%Y'
 }
+```
+
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+dfColnames <- c('Period1', 'Period2')
+dateRange01 <- as.Date(c('2009/9/1', '2012/12/1'))
+dateRange02 <- c(as.Date('2013/1/1'), as.Date(tmp[nrow(tmp),1]))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
@@ -97,6 +100,8 @@ comparisonData[1, ccc] <- paste(dateRange[[ccc]] , collapse = '~')
   comparisonData[11, ccc] <-
     format(sqrt(var(x) * (length(x) - 1) / length(x)), digits = digitsN)# 標本標準偏差
   comparisonData[12, ccc] <- format(sd(x), digits = digitsN)# 不偏標準偏差
+  comparisonData[13, ccc] <- format(adf.test(x)$p.value, digits = digitsN)
+  comparisonData[14, ccc] <- format(adf.test(diff(x))$p.value, digits = digitsN)
 }
 comparisonData
 row.names(comparisonData) <-
@@ -111,7 +116,10 @@ row.names(comparisonData) <-
     '標本分散',
     '不偏分散',
     '標本標準偏差',
-    '不偏標準偏差')
+    '不偏標準偏差',
+    'ADF検定(p値)',
+    'ADF検定(p値、一次差分)'
+    )
 colnames(comparisonData) <- dfColnames
 ```
 
@@ -247,4 +255,8 @@ wilcox_test(TwoTimeSeriesData ~ Period, distribution = "exact")
 
 ```{r,warning=T,error=F,message=F,results='hold'}
 var.test(x, y, alternative = 'two.sided')
+```
+
+```{r,warning=T,error=F,message=F,results='hold'}
+brunner.munzel.test(x, y, alternative = 'two.sided')
 ```
