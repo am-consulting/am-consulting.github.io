@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '消費者物価指数'
+title : '新規求人数'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -13,7 +13,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1400px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -32,8 +32,8 @@ needID<-1
 needAtag<-0
 needAdd<-0
 pp<-1
-dataTitle<-'2015年基準消費者物価指数 前年同月比 2016年7月'
-dataSource<-'総務省'
+dataTitle<-'産業･事業所規模別新規求人数 実数 平成19年改定 2016年7月'
+dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
