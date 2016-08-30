@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '就業者数'
+title : '消費水準'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -28,7 +28,7 @@ options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'日本の就業者数 女 季節調整値 2016年7月'
+dataTitle<-'消費水準指数(世帯人員及び世帯主の年齢分布調整済)-2人以上の世帯 2016年7月'
 dataSource<-'総務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
@@ -85,6 +85,7 @@ colnames(dataSet01P)<-colnames(dataSet01D)<-colnames(dataSet12P)<-colnames(dataS
 funTimeSeries<-function(dataTS,lineType,rowN,bigTitle){
 cat(paste0('<h3>',bigTitle,'</h3>'))  
 par(mfrow=c(ceiling((ncol(dataTS)-1)/rowN),rowN),mar=c(3,3,3,2))
+par(mfrow=c(ceiling(plotBorder/rowN),rowN),mar=c(3,3,3,2))
 for(ccc in 2:ncol(dataTS)){ 
   tmp0<-na.omit(dataTS[,c(1,ccc)])
   plot(
@@ -144,15 +145,15 @@ fungvisTable <- function(obj) {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
 plotData<-list()
-plotBorder<-7
+plotBorder<-6
 plotChunk01<-1
 plotChunk02<-1
 tableChunk01<-1
 tableChunk02<-1
 buf_dataSet<-dataSet
 chunck01Append<-'原系列'
-chunck02Append<-'前月比(%)'
-dataSet2<-dataSet01P
+chunck02Append<-'前年同月比(%)'
+dataSet2<-dataSet12P
 tableRange<-5
 ```
 
