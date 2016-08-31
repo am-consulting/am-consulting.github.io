@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "建設統計"
+title : "ADP vs DOL"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,8 +19,8 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'住宅着工統計 2016年7月分'
-dataSource<-'国土交通省'
+dataTitle<-'ADP雇用統計と米国労働省雇用統計の比較'
+dataSource<-'ADP、United States Department of Labor'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -55,7 +55,7 @@ highestAuthority()
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-iii <- 1
+iii <- 3
 highestData <- switch (iii,
                        get(titleAbb[1]),
                        get(titleAbb[2]),
@@ -234,7 +234,7 @@ obj02lwd<-1
 needloess01<-1
 needloess02<-1
 needCCF<-1
-need1stdiff<-1
+need1stdiff<-0
 dataTail<-12*20000
 bufdataSet<-dataSet
 dataSet<-tail(dataSet,dataTail)
@@ -253,7 +253,7 @@ dataSet <- bufdataSet
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-#if(need1stdiff!=0){
+if(need1stdiff!=0){
 cat('<b>1次階差 / 1st difference</b>')
 bufdataSet <- dataSet
 dataSet0 <- dataSet
@@ -267,7 +267,7 @@ dataSet0[is.na(dataSet0)] <- ''
 dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
 dataSet <- bufdataSet
-#}
+}
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
