@@ -1,0 +1,143 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+
+title : '検察統計'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(googleVis)
+library(dplyr)
+library(rAmCharts)
+library(knitr)
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '検察統計 年次 2015年'
+dataSource <- '法務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+dataTail <- 0
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :', notes, '\n'))
+cat(paste('特記 :', notes0, '\n'))
+```
+
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+tmp <-
+  read.table(
+    "clipboard",
+    header = T,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("NA", "-", "－", "… ", ".", ""),
+    check.names = F
+  )
+tmp$Sum <- apply(tmp[, -1], 1, sum)
+tmp0 <- tmp[order(tmp$Sum, decreasing = T),]
+tmp0[, 1] <- ordered(tmp0[, 1], levels = tmp0[, 1][1:nrow(tmp0)])
+tmp0 <- tmp0[, -ncol(tmp0)]
+head(tmp0)
+```
+
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+dataSet <- list()
+for (iii in seq(1, ceiling(nrow(tmp0) / 5))) {
+  dataSet[[iii]] <-
+    tmp0[seq((iii - 1) * 5 + 1, min(iii * 5, nrow(tmp0))),]
+}
+length(dataSet)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funamBarplot <- function(obj, mainTitle = '', type) {
+  amBarplot(
+    x = colnames(obj)[1] ,
+    y = colnames(obj)[2:ncol(obj)],
+    data = obj,
+    horiz = T,
+    stack_type = type,
+    legend = T,
+    labelRotation = 0,
+    main = mainTitle,
+    mainColor = "#68838B",
+    mainSize = 15,
+    creditsPosition = "top-right",
+    legendPosition = "bottom"
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+out = NULL
+for (iii in 1:length(dataSet)) {
+  knit_expanded_1 <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h4>',paste(dataSet[[",
+      iii,
+      "]][,1],collapse = ','),'</h4>'))\n\n",
+      "funamBarplot(obj = dataSet[[",
+      iii,
+      "]], mainTitle = paste0(paste(dataSet[[",
+      iii,
+      "]][,1],collapse = ',') ,'-積み上げ'), type='regular')
+    \n\ncat('<hr>')\n\n```"
+    )
+  
+  knit_expanded_2 <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h4>',paste(dataSet[[",
+      iii,
+      "]][,1],collapse = ','),'</h4>'))\n\n",
+      "funamBarplot(obj = dataSet[[",
+      iii,
+      "]], mainTitle = paste0(paste(dataSet[[",
+      iii,
+      "]][,1],collapse = ',') ,'-100%'), type='100')
+    \n\ncat('<hr>')\n\n```"
+    )
+  
+  out = c(out, knit_expanded_1, knit_expanded_2)
+}
+```
+`r paste(knit(text = out), collapse = '\n')`
+```{r,warning=F,error=F,message=F,echo=F}
+fungvisTable <- function(obj) {
+  PopTable <- gvisTable(obj,
+                        options = list(
+                          width = 2000,
+                          height = 'automatic',
+                          page = 'enable' ,
+                          pageSize = 30
+                        ))
+  plot(PopTable, tag = 'chart')
+}  
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableData <- data.frame(ID = seq(1, nrow(tmp0)), tmp0, check.names = F)
+fungvisTable(obj = tableData)
+```
