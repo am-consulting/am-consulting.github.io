@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "設備投資"
+title : "利益剰余金"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -20,7 +20,7 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'法人企業統計調査 現金･預金(当期末流動資産) ソフトウェアを除く設備投資(当期末新設固定資産) 金融業、保険業以外の業種(原数値) 全産業(除く金融保険業) 全規模 2016年4～6月期 原数値'
+dataTitle<-'法人企業統計調査-利益剰余金(当期末純資産、兆円)※いわゆる内部留保金-金融業、保険業以外の業種(原数値)-全産業(除く金融保険業)-全規模-2016年4～6月期-原数値'
 dataSource<-'財務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -230,7 +230,7 @@ lineColor<-c('red','blue')
 chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
-seriesType02<-'l'
+seriesType02<-'h'
 obj01<-2
 obj02<-3
 obj01lwd<-1
