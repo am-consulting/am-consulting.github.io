@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '検察統計'
+title : '粗鋼生産'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -30,8 +30,9 @@ options(scipen = 100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '検察統計 年次 2015年'
-dataSource <- '法務省'
+needReshape<-0
+dataTitle <- '世界の粗鋼生産量(単位:1000t)時系列推移'
+dataSource <- '一般社団法人日本鉄鋼連盟'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0
@@ -54,10 +55,14 @@ tmp <-
     na.strings = c("NA", "-", "－", "… ", ".", ""),
     check.names = F
   )
+if(needReshape==1) {
 tmp$Sum <- apply(tmp[, -1], 1, sum)
 tmp0 <- tmp[order(tmp$Sum, decreasing = T),]
 tmp0[, 1] <- ordered(tmp0[, 1], levels = tmp0[, 1][1:nrow(tmp0)])
 tmp0 <- tmp0[, -ncol(tmp0)]
+}else{
+tmp0 <- tmp  
+}
 head(tmp0)
 ```
 
@@ -136,8 +141,10 @@ fungvisTable <- function(obj) {
   plot(PopTable, tag = 'chart')
 }  
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 tableData <- data.frame(ID = seq(1, nrow(tmp0)), tmp0, check.names = F)
+tableTitle <- paste0(dataTitle,'-',dataSource)
+cat(paste0('<h3>',tableTitle,'</h3>\n'))
 fungvisTable(obj = tableData)
 ```
