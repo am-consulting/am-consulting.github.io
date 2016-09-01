@@ -19,7 +19,7 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
 </style>
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- '投資部門別株式売買状況 二市場一･二部等 2016年8月第3週分'
+dataTitle <- '投資部門別株式売買状況 二市場一･二部等 2016年8月第4週分'
 dataSource <- '株式会社日本取引所グループ'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -39,6 +39,7 @@ library(zoo)
 #library(scales)
 # library(reshape)
 library(DT)
+library(knitr)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -58,6 +59,7 @@ tmp <- tmp0
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=12,results='asis'}
 dataSet <- list()
 obj <- c(9, 15, 18, 42)
+obj <- seq(3, 45, by = 3)
 for (iii in 1:length(obj)) {
   dataSet[[iii]] <-
     data.frame(tmp[, 1], tmp[, obj[iii]], tmp[, obj[iii] + 1], round(tmp[, obj[iii] + 1] - tmp[, obj[iii]], 12), check.names = F)
@@ -128,23 +130,18 @@ funDataTable <- function(obj, append = '') {
 }  
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
+```{r,warning=F,error=F,message=F,echo=F,include=F}
 appendTitle<-''
-funDataTable(obj = tail(dataSet[[1]],8), append = appendTitle)
+out = NULL
+for (iii in 1:length(dataSet)) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "funDataTable(obj = tail(dataSet[[",
+      iii,
+      "]],8), append = appendTitle)\n\ncat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded)
+}
 ```
-<hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-appendTitle<-''
-funDataTable(obj = tail(dataSet[[2]],8), append = appendTitle)
-```
-<hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-appendTitle<-''
-funDataTable(obj = tail(dataSet[[3]],8), append = appendTitle)
-```
-<hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-appendTitle<-''
-funDataTable(obj = tail(dataSet[[4]],8), append = appendTitle)
-```
-<hr>
+`r paste(knit(text = out), collapse = '\n')`
