@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '国債構成比'
+title : 'マネタリーベース'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
@@ -20,7 +20,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"国内銀行-資産-国債構成比(%) 2016年7月分"
+dataTitle<-"日本のマネタリーベース(平均残高、兆円) 2016年8月分"
 dataTitle0<-'歴代政権毎の時系列推移'
 dataSource<-"日本銀行"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"

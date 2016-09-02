@@ -1,0 +1,24 @@
+```{r}
+library(xtable)
+library(lubridate)
+library(knitr)
+tailN <- 12
+tmp <-
+  read.table(
+    "clipboard",
+    header = TRUE,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("NA", "-", "－", "… ", ".", ""),
+    check.names = F
+  )
+dateFormat = "%Y-%m-%d"
+if (length(unique(day(tmp[, 1]))) == 1) {
+  dateFormat = "%Y-%m"
+}
+if (length(unique(month(tmp[, 1]))) == 1) {
+  dateFormat = "%Y"
+}
+tmp[, 1] <- format(as.Date(tmp[, 1]), dateFormat)
+kable(tail(na.omit(tmp), tailN), row.names = F)
+```
