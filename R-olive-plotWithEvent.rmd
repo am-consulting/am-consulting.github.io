@@ -19,7 +19,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:2016-08-24更新'
+dataTitle <- '中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:2016-09-02更新'
 dataSource <- '海上保安庁 『尖閣諸島周辺海域における中国公船等の動向と我が国の対処』'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 cat(paste("Title :", dataTitle, "\n"))
