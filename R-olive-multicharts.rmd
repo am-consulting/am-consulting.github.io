@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "利益剰余金"
+title : "米国国際収支"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -20,8 +20,8 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'法人企業統計調査-利益剰余金(当期末純資産、兆円)※いわゆる内部留保金-金融業、保険業以外の業種(原数値)-全産業(除く金融保険業)-全規模-2016年4～6月期-原数値'
-dataSource<-'財務省'
+dataTitle<-'日本から米国への輸入額と日本への米国からの輸出額 2016年7月'
+dataSource<-'Federal Reserve Bank of St. Louis'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -56,7 +56,7 @@ highestAuthority()
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-iii <- 1
+iii <- 3
 highestData <- switch (iii,
                        get(titleAbb[1]),
                        get(titleAbb[2]),
@@ -227,10 +227,10 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 lineColor<-c('red','blue')
-chartTtpe<-2
+chartTtpe<-1
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
-seriesType02<-'h'
+seriesType02<-'l'
 obj01<-2
 obj02<-3
 obj01lwd<-1
@@ -271,9 +271,10 @@ dataSet0[is.na(dataSet0)] <- ''
 dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
 dataSet <- bufdataSet
+cat('<hr>')
 }
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(needCCF!=0){
 par(mfrow = c(1, 2), family = 'Meiryo',oma=c(1,1,5,1))
