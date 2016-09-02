@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '粗鋼生産'
+title : '企業統計'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -31,9 +31,10 @@ options(scipen = 100)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 needReshape<-0
-dataTitle <- '世界の粗鋼生産量(単位:1000t)時系列推移'
-dataSource <- '一般社団法人日本鉄鋼連盟'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+splitN<-10
+dataTitle <- '法人企業統計調査 年度データ-当期末純資産合計とその内訳-単位:兆円'
+dataSource <- '財務省'
+notes <- '金融業、保険業以外の業種(原数値)-業種:全産業(除く金融保険業)-規模:全規模'
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -68,9 +69,9 @@ head(tmp0)
 
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
 dataSet <- list()
-for (iii in seq(1, ceiling(nrow(tmp0) / 5))) {
+for (iii in seq(1, ceiling(nrow(tmp0) / splitN))) {
   dataSet[[iii]] <-
-    tmp0[seq((iii - 1) * 5 + 1, min(iii * 5, nrow(tmp0))),]
+    tmp0[seq((iii - 1) * splitN + 1, min(iii * splitN, nrow(tmp0))),]
 }
 length(dataSet)
 ```
