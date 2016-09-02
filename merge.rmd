@@ -59,4 +59,13 @@ write.csv(
   quote = F,
   fileEncoding = "cp932" # cp932 UTF-8
 ) #col.names=Tを付けると日本語が文字化けする
+write.table(
+  dataSet,
+  "dataSet.txt",
+  row.names = F,
+  append = F,
+  quote = F,
+  fileEncoding = "cp932",
+  sep = '\t'
+)
 ```
