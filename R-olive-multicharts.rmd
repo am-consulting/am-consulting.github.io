@@ -4,7 +4,7 @@ title : "米国国際収支"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 6
+    fig_height: 8
     fig_width: 12
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -46,6 +46,9 @@ library(scales)
 library(reshape)
 library(dplyr)
 library(RCurl)
+library(rAmCharts)
+library(seasonal)
+library(zoo)
 script <-
   getURL(
     'https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r',
@@ -128,15 +131,35 @@ if (length(unique(day(dataSet[, 1]))) == 1) {
 if (length(unique(month(dataSet[, 1]))) == 1) {
   dateFormat = '%Y'
 }
-borderdate <- max(highestData[1, 1], dataSet[1, 1])
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+# seasonal adjust part
+funSeasonal <- function() {
+  tmpSA <- dataSet
+  buf01 <-
+    ts(data = tmpSA[, obj01],
+       start = c(year(tmpSA[1, 1]), month(tmpSA[1, 1])),
+       freq = 12)
+  buf02 <-
+    ts(data = tmpSA[, obj02],
+       start = c(year(tmpSA[1, 1]), month(tmpSA[1, 1])),
+       freq = 12)
+  result01 <- final(seas(buf01, na.action = na.omit))
+  result02 <- final(seas(buf02, na.action = na.omit))
+  tmpSA[, obj01] <- as.matrix(result01)
+  tmpSA[, obj02] <- as.matrix(result02)
+  dataSetSA <<- tmpSA
+}
+# seasonal adjust part
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
 funPlotTimeSeries <- function() {
-mainTitle<-paste(colnames(dataSet)[obj01],'×',colnames(dataSet)[obj02])
+mainTitle<-paste(colnames(dataSet)[obj01],'\n×\n',colnames(dataSet)[obj02])
 maxValue<-max(dataSet[,obj01],dataSet[,obj02])
 minValue<-min(dataSet[,obj01],dataSet[,obj02])
-par(mar=c(3,5,4,5),family = 'Meiryo')
+par(mar=c(3,5,6,5),family = 'Meiryo')
 plot(
   dataSet[, 1],
   dataSet[, obj01],
@@ -162,6 +185,17 @@ if(needloess01==1){
 lo <- loess(dataSet[, obj01]~as.numeric(dataSet[, 1]))
 lines(dataSet[, 1] , predict(lo) , col=lineColor[1], lwd=2,lty=2)
 }
+# SA part
+if(needSA01==1) {
+  lines(
+    dataSetSA[, 1],
+    dataSetSA[, obj01],
+    col = lineColor[3],
+    lwd = 1,
+    lty = 1
+  )
+}
+# SA part
 if(chartTtpe==1){
 lines(
   dataSet[, 1],
@@ -192,7 +226,18 @@ if(needloess02==1){
 lo <- loess(dataSet[, obj02]~as.numeric(dataSet[, 1]))
 lines(dataSet[, 1] , predict(lo) , col=lineColor[2], lwd=2,lty=2)
 }
-legend('topleft',col=lineColor,lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1,bty='n')
+# SA part
+if(needSA02==1) {
+  lines(
+    dataSetSA[, 1],
+    dataSetSA[, obj02],
+    col = lineColor[3],
+    lwd = 1,
+    lty = 1
+  )
+}
+# SA part
+graphics::legend('topleft',col=lineColor[-3],lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1,bty='n')
 axis.Date(side=1,at=dataSet[,1],format=dateFormat,padj=1,cex.axis=1.0)  
 }
 ```
@@ -225,18 +270,21 @@ funDataTable <- function() {
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-lineColor<-c('red','blue')
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
+lineColor<-c('red','blue','black')
 chartTtpe<-1
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'l'
 obj01<-2
 obj02<-3
+funSeasonal()
 obj01lwd<-1
 obj02lwd<-1
 needloess01<-1
 needloess02<-1
+needSA01<-1
+needSA02<-1
 needCCF<-1
 need1stdiff<-0
 dataTail<-12*20000
@@ -244,6 +292,18 @@ bufdataSet<-dataSet
 dataSet<-tail(dataSet,dataTail)
 funPlotTimeSeries()
 dataSet<-bufdataSet
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
+  cat(paste0('<b>', bigTitle, '</b>'))
+  amBoxplot(obj[,-1], horiz = T)
+}
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F} 
+dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
+funPlotBoxplotAmcharts(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
@@ -275,7 +335,7 @@ cat('<hr>')
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
 if(needCCF!=0){
 par(mfrow = c(1, 2), family = 'Meiryo',oma=c(1,1,5,1))
 obj01 <- 2
@@ -289,6 +349,6 @@ ccf(
   diff(dataSet[, obj02], lag = 1),
   main = '1st Difference'
 )
-mtext(paste(colnames(dataSet)[obj01], '×', colnames(dataSet)[obj02]),side = 3,outer = T)
+mtext(paste(colnames(dataSet)[obj01], '\n×\n', colnames(dataSet)[obj02]),side = 3,outer = T)
 }
 ```
