@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : 'サービス産業'
+title : '企業統計'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -30,8 +30,8 @@ options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'サービス産業動向調査 事業活動の産業別売上高(単位:億円) 2016年6月'
-dataSource<-'総務省'
+dataTitle<-'法人企業統計-金融業、保険業以外の業種(原数値)-全産業(除く金融保険業)-全規模-過去20年間の流動資産推移 年度データ '
+dataSource<-'財務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -61,6 +61,9 @@ dateFormat <- '%Y-%m'
 if (1 < unique(day(dataSet[, 1]))) {
   dateFormat <- '%Y-%m-%d'
 }
+if (1 == unique(month(dataSet[, 1]))) {
+  dateFormat <- '%Y'
+}
 colnames(dataSet)
 # 前月比  
 dataSet01P<-data.frame(
@@ -74,12 +77,16 @@ dataSet01D<-data.frame(
   diff(as.matrix(dataSet[,-1]),lag = 1,differences = 1),
   check.names = F
 )
-# 前月同月比  
+# 前月同月比
+if(12<nrow(dataSet)){
 dataSet12P<-data.frame(
   Date=tail(dataSet[,1],nrow(dataSet)-12),  
   round(diff(as.matrix(dataSet[,-1]),lag = 12,differences = 1)/as.matrix(head(dataSet[,-1],nrow(dataSet)-12))*100,2),
   check.names = F
 )
+}else{
+dataSet12P<-dataSet  
+}
 colnames(dataSet01P)<-colnames(dataSet01D)<-colnames(dataSet12P)<-colnames(dataSet)
 ```
 
@@ -159,15 +166,15 @@ funPlotBoxplotAmcharts(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Pow
 <hr>  
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 plotData<-list()
-plotBorder<-7
+plotBorder<-5
 plotChunk01<-1
 plotChunk02<-1
 tableChunk01<-1
 tableChunk02<-1
 buf_dataSet<-dataSet
 chunck01Append<-'原系列'
-chunck02Append<-'前年同月比(%)'
-dataSet2<-dataSet12P
+chunck02Append<-'前年比(%)'
+dataSet2<-dataSet01P
 tableRange<-5
 ```
 
@@ -178,7 +185,7 @@ for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
   columnE<-(min(1+plotBorder*ppp,ncol(dataSet)))
   plotData[[ppp]]<-dataSet[,c(1,columnS:columnE)]
   colnames(plotData[[ppp]])<-colnames(dataSet)[c(1,columnS:columnE)]
-  funTimeSeries(dataTS=plotData[[ppp]] ,lineType='l', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck01Append))
+  funTimeSeries(dataTS=plotData[[ppp]] ,lineType='h', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck01Append))
 }
 }  
 ```
