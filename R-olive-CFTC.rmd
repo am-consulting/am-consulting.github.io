@@ -21,7 +21,7 @@ output:
 </style>
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'CFTC Speculative Positions / IMM･CFTC投機筋ポジション 2016年8月23日分'
+dataTitle<-'CFTC Speculative Positions / IMM･CFTC投機筋ポジション 2016年8月30日分'
 dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. Louis'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
