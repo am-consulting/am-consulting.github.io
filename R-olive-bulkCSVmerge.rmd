@@ -1,0 +1,66 @@
+```{r}
+username <- Sys.info()['user']
+pathReadCSV <-
+  file.path(paste0('C:/Users/', username, '/Desktop/timeSeriesCSVdata/'))
+setwd(pathReadCSV)
+if (length(dir(pathReadCSV)) != 0) {
+  for (fff in 1:length(dir(pathReadCSV))) {
+    tmp <-
+      read.csv(
+        file = dir(pathReadCSV)[fff],
+        header = T,
+        as.is = T,
+        skip = 0,
+        na.strings = c("", "NA"),
+        stringsAsFactors = F,
+        check.names = F
+      )
+    if (fff == 1) {
+      dataSet <- tmp
+    } else{
+      dataSet <- merge(dataSet, tmp, all = T)
+    }
+  }
+}
+dataSet0 <- na.omit(dataSet)
+```
+
+```{r}
+pathOutput <-
+  paste0('C:/Users/', username, '/Desktop/R_Data_Write/')
+setwd(pathOutput)
+write.csv(
+  dataSet,
+  "dataSet.csv",
+  row.names = F,
+  append = F,
+  quote = F,
+  fileEncoding = "cp932" # cp932 UTF-8
+) #col.names=Tを付けると日本語が文字化けする
+write.table(
+  dataSet,
+  "dataSet.txt",
+  row.names = F,
+  append = F,
+  quote = F,
+  fileEncoding = "cp932",
+  sep = '\t'
+)
+write.csv(
+  dataSet0,
+  "dataSet0.csv",
+  row.names = F,
+  append = F,
+  quote = F,
+  fileEncoding = "cp932"
+)
+write.table(
+  dataSet0,
+  "dataSet0.txt",
+  row.names = F,
+  append = F,
+  quote = F,
+  fileEncoding = "cp932",
+  sep = '\t'
+)
+```
