@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '漁業生産額'
+title : 'DOW vs NIKKEI225'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -26,13 +26,14 @@ library(rAmCharts)
 library(googleVis)
 library(RColorBrewer)
 library(dplyr)
+library(colorspace)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'漁業生産額 総生産額 1960年-2014年(年次データ)'
-dataSource<-'農林水産省'
+dataTitle<-'ダウ平均株価と日経平均株価の比較 月次データ(ともに平均) 2016年8月分'
+dataSource<-'Federal Reserve Bank of St. Louis、株式会社日本経済新聞社'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -119,9 +120,10 @@ funTimeSeries <- function(obj, bigTitle = '') {
 dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
 funBoxPlot(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
 ```
-
+<hr>
 ```{r,warning=F,error=F,message=F,echo=F}
-cols <- c(brewer.pal(12, "Paired"),brewer.pal(12, "Set3"))
+cols <- c(brewer.pal(8, "Accent"),brewer.pal(12, "Set3"))
+cols <- rainbow_hcl(7)
 maxseries <- 300
 if (length(unique(day(dataSet[, 1]))) != 1) {
   maxseries <- as.numeric(dataSet[nrow(dataSet), 1] - dataSet[1, 1]) + 1
@@ -133,7 +135,7 @@ funTimeSeries(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By h
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-funTimeSeries(obj = dataSetScale,bigTitle = paste(dataTitle,dateRange,' Center=First Value,Scale=SD. Powered By https://www.amcharts.com/'))
+funTimeSeries(obj = dataSetScale,bigTitle = paste(dataTitle,dateRange,'. Center=First Value,Scale=SD. Powered By https://www.amcharts.com/'))
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -176,9 +178,9 @@ tableChunk01<-1
 tableChunk02<-1
 buf_dataSet<-dataSet
 chunck01Append<-'原系列'
-chunck02Append<-'前年比(%)'
-dataSet2<-dataSet01P
-tableRange<-5
+chunck02Append<-'前年同月比(%)'
+dataSet2<-dataSet12P
+tableRange<-11
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}

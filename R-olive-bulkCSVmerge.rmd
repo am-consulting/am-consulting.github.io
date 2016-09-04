@@ -15,10 +15,12 @@ if (length(dir(pathReadCSV)) != 0) {
         stringsAsFactors = F,
         check.names = F
       )
+    tmp[, 1] <- as.Date(tmp[, 1])
+    colnames(tmp)[1] <- 'Date'
     if (fff == 1) {
       dataSet <- tmp
     } else{
-      dataSet <- merge(dataSet, tmp, all = T)
+      dataSet <- merge(dataSet, tmp, all = T, by='Date')
     }
   }
 }
