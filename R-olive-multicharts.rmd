@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "North America Rig Count"
+title : "国内総生産"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -20,8 +20,8 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス 2016年9月2日分'
-dataSource<-'Baker Hughes'
+dataTitle<-'国内総生産(名目、季節調整、支出側)における家計最終消費支出(Consumption of Households)と財貨・サービス_輸出(Goods & Services-Exports)の構成比(%)'
+dataSource<-'内閣府'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -59,7 +59,7 @@ highestAuthority()
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-iii <- 3
+iii <- 1
 highestData <- switch (iii,
                        get(titleAbb[1]),
                        get(titleAbb[2]),
@@ -272,7 +272,7 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
 lineColor<-c('red','blue','black')
-chartTtpe<-1
+chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'l'
@@ -297,7 +297,7 @@ dataSet<-bufdataSet
 ```{r,warning=F,error=F,message=F,echo=F} 
 funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
   cat(paste0('<b>', bigTitle, '</b>'))
-  amBoxplot(obj[,-1], horiz = T)
+  amBoxplot(obj[,-c(1,4)], horiz = T)
 }
 ```
 <hr>
