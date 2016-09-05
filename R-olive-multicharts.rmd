@@ -12,7 +12,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1100px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -20,7 +20,7 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'国内総生産(名目、季節調整、支出側)における家計最終消費支出(Consumption of Households)と財貨・サービス_輸出(Goods & Services-Exports)の構成比(%)'
+dataTitle<-'内閣府版GDPギャップ'
 dataSource<-'内閣府'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -270,11 +270,11 @@ funDataTable <- function() {
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
 lineColor<-c('red','blue','black')
 chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
-seriesType01<-'l'
+seriesType01<-'h'
 seriesType02<-'l'
 obj01<-2
 obj02<-3

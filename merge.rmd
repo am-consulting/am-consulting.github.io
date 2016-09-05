@@ -8,7 +8,7 @@ tmp <-
   na.strings = c("NA", "-", "－", "… ", ".", ""),
   check.names = FALSE
   )
-#  tmp[, 1] <- as.Date(tmp[, 1])
+  tmp[, 1] <- as.Date(tmp[, 1])
   tmp01 <- na.omit(tmp)
 ```
 
@@ -22,12 +22,12 @@ tmp <-
   na.strings = c("NA", "-", "－", "… ", ".", ""),
   check.names = FALSE
   )
-#  tmp[, 1] <- as.Date(tmp[, 1])
+  tmp[, 1] <- as.Date(tmp[, 1])
   tmp02 <- na.omit(tmp)
 ```
 
 ```{r}
-tmp <- merge(tmp01, tmp02, by = "都道府県", all = T)
+tmp <- merge(tmp01, tmp02, by = "Date", all = T)
 head(tmp, 1)
 ```
 
