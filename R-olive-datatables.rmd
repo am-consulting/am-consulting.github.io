@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '企業統計'
+title : '人口動態'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -13,7 +13,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1400px;
+	max-width: 1200px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -28,12 +28,12 @@ library(googleVis)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
-needID<-0
+needID<-1
 needAtag<-0
 needAdd<-0
 pp<-1
-dataTitle<-'日本企業の損益計算書(売上高他):民主党政権時と第二次安倍政権発足以降の比較'
-dataSource<-'財務省'
+dataTitle<-'人口動態調査 人口動態統計 死因簡単分類別 2016年4月'
+dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -134,9 +134,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-funDataTable(obj = dataSetDT, append = appendTitle)
-#cat(paste(dataTitle,appendTitle))
-#fungvisTable(obj = dataSetDT)
+#funDataTable(obj = dataSetDT, append = appendTitle)
+cat(paste(dataTitle,appendTitle))
+fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
