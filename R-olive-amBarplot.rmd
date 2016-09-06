@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '企業統計'
+title : '消費動向'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -30,11 +30,13 @@ options(scipen = 100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+needStack<-0
+need100<-1
 needReshape<-0
 splitN<-10
-dataTitle <- '法人企業統計調査 年度データ-当期末純資産合計とその内訳-単位:兆円'
-dataSource <- '財務省'
-notes <- '金融業、保険業以外の業種(原数値)-業種:全産業(除く金融保険業)-規模:全規模'
+dataTitle <- '消費動向調査 物価の見通しの推移(総世帯、原数値)-日銀金融緩和開始時(2013年4月)と現在の比較'
+dataSource <- '内閣府'
+notes <- ''
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -42,8 +44,8 @@ cat(paste('Title :', dataTitle, '\n'))
 cat(paste('Raw Data Source :', dataSource, '\n'))
 cat(paste('Author :', Author, '\n'))
 cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
+#cat(paste('特記 :', notes, '\n'))
+#cat(paste('特記 :', notes0, '\n'))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
@@ -97,7 +99,9 @@ funamBarplot <- function(obj, mainTitle = '', type) {
 
 ```{r,warning=F,error=F,message=F,echo=F,include=F}
 out = NULL
+knit_expanded_1<-knit_expanded_2<-''
 for (iii in 1:length(dataSet)) {
+  if(needStack!=0){
   knit_expanded_1 <-
     paste0(
       "\n```{r results='asis', echo=F}\n\n",
@@ -111,7 +115,9 @@ for (iii in 1:length(dataSet)) {
       "]][,1],collapse = ',') ,'-積み上げ'), type='regular')
     \n\ncat('<hr>')\n\n```"
     )
+  }
   
+  if(need100!=0){
   knit_expanded_2 <-
     paste0(
       "\n```{r results='asis', echo=F}\n\n",
@@ -125,6 +131,7 @@ for (iii in 1:length(dataSet)) {
       "]][,1],collapse = ',') ,'-100%'), type='100')
     \n\ncat('<hr>')\n\n```"
     )
+  }
   
   out = c(out, knit_expanded_1, knit_expanded_2)
 }
