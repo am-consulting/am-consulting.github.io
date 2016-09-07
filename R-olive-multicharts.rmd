@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
-title : "国内総生産"
+title : "不動産融資"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -20,17 +20,19 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'内閣府版GDPギャップ'
-dataSource<-'内閣府'
+dataTitle<-'不動産業-設備資金新規貸出-国内銀行3勘定合算(億円) 2016年4-6月期'
+dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID<-format(Sys.time(),'%Y-%m-%d-%H-%M-%S')
 cat(paste("Title :",dataTitle,"\n"))
 cat(paste("Raw Data Source :",dataSource,"\n"))
 cat(paste("Author :",Author,"\n"))
 cat(paste("作成日 :",Sys.time(),"\n"))
 cat(paste("特記 :",notes,"\n"))
 cat(paste("特記 :",notes0,"\n"))
+cat(paste("ID :",htmlID,"\n"))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -49,6 +51,7 @@ library(RCurl)
 library(rAmCharts)
 library(seasonal)
 library(zoo)
+library(knitr)
 script <-
   getURL(
     'https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_HighestAuthority.r',
@@ -274,8 +277,8 @@ funDataTable <- function() {
 lineColor<-c('red','blue','black')
 chartTtpe<-2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
-seriesType01<-'h'
-seriesType02<-'l'
+seriesType01<-'l'
+seriesType02<-'h'
 obj01<-2
 obj02<-3
 funSeasonal()
@@ -285,7 +288,7 @@ needloess01<-1
 needloess02<-1
 needSA01<-0
 needSA02<-0
-needCCF<-1
+needCCF<-0
 need1stdiff<-0
 dataTail<-12*20000
 bufdataSet<-dataSet
@@ -297,15 +300,26 @@ dataSet<-bufdataSet
 ```{r,warning=F,error=F,message=F,echo=F} 
 funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
   cat(paste0('<b>', bigTitle, '</b>'))
-  amBoxplot(obj[,-c(1,4)], horiz = T)
+  amBoxplot(obj, horiz = T)
 }
 ```
 <hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F} 
-dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
-funPlotBoxplotAmcharts(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+out = NULL
+for (iii in 2:(ncol(dataSet) - 1)) {
+  knit_expanded_1 <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))\n\n",
+      "funPlotBoxplotAmcharts(obj = dataSet[,",
+      iii,
+      ",drop=F], bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
+\n\ncat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded_1)
+}
 ```
-<hr>
+`r paste(knit(text = out), collapse = '\n')`
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 cat('<b>原系列 / Original</b>')
 bufdataSet <- dataSet
