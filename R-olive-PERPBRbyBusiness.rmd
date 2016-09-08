@@ -24,18 +24,21 @@ library(DT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'規模別･業種別PER･PBR(連結･単体) 市場一部 2016年7月分'
+dataTitle<-'規模別･業種別PER･PBR(連結･単体) 市場一部 2016年8月分'
 dataSource<-'株式会社日本取引所グループ'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
 Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID<-format(Sys.time(),'%Y-%m-%d-%H-%M-%S')
 cat(paste('Title :',dataTitle,'\n'))
 cat(paste('Raw Data Source :',dataSource,'\n'))
 cat(paste('Author :',Author,'\n'))
 cat(paste('作成日 :',Sys.time(),'\n'))
 cat(paste('特記 :',notes,'\n'))
 cat(paste('特記 :',notes0,'\n'))
+cat(paste("ID :",htmlID,"\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
@@ -113,8 +116,8 @@ obj<-8
 buf<-na.omit(tmp1[,c(1,obj)])
 rrr<-rrr+1
 dataSet[rrr,1]<-'加重-最高PBR'
-dataSet[rrr,2]<-subset(buf,max(buf[,2])==buf[,2])[,1]
-dataSet[rrr,3]<-subset(buf,max(buf[,2])==buf[,2])[,2]
+dataSet[rrr,2]<-paste(as.vector(subset(buf,max(buf[,2])==buf[,2])[,1]),collapse = ',')
+dataSet[rrr,3]<-paste(as.vector(subset(buf,max(buf[,2])==buf[,2])[,2]),collapse = ',')
 rrr<-rrr+1
 dataSet[rrr,1]<-'加重-最低PBR'
 dataSet[rrr,2]<-subset(buf,min(buf[,2])==buf[,2])[,1]
@@ -148,13 +151,13 @@ funDataTable <- function(obj,dataTitle='',append='') {
   DT::datatable(
     obj,
     options = list(
-      search.regex = T,
-      paging = T,
+      search.regex = F,
+      paging = F,
       autoWidth = F,
-      info = T,
-      lengthChange = T,
+      info = F,
+      lengthChange = F,
       ordering = T,
-      searching = T,
+      searching = F,
       scrollX = T,
       lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
       orderClasses = T,
@@ -180,3 +183,4 @@ funDataTable(obj = dataSet, dataTitle = dataTitle , append = append)
 dataSet0<-data.frame(ID=seq(1,nrow(tmp0)),tmp0[,c(1,2,3,4,7,8,11,12)],check.names = F)
 funDataTable(obj = dataSet0, dataTitle = dataTitle)
 ```
+<hr>
