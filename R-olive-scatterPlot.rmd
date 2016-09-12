@@ -20,7 +20,7 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'都道府県別の悪性新生物75歳未満年齢調整死亡率と喫煙率 - 男女計 - 2013年'
+dataTitle<-'都道府県別の悪性新生物75歳未満年齢調整死亡率と喫煙率 - 女 - 2013年'
 dataSource<-'国立がん研究センター'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -127,6 +127,12 @@ obj01 <- 2
 obj02 <- 3
 x <- dataSet[, obj01]
 y <- dataSet[, obj02]
+cat('<div align="center"><b>原数値</b></div>')
+funScatterPlot()
+cat('<hr>')
+x <- rank(x)
+y <- rank(y)
+cat('<div align="center"><b>順位</b></div>')
 funScatterPlot()
 ```
 <hr>
@@ -140,11 +146,23 @@ cat(paste("x :", colnames(dataSet)[obj01], "\ny :", colnames(dataSet)[obj02], "\
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+x <- dataSet[, obj01]
+y <- dataSet[, obj02]
 summary(lm(y ~ x))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-cor.test(x, y)
+xRank <- rank(x)
+yRank <- rank(y)
+summary(lm(yRank ~ xRank))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+cor.test(x, y, method = 'pearson')
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+cor.test(x, y, method = 'spearman')
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
