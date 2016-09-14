@@ -1,0 +1,204 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d-%H-%M-%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "購買力平価"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <-
+  'OECD購買力平価と実勢為替レートの比較 2015年'
+dataSource <- 'OECD'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+library(googleVis)
+library(DT)
+library(ggplot2)
+library(lubridate)
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importFXRateFromFRED_major.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+dailyFXrate <- data.frame(origData, TIME = year(origData[, 1]),check.names = F)
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importOECDPPP.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F,fig.height=6,fig.width=10}
+#JPY
+JPY01 <- dailyFXrate[, c(1, 2, 5)]
+JPY02 <- origData[, c(1, 16)]
+chimeraPlotJPY <- merge(JPY01, JPY02, by = "TIME", all = T)
+chimeraPlotJPY <- na.omit(chimeraPlotJPY)
+chimeraPlotJPY$TIME <- factor(chimeraPlotJPY$TIME)
+tsDataJPY <- unique(chimeraPlotJPY[, c(1, 4)])
+tsDataJPY[, 1] <- as.integer(tsDataJPY[, 1]) # important
+subtitle <-
+  paste(chimeraPlotJPY[1, 1], " - ", chimeraPlotJPY[nrow(chimeraPlotJPY), 1])
+g1 <- ggplot()
+g1 <-
+  g1 + geom_boxplot(data = chimeraPlotJPY, aes(x = TIME, y = chimeraPlotJPY[, 3]))
+g1 <-
+  g1 + geom_line(data = tsDataJPY, aes(x = TIME, y = tsDataJPY[, 2]), col =
+      "blue")
+g1 <-
+  g1 + geom_point(
+    data = tsDataJPY,
+    aes(x = TIME, y = tsDataJPY[, 2]),
+    size = 3,
+    col = "blue"
+  )
+g1 <- g1 + theme(plot.title = element_text(size = 15))
+g1 <- g1 + theme(axis.title.x = element_text(size = 15))
+g1 <- g1 + theme(axis.title.y = element_text(size = 15))
+g1 <-
+  g1 + theme(axis.text.x = element_text(
+    size = 15,
+    angle = 90,
+    hjust = 0.5,
+    vjust = 0.5
+  ))
+g1 <- g1 + theme(axis.text.y = element_text(size = 15, angle = 90))
+g1 <-
+  g1 + ggtitle(
+    paste(
+      colnames(chimeraPlotJPY)[3],
+      "×",
+      colnames(chimeraPlotJPY)[4],
+      "\nBoxplot:Daily Exchange Rate , Blue Line:PPP\n",
+      subtitle
+    )
+  )
+g1 <- g1 + xlab("Year")
+g1 <- g1 + ylab("")
+print(g1)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='hold',echo=F,fig.height=6,fig.width=10}
+#EURO
+EUR01<-dailyFXrate[,c(1,3,5)]
+EUR02<-origData[,c(1,48)]
+chimeraPlotEUR<-merge(EUR01,EUR02,by="TIME",all=T)
+chimeraPlotEUR<-na.omit(chimeraPlotEUR)
+chimeraPlotEUR$TIME <-factor(chimeraPlotEUR$TIME)
+tsDataEUR<-unique(chimeraPlotEUR[,c(1,4)])
+tsDataEUR[,1]<-as.integer(tsDataEUR[,1]) # important
+subtitle <-
+  paste(chimeraPlotEUR[1, 1], " - ", chimeraPlotEUR[nrow(chimeraPlotEUR), 1])
+g2<-ggplot()
+g2<-g2+geom_boxplot(data = chimeraPlotEUR, aes(x = TIME, y = chimeraPlotEUR[, 3]))
+g2<-g2+geom_line(data = tsDataEUR,aes(x=TIME, y=tsDataEUR[,2]),col="blue")
+g2<-g2+geom_point(data = tsDataEUR,aes(x=TIME, y=tsDataEUR[,2]),size=3,col="blue")
+g2 <- g2 + theme(plot.title = element_text(size = 15))
+g2 <- g2 + theme(axis.title.x = element_text(size = 15))
+g2 <- g2 + theme(axis.title.y = element_text(size = 15))
+g2 <-
+  g2 + theme(axis.text.x = element_text(
+    size = 15,
+    angle = 90,
+    hjust = 0.5,
+    vjust = 0.5
+  ))
+g2 <-      g2 + theme(axis.text.y = element_text(size = 15, angle = 90))
+g2 <-
+  g2 + ggtitle(paste(colnames(chimeraPlotEUR)[3],"×",colnames(chimeraPlotEUR)[4],"\nBoxplot:Daily Exchange Rate , Blue Line:PPP\n", subtitle))
+g2 <- g2 + xlab("Year")
+g2 <- g2 + ylab("")
+print(g2)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='hold',echo=F,fig.height=6,fig.width=10}
+    #GBR
+GBR01<-dailyFXrate[,c(1,4,5)]
+GBR02<-origData[,c(1,30)]
+chimeraPlotGBR<-merge(GBR01,GBR02,by="TIME",all=T)
+chimeraPlotGBR<-na.omit(chimeraPlotGBR)
+chimeraPlotGBR$TIME <-factor(chimeraPlotGBR$TIME)
+tsDataGBR<-unique(chimeraPlotGBR[,c(1,4)])
+tsDataGBR[,1]<-as.integer(tsDataGBR[,1]) # important
+subtitle <-
+  paste(chimeraPlotGBR[1, 1], " - ", chimeraPlotGBR[nrow(chimeraPlotGBR), 1])
+g3<-ggplot()
+g3<-g3+geom_boxplot(data = chimeraPlotGBR, aes(x = TIME, y = chimeraPlotGBR[, 3]))
+g3<-g3+geom_line(data = tsDataGBR,aes(x=TIME, y=tsDataGBR[,2]),col="blue")
+g3<-g3+geom_point(data = tsDataGBR,aes(x=TIME, y=tsDataGBR[,2]),size=3,col="blue")
+g3 <- g3 + theme(plot.title = element_text(size = 15))
+g3 <- g3 + theme(axis.title.x = element_text(size = 15))
+g3 <- g3 + theme(axis.title.y = element_text(size = 15))
+g3 <-
+  g3 + theme(axis.text.x = element_text(
+    size = 15,
+    angle = 90,
+    hjust = 0.5,
+    vjust = 0.5
+  ))
+g3 <-      g3 + theme(axis.text.y = element_text(size = 15, angle = 90))
+g3 <-
+  g3 + ggtitle(paste(colnames(chimeraPlotGBR)[3],"×",colnames(chimeraPlotGBR)[4],"\nBoxplot:Daily Exchange Rate , Blue Line:PPP\n", subtitle))
+g3 <- g3 + xlab("Year")
+g3 <- g3 + ylab("")
+print(g3)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+append=''
+DT::datatable(
+  origData,
+  options = list(
+    search.regex = F,
+    paging = T,
+    autoWidth = F,
+    info = T,
+    lengthChange = T,
+    ordering = T,
+    searching = T,
+    scrollX = T,
+    lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
+    orderClasses = T,
+    order = list(list(0, 'desc')),
+    columnDefs = list(list(width = '10%', targets = 0))
+  ),
+  rownames = F,
+  caption = paste(dataTitle, '. Source:',dataSource),
+  class = 'display compact'
+)
+cat('<hr>')
+PopTable <- gvisTable(      locationList, 
+  options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=10)
+)
+plot(PopTable,tag='chart')
+```
