@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
 
-title : '人口動態'
+title : '再分配'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -32,7 +32,7 @@ needID<-1
 needAtag<-0
 needAdd<-0
 pp<-1
-dataTitle<-'人口動態調査 人口動態統計 死因簡単分類別 2016年4月'
+dataTitle<-'所得再分配調査 2014年 - 世帯人員別所得再分配状況(単位:万円)'
 dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
@@ -107,11 +107,11 @@ tmp <-
         ordering = T,
         searching = T,
         scrollX = T,
-        lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
+        lengthMenu = list(c(25,-1, 1), c(25, 'All', 1)),
         orderClasses = T,
         order = list(list(0, 'asc')),
         columnDefs = list(
-          list(width = '10%', targets = 0)
+          list(width = '5%', targets = 0)
           # ,
           # list(width = '8%', targets = 1)
           # ,
@@ -134,9 +134,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste(dataTitle,appendTitle))
-fungvisTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = appendTitle)
+#cat(paste(dataTitle,appendTitle))
+#fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
