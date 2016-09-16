@@ -1,0 +1,138 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : 'イールドカーブ'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+library(lubridate)
+library(googleVis)
+library(dplyr)
+library(rAmCharts)
+library(RCurl)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle<-'日本国債のイールドカーブ'
+dataSource<-'財務省'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-'表中、-9999はNAを意味します'
+dataTail<-0 
+Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID<-timeStamp
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+cat(paste("ID :",htmlID,"\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_JGBInterestRate.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+jgbData <- na.omit(jgbData)
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide', fig.show='animate', interval=0.2, aniopts="controls"}
+dateRange<-seq(nrow(jgbData)-300,nrow(jgbData))
+yRange<-c(min(jgbData[dateRange,][,-1]),max(jgbData[dateRange,][,-1]))
+slopeTable<-data.frame()
+cnt<-1
+for(rrr in dateRange){
+par(mar = c(5, 3, 3, 2), family = 'Meiryo')
+xRange <- seq(1, ncol(jgbData) - 1)
+yieldCurve <- unlist(jgbData[rrr, -1])
+plot(
+  yieldCurve,
+  type = 'o',
+  xaxt = "n",
+  col = 'blue',
+  xlab = '' ,
+  ylab = '%' ,
+  panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ) ,
+  xaxt = 'n',
+  main = paste0('日本国債のイールドカーブ:', jgbData[rrr, 1]),
+  cex.axis = 1.2,
+  cex.lab = 1,
+  cex.main = 1.2,
+  ylim=yRange
+)
+lmResult <- lm(yieldCurve ~ xRange)
+slope <- round(lmResult$coefficients[2], 4)
+abline(lmResult, col = 'red', lty = 2)
+axis(1, at = xRange, labels = colnames(jgbData)[-1])
+text(1, sum(yRange) / 2, paste0('線形回帰 Slope=', slope), pos = 4)
+CIrange <- confint(lmResult, 'xRange', level = 0.95)
+slopeTable[cnt, 1] <- as.character(jgbData[rrr, 1])
+slopeTable[cnt, 2] <- slope
+slopeTable[cnt, 3] <- CIrange[1]
+slopeTable[cnt, 4] <- CIrange[2]
+cnt <- cnt + 1
+}
+colnames(slopeTable)<-c('Date','Slope','C.I.95%-lwr','C.I.95%-upr')
+```
+####注意
+イールドカーブの線形回帰は説明変数を数値の1から15(1Y、2Y・・・40Y)、応答変数を金利データとして算出したものである。
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj,tableTitle='',append='') {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(5,-1, 1), c(5, 'All', 1)),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(
+        list(width = '10%', targets = 0)
+        )
+      ),
+    rownames = F,
+    caption = paste(tableTitle, append),
+    class = 'display compact'
+  )
+}
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable(obj = slopeTable, tableTitle = '線形回帰Slope')
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable(obj = jgbData, tableTitle = '日本国債金利情報')
+```
