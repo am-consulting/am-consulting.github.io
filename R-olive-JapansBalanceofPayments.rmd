@@ -1,0 +1,150 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '国際収支'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+library(lubridate)
+library(googleVis)
+library(dplyr)
+library(rAmCharts)
+library(RCurl)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importJapansBalanceofPayments.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('日本の国際収支 - ', format(origData1[nrow(origData1),1],'%Y年%m月'))
+dataSource <- '財務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :', notes, '\n'))
+cat(paste('特記 :', notes0, '\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funamBarplot <- function(obj, mainTitle = '') {
+  amBarplot(
+    x = colnames(obj)[1] ,
+    y = colnames(obj)[2:ncol(obj)],
+    data = obj,
+    horiz = T,
+    stack_type = 'regular',
+    legend = T,
+    labelRotation = 0,
+    main = mainTitle,
+    mainColor = "#68838B",
+    mainSize = 15,
+    creditsPosition = "top-right",
+    legendPosition = "bottom",
+    show_values = T
+  )
+}  
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj,dataTitle='',append='') {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = F,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = F,
+      lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(
+        list(width = '10%' , targets = 0)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle, append),
+    class = 'display compact'
+  )
+}
+```
+####日本の国際収支(単位：億円)
+######注)経常収支＋資本移転等収支－金融収支＋誤差脱漏＝0
+######注)金融収支の額は棒グラフに表示されている数値の符号を逆にして下さい。
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+bop0 <- origData1[, c(1, 2, 10, 11, 17), drop = F]
+bop0[, 1] <- as.character(format(bop0[, 1], '%Y-%m'))
+bop <- tail(bop0, 12)
+bop[, 4] <- bop[, 4] * -1
+funamBarplot(obj = bop, mainTitle = '日本の国際収支(単位：億円)' )
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+titleDT<-'日本の国際収支'
+appendTitle<-'単位：億円'
+funDataTable(obj = bop0, append = paste0(titleDT,'-',appendTitle))
+```
+<hr>
+####日本の経常収支(単位：億円)
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+currentAccount0 <- origData1[, c(1,4,7:9), drop = F]
+currentAccount0[, 1] <- as.character(format(currentAccount0[, 1], '%Y-%m'))
+currentAccount <- tail(currentAccount0, 12)
+funamBarplot(obj = currentAccount, mainTitle = '日本の経常収支(単位：億円)' )
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+titleDT<-'日本の経常収支'
+appendTitle<-'単位：億円'
+funDataTable(obj = currentAccount0, append = paste0(titleDT,'-',appendTitle))
+```
+<hr>
+####日本の貿易収支(単位：億円)
+######注)貿易収支＝輸出 －輸入
+######注)輸入の額は棒グラフに表示されている数値の符号を逆にして下さい。
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+goods0 <- origData1[, c(1,5:6), drop = F]
+goods0[, 1] <- as.character(format(goods0[, 1], '%Y-%m'))
+goods <- tail(goods0, 12)
+goods[, 3] <- goods[, 3] * -1
+funamBarplot(obj = goods, mainTitle = '日本の貿易収支(単位：億円)' )
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+titleDT<-'日本の貿易収支'
+appendTitle<-'単位：億円'
+funDataTable(obj = goods0, append = paste0(titleDT,'-',appendTitle))
+```
