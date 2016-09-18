@@ -1,0 +1,291 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "大気汚染物質"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '有害大気汚染物質のモニタリング調査-中央区晴海局-ベンゼンとヒ素'
+dataSource <- '東京都環境局'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(lubridate)
+library(tseries)
+library(dplyr)
+library(rAmCharts)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.csv(
+    paste0(getwd(), "/csv/中央区晴海のベンゼンとヒ素.csv"),
+    header = T,
+    skip = 0,
+    stringsAsFactor = F,
+    na.strings = c("", "***"),
+    check.names = F,
+    fileEncoding = "utf-8"
+  )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+dataSet <- tmp
+dataSet[, 1] <- as.Date(dataSet[, 1])
+dateFormat = '%Y-%m-%d'
+if (length(unique(day(dataSet[, 1]))) == 1) {
+  dateFormat = '%Y-%m'
+}
+if (length(unique(month(dataSet[, 1]))) == 1) {
+  dateFormat = '%Y'
+}
+```
+####測定局
+<div align="center">
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3241.840263996947!2d139.77699291525815!3d35.656306980200114!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x60188978dd135fe5%3A0xf90412d9c01fe55b!2z44CSMTA0LTAwNTMg5p2x5Lqs6YO95Lit5aSu5Yy65pm05rW377yT5LiB55uu77yW4oiS77yRIOadseS6rOmDveeSsOWig-WxgOS4reWkruWMuuaZtOa1t-S4gOiIrOeSsOWig-Wkp-awl-a4rOWumuWxgA!5e0!3m2!1sja!2sjp!4v1474186704248" width="1000" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
+
+</div>
+
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotTimeSeries <- function() {
+  resultADF<-adf.test(dataSet[,obj01])
+  mainTitle <- paste0(colnames(dataSet)[obj01],
+                      '\nADF test\np:',resultADF$p.value,
+                      '\nalternative hypothesis:',resultADF$alternative)
+  plot(
+    dataSet[, 1],
+    dataSet[, obj01],
+    type = seriesType01,
+    col = lineColor[1],
+    xlab = '',
+    ylab = colnames(dataSet)[obj01],
+    panel.first = grid(
+      nx = NULL,
+      ny = NULL,
+      lty = 2,
+      equilogs = T
+    ) ,
+    xaxt = 'n',
+    main = mainTitle,
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1,
+    lwd = obj01lwd
+  )
+  lo <-
+    loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
+  lines(dataSet[, 1] ,
+        predict(lo) ,
+        col = lineColor[1],
+        lwd = 2,
+        lty = 2)
+  axis.Date(
+    side = 1,
+    at = dataSet[, 1],
+    format = dateFormat,
+    padj = 1,
+    cex.axis = 1.0
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function() {
+  DT::datatable(
+    dataSet0,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(
+        list(width = '10%', targets = 0)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle,'. Source:' ,dataSource),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+lineColor <- c('black', 'blue', 'red')
+title0 <-
+  paste0(
+    'Period:',
+    format(first(dataSet[, 1]), dateFormat),
+    '~',
+    format(last(dataSet[, 1]), dateFormat),
+    ' , Source:',
+    dataSource
+  )
+```
+####ベンゼンとヒ素及びその化合物の年平均濃度時系列推移
+#####- ベンゼン環境基準:3μg/m<sup>3</sup>
+#####- ヒ素及びその化合物指針値:6ng/m<sup>3</sup>
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+par(
+  mar = c(3, 5, 6, 3),
+  family = 'Meiryo',
+  mfrow = c(1, 2) ,
+  oma = c(0, 0, 3, 0)
+)
+for (iii in 1:2) {
+  switch (iii,
+          obj01 <- 2,
+          obj01 <- 3)
+  switch (iii,
+          seriesType01 <- 'h',
+          seriesType01 <- 'h')
+  switch (iii,
+          obj01lwd <- 1,
+          obj01lwd <- 1)
+  funPlotTimeSeries()
+}
+mtext(title0, 3, outer = T) 
+```
+<hr>
+####ベンゼンとヒ素及びその化合物の年平均濃度自己相関
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+par(
+  mar = c(3, 5, 4, 3),
+  family = 'Meiryo',
+  mfrow = c(1, 2) ,
+  oma = c(0, 0, 3, 0)
+)
+for (iii in 1:2) {
+  switch (iii,
+          obj01 <- 2,
+          obj01 <- 3)
+  switch (iii,
+          seriesType01 <- 'h',
+          seriesType01 <- 'h')
+  switch (iii,
+          obj01lwd <- 1,
+          obj01lwd <- 1)
+  acf(dataSet[, obj01], main = colnames(dataSet)[obj01])
+}
+mtext(title0, 3, outer = T) 
+```
+<hr>
+####ベンゼンとヒ素及びその化合物の年平均濃度基本統計量
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+cat(title0)
+amBoxplot(dataSet[,-1])
+```
+<hr>
+####ベンゼンとヒ素及びその化合物の年平均濃度基本統計量:月別
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+cat(title0)
+for (mm in 1:12) {
+  buf <- subset(dataSet, month(dataSet[, 1]) == mm)
+  if (mm == 1) {
+    bpMonth01 <-  buf[, 2, drop = F]
+    bpMonth02 <-  buf[, 3, drop = F]
+  } else{
+    bpMonth01 <-  qpcR:::cbind.na(bpMonth01, buf[, 2, drop = F])
+    bpMonth02 <-  qpcR:::cbind.na(bpMonth02, buf[, 3, drop = F])
+  }
+  colnames(bpMonth01)[mm] <- colnames(bpMonth02)[mm] <- paste0(mm, '月')
+}
+cat('<div align=\'center\'><b>',colnames(dataSet)[2],'</b></div>')
+amBoxplot(bpMonth01)
+cat('<div align=\'center\'><b>',colnames(dataSet)[3],'</b></div>')
+amBoxplot(bpMonth02)
+```
+<hr>
+####ベンゼンとヒ素及びその化合物の年平均濃度基本統計量:年別
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+cat(title0)
+cnt<-1
+for (yyyy in year(first(dataSet[,1])):year(last(dataSet[,1]))) {
+  buf <- subset(dataSet, year(dataSet[, 1]) == yyyy)
+  if (cnt == 1) {
+    bpYear01 <-  buf[, 2, drop = F]
+    bpYear02 <-  buf[, 3, drop = F]
+  } else{
+    bpYear01 <-  qpcR:::cbind.na(bpYear01, buf[, 2, drop = F])
+    bpYear02 <-  qpcR:::cbind.na(bpYear02, buf[, 3, drop = F])
+  }
+  colnames(bpYear01)[cnt] <- colnames(bpYear02)[cnt] <- paste0(yyyy, '年')
+  cnt<-cnt+1
+}
+cat('<div align=\'center\'><b>',colnames(dataSet)[2],'</b></div>')
+amBoxplot(bpYear01)
+cat('<div align=\'center\'><b>',colnames(dataSet)[3],'</b></div>')
+amBoxplot(bpYear02)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cat('<div align=\'center\'><b>原系列 / Original</b></div>')
+dataSet0 <- dataSet
+dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
+funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cat('<div align=\'center\'><b>1次階差 / 1st difference</b></div>')
+dataSet0 <- dataSet
+dataSet0 <-
+  data.frame(dataSet0[-1, 1],
+             diff(as.matrix(dataSet0[, -1]), differences = 1),
+             check.names = F)
+dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
+colnames(dataSet0) <- colnames(dataSet)
+funDataTable()
+```
+<hr>
+####ベンゼンとヒ素及びその化合物の年平均濃度相互相関
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
+par(mfrow = c(1, 2),
+    family = 'Meiryo',
+    oma = c(1, 1, 3, 1))
+obj01 <- 2
+obj02 <- 3
+ccf(dataSet[, obj01],
+    dataSet[, obj02],
+    main = 'Level')
+ccf(diff(dataSet[, obj01], lag = 1),
+    diff(dataSet[, obj02], lag = 1),
+    main = '1st Difference')
+mtext(paste(colnames(dataSet)[obj01], ' × ', colnames(dataSet)[obj02]),
+      side = 3,
+      outer = T)
+```
