@@ -1,0 +1,280 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '外貨準備'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 11
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1100px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+library(lubridate)
+library(googleVis)
+library(dplyr)
+library(rAmCharts)
+library(RCurl)
+library(pipeR)
+library(gridExtra)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importInternationalReserves.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('日本の外貨準備等状況 - ', format(origData1[nrow(origData1),1],'%Y年%m月'))
+dataSource <- '財務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :', notes, '\n'))
+cat(paste('特記 :', notes0, '\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funamBarplot <- function(obj, mainTitle = '') {
+  amBarplot(
+    x = colnames(obj)[1] ,
+    y = colnames(obj)[2:ncol(obj)],
+    data = obj,
+    horiz = T,
+    stack_type = 'regular',
+    main = mainTitle,
+    mainColor = "#68838B",
+    mainSize = 15,
+    creditsPosition = "top-right",
+    legendPosition = "bottom",
+    show_values = T
+  ) %>>%amOptions(legend=T, legendPosition="right", labelRotation = 0, zoom=F)
+}  
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj,dataTitle='',append='') {
+  DT::datatable(
+    obj,
+    options = list(
+      search.regex = F,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = F,
+      lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(
+        list(width = '10%' , targets = 0)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle, append),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funPlotTimeSeries <- function(dataSet,append='') {
+  plot(
+    dataSet[, 1],
+    dataSet[, obj01],
+    type = seriesType01,
+    col = lineColor[1],
+    xlab = '' ,
+    ylab = '' ,
+    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+    xaxt = 'n',
+    main = append,
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1,
+    lwd = obj01lwd
+  )
+  lo <- loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
+  lines(dataSet[, 1] ,
+        predict(lo) ,
+        col = lineColor[1],
+        lwd = 2,
+        lty = 2)
+  if (chartTtpe == 1) {
+    lines(dataSet[, 1],
+          dataSet[, obj02],
+          col = lineColor[2],
+          lwd = obj02lwd)
+  } else{
+    par(new = T)
+    plot(
+      dataSet[, 1],
+      dataSet[, obj02],
+      col = lineColor[2],
+      type = seriesType02,
+      xlab = '' ,
+      ylab = '' ,
+      panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+      xaxt = 'n',
+      yaxt = 'n',
+      cex.axis = 1,
+      cex.lab = 1,
+      cex.main = 1,
+      lwd = obj02lwd
+    )
+    axis(4, cex.axis = 1, cex.lab = 1)
+    mtext(
+      colnames(dataSet)[obj01],
+      side = 2,
+      line = 3.2,
+      cex = 1
+    )
+    mtext(
+      colnames(dataSet)[obj02],
+      side = 4,
+      line = 3.2,
+      cex = 1
+    )
+  }
+  lo <- loess(dataSet[, obj02] ~ as.numeric(dataSet[, 1]), degree = 2)
+  lines(dataSet[, 1] ,
+        predict(lo) ,
+        col = lineColor[2],
+        lwd = 2,
+        lty = 2)
+  graphics::legend(
+    'topleft',
+    col = lineColor[-3],
+    lty = 1,
+    legend = c(colnames(dataSet)[obj01], colnames(dataSet)[obj02]),
+    cex = 1,
+    bty = 'n'
+  )
+  axis.Date(
+    side = 1,
+    at = dataSet[, 1],
+    format = dateFormat,
+    padj = 1,
+    cex.axis = 1.0
+  )
+}
+```
+<hr>
+####日本の外貨準備高
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dateFormat <- '%Y-%m'
+obj01 <- 2
+obj02 <- 3
+seriesType01 <- 'l'
+seriesType02 <- 'l'
+obj01lwd <- 1
+obj02lwd <- 1
+lineColor <- c('blue', 'red')
+chartTtpe <- 1
+mainTitle <- paste(colnames(origData1)[obj01], ' × ', colnames(origData1)[obj02])
+par(mfrow = c(1, 2), mar = c(3, 4, 3, 3), family = 'Meiryo', oma = c(0, 0, 3, 0))
+funPlotTimeSeries(dataSet = origData1, append = 'ドル建て(百万ドル)')
+funPlotTimeSeries(dataSet = origData3, append = '円建て(兆円)')
+mtext(paste(mainTitle, '\n', format(first(origData1[, 1]), dateFormat), '~', format(last(origData1[, 1]), dateFormat),
+    ' , Source:', dataSource), side = 3, outer = T)
+```
+<hr>
+####外貨準備高の構成(ドル建て.百万ドル)
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+buf0 <- origData1[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
+buf <- tail(buf0, 12)
+buf[, 1] <- as.character(format(buf[, 1], '%Y-%m'))
+funamBarplot(obj = buf, mainTitle = '外貨準備高')
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+titleDT<-'日本の外貨準備高'
+appendTitle<-'単位：百万ドル'
+buf0 <- origData1[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
+buf0 <- merge(buf0, origData5)
+buf0[, 1] <- as.character(format(buf0[, 1], '%Y-%m'))
+funDataTable(obj = buf0, append = paste0(titleDT,'-',appendTitle))
+```
+<hr>
+####外貨準備高の構成(円建て.兆円)
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+buf0 <- origData3[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
+buf0[,-1] <- round(buf0[,-1],4)
+buf <- tail(buf0, 12)
+buf[, 1] <- as.character(format(buf[, 1], '%Y-%m'))
+funamBarplot(obj = buf, mainTitle = '外貨準備高')
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+titleDT<-'日本の外貨準備高'
+appendTitle<-'単位：兆円'
+buf0 <- origData3[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
+buf0[,-1] <- round(buf0[,-1],4)
+buf0 <- merge(buf0, origData5)
+buf0[, 1] <- as.character(format(buf0[, 1], '%Y-%m'))
+funDataTable(obj = buf0, append = paste0(titleDT,'-',appendTitle))
+```
+<hr>
+####日本の金(ゴールド)保有量(百万トロイオンス)
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dataSet <- origData4
+obj01 <- 2
+seriesType01 <- 'o'
+obj01lwd <- 1
+lineColor <- c('blue', 'red')
+par(mar = c(3, 4, 3, 3), family = 'Meiryo')
+plot(
+  dataSet[, 1],
+  dataSet[, obj01],
+  type = seriesType01,
+  col = lineColor[1],
+  xlab = '' ,
+  ylab = '' ,
+  panel.first = grid(
+    nx = NULL,
+    ny = NULL,
+    lty = 2,
+    equilogs = T
+  ) ,
+  xaxt = 'n',
+  main = colnames(dataSet)[obj01],
+  cex.axis = 1,
+  cex.lab = 1,
+  cex.main = 1,
+  lwd = obj01lwd
+)
+axis.Date(
+  side = 1,
+  at = dataSet[, 1],
+  format = dateFormat,
+  padj = 1,
+  cex.axis = 1.0
+)
+dataSet[, 1] <- format(dataSet[, 1], '%Y-%m')
+grid.table(tail(dataSet, 5), rows = NULL)
+```
