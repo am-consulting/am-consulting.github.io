@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : '再分配'
+title : '地価調査'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -24,6 +24,8 @@ output:
 library(DT)
 library(lubridate)
 library(googleVis)
+library(rAmCharts)
+library(pipeR)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -32,18 +34,20 @@ needID<-1
 needAtag<-0
 needAdd<-0
 pp<-1
-dataTitle<-'所得再分配調査 2014年 - 世帯人員別所得再分配状況(単位:万円)'
-dataSource<-'厚生労働省'
+dataTitle<-'平成28年都道府県地価調査 - 東京圏の東京都特別区及び人口１０万以上の市における住宅地の平均価格(円/m^2)'
+dataSource<-'国土交通省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
 Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
 cat(paste('Title :',dataTitle,'\n'))
 cat(paste('Raw Data Source :',dataSource,'\n'))
 cat(paste('Author :',Author,'\n'))
 cat(paste('作成日 :',Sys.time(),'\n'))
 cat(paste('特記 :',notes,'\n'))
 cat(paste('特記 :',notes0,'\n'))
+cat(paste("ID :", htmlID, "\n"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -53,7 +57,7 @@ tmp <-
   header = T,
   sep = '\t',
   stringsAsFactor = F,
-  na.strings = c('na', '', '-'),
+  na.strings = c('na', '', '-', ' ---- ', '   -- '),
   check.names = F
   )
   if(timeSeries==0){
@@ -99,15 +103,15 @@ tmp <-
     DT::datatable(
       obj,
       options = list(
-        search.regex = T,
+        search.regex = F,
         paging = T,
         autoWidth = F,
         info = T,
         lengthChange = T,
         ordering = T,
         searching = T,
-        scrollX = T,
-        lengthMenu = list(c(25,-1, 1), c(25, 'All', 1)),
+        scrollX = F,
+        lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
         orderClasses = T,
         order = list(list(0, 'asc')),
         columnDefs = list(
@@ -137,6 +141,16 @@ appendTitle<-''
 funDataTable(obj = dataSetDT, append = appendTitle)
 #cat(paste(dataTitle,appendTitle))
 #fungvisTable(obj = dataSetDT)
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
+  amBoxplot(obj, horiz = T, names = colnames(obj)) %>>% amOptions(theme = "none" , main = bigTitle)
+}
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotBoxplotAmcharts(obj = dataSetDT[, 4:6], bigTitle = paste0(dataTitle, ' - 基本統計量'))
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
