@@ -1,11 +1,11 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : '売上高指数'
+title : '報告省令レート'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 10
+    fig_height: 3
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -13,7 +13,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1380px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -25,13 +25,14 @@ library(lubridate)
 library(googleVis)
 library(dplyr)
 library(rAmCharts)
+library(pipeR)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'特定サービス産業動態売上高指数 季節調整済指数 2016年7月'
-dataSource<-'経済産業省'
+dataTitle<-'報告省令レートの時系列推移 2016年10月分'
+dataSource<-'日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -94,7 +95,7 @@ colnames(dataSet01P)<-colnames(dataSet01D)<-colnames(dataSet12P)<-colnames(dataS
 
 ```{r,warning=F,error=F,message=F,echo=F}
 funTimeSeries<-function(dataTS,lineType,rowN,bigTitle){
-cat(paste0('<h3>',bigTitle,'</h3>'))  
+cat(paste0('<h4>',bigTitle,'</h4>'))  
 par(mfrow=c(ceiling((ncol(dataTS)-1)/rowN),rowN),mar=c(3,3,3,2))
 par(mfrow=c(ceiling(plotBorder/rowN),rowN),mar=c(3,3,3,2))
 for(ccc in 2:ncol(dataTS)){ 
@@ -110,12 +111,12 @@ for(ccc in 2:ncol(dataTS)){
     panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T) ,
     xaxt='n',
     main = paste(colnames(tmp0)[2],'\n',format(tmp0[1,1],dateFormat),'-',format(tmp0[nrow(tmp0),1],dateFormat)),
-    cex.axis=1.2,cex.lab=1,cex.main=1.5
+    cex.axis=1.0,cex.lab=1,cex.main=1.0
   )
   lo <- loess(tmp0[, 2]~as.numeric(tmp0[, 1]))
   lines(tmp0[, 1] , predict(lo) , col='red', lwd=1)
   abline(lm(tmp0[, 2]~as.numeric(tmp0[, 1])), col='red', lty=2)
-  axis.Date(side=1,at=tmp0[,1],format=dateFormat,padj=0.0,cex.axis=1.2)
+  axis.Date(side=1,at=tmp0[,1],format=dateFormat,padj=0.0,cex.axis=1.0)
 }
 }
 ```
@@ -138,7 +139,7 @@ funDataTable <- function(obj,dataTitle='',append='') {
       order = list(list(0, 'asc')),
       columnDefs = list(
         list(width = '5%' , targets = 0),
-        list(width = '10%', targets = 1)
+        list(width = '20%', targets = 1)
         )
       ),
     rownames = F,
@@ -158,30 +159,33 @@ fungvisTable <- function(obj) {
 ```{r,warning=F,error=F,message=F,echo=F} 
 funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
   cat(paste0('<b>', bigTitle, '</b>'))
-  amBoxplot(obj[,-1], horiz = T)
+  amBoxplot(obj[,-1], horiz = T,names = colnames(obj)[-1]) %>>%amOptions(theme = "none")
+  # c("none", "light", "dark", "patterns", "chalk")
 }
 ```
 
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+plotData <- list()
+plotBorder <- 2
+plotChunk01 <- 1
+plotChunk02 <- 0
+tableChunk01 <- 1
+tableChunk02 <- 0
+buf_dataSet <- dataSet
+chunck01Append <- '原系列'
+chunck02Append <- '前月比(%)'
+dataSet2 <- dataSet01P
+tableRange <- 6
+needCompare <- 0
+dataSetBP<- dataSet[,1:2]
+```
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F} 
-dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
-funPlotBoxplotAmcharts(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
+dateRange<-paste0(format(first(dataSetBP[,1]),dateFormat),'~',format(last(dataSetBP[,1]),dateFormat))
+funPlotBoxplotAmcharts(obj = dataSetBP,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
 ```
 <hr>  
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-plotData<-list()
-plotBorder<-9
-plotChunk01<-1
-plotChunk02<-1
-tableChunk01<-1
-tableChunk02<-1
-buf_dataSet<-dataSet
-chunck01Append<-'原系列'
-chunck02Append<-'前月比(%)'
-dataSet2<-dataSet01P
-tableRange<-12
-```
-
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=14,fig.width=14}
 if(plotChunk01==1){
 for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
   columnS<-(2+plotBorder*(ppp-1))
@@ -189,11 +193,12 @@ for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
   plotData[[ppp]]<-dataSet[,c(1,columnS:columnE)]
   colnames(plotData[[ppp]])<-colnames(dataSet)[c(1,columnS:columnE)]
   funTimeSeries(dataTS=plotData[[ppp]] ,lineType='l', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck01Append))
+  cat('<hr>')
 }
 }  
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10,fig.width=14}
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(plotChunk02==1){
 dataSet<-dataSet2  
 for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
@@ -202,6 +207,7 @@ for(ppp in 1:ceiling((ncol(dataSet)-1)/plotBorder)){
   plotData[[ppp]]<-dataSet[,c(1,columnS:columnE)]
   colnames(plotData[[ppp]])<-colnames(dataSet)[c(1,columnS:columnE)]
   funTimeSeries(dataTS=plotData[[ppp]] ,lineType='h', rowN=2 , bigTitle=paste0(dataTitle,'-',chunck02Append))
+  cat('<hr>')
 }
 dataSet<-buf_dataSet
 }  
@@ -225,7 +231,7 @@ if(length(grep("報告省令レート",dataTitle))!=0){
 dataSetDT<<-buf0
 }
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(tableChunk01==1){
 funTableReshape(obj=dataSet)
@@ -248,9 +254,16 @@ funDataTable(obj = dataSetDT, append = paste0(dataTitle,'-',appendTitle))
 #fungvisTable(obj = dataSetDT)
 }
 ```
-<hr>
-<h3>民主党政権時と第二次安倍政権発足以降の比較</h3>
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+if(needCompare==1) {
+  cat('<hr>')
+  cat('<h4>民主党政権時と第二次安倍政権発足以降の比較</h4>')
+}
+```
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+if(needCompare==1) {
 summaryObj <- c(2, 3, 4, 5, 6, 7, 8)
 dateRangeS <- rangeNameS <- list()
 dateRangeS[[1]] <- as.Date(c('2009/9/1', '2012/12/1'))
@@ -274,4 +287,5 @@ for (iii in 1:length(dateRangeS)) {
 dataSetS <- dataSetS0
 attach(dataSetS)
 by(dataSetS[, summaryObj], Group, summary)
+}
 ```
