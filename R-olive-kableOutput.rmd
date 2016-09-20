@@ -3,7 +3,7 @@ library(xtable)
 library(lubridate)
 library(knitr)
 tailN <- 50
-needDateFormat<-0
+needDateFormat<-1
 tmp <-
   read.table(
     "clipboard",
@@ -23,5 +23,6 @@ if (length(unique(month(tmp[, 1]))) == 1) {
 }
 tmp[, 1] <- format(as.Date(tmp[, 1]), dateFormat)
 }
+tmp[is.na(tmp)]<-''
 kable(tail(na.omit(tmp), tailN), row.names = F)
 ```

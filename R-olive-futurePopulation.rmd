@@ -1,0 +1,181 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '人口推計'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(plotrix)
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '日本の総人口 - 単位:万人 2016年9月1日現在(概算値)'
+dataSource <- '総務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+dataTail <- 0
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :', notes, '\n'))
+cat(paste('特記 :', notes0, '\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+# Reference http://stats.stackexchange.com/questions/2455/how-to-make-age-pyramid-like-plot-in-r
+tmp <-
+  read.table(
+    "clipboard",
+    header = F,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("NA", "-", "－", "… ", ".", ""),
+    check.names = F
+  )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+totalPopulation <- sum(tmp[, 2])
+totalPopulationM <- sum(tmp[,3])
+totalPopulationF <- sum(tmp[,4])
+malePopulation <- tmp[, 3]
+femalePopulation <- tmp[, 4]
+malePopulationRatio <- round(malePopulation / totalPopulation * 100, 1)
+femalePopulationRatio <- round(femalePopulation / totalPopulation * 100, 1)
+malePopulationRatioM <- round(malePopulation / totalPopulationM * 100, 1)
+femalePopulationRatioF <- round(femalePopulation / totalPopulationF * 100, 1)
+malePcum <- cumsum(malePopulation)
+femalePcum <- cumsum(femalePopulation)
+malePratiocum <- cumsum(malePopulationRatio)
+femalePratiocum <- cumsum(femalePopulationRatio)
+malePratiocumM <- cumsum(malePopulationRatioM)
+femalePratiocumF <- cumsum(femalePopulationRatioF)
+ageGroup <- tmp[, 1]
+mcol <-
+  color.gradient(c(0, 0, 0.5, 1), c(0, 0, 0.5, 1), c(1, 1, 0.5, 1), length(malePopulation))
+fcol <-
+  color.gradient(c(1, 1, 0.5, 1), c(0.5, 0.5, 0.5, 1), c(0.5, 0.5, 0.5, 1), length(malePopulation))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+fun <- function(ldata, rdata, ageGroup, gapV, main = '', unit = '') {
+  pyramid.plot(
+    lx = ldata,
+    rx = rdata,
+    labels = ageGroup,
+    show.values = T,
+    gap = gapV,
+    lxcol = mcol,
+    rxcol = fcol,
+    main = main,
+    unit = unit,
+    top.labels = c("男", "年齢階級", "女"),
+    ppmar = c(4, 4, 4, 4)
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+par(mfrow = c(1, 2), family = 'Meiryo', oma = c(0, 0, 2, 0))
+fun(
+  ldata = malePopulation,
+  rdata = femalePopulation,
+  ageGroup = ageGroup,
+  gapV = 200,
+  main = '総人口(万人)',
+  unit = '万人'
+)
+fun(
+  ldata = malePopulationRatio,
+  rdata = femalePopulationRatio,
+  ageGroup = ageGroup,
+  gapV = 2,
+  main = '性別･年齢階級別構成比(%) ',
+  unit = '%'
+)
+mtext('性別･年齢階級別総人口と構成比', side = 3, outer = T)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+par(mfrow = c(1, 2), family = 'Meiryo', oma = c(0, 0, 2, 0))
+fun(
+  ldata = malePopulation,
+  rdata = femalePopulation,
+  ageGroup = ageGroup,
+  gapV = 200,
+  main = '総人口(万人)',
+  unit = '万人'
+)
+fun(
+  ldata = malePopulationRatioM,
+  rdata = femalePopulationRatioF,
+  ageGroup = ageGroup,
+  gapV = 3,
+  main = '性別毎年齢階級別構成比(%) ',
+  unit = '%'
+)
+mtext('性別毎年齢階級別総人口と構成比', side = 3, outer = T)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+par(mfrow = c(1, 2), family = 'Meiryo', oma = c(0, 0, 2, 0))
+fun(
+  ldata = malePcum,
+  rdata = femalePcum,
+  ageGroup = ageGroup,
+  gapV = 2000,
+  main = '累積-総人口(万人)',
+  unit = '万人'
+)
+fun(
+  ldata = malePratiocum,
+  rdata = femalePratiocum,
+  ageGroup = ageGroup,
+  gapV = 20,
+  main = '累積-性別･年齢階級別構成比(%)',
+  unit = '%'
+)
+mtext('累積-性別･年齢階級別総人口と構成比', side = 3, outer = T)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+par(mfrow = c(1, 2), family = 'Meiryo', oma = c(0, 0, 2, 0))
+fun(
+  ldata = malePcum,
+  rdata = femalePcum,
+  ageGroup = ageGroup,
+  gapV = 2000,
+  main = '累積-総人口(万人)',
+  unit = '万人'
+)
+fun(
+  ldata = malePratiocumM,
+  rdata = femalePratiocumF,
+  ageGroup = ageGroup,
+  gapV = 30,
+  main = '累積-性別毎年齢階級別構成比(%)',
+  unit = '%'
+)
+mtext('累積-性別毎年齢階級別総人口と構成比', side = 3, outer = T)
+```
