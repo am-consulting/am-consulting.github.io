@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : 'マネタリーベース'
+title : '勤労統計'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -13,7 +13,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1000px;
+	max-width: 1400px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -28,14 +28,14 @@ library(pipeR)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-timeSeries<-1 # 1 or 0
-needID<-1
+timeSeries<-0 # 1 or 0
+needID<-0
 needAtag<-0
 needAdd<-0
 needDiff<-0
 pp<-0
-dataTitle<-'マネタリーベース平均残高の名目季節調整国内総生産(支出側)に対する比率の時系列推移'
-dataSource<-'日本銀行、内閣府'
+dataTitle<-'毎月勤労統計調査　全国調査 原表 実数原表 2016年7月'
+dataSource<-'厚生労働省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -130,7 +130,7 @@ tmp <-
   
   fungvisTable <- function(obj) {
     PopTable <- gvisTable(      obj, 
-      options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=30)
+      options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=20)
     )
     plot(PopTable,tag='chart')
   }  
@@ -138,9 +138,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-funDataTable(obj = dataSetDT, append = appendTitle)
-#cat(paste(dataTitle,appendTitle))
-#fungvisTable(obj = dataSetDT)
+#funDataTable(obj = dataSetDT, append = appendTitle)
+cat(paste(dataTitle,appendTitle))
+fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
