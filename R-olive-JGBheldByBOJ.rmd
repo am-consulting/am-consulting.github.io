@@ -1,0 +1,136 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '日本国債'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(DT)
+library(lubridate)
+library(googleVis)
+library(pipeR)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <-
+  '日本銀行が保有する国債の銘柄別残高 / Japanese Government Bonds held by the Bank of Japan-'
+subTitle <- '(2016年9月20日現在)'
+dataSource <- '日本銀行'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste0('Title :', dataTitle, subTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :', notes, '\n'))
+cat(paste('特記 :', notes0, '\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+    "clipboard",
+    header = F,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("NA", "-", "－", "… ", ".", ""),
+    check.names = F
+  )
+tmp[, 3] <- tmp[, 3] * 10 ^ -4
+colnames(tmp) <- c('JGB', '銘柄', '保有残高(兆円)')
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+for(iii in 1:length(unique(tmp[, 1]))) {
+  buf <- subset(tmp, tmp[, 1] == unique(tmp[, 1])[iii])[, 3, drop = F]
+  colnames(buf) <- paste0(unique(tmp[, 1])[iii], '-', colnames(buf))
+  if (iii == 1) {
+    jgbData <- buf
+  } else{
+    jgbData <-  qpcR:::cbind.na(jgbData, buf[, 1, drop = F])
+  }
+}
+barData <-
+  data.frame(id = '日本国債', t(colSums(jgbData, na.rm = T)), check.names = F)
+totalJGB <- sum(tmp[, 3])
+barDataRatio <- barData
+barDataRatio[, -1] <- round(barDataRatio[, -1] / totalJGB * 100, 2)
+colnames(barDataRatio) <- gsub('兆円', '%', colnames(barDataRatio))
+```
+<h4>日本国債年限名称別合計残高(兆円)</h4>
+```{r,warning=F,error=F,message=F,echo=F}
+rAmCharts::amBarplot(
+  x = colnames(barData)[1] ,
+  y = colnames(barData)[-1],
+  data = barData,
+  horiz = T,
+  stack_type = 'regular',
+  legend = T,
+  labelRotation = 0,
+  main = '',
+  mainColor = "#68838B",
+  mainSize = 15,
+  creditsPosition = "top-right",
+  legendPosition = "bottom",
+  show_values = T
+)
+```
+<hr>
+<h4>日本国債年限名称別合計残高構成比(%)</h4>
+```{r,warning=F,error=F,message=F,echo=F}
+rAmCharts::amBarplot(
+  x = colnames(barDataRatio)[1] ,
+  y = colnames(barDataRatio)[-1],
+  data = barDataRatio,
+  horiz = T,
+  stack_type = '100',
+  legend = T,
+  labelRotation = 0,
+  main = '',
+  mainColor = "#68838B",
+  mainSize = 15,
+  creditsPosition = "top-right",
+  legendPosition = "bottom",
+  show_values = T
+)
+```
+<hr>
+<h4>年限･国債名称(第x回債)毎の保有額(兆円)ボックスプロット</h4>
+```{r,warning=F,error=F,message=F,echo=F}
+rAmCharts::amBoxplot(jgbData, horiz = T)
+```
+<hr>
+<h4>年限名称毎の基本統計量(兆円)</h4>
+```{r,warning=F,error=F,message=F,echo=F}
+attach(tmp)
+by(tmp[, 3], JGB, summary)
+```
+<hr>
+<h4>年限名称毎の保有残高(兆円)</h4>
+```{r,warning=F,error=F,message=F,echo=F}
+attach(tmp)
+by(tmp[, 3], JGB, sum)
+```
+<hr>
+<h4>日本銀行が保有する国債残高合計(兆円)</h4>
+```{r,warning=F,error=F,message=F,echo=F}
+totalJGB
+```
