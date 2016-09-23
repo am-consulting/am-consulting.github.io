@@ -1,0 +1,322 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '米国債保有額'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 16
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(choroplethrAdmin1)
+library(DT)
+library(lubridate)
+library(googleVis)
+library(pipeR)
+library(RCurl)
+library(seasonal)
+library(dplyr)
+library(plotly)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importMajorForeignHoldersUSTreasury.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+dateFormat <- '%Y-%m'
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('米国財務省証券(米国債)国別保有額 - 日本と中国の保有額時系列推移 - ', format(tail(allData[, 1], 1), '%Y年%m月'))
+dataSource <- 'U.S. Department of the Treasury'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :', dataTitle, '\n'))
+cat(paste('Raw Data Source :', dataSource, '\n'))
+cat(paste('Author :', Author, '\n'))
+cat(paste('作成日 :', Sys.time(), '\n'))
+cat(paste('特記 :', notes, '\n'))
+cat(paste('特記 :', notes0, '\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+fun <- function(){
+  data("admin1.map")
+  # 1st step
+  countryName <- data.frame(region = sort(unique(admin1.map$admin)))
+  region <- tolower(colnames(allData)[-1])
+  value <- as.vector(t(tail(allData[, -1], 1)))
+  latestDF <- data.frame(region = region, value = value)
+  dataFor_choroplethr <- na.omit(merge(latestDF, countryName, by = 'region', all = F))
+  buf000 <- merge(dataFor_choroplethr, latestDF, by = 'region', all = T) #検証用
+  # 2nd step
+  # 米国財務省データの国名をパッケージの国名にあわせる。
+  # 但しcayman islandsはパッケージに無い。
+  countryName[which(regexpr("baha", as.vector(countryName[, 1])) != -1), 1]
+  countryName[which(regexpr("virgin", as.vector(countryName[, 1])) != -1), 1]
+  countryName[which(regexpr("cayman", as.vector(countryName[, 1])) != -1), 1]
+  countryName[which(regexpr("hong kong", as.vector(countryName[, 1])) != -1), 1]
+  countryName[which(regexpr("brit", as.vector(countryName[, 1])) != -1), 1]
+  countryName[which(regexpr("terr", as.vector(countryName[, 1])) != -1), 1]
+  region[which(region == 'korea, south')] <- 'south korea'
+  region[which(region == 'china, mainland')] <- 'china'
+  region[which(region == 'bahamas')] <- 'the bahamas'
+  region[which(region == 'british virgin islands')] <- 'united states virgin islands'
+  region[which(region == 'hong kong')] <- 'hong kong s.a.r.'
+  # 以下は非国名 計13
+  region[which(regexpr("total", region) != -1)] # 9
+  region[which(regexpr("memo:", region) != -1)] # 2
+  region[which(regexpr("international", region) != -1)] # 1
+  region[which(regexpr("all", region) != -1)] # 1
+  # 3rd step
+  latestDF <- data.frame(region = region, value = value)
+  dataFor_choroplethr <- na.omit(merge(latestDF, countryName, by = 'region', all = F))
+  buf000 <- merge(dataFor_choroplethr, latestDF, by = 'region', all = T) #検証用
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'} 
+# 1st step
+df <- read.csv('https://raw.githubusercontent.com/plotly/datasets/master/2014_world_gdp_with_codes.csv')
+COUNTRY <- colnames(allData)[-1]
+value <- as.vector(t(tail(allData[, -1], 1)))
+latestDF <-
+  data.frame(COUNTRY = COUNTRY,
+             value = value,
+             stringsAsFactors = F)
+removeData <- c(
+  which(regexpr("total", COUNTRY, ignore.case = T) != -1),  # 9
+  which(regexpr("memo:", COUNTRY, ignore.case = T) != -1),  # 2
+  which(regexpr("international", COUNTRY, ignore.case = T) != -1),  # 1
+  which(regexpr("all", COUNTRY, ignore.case = T) != -1) # 1
+)
+latestDF <- latestDF[-removeData, ]
+dataFor_plotly <- merge(df, latestDF, by = 'COUNTRY', all = T)
+# 2nd step
+df[which(regexpr("baha",  as.vector(df[, 1]), ignore.case = T) != -1), 1]
+df[which(regexpr("china", as.vector(df[, 1]), ignore.case = T) != -1), 1]
+df[which(regexpr("Netherland", as.vector(df[, 1]), ignore.case = T) != -1), 1]
+df[which(regexpr("Antill", as.vector(df[, 1]), ignore.case = T) != -1), 1]
+# 3rd step
+latestDF[which(latestDF[, 1] == 'Bahamas'), 1] <- 'Bahamas, The'
+latestDF[which(latestDF[, 1] == 'China, Mainland'), 1] <- 'China'
+dataFor_plotly <- merge(df, latestDF, by = 'COUNTRY', all = T)
+dataFor_plotly <- dataFor_plotly[-which(is.na(dataFor_plotly$CODE)), ]
+dataFor_plotly <- dataFor_plotly[, -2]
+dataFor_plotly[, 3] <- dataFor_plotly[, 3] * (10 ^ 6)
+colnames(dataFor_plotly)[3]  <- 'Holdings' 
+```
+
+```{r,warning=F,error=F,message=F,echo=F,fig.height=6,fig.width=12} 
+l <- list(color = toRGB("grey"), width = 0.5)
+g <- list(
+  showframe = F,
+  showcoastlines = F,
+  projection = list(type = 'Mercator')
+)
+
+plot_ly(
+  dataFor_plotly,
+  z = Holdings,
+  text = dataFor_plotly[, 1],
+  locations = dataFor_plotly[, 2],
+  type = 'choropleth',
+  color = Holdings,
+  colors = 'Blues',
+  marker = list(line = l),
+  colorbar = list(tickprefix = '$', title = 'Holdings US$')
+) %>%
+  layout(
+    title = paste0(
+      'Major Foreign Holders Of U.S.Treasury. Raw Data source:U.S. Department of the Treasury<br>',
+      format(tail(allData[, 1], 1), dateFormat)
+    ),
+    geo = g
+  )
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+Japan <- which(regexpr('japan', colnames(allData), ignore.case = T) != -1)
+China <- which(regexpr('china', colnames(allData), ignore.case = T) != -1)
+JvsC <- allData[, c(1, Japan, China)]
+JvsC$Diff <- JvsC[,2]-JvsC[,3]
+JvsC[, -1] <- apply(JvsC[, -1], 2, function(x)  x * 10 ^ -6)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}   
+funDataTable <- function(obj,append='',width='') {
+    DT::datatable(
+      obj,
+      options = list(
+        search.regex = F,
+        paging = T,
+        autoWidth = F,
+        info = T,
+        lengthChange = T,
+        ordering = T,
+        searching = T,
+        scrollX = F,
+        lengthMenu = list(c(5,-1, 1), c(5, 'All', 1)),
+        orderClasses = T,
+        order = list(list(0, 'desc')),
+        columnDefs = list(
+          list(width = width, targets = 0)
+          )
+        ),
+      rownames = F,
+      caption = paste(dataTitle, append),
+      class = 'display compact'
+    )
+  }
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+appendTitle <- '(単位:兆ドル)'
+buf <- JvsC
+buf[, 1] <- format(buf[, 1], dateFormat)
+funDataTable(obj = buf,
+             append = appendTitle,
+             width = '10%')
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+appendTitle <- '(単位:兆ドル)'
+buf <- tail(allData, 5)
+buf[, -1] <- apply(buf[, -1], 2, function(x)  x * 10 ^ -6)
+buf <- na.omit(t(buf))
+colnames(buf) <- format(as.Date(buf[1, ]), dateFormat)
+buf <- buf[-1, ]
+buf <-
+  data.frame(
+    ID = seq(1, nrow(buf)),
+    Region = row.names(buf),
+    apply(buf, 2, as.numeric),
+    check.names = F
+  )
+funDataTable(obj = buf,
+             append = appendTitle,
+             width = '5%')
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotTimeSeries <- function(dataSet, append = '') {
+  mainTitle <- paste(colnames(dataSet)[obj01], ' × ', colnames(dataSet)[obj02])
+  maxValue <- max(dataSet[, obj01], dataSet[, obj02])
+  minValue <- min(dataSet[, obj01], dataSet[, obj02])
+  plot(
+    dataSet[, 1],
+    dataSet[, obj01],
+    type = seriesType01,
+    col = lineColor[1],
+    xlab = '' ,
+    ylab = '' ,
+    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+    xaxt = 'n',
+    ylim = if (needYlim == 1) {c(minValue, maxValue)},
+    main = paste(
+      mainTitle,
+      '\n',
+      format(first(dataSet[, 1]), dateFormat),
+      '~',
+      format(last(dataSet[, 1]), dateFormat),
+      '\nSource:',
+      dataSource,
+      append
+    ),
+    cex.axis = 1,
+    cex.lab = 1,
+    cex.main = 1,
+    lwd = obj01lwd
+  )
+  if (needloess01 == 1) {
+    lo <- loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
+    lines(
+      dataSet[, 1] ,
+      predict(lo) ,
+      col = lineColor[1],
+      lwd = 2,
+      lty = 2
+    )
+  }
+  if (chartTtpe == 1) {
+    lines(dataSet[, 1], dataSet[, obj02], type = seriesType02, col = lineColor[2], lwd = obj02lwd)
+  } else{
+    par(new = T)
+    plot(
+      dataSet[, 1],
+      dataSet[, obj02],
+      col = lineColor[2],
+      type = seriesType02,
+      xlab = '' ,
+      ylab = '' ,
+      panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+      xaxt = 'n',
+      yaxt = 'n',
+      cex.axis = 1,
+      cex.lab = 1,
+      cex.main = 1,
+      lwd = obj02lwd
+    )
+    axis(4, cex.axis = 1, cex.lab = 1)
+    mtext(colnames(dataSet)[obj01], side = 2, line = 3.2, cex = 1)
+    mtext(colnames(dataSet)[obj02], side = 4, line = 3.2, cex = 1)
+  }
+  if (needloess02 == 1) {
+    lo <- loess(dataSet[, obj02] ~ as.numeric(dataSet[, 1]), degree = 2)
+    lines(dataSet[, 1] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)
+  }
+  graphics::legend(
+    'topleft',
+    col = lineColor[-3],
+    lty = 1,
+    legend = c(colnames(dataSet)[obj01], colnames(dataSet)[obj02]),
+    cex = 1,
+    bty = 'n'
+  )
+  axis.Date(
+    side = 1,
+    at = dataSet[, 1],
+    format = dateFormat,
+    padj = 1,
+    cex.axis = 1.0
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
+lineColor <- c('red', 'blue', 'black')
+chartTtpe <- 1
+if (chartTtpe == 1) {
+  needYlim <- 1
+} else{
+  needYlim <- 0
+}
+seriesType01 <- 'o'
+seriesType02 <- 'o'
+obj01 <- 2
+obj02 <- 3
+obj01lwd <- 1
+obj02lwd <- 1
+needloess01 <- 1
+needloess02 <- 1
+par(mar = c(3, 5, 6, 5), family = 'Meiryo')
+funPlotTimeSeries(dataSet = JvsC, append = '\n単位：兆ドル')
+```
+<hr>
