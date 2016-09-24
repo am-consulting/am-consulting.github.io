@@ -20,7 +20,7 @@ output:
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス 2016年9月16日分'
+dataTitle<-'North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス 2016年9月23日分'
 dataSource<-'Baker Hughes'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
