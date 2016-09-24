@@ -20,23 +20,6 @@ output:
 }
 </style>
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-'CFTC Speculative Positions / IMM･CFTC投機筋ポジション 2016年9月13日分'
-dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. Louis'
-notes<-'複数のワードで検索する際は半角スペースで区切ってください'
-notes0<-"表中、-9999はNAを意味します"
-Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID<-timeStamp
-cat(paste("Title :",dataTitle,"\n"))
-cat(paste("Raw Data Source :",dataSource,"\n"))
-cat(paste("Author :",Author,"\n"))
-cat(paste("作成日 :",Sys.time(),"\n"))
-cat(paste("特記 :",notes,"\n"))
-cat(paste("特記 :",notes0,"\n"))
-cat(paste("ID :",htmlID,"\n"))
-windowsFonts(Meiryo=windowsFont("Meiryo"))
-```
-
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=9999)
@@ -52,6 +35,25 @@ for(iii in 1:length(dataset)){
   cat(iii,dataset[[iii]][1,5],'\n')  
   dataset[[iii]]$Col<-ifelse(0<=dataset[[iii]][,4],'blue','red')
 }
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <-
+  paste0('CFTC Speculative Positions / IMM･CFTC投機筋ポジション-',
+         format(tail(dataset[[1]][, 1], 1), '%Y年%m月%d日分'))
+dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. Louis'
+notes<-'複数のワードで検索する際は半角スペースで区切ってください'
+notes0<-"表中、-9999はNAを意味します"
+Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID<-timeStamp
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Raw Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",notes0,"\n"))
+cat(paste("ID :",htmlID,"\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
