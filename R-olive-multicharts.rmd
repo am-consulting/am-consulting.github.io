@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "North America Rig Count"
+title : "建設労働"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -12,16 +12,21 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1100px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
 </style>
 
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle<-'North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス 2016年9月23日分'
-dataSource<-'Baker Hughes'
+dataTitle<-'建設労働需給調査 - 建設技能労働者過不足率 - 全国 - 季節調整値 - 2016年8月'
+dataSource<-'国土交通省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -276,9 +281,9 @@ funDataTable <- function() {
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 lineColor<-c('red','blue','black')
-chartTtpe<-2
+chartTtpe <- 1
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'l'
@@ -291,7 +296,7 @@ needloess01<-1
 needloess02<-1
 needSA01<-0
 needSA02<-0
-needCCF<-1
+needCCF <- 0
 need1stdiff<-0
 dataTail<-12*20000
 bufdataSet<-dataSet
@@ -300,7 +305,7 @@ funPlotTimeSeries()
 dataSet<-bufdataSet
 ```
 <hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=11}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 dateRangeS <- rangeNameS <- list()
 dateRangeS[[1]] <- as.Date(c('2009/9/1', '2012/12/1'))
 dateRangeS[[2]] <- c(as.Date('2013/1/1'), Sys.Date())
@@ -372,9 +377,10 @@ dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
 dataSet <- bufdataSet
 ```
-<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 if(need1stdiff!=0){
+cat('<hr>')  
 cat('<b>1次階差 / 1st difference</b>')
 bufdataSet <- dataSet
 dataSet0 <- dataSet
@@ -392,7 +398,7 @@ cat('<hr>')
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 if(needCCF!=0){
 par(mfrow = c(1, 2), family = 'Meiryo',oma=c(1,1,5,1))
 obj01 <- 2
