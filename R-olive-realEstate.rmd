@@ -1,0 +1,316 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlFile<-paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html');rmarkdown::render(inputFile, encoding = encoding, output_file = htmlFile) })
+
+title : "不動産取引価格"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r echo=F}
+targetPre <- 11
+```
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+prefecture = c('北海道', '青森県', '岩手県', '宮城県', '秋田県', '山形県', '福島県', '茨城県', '栃木県', '群馬県', '埼玉県', '千葉県', '東京都', '神奈川県', '新潟県', '富山県', '石川県', '福井県', '山梨県', '長野県', '岐阜県', '静岡県', '愛知県', '三重県', '滋賀県', '京都府', '大阪府', '兵庫県', '奈良県', '和歌山県', '鳥取県', '島根県', '岡山県', '広島県', '山口県', '徳島県', '香川県', '愛媛県', '高知県', '福岡県', '佐賀県', '長崎県', '熊本県', '大分県', '宮崎県', '鹿児島県', '沖縄県')
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+targetFolder <- 'All_20161_20161'
+targetRE <- '中古マンション等'
+dataTitle <- paste0('不動産取引価格情報の計量分析 - ', '2016年度第1四半期 - ', prefecture[targetPre],' - ', targetRE)
+dataSource <- '国土交通省:不動産取引価格情報'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+library(lubridate)
+library(knitr)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+username <- Sys.info()['user']
+pathTOdata <- paste0("C:/Users/", username, "/Desktop/",targetFolder,'/')
+csvList <- dir(pathTOdata)
+```
+
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+dataSet0 <- list()
+#for(csv in 1:length(csvList)){
+csv <- targetPre
+  tmp0 <-
+    read.csv(
+      file = paste0(pathTOdata, csvList[csv]),
+      na.strings = c(""),
+      stringsAsFactors = F,
+      check.names = F
+    )
+  tmp1 <- tmp0[grep(targetRE, tmp0[, 2], ignore.case = T),]
+  tmp2 <- na.omit(tmp1[, c(2, 6, 7, 10, 13, 18, 19, 25:27)])
+  colnames(tmp2)
+  city <- 2
+  torihikigaku <- 4
+  menseki <- 5
+  kenchikuYear <- 6
+  kouzou <- 7
+  youtochiiki <- 8
+  chikunensuu <- 12
+  heibeitanka <- 13
+  buf <-  substring(tmp2[, kenchikuYear], 1, 2)
+  buf0 <-
+    substring(tmp2[, kenchikuYear], 3, nchar(tmp2[, kenchikuYear]) - 1)
+  buf1 <- data.frame(buf,
+                     buf0,
+                     stringsAsFactors = F,
+                     check.names = F)
+  for (rrr in 1:nrow(buf1)) {
+    if (buf1[rrr, 1] == '昭和') {
+      yyyy <- as.numeric(buf1[rrr, 2]) + 1925
+    } else{
+      if (substring(buf1[rrr, 2], 1, 1) != '元') {
+        yyyy <- as.numeric(buf1[rrr, 2]) + 1988
+      } else{
+        yyyy <- 1989
+      }
+    }
+    buf1[rrr, 3] <- yyyy
+  }
+  tmp3 <- data.frame(tmp2,
+                     buf1[, 3],
+                     stringsAsFactors = F,
+                     check.names = F)
+  colnames(tmp3)[ncol(tmp3)] <- '建築年(西暦)'
+  tmp3[, ncol(tmp3) + 1] <- year(Sys.Date()) - tmp3[, ncol(tmp3)]
+  colnames(tmp3)[ncol(tmp3)] <- '築年数'
+  tmp3[, ncol(tmp3) + 1] <- round(tmp3[, torihikigaku] / as.numeric(tmp3[, menseki]), -3)
+  colnames(tmp3)[ncol(tmp3)] <- gsub('（総額）','(総額-平米単価(円))',colnames(tmp3)[torihikigaku])
+  dataSet0[[csv]] <- tmp3
+#}
+```
+
+####築年数 × 取引価格(総額)の平米単価
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=8,fig.width=10}
+par(mar=c(5,5,5,5),family = 'Meiryo', mfrow = c(2,2), oma=c(0,0,0,0))
+append <- '\n外れ値(±3σ)除去'
+for(ppp in 1:2){
+dataSet <- dataSet0[[targetPre]]
+obj01 <- 12
+obj02 <- 13
+mainTitle<-paste0(colnames(dataSet)[obj01],' × ',colnames(dataSet)[obj02])
+if(ppp == 2){
+  meanPrice <- mean(dataSet[, obj02])
+  sdPrice <- sd(dataSet[, obj02])
+  dataSet <-
+    subset(dataSet,
+           meanPrice - 3 * sdPrice <= dataSet[, obj02] &
+             dataSet[, obj02] <= meanPrice + 3 * sdPrice)
+  mainTitle<-paste0(mainTitle, append)
+}
+dataSet$col<- apply(dataSet[,city,drop=F],2, function(x)  match(x,unique(dataSet[,city])))
+Chikunensuu <- dataSet[, chikunensuu]
+Heibeitanka <- dataSet[, heibeitanka]
+glmResult <- lm(Heibeitanka ~ Chikunensuu)
+plot(
+  dataSet[, obj01],
+  dataSet[, obj02],
+  type = 'p',
+#  col = dataSet$col,
+  col = 'blue',
+  xlab = paste0(colnames(dataSet)[obj01]) ,
+  ylab = paste0(colnames(dataSet)[obj02]) ,
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+  main = paste(mainTitle),
+  cex.axis = 1,
+  cex.lab = 1,
+  cex.main = 1.2,
+  cex.sub=1.2,
+  lwd = 1,
+  sub = paste0(
+    colnames(dataSet)[heibeitanka],
+    ' = ',
+    round(glmResult$coefficients[2]),
+    ' × ',
+    colnames(dataSet)[chikunensuu],
+    ' + ' ,
+    round(glmResult$coefficients[1])
+    )
+  )
+abline(lm(dataSet[,obj02]~dataSet[,obj01]),col='red')
+#legend('topleft',col=seq(1,length(unique(dataSet[,city]))),legend=unique(dataSet[,city]),pch = 21,bty = "n")
+mainTitle <- paste0('ヒストグラム-', colnames(dataSet)[obj02])
+if (ppp == 2) {
+  mainTitle <- paste0(mainTitle, append)
+}
+hist(dataSet[, obj02],
+     xlab = colnames(dataSet)[obj02],
+     col = '#ADD8E6',
+     main = mainTitle,
+     cex.axis = 1,
+     cex.lab = 1,
+     cex.main = 1.2
+     )
+}
+```
+<hr>
+#####一般線形モデル：築年数 × 取引価格(総額-平米単価) - 外れ値(±3σ)除去
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+summary(aov(glmResult))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+summary(glmResult)
+```
+
+<hr>
+#####築年数 × 取引価格(総額)の平米単価：線形回帰Slopeの95%信頼区間 - 外れ値(±3σ)除去
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+confint(lm(Heibeitanka ~ Chikunensuu), 'Chikunensuu', level=0.95)
+```
+<hr>
+#####一般化線形モデル：重回帰分析 - 外れ値(±3σ)除去
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+City <- as.factor(dataSet[, city])
+Kouzou <- as.factor(dataSet[, kouzou])
+Youtochiiki <- as.factor(dataSet[, youtochiiki])
+glmResult <- glm(Heibeitanka ~ City + Kouzou + Youtochiiki + Chikunensuu)
+summary(aov(glmResult))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+summary(glmResult)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+buf <- coef(summary(glmResult))[, c(1, 4)]
+buf0 <-
+  data.frame(
+    Variable=rownames(buf),
+    buf,
+    check.names = F,
+    stringsAsFactors = F,
+    row.names = NULL
+  )
+buf0 <- subset(buf0, buf0[, 3] <= 0.05)
+buf0 <-
+  data.frame(
+    ID = seq(1, nrow(buf0)),
+    buf0,
+    check.names = F,
+    stringsAsFactors = F
+  )
+DT::datatable(
+  buf0,
+  options = list(
+    search.regex = F,
+    paging = T,
+    autoWidth = F,
+    info = T,
+    lengthChange = T,
+    ordering = T,
+    searching = T,
+    scrollX = F,
+    lengthMenu = list(c(10, -1, 1), c(10, 'All', 1)),
+    orderClasses = T,
+    order = list(list(0, 'asc')),
+    columnDefs = list(list(width = '5%', targets = 0))
+  ),
+  rownames = F,
+  caption = paste('Pr(>|t|) <= 0.05のみピックアップ'),
+  class = 'display compact'
+)
+```
+<hr>
+####Boxplot：市区町村別取引価格(総額)の平米単価
+##### Powered by https://www.amcharts.com/
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+boxData0 <- dataSet0[[targetPre]][,c(city, heibeitanka)]
+for (iii in 1:length(unique(boxData0[, 1]))) {
+  buf <- subset(boxData0, boxData0[, 1] == unique(boxData0[, 1])[iii])
+  colnames(buf)[2] <- unique(boxData0[, 1])[iii]
+  if (iii == 1) {
+    boxData <- buf[, 2, drop = F]
+  } else{
+    boxData <- qpcR:::cbind.na(boxData, buf[, 2, drop = F])
+  }
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+border <- 16
+ambox <- list()
+for (sss in 0:(ceiling(ncol(boxData) / border) - 1)) {
+  ambox[[sss+1]] <- boxData[, (sss * border + 1):min(ncol(boxData),(sss * border + border))]
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+out = NULL
+for (iii in 1:length(ambox)) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "rAmCharts::amBoxplot(ambox[[",iii,"]], horiz = T)",
+      "\n\ncat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded)
+}
+```
+`r paste(knit(text = out), collapse = '\n')`
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableData <-
+  data.frame(ID = seq(1, nrow(dataSet0[[targetPre]])), dataSet0[[targetPre]][, -c(1, 9, 10, 11)], check.names = F)
+PopTable <- googleVis::gvisTable(tableData,
+                                 options = list(
+                                   width = 2000,
+                                   height = 'automatic',
+                                   page = 'enable' ,
+                                   pageSize = 20
+                                 ))
+plot(PopTable, tag = 'chart')
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+pathOutput <-
+  paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
+setwd(pathOutput)
+htmlFile0 <- paste0('不動産取引情報.html')
+htmlFile <-
+  paste0(
+    '<tr><td>',
+    prefecture[targetPre],
+    '</td><td><a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
+    timeStamp,
+    '.html" target="_blank">Link</a></td></tr>'
+  )
+cat(htmlFile, file = htmlFile0, append = T)
+```
