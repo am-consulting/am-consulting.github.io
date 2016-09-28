@@ -1,0 +1,194 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "国民医療費"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(dplyr)
+library(lubridate)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, na.strings = c('na', '', '-', 'NA'),
+    check.names = F)
+tmp[,1] <- as.Date(tmp[,1])
+dateFormat = '%Y年%m月%d日'
+if (length(unique(day(tmp[, 1]))) == 1) {
+  dateFormat = '%Y年%m月'
+}
+if (length(unique(month(tmp[, 1]))) == 1) {
+  dateFormat = '%Y年'
+}
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+omitType <- 1
+dataTitle <-
+  paste0('国民医療費 - 人口一人当たり国民医療費 - 対国内総生産比率 - 年次別 -',
+         format(last(tmp[, 1]), dateFormat))
+dataSource <- '厚生労働省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+if(omitType==1) {
+  dataSet <- na.omit(tmp)
+} else{
+  dataSet <- tmp[rowSums(is.na(tmp)) != (ncol(tmp) - 1), ]
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+funPlotTimeSeries <- function() {
+  mainTitle <-
+    paste(colnames(dataSet)[obj01], '\n×\n', colnames(dataSet)[obj02])
+  datePeriod <- paste0(format(first(dataSet[, 1]), dateFormat), '~', format(last(dataSet[, 1]), dateFormat))
+  maxValue <- max(dataSet[, obj01], dataSet[, obj02])
+  minValue <- min(dataSet[, obj01], dataSet[, obj02])
+  par(mar = c(3, 5, 6, 5), family = 'Meiryo')
+  plot(
+    dataSet[, 1],
+    dataSet[, obj01],
+    type = seriesType01,
+    col = lineColor[1],
+    xlab = '' ,
+    ylab = '' ,
+    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+    xaxt = 'n',
+    ylim = if (needYlim == 1) {c(minValue, maxValue)},
+    main = paste(mainTitle, '\n', datePeriod, '\nSource:', dataSource),
+    cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = obj01lwd
+  )
+  if (needloess01 == 1) {
+    lo <- loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
+    lines(dataSet[, 1] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)
+  }
+  if (chartTtpe == 1) {
+    lines(dataSet[, 1], dataSet[, obj02], col = lineColor[2], lwd = obj02lwd)
+  } else{
+    par(new = T)
+    plot(
+      dataSet[, 1],
+      dataSet[, obj02],
+      col = lineColor[2],
+      type = seriesType02,
+      xlab = '' ,
+      ylab = '' ,
+      panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+      xaxt = 'n',
+      yaxt = 'n',
+      cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = obj02lwd
+    )
+    axis(4, cex.axis = 1, cex.lab = 1)
+    mtext(colnames(dataSet)[obj01], side = 2, line = 3.2, cex = 1)
+    mtext(colnames(dataSet)[obj02], side = 4, line = 3.2, cex = 1)
+  }
+  if (needloess02 == 1) {
+    lo <- loess(dataSet[, obj02] ~ as.numeric(dataSet[, 1]), degree = 2)
+    lines(dataSet[, 1] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)
+  }
+  graphics::legend(
+    'topleft',
+    col = lineColor[-3],
+    lty = 1,
+    legend = c(colnames(dataSet)[obj01], colnames(dataSet)[obj02]),
+    cex = 1,
+    bty = 'n'
+  )
+  axis.Date(side = 1, at = dataSet[, 1], format = dateFormat, padj = 1, cex.axis = 1.0)
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function() {
+  DT::datatable(
+    dataSet0,
+    options = list(
+      search.regex = T,
+      paging = T,
+      autoWidth = F,
+      info = T,
+      lengthChange = T,
+      ordering = T,
+      searching = T,
+      scrollX = T,
+      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
+      orderClasses = T,
+      order = list(list(0, 'desc')),
+      columnDefs = list(
+        list(width = '10%', targets = 0)
+        )
+      ),
+    rownames = F,
+    caption = paste(dataTitle,'. Source:' ,dataSource),
+    class = 'display compact'
+  )
+}
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
+lineColor <- c('blue', 'red', 'black')
+chartTtpe <- 2
+if (chartTtpe == 1) {
+  needYlim <- 1
+} else{
+  needYlim <- 0
+}
+seriesType01 <- 'l'
+seriesType02 <- 'l'
+obj01 <- 2
+obj02 <- 3
+obj01lwd <- 1
+obj02lwd <- 1
+needloess01 <- 1
+needloess02 <- 1
+dataTail <- 12 * 20000
+bufdataSet <- dataSet
+dataSet <- tail(dataSet, dataTail)
+funPlotTimeSeries()
+dataSet <- bufdataSet
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+summary(dataSet[,-1])
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dataSet0 <- dataSet
+dataSet0[is.na(dataSet0)] <- ''
+dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
+funDataTable()
+```
