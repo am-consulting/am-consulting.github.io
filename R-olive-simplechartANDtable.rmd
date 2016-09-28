@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "国民医療費"
+title : "価格指数"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -26,6 +26,10 @@ options(width = 1000)
 ```{r,warning=F,error=F,message=F,echo=F}
 library(dplyr)
 library(lubridate)
+library(psych)
+library(Hmisc)
+library(pastecs)
+library(tseries)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -45,9 +49,9 @@ if (length(unique(month(tmp[, 1]))) == 1) {
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
 dataTitle <-
-  paste0('国民医療費 - 人口一人当たり国民医療費 - 対国内総生産比率 - 年次別 -',
+  paste0('消費税を除く企業向けサービス価格指数 - 2010年基準 - ',
          format(last(tmp[, 1]), dateFormat))
-dataSource <- '厚生労働省'
+dataSource <- '日本銀行'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -75,7 +79,6 @@ if(omitType==1) {
 funPlotTimeSeries <- function() {
   mainTitle <-
     paste(colnames(dataSet)[obj01], '\n×\n', colnames(dataSet)[obj02])
-  datePeriod <- paste0(format(first(dataSet[, 1]), dateFormat), '~', format(last(dataSet[, 1]), dateFormat))
   maxValue <- max(dataSet[, obj01], dataSet[, obj02])
   minValue <- min(dataSet[, obj01], dataSet[, obj02])
   par(mar = c(3, 5, 6, 5), family = 'Meiryo')
@@ -168,7 +171,7 @@ if (chartTtpe == 1) {
   needYlim <- 0
 }
 seriesType01 <- 'l'
-seriesType02 <- 'l'
+seriesType02 <- 'h'
 obj01 <- 2
 obj02 <- 3
 obj01lwd <- 1
@@ -176,16 +179,45 @@ obj02lwd <- 1
 needloess01 <- 1
 needloess02 <- 1
 dataTail <- 12 * 20000
-bufdataSet <- dataSet
 dataSet <- tail(dataSet, dataTail)
+datePeriod <- paste0(format(first(dataSet[, 1]), dateFormat), '~', format(last(dataSet[, 1]), dateFormat))
 funPlotTimeSeries()
-dataSet <- bufdataSet
 ```
 <hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
+par(mfrow = c(1, 2), mar = c(3, 3, 3, 3), family = 'Meiryo', oma = c(0, 0, 3, 0))
+for (ddd in 1:2) {
+  bufN <- get(paste0('obj0', ddd))
+  hist(
+    dataSet[, bufN],
+    col = '#ADD8E6',
+    main = colnames(dataSet)[bufN],
+    cex.main = 1.0
+  )
+}
+mtext(datePeriod, side = 3,outer = T,cex = 1.2)
+```
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 summary(dataSet[,-1])
 ```
-<hr>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+psych::describe(dataSet[,-1])
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+Hmisc::describe(dataSet[,-1])
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+pastecs::stat.desc(dataSet[,-1]) 
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+apply(dataSet[,-1],2,adf.test)
+```
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet0 <- dataSet
 dataSet0[is.na(dataSet0)] <- ''
