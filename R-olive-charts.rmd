@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : '株式平均利回り'
+title : 'コアCPI'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
@@ -13,30 +13,22 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
 </style>
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"株式平均利回り 一部 加重平均 2016年8月分"
-dataTitle0<-'歴代政権毎の時系列推移'
-dataSource<-"株式会社東京証券取引所"
-notes<-"複数のワードで検索する際は半角スペースで区切ってください"
-dataTail<-0 
-Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID<-format(Sys.time(),'%Y-%m-%d-%H-%M-%S')
-cat(paste("Title :",dataTitle,dataTitle0,"\n"))
-cat(paste("Raw Data Source :",dataSource,"\n"))
-cat(paste("Author :",Author,"\n"))
-cat(paste("作成日 :",Sys.time(),"\n"))
-cat(paste("特記 :",notes,"\n"))
-cat(paste("ID :",htmlID,"\n"))
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-loadTMP <- 4
+loadTMP <- 1
+dataTail <- 12 * 20 
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -79,7 +71,7 @@ tmp <-
     header = T,
     sep = "\t",
     stringsAsFactor = F,
-    na.strings = c("na", "", "-"),
+    na.strings = c("na", "", "-", '* '),
     check.names = F
   )
 tmp <- tmp[order(tmp[,1],decreasing = F),]
@@ -137,12 +129,12 @@ dataSet[, 1] <- as.Date(dataSet[, 1])
 dataSet <-
   data.frame(dataSet, apply(dataSet[1], 1, FUN), check.names = F)
 colnames(dataSet)[ncol(dataSet)] <- indextitle[iii]
-dateFormat = "%Y-%m-%d"
+dateFormat = "%Y年%m月%d日"
 if (length(unique(day(dataSet[, 1]))) == 1) {
-  dateFormat = "%Y-%m"
+  dateFormat = "%Y年%m月"
 }
 if (length(unique(month(dataSet[, 1]))) == 1) {
-  dateFormat = "%Y"
+  dateFormat = "%Y年"
 }
 chartTitle <-
   paste(colnames(dataSet)[2],
@@ -150,6 +142,22 @@ chartTitle <-
         "-",
         format(dataSet[nrow(dataSet), 1], dateFormat))
 borderdate <- max(highestData[1, 1], dataSet[1, 1])
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <-
+  paste0("2015年基準消費者物価指数-生鮮食品を除く総合消費者物価指数(コアCPI)-", format(tail(dataSet[, 1], 1), dateFormat))
+dataTitle0 <- '歴代政権毎の時系列推移'
+dataSource <- "総務省"
+notes <- "複数のワードで検索する際は半角スペースで区切ってください"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, dataTitle0, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("ID :", htmlID, "\n"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -358,12 +366,13 @@ funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
       bufAmcharts <- qpcR:::cbind.na(bufAmcharts, tmp0)
     }
   }
+  bufAmcharts <<- bufAmcharts
   cat(paste0('<b>', bigTitle, '</b>'))
   amBoxplot(bufAmcharts, horiz = T)
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F} 
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dateRange<-paste0(format(first(dataSet[,1]),dateFormat),'~',format(last(dataSet[,1]),dateFormat))
 funPlotBoxplotAmcharts(obj = dataSet,bigTitle = paste(dataTitle,dateRange,'. Powered By https://www.amcharts.com/'))
 ```
@@ -384,6 +393,20 @@ captionText<-paste(dataTitle, dataSource)
 #dataSet0 <- data.frame(ID = seq(1, nrow(dataSet)), dataSet, check.names = F)
 #dataSet0[,2]<-format(dataSet0[,2],dateFormat)
 funDataTable()
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cat(paste0('<b>',dateRange,'</b>'))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+summary(dataSet[,2,drop=F])
+```
+<hr>
+<b>民主党政権時と第二次安倍政権発足以降の比較</b>
+```{r,warning=F,error=F,message=F,results='markup',echo=F}
+summaryData <- bufAmcharts[,seq(ncol(bufAmcharts)-3,ncol(bufAmcharts))]
+summary(summaryData)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
