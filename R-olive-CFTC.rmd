@@ -19,6 +19,9 @@ output:
 	margin-right: auto;
 }
 </style>
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
@@ -194,6 +197,12 @@ for (iii in 1:length(cftcOBJ)) {
 }
 ```
 
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+for (iii in 1:length(dataset)) {
+  print(summary(dataset[[iii]][, c( 1, 2, 3, 4)]))
+}
+```
+<hr>
 ```{r,warning=F,error=F,message=F,echo=F}
 funDataTable <- function(obj, append = '') {
   DT::datatable(
@@ -214,7 +223,9 @@ funDataTable <- function(obj, append = '') {
     ),
     rownames = F,
     caption = paste0(dataTitle, '. ', append),
-    class = 'display compact'
+    class = 'display compact',
+    escape = F,
+    filter = 'bottom'
   )
 }
 ```
