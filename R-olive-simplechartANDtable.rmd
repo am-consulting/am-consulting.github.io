@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "平均給与"
+title : "North America Rig Count"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -49,9 +49,9 @@ if (length(unique(month(tmp[, 1]))) == 1) {
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
 dataTitle <-
-  paste0('民間給与実態統計調査 - 1年を通じて勤務した給与所得者の1人当たりの平均給与 - 女',' - ',
+  paste0('Baker Hughes:North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス',' - ',
          format(last(tmp[, 1]), dateFormat))
-dataSource <- '国税庁'
+dataSource <- 'Baker Hughes'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -152,12 +152,13 @@ funDataTable <- function() {
       orderClasses = T,
       order = list(list(0, 'desc')),
       columnDefs = list(
-        list(width = '10%', targets = 0)
+        list(width = '15%', targets = 0)
         )
       ),
     rownames = F,
     caption = paste(dataTitle,'. Source:' ,dataSource),
-    class = 'display compact'
+    class = 'display compact',
+    escape = F # or escape = 'v1'(特定のcolumn) テーブル内でhtmlマークアップする場合に必須 
   )
 }
 ```
@@ -171,7 +172,7 @@ if (chartTtpe == 1) {
   needYlim <- 0
 }
 seriesType01 <- 'l'
-seriesType02 <- 'h'
+seriesType02 <- 'l'
 obj01 <- 2
 obj02 <- 3
 obj01lwd <- 1
@@ -207,7 +208,7 @@ psych::describe(dataSet[,-1])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-Hmisc::describe(dataSet[,-1])
+#Hmisc::describe(dataSet[,-1])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
