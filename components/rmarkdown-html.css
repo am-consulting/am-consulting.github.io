@@ -9,6 +9,12 @@ body {
 	margin-left: auto;
 	margin-right: auto;
 }
+
+tt, code, pre {
+   font-family: 'MS Gothic', 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+/* 参照 : http://qiita.com/quattro_4/items/d56dc21adb7c5f2873ef */
+
 /*
 pre:not([class]) {
 	background-color: white;
