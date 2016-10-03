@@ -12,7 +12,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1100px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -35,6 +35,7 @@ library(ggplot2)
 library(scales)
 library(tseries)
 library(pipeR)
+library(zoo)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -130,7 +131,7 @@ funbarPlot <- function() {
   mainTitle <-
     paste(title01, ':', first(dataSet00[, 1]), '-', last(dataSet00[, 1]))
   labels <- c(colnames(dataSet00)[c(obj01, obj02)])
-  par(mar = c(5, 7, 7, 5),
+  par(mar = c(2, 7, 4, 2),
       family = 'Meiryo')
   barplot(
     t(dataSet00[, c(obj01, obj02)]),
@@ -142,14 +143,15 @@ funbarPlot <- function() {
     legend.text = labels,
     args.legend = list(
       x = max(dataSet00[, obj01] + dataSet00[, obj02]),
-      y = floor(nrow(dataSet00) / 1.2)
+      y = floor(nrow(dataSet00) + 4),
+      horiz = T
     ),
-    ylim = c(0, nrow(dataSet00) + 0)
+    ylim = c(0, nrow(dataSet00) + 3)
   )
 }
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=5,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=5} 
 title01 <- paste0('1日当り',colnames(dataSet)[2])
 obj01 <- 3
 obj02 <- 4
@@ -240,12 +242,12 @@ dateRange <-
   paste(first(dataSet[, 1]), '-', last(dataSet[, 1]))
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
 boxType <- 1
 funBoxplot()
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
 for(mm in 1:12) {
   buf <- subset(dataSet, month(dataSet[, 1]) == mm)[, 2, drop = F]
   colnames(buf) <- paste0(mm, '月')
@@ -272,12 +274,12 @@ tableObj <- tableObj[, -5]
 funDataTable()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
 boxType <- 2
 funBoxplot()
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
 for(dd in 1:31) {
   buf <- subset(dataSet, day(dataSet[, 1]) == dd)[, 2, drop = F]
   colnames(buf) <- paste0(dd, '日')
@@ -304,12 +306,12 @@ tableObj <- tableObj[, -5]
 funDataTable()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
 boxType <- 3
 funBoxplot()
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11}
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4}
 cnt<-1
 for(yyyy in year(first(dataSet[,1])):year(last(dataSet[,1]))) {
   buf <- subset(dataSet, year(dataSet[, 1]) == yyyy)[, 2, drop = F]
@@ -338,15 +340,17 @@ tableObj <- tableObj[, -5]
 funDataTable()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F} 
+```{r,warning=F,error=F,message=F,echo=F}
+tailN <- 100
 dataSet1 <- merge(dataSet, eventDataDF, all = T)
+dataSet1 <- tail(dataSet1, tailN)
 funTimeSeries <- function() {
   par(mar = c(3, 5, 3, 3),
       family = 'Meiryo')
   plot(
     dataSet1[, 1],
     dataSet1[, obj01],
-    type = 'h',
+    type = 'o',
     pch = 1,
     lwd = 1,
     family = 'Meiryo',
@@ -360,10 +364,11 @@ funTimeSeries <- function() {
       equilogs = T
     ) ,
     xaxt = 'n',
-    main = paste(mainTitle, '\nSource:', dataSource,'、出来事の出所はWikipedia'),
+    main = paste0('直近',tailN,'日の入域(隻):', 
+                  head(dataSet1[,1],1),'~',tail(dataSet1[,1],1), '\nSource:', dataSource,'、出来事の出所はWikipedia'),
     cex.axis = 1,
-    cex.lab = 1,
-    cex.main = 1,
+    cex.lab = 1.5,
+    cex.main = 1.2,
     ylim = c(0, 35)
   )
   axis.Date(
@@ -379,7 +384,7 @@ funTimeSeries <- function() {
     labels = dataSet1[, 5],
     srt = 90,
     pos = 4,
-    cex = 0.9,
+    cex = 1.0,
     offset = 0
   )
   par(new = T)
@@ -398,16 +403,16 @@ funTimeSeries <- function() {
 }
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=10,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=10} 
 obj01 <- 2
 funTimeSeries()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=11} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
 statDataSet <- dataSet0[, c(obj01, 1), drop = F]
 statDataSet[which(is.na(statDataSet[, 1, drop = F])), 1] <- 0
 par(mfrow = c(1, 2),
-      family = 'Meiryo')
+      family = 'Meiryo',mar=c(3, 3, 6, 1))
 # histogram
 hist(
   statDataSet[, 1],
@@ -444,7 +449,10 @@ acfResult <- acf(
     adfResult$p.value,
     '(lag=',
     adfResult$parameter,
-    ')'
+    ')\n',
+    first(statDataSet[, 2]),
+    '~',
+    last(statDataSet[, 2])
   ),
   xlab = paste0('Lag(日)')
 )
@@ -467,19 +475,37 @@ statResultDF[1,1]<-1
 statResultDF[1,2]<-'直近の最長連続入域日数'
 statResultDF[1,3]<-cntMax
 statResultDF[1,4]<-paste0(statDataSet[buf,2]-cntMax,'~',statDataSet[buf,2]-1)
+# 最長連続無入域(日)
+cnt <- 0
+cntMax<--10^100
+for (rrr in 1:nrow(statDataSet)) {
+  if (statDataSet[rrr, 1] == 0) {
+    cnt <- cnt + 1
+  } else{
+    if(cntMax<=cnt){
+      cntMax<-cnt
+    buf <- rrr
+      }
+    cnt <- 0
+  }
+}
+statResultDF[2,1]<-1
+statResultDF[2,2]<-'直近の最長連続無入域日数'
+statResultDF[2,3]<-cntMax
+statResultDF[2,4]<-paste0(statDataSet[buf,2]-cntMax,'~',statDataSet[buf,2]-1)
 # 1日当り最多入域数
 buf0<-subset(statDataSet,max(statDataSet[,1])==statDataSet)
-statResultDF[2,1]<-2
-statResultDF[2,2]<-'直近の1日当り最多入域隻'
-statResultDF[2,3]<-buf0[1,1]
-statResultDF[2,4]<-as.character(buf0[1,2])
+statResultDF[3,1]<-2
+statResultDF[3,2]<-'直近の1日当り最多入域隻'
+statResultDF[3,3]<-buf0[1,1]
+statResultDF[3,4]<-as.character(buf0[1,2])
 # 平均1日当り入域隻
 dateDiff<-as.numeric(last(statDataSet[, 2])-first(statDataSet[, 2])+1)
 totalShip<-sum(statDataSet[,1])
-statResultDF[3,1]<-3
-statResultDF[3,2]<-'平均1日当り入域隻'
-statResultDF[3,3]<-round(totalShip/dateDiff,2)
-statResultDF[3,4]<-paste0('=',totalShip,'隻/',dateDiff,'日(',first(statDataSet[, 2]),'~',last(statDataSet[, 2]),')')
+statResultDF[4,1]<-3
+statResultDF[4,2]<-'平均1日当り入域隻'
+statResultDF[4,3]<-round(totalShip/dateDiff,2)
+statResultDF[4,4]<-paste0('=',totalShip,'隻/',dateDiff,'日(',first(statDataSet[, 2]),'~',last(statDataSet[, 2]),')')
 colnames(statResultDF)<-c('ID','項目','数値','備考')
 ```
 <hr>
