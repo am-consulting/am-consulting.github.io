@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : '勤労統計'
+title : '為替介入'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -30,12 +30,12 @@ library(pipeR)
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 timeSeries<-0 # 1 or 0
 needID<-0
-needAtag<-0
+needAtag<-4
 needAdd<-0
 needDiff<-0
 pp<-0
-dataTitle<-'毎月勤労統計調査　全国調査 原表 実数原表 2016年7月'
-dataSource<-'厚生労働省'
+dataTitle<-'外国為替平衡操作の実施状況(月次ベース) 2016年9月'
+dataSource<-'財務省'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
@@ -113,9 +113,9 @@ tmp <-
         scrollX = F,
         lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
         orderClasses = T,
-        order = list(list(0, 'desc')),
+        order = list(list(0, 'asc')),
         columnDefs = list(
-          list(width = '10%', targets = 0)
+          list(width = '5%', targets = 0)
 #           ,
 #          list(width = '15%', targets = 1)
           # ,
@@ -124,7 +124,9 @@ tmp <-
         ),
       rownames = F,
       caption = paste(dataTitle, append),
-      class = 'display compact'
+      class = 'display compact',
+      escape = F, # or escape = 'v1'(特定のcolumn) テーブル内でhtmlマークアップする場合に必須 
+      filter = 'bottom'
     )
   }
   
@@ -138,9 +140,9 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste(dataTitle,appendTitle))
-fungvisTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = appendTitle)
+#cat(paste(dataTitle,appendTitle))
+#fungvisTable(obj = dataSetDT)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
