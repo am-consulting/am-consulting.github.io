@@ -1,4 +1,5 @@
 ```{r}
+boj <- 1
 username <- Sys.info()['user']
 pathReadCSV <-
   file.path(paste0('C:/Users/', username, '/Desktop/timeSeriesCSVdata/'))
@@ -15,6 +16,12 @@ if (length(dir(pathReadCSV)) != 0) {
         stringsAsFactors = F,
         check.names = F
       )
+    if (boj == 1) {
+      colnames(tmp) <- unlist(tmp[1, ])
+      tmp <- tmp[-1, ]
+      tmp[, 1] <- paste0(tmp[, 1], '/01')
+      tmp[, -1] <- apply(tmp[, -1, drop=F], 2, as.numeric)
+    }
     tmp[, 1] <- as.Date(tmp[, 1])
     colnames(tmp)[1] <- 'Date'
     if (fff == 1) {
@@ -25,6 +32,10 @@ if (length(dir(pathReadCSV)) != 0) {
   }
 }
 dataSet0 <- na.omit(dataSet)
+```
+
+```{r}
+colnames(dataSet0)
 ```
 
 ```{r}
