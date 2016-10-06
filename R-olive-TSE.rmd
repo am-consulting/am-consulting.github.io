@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
 title : '株式売買状況'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -17,23 +17,6 @@ body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
 	margin-right: auto;
 }
 </style>
-
-```{r,warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- '投資部門別株式売買状況 二市場一･二部等 2016年8月第5週分'
-dataSource <- '株式会社日本取引所グループ'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID<-format(Sys.time(),'%Y-%m-%d-%H-%M-%S')
-cat(paste("Title :", dataTitle, "\n"))
-cat(paste("Raw Data Source :", dataSource, "\n"))
-cat(paste("Author :", Author, "\n"))
-cat(paste("作成日 :", Sys.time(), "\n"))
-cat(paste("特記 :", notes, "\n"))
-cat(paste("特記 :", notes0, "\n"))
-cat(paste("ID :",htmlID,"\n"))
-windowsFonts(Meiryo = windowsFont("Meiryo"))
-```
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(zoo)
@@ -56,6 +39,23 @@ tmp0 <-
     check.names = F
   )
 tmp <- tmp0
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- paste0('投資部門別株式売買状況 二市場一･二部等 ',tail(tmp[,1],1))
+dataSource <- '株式会社日本取引所グループ'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID<-timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :",htmlID,"\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=12,results='asis'}
