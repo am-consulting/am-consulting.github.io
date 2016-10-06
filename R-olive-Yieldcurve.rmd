@@ -6,14 +6,14 @@ author: "アセット･マネジメント･コンサルティング株式会�
 output: 
   html_document:
     fig_height: 5
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1000px;
+	max-width: 900px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -57,9 +57,9 @@ eval(parse(text = script))
 jgbData <- na.omit(jgbData)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,results='hide', fig.show='animate', interval=0.2, aniopts="controls"}
+```{r,warning=F,error=F,message=F,echo=F,results='hide', fig.show='animate', interval=0.2, aniopts="controls",fig.height=5,fig.width=9}
 #dateRange<-seq(nrow(jgbData)-300,nrow(jgbData))
-dataStep <- 20
+dataStep <- 30
 dateRange <- c(seq(1,nrow(jgbData),by=dataStep),nrow(jgbData))
 yRange<-c(min(jgbData[dateRange,][,-1]),max(jgbData[dateRange,][,-1]))
 slopeTable<-data.frame()
@@ -107,7 +107,10 @@ colnames(slopeTable)<-c('Date','Slope','C.I.95%-lwr','C.I.95%-upr')
 slopeTable[,1] <- as.Date(slopeTable[,1])
 ```
 ####注意
-イールドカーブの線形回帰は説明変数を数値の1から15(1Y、2Y・・・40Y)、応答変数を金利データとして算出したものである。
+
+1. イールドカーブの線形回帰は説明変数を数値の1から15(1Y、2Y・・・40Y)、応答変数を金利データとして算出したものである。
+1. 本ページでは線形回帰Slopeの変化を以て"スティープ化"、"フラット化"と呼称する。
+
 ```{r,warning=F,error=F,message=F,echo=F}
 funDataTable <- function(obj,tableTitle='',append='') {
   DT::datatable(
@@ -136,7 +139,7 @@ funDataTable <- function(obj,tableTitle='',append='') {
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F}
-par(mar=c(3,5,6,5),family = 'Meiryo')
+par(mar=c(3,4,4,1),family = 'Meiryo')
 plot(
   slopeTable[, 1],
   slopeTable[, 2],
@@ -174,3 +177,14 @@ funDataTable(obj = slopeTable, tableTitle = '線形回帰Slope')
 ```{r,warning=F,error=F,message=F,echo=F}
 funDataTable(obj = jgbData, tableTitle = '日本国債金利情報')
 ```
+<hr>
+####「長短金利操作付き量的・質的金融緩和」導入時(2016年09月21日)と直近の10年物日本国債金利の比較 
+```{r,warning=F,error=F,message=F,echo=F}
+col10Y <- grep('10Y', colnames(jgbData))
+buf01 <- tail(jgbData[, c(1, col10Y)], 1)
+buf02 <- subset(jgbData, jgbData[, 1] == '2016-09-21')[, c(1, col10Y)]
+buf03 <- data.frame(rbind(buf01, buf02), row.names = NULL, check.names = F)
+print(buf03)
+print(paste0('直近と導入時の金利差(pp) = ', buf03[1, 2] - buf03[2, 2]))
+```
+<hr>
