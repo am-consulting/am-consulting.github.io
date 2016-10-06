@@ -1,0 +1,143 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : 'ODA'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+output: 
+  html_document:
+    fig_height: 7
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '主要援助国のODA実績の推移(支出純額ベース、単位:億ドル)'
+dataSource <- '外務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :", htmlID, "\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+    "clipboard",
+    header = T,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("NA", "-", "－", "… ", ".", ""),
+    check.names = F
+  )
+dataSet <- tmp
+dataSet[,1] <- as.Date(dataSet[,1])
+dataSet0 <- data.frame(
+  Date=dataSet[-1,1,drop=F],
+  round(diff(as.matrix(dataSet[,-1,drop=F]))/as.matrix(dataSet[-nrow(dataSet),-1,drop=F])*100,2)
+  )
+par(mfrow=c(1,2),mar=c(3,3,3,2),family='Meiryo',oma=c(0,0,2,0))
+for(iii in 1:2){
+  switch (iii,
+    obj <- dataSet,
+    obj <- dataSet0
+  )
+  ymax<-max(obj[,-1])
+  ymin<-min(obj[,-1])
+  plot(
+    obj[,1],
+    obj[,2],
+    type = 'o',
+    col=2,
+    ylim = c(ymin,ymax),
+    lwd=2,  
+    xlab = '' ,
+    ylab = '' ,
+    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+    xaxt = 'n',
+    main = if(iii==1){'原数値(億ドル)'}else{'前年比(%)'}
+    )
+  abline(h=0)
+  for(lll in 3:ncol(obj)){
+    lines(obj[,1],obj[,lll],type = 'o',col=lll,lwd=2)  
+  }
+  dateFormat<-'%Y年'
+  graphics::legend('topleft',col=seq(2,ncol(obj)),lty=1,legend=colnames(obj)[-1],cex=1,lwd = 2, bty='n')
+  axis.Date(side=1,at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0)  
+}
+mtext(paste0(dataTitle,'\nSource:',dataSource),side = 3,outer = T)
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+dataDT<-dataSet
+dataDT[,1]<-format(dataDT[,1],'%Y年')
+DT::datatable(
+  dataDT,
+  options = list(
+    search.regex = F,
+    paging = F,
+    autoWidth = F,
+    info = F,
+    lengthChange = F,
+    ordering = T,
+    searching = T,
+    scrollX = F,
+    orderClasses = T,
+    order = list(list(0, 'desc')),
+    columnDefs = list(list(width = '10%', targets = 0))
+  ),
+  rownames = F,
+  caption = paste(dataTitle,' - 原数値(億ドル)'),
+  class = 'display compact',
+  escape = F,
+  filter = 'bottom'
+)
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+dataDT<-dataSet0
+dataDT[,1]<-format(dataDT[,1],'%Y年')
+DT::datatable(
+  dataDT,
+  options = list(
+    search.regex = F,
+    paging = F,
+    autoWidth = F,
+    info = F,
+    lengthChange = F,
+    ordering = T,
+    searching = T,
+    scrollX = F,
+    orderClasses = T,
+    order = list(list(0, 'desc')),
+    columnDefs = list(list(width = '10%', targets = 0))
+  ),
+  rownames = F,
+  caption = paste(dataTitle,' - 前年比(%)'),
+  class = 'display compact',
+  escape = F,
+  filter = 'bottom'
+)
+```
+<hr>
