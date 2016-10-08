@@ -199,7 +199,10 @@ for (iii in 1:length(cftcOBJ)) {
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 for (iii in 1:length(dataset)) {
-  print(summary(dataset[[iii]][, c( 1, 2, 3, 4)]))
+  # print(summary(dataset[[iii]][, c( 1, 2, 3, 4)]))
+  cat(paste(range(dataset[[iii]][,1]),collapse = ' ~ '),'\n')
+  print(apply(dataset[[iii]][, c( 2, 3, 4), drop=F], 2, summary))
+  cat('\n\n')
 }
 ```
 <hr>
