@@ -158,7 +158,8 @@ funDataTable <- function() {
     rownames = F,
     caption = paste(dataTitle,'. Source:' ,dataSource),
     class = 'display compact',
-    escape = F # or escape = 'v1'(特定のcolumn) テーブル内でhtmlマークアップする場合に必須 
+    escape = F, # or escape = 'v1'(特定のcolumn) テーブル内でhtmlマークアップする場合に必須
+    filter = 'bottom'
   )
 }
 ```
@@ -221,7 +222,16 @@ apply(dataSet[,-1],2,adf.test)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet0 <- dataSet
-dataSet0[is.na(dataSet0)] <- ''
+dataSet0 <- data.frame(dataSet0[-1,1,drop=F],diff(as.matrix(dataSet0[,-1,drop=F])),check.names = F)
+colnames(dataSet0)[-1] <- paste0(colnames(dataSet0)[-1],'-Change From Last Data')
+dataSet1 <- dataSet
+dataSet1[,-1] <- apply(dataSet1[,-1,drop=F],2,function(x){round(x/max(x)*100,1)})
+colnames(dataSet1)[-1] <- paste0(colnames(dataSet1)[-1],'-Ratio to Peak')
+dataSet0 <- merge(dataSet, dataSet0, by = 'Date',all = T)
+dataSet0 <- merge(dataSet0, dataSet1, by = 'Date',all = T)
+#dataSet0[is.na(dataSet0)] <- ''
+#dataframeのNAを''に置換すると、そのNAを含む列全てがcharacterに変換されてしまうので注意
 dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
 ```
+<hr>
