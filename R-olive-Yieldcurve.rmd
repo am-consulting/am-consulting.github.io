@@ -19,6 +19,10 @@ output:
 }
 </style>
 
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
 ```{r,warning=F,error=F,message=F,echo=F}
 library(DT)
 library(lubridate)
@@ -69,6 +73,20 @@ xRange <- seq(1, ncol(jgbData) - 1)
 yieldCurve <- unlist(jgbData[rrr, -1])
 lmResult <- lm(yieldCurve ~ xRange)
 slope <- round(lmResult$coefficients[2], 4)
+#1-10
+xRange01 <- seq(1, 10)
+yieldCurve01 <- unlist(jgbData[rrr, 2:11])
+lmResult01 <- lm(yieldCurve01 ~ xRange01)
+slope01 <- round(lmResult01$coefficients[2], 4)
+Y01 <- predict(lmResult01, newdata=data.frame(x=xRange01))
+#1-10
+#15-40
+xRange02 <- seq(10, 15)
+yieldCurve02 <- unlist(jgbData[rrr, 11:16])
+lmResult02 <- lm(yieldCurve02 ~ xRange02)
+slope02 <- round(lmResult02$coefficients[2], 4)
+Y02 <- predict(lmResult02, newdata=data.frame(x=xRange02))
+#15-40
 if(sum(rrr==dateRange)!=0){
 par(mar = c(5, 3, 3, 2), family = 'Meiryo')
 plot(
@@ -78,12 +96,7 @@ plot(
   col = 'blue',
   xlab = '' ,
   ylab = '%' ,
-  panel.first = grid(
-    nx = NULL,
-    ny = NULL,
-    lty = 2,
-    equilogs = T
-  ) ,
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
   xaxt = 'n',
   main = paste0('日本国債のイールドカーブ(',dataStep,'日毎):', jgbData[rrr, 1]),
   cex.axis = 1.2,
@@ -92,18 +105,26 @@ plot(
   ylim=yRange
 )
 abline(lmResult, col = 'red', lty = 2)
+lines(x=xRange01, y=Y01, col = 'green', lty = 2, lwd = 2)
+lines(x=xRange02, y=Y02, col = 'green', lty = 2, lwd = 2)
 axis(1, at = xRange, labels = colnames(jgbData)[-1])
-text(1, sum(yRange) / 2, paste0('線形回帰 Slope=', slope), pos = 4)
+slopeText <- paste0('\n\n\n',
+  '線形回帰(01Y-40Y) Slope=', slope,'\n',
+  '線形回帰(01Y-10Y) Slope=', slope01,'\n',
+  '線形回帰(10Y-40Y) Slope=', slope02)
+text(1, yRange[2], slopeText, pos = 4)
 abline(h=0,col='red',lwd=2)
 }
 CIrange <- confint(lmResult, 'xRange', level = 0.95)
 slopeTable[cnt, 1] <- as.character(jgbData[rrr, 1])
 slopeTable[cnt, 2] <- slope
-slopeTable[cnt, 3] <- CIrange[1]
-slopeTable[cnt, 4] <- CIrange[2]
+slopeTable[cnt, 3] <- round(CIrange[1],4)
+slopeTable[cnt, 4] <- round(CIrange[2],4)
+slopeTable[cnt, 5] <- slope01
+slopeTable[cnt, 6] <- slope02
 cnt <- cnt + 1
 }
-colnames(slopeTable)<-c('Date','Slope','C.I.95%-lwr','C.I.95%-upr')
+colnames(slopeTable)<-c('Date','Slope:1-40Y','C.I.95%-lwr','C.I.95%-upr','Slope:1-10Y','Slope:10Y-40Y')
 slopeTable[,1] <- as.Date(slopeTable[,1])
 ```
 ####注意
@@ -154,7 +175,7 @@ plot(
     equilogs = T
   ) ,
   xaxt = 'n',
-  main = paste('日本国債のイールドカーブ線形回帰のSlope\n',
+  main = paste('日本国債のイールドカーブ線形回帰のSlope(1Y-40Y)\n',
                format(first(slopeTable[,1]),'%Y-%m-%d'),'~',
                format(last(slopeTable[,1]),'%Y-%m-%d'),'\nSource:',dataSource),
   cex.axis = 1,
