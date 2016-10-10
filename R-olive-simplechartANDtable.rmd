@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "North America Rig Count"
+title : "PER･PBR"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -30,12 +30,13 @@ library(psych)
 library(Hmisc)
 library(pastecs)
 library(tseries)
+library(RCurl)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-tmp <-
-  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, na.strings = c('na', '', '-', 'NA'),
-    check.names = F)
+loadTMP <- 1
+if(loadTMP == 0){
+tmp <- read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, na.strings = c('na', '', '-', 'NA'), check.names = F)
 tmp[,1] <- as.Date(tmp[,1])
 dateFormat = '%Y年%m月%d日'
 if (length(unique(day(tmp[, 1]))) == 1) {
@@ -44,14 +45,34 @@ if (length(unique(day(tmp[, 1]))) == 1) {
 if (length(unique(month(tmp[, 1]))) == 1) {
   dateFormat = '%Y年'
 }
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+if(loadTMP==1){
+  script <-
+    getURL(
+      "https://raw.githubusercontent.com/am-consulting/Rscript/master/importPERPBR.r",
+      ssl.verifypeer = FALSE
+    )
+  eval(parse(text = script))
+  tmp <- PERPBR[,c(1,3,4)]
+  dataTitle <- paste0('PER･PBR 市場第一部 - 連結総合(加重) - PER･PBR - ',paste0(format(range(tmp[,1]),'%Y年%m月'),collapse='~'))
+  dataSource <- '株式会社東京証券取引所'
+  tmp[,1] <- as.Date(tmp[,1])
+  dateFormat = '%Y年%m月%d日'
+  colnames(tmp)[1] <- 'Date'
+}
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
+if(loadTMP == 0){
 dataTitle <-
   paste0('Baker Hughes:North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス',' - ',
          format(last(tmp[, 1]), dateFormat))
 dataSource <- 'Baker Hughes'
+}
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -201,6 +222,7 @@ mtext(datePeriod, side = 3,outer = T,cex = 1.2)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+cat(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '))
 summary(dataSet[,-1])
 ```
 
@@ -222,7 +244,7 @@ apply(dataSet[,-1],2,adf.test)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet0 <- dataSet
-dataSet0 <- data.frame(dataSet0[-1,1,drop=F],diff(as.matrix(dataSet0[,-1,drop=F])),check.names = F)
+dataSet0 <- data.frame(dataSet0[-1,1,drop=F],round(diff(as.matrix(dataSet0[,-1,drop=F])),10),check.names = F)
 colnames(dataSet0)[-1] <- paste0(colnames(dataSet0)[-1],'-Change From Last Data')
 dataSet1 <- dataSet
 dataSet1[,-1] <- apply(dataSet1[,-1,drop=F],2,function(x){round(x/max(x)*100,1)})
@@ -235,3 +257,6 @@ dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
 ```
 <hr>
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+knitr::kable(tail(dataSet,12),row.names = F)
+```
