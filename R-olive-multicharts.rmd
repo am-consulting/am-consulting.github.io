@@ -43,7 +43,7 @@ options(scipen = 999)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-loadTMP <- 1
+loadTMP <- 2
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -107,6 +107,8 @@ script <-
   )
 eval(parse(text = script))
 tmp <- PERPBR[,c(1,3,4)]
+dataTitle <- paste0('市場第一部 - 連結総合(加重) - PER･PBR - ',paste0(format(range(tmp[,1]),'%Y年%m月'),collapse='~'))
+dataSource <- '株式会社東京証券取引所'
 }
 ```
 
@@ -283,12 +285,12 @@ funDataTable <- function() {
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 lineColor<-c('red','blue','black')
-chartTtpe <- 1
+chartTtpe <- 2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
 seriesType02<-'l'
-obj01 <- 5
-obj02 <- 6
+obj01 <- 2
+obj02 <- 3
 funSeasonal()
 obj01lwd<-1
 obj02lwd<-1
