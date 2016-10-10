@@ -57,7 +57,7 @@ if(loadTMP==1){
     )
   eval(parse(text = script))
   tmp <- PERPBR[,c(1,3,4)]
-  dataTitle <- paste0('PER･PBR 市場第一部 - 連結総合(加重) - PER･PBR - ',paste0(format(range(tmp[,1]),'%Y年%m月'),collapse='~'))
+  dataTitle <- paste0('市場第一部 - 連結総合(加重) - PER･PBR - ',paste0(format(range(tmp[,1]),'%Y年%m月'),collapse='~'))
   dataSource <- '株式会社東京証券取引所'
   tmp[,1] <- as.Date(tmp[,1])
   dateFormat = '%Y年%m月%d日'
