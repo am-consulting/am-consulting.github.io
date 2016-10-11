@@ -51,6 +51,14 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+1. 対外、対内ともプラス値は取得超を、マイナス値は処分超を意味します。
+1. 対外証券投資
+	1. 居住者による取得または処分
+	1. 取得超は資産増加つまり資金流出、処分超は資産減少つまり資金流入を意味します。
+1. 対内証券投資
+	1. 非居住者による取得または処分
+	1. 場合取得超は負債増加つまり資金流入、処分超は負債減少つまり資金流出を意味します。
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 DT::datatable(
   origData[,c(1,2,5,8,13,16,19,24)],
@@ -111,12 +119,18 @@ for(iii in seq(3,ncol(origData),by=2)){
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-statData <- origData[,c(1,2,5,8,13,16,19,24)]
-cat(paste0('<h4>',head(statData[,2],1),' - ',tail(statData[,2],1),'</h4>'))
-```
-
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-summary(statData[,-c(1,2)])
+statData <- origData[,c(1,2,5,8,13,16,19,24)]
+cat(paste0(head(statData[,2],1),' - ',tail(statData[,2],1),'\n'))
+apply(statData[,c(3,5,6,8)],2,summary)
 ```
 <hr>
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+buf <- tail(origData, 3)
+buf <- t(buf)
+buf <- data.frame(rownames(buf), buf)
+colnames(buf) <- unlist(buf[2, ])
+buf <- buf[-(1:2), ]
+colnames(buf)[1] <- '対象'
+knitr::kable(buf, row.names = F)
+```
