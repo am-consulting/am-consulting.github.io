@@ -40,7 +40,9 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('日本の国際収支 - ', format(origData1[nrow(origData1),1],'%Y年%m月'))
+dataTitle <- 
+  paste0('日本の国際収支 - 経常収支、資本移転等収支、金融収支、誤差脱漏、貿易収支、サービス収支、所得収支、輸出、輸入 - ', 
+         paste0(format(range(origData1[,1]),'%Y年%m月'),collapse = '~'))
 dataSource <- '財務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
@@ -97,13 +99,15 @@ funDataTable <- function(obj,dataTitle='',append='') {
       ),
     rownames = F,
     caption = paste(dataTitle, append),
-    class = 'display compact'
+    class = 'display compact',
+    filter = 'bottom'
   )
 }
 ```
 ####日本の国際収支(単位：億円)
 ######注)経常収支＋資本移転等収支－金融収支＋誤差脱漏＝0
 ######注)金融収支の額は棒グラフに表示されている数値の符号を逆にして下さい。
+######Powered by https://www.amcharts.com/
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 bop0 <- origData1[, c(1, 2, 10, 11, 17), drop = F]
 bop0[, 1] <- as.character(format(bop0[, 1], '%Y-%m'))
@@ -119,6 +123,7 @@ funDataTable(obj = bop0, append = paste0(titleDT,'-',appendTitle))
 ```
 <hr>
 ####日本の経常収支(単位：億円)
+######Powered by https://www.amcharts.com/
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 currentAccount0 <- origData1[, c(1,4,7:9), drop = F]
 currentAccount0[, 1] <- as.character(format(currentAccount0[, 1], '%Y-%m'))
@@ -135,6 +140,7 @@ funDataTable(obj = currentAccount0, append = paste0(titleDT,'-',appendTitle))
 ####日本の貿易収支(単位：億円)
 ######注)貿易収支＝輸出 －輸入
 ######注)輸入の額は棒グラフに表示されている数値の符号を逆にして下さい。
+######Powered by https://www.amcharts.com/
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 goods0 <- origData1[, c(1,5:6), drop = F]
 goods0[, 1] <- as.character(format(goods0[, 1], '%Y-%m'))
