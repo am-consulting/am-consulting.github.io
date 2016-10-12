@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d-%H-%M-%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',format(Sys.time(),'%Y-%m-%d-%H-%M-%S'),'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
 title : '内閣支持率'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -19,9 +19,29 @@ output:
 }
 </style>
 
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+    "clipboard",
+    header = T,
+    sep = "\t",
+    stringsAsFactor = F,
+    na.strings = c("na", "", "-"),
+    check.names = F
+  )
+tmp[,1] <- as.Date(tmp[,1])
+tmp[,7] <- ifelse(as.Date("2013-1-1")<=tmp[,1],paste(tmp[,7],'(第2次以降)'),tmp[,7])
+# tmp[,7] <- ordered(tmp[,7], levels = tmp[,7][1:nrow(tmp)])
+# この時点でordered化するとby(INDICES)で纏められない。
+```
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle<-"内閣支持率と政党支持率(自民党、民進党(民主党)、支持なし)の時系列推移 2016年9月分"
-dataTitle0<-'対象:1998年4月以降の支持率'
+dataTitle <- "内閣支持率と政党支持率(月例、自民党、民進党(民主党)、支持なし)の時系列推移"
+dataTitle0 <- paste0(' - 対象:',paste0(format(range(tmp[,1]),'%Y年%m月'),collapse='~'))
 dataSource<-"NHK放送文化研究所"
 notes<-"複数のワードで検索する際は半角スペースで区切ってください"
 notes0<-"内閣支持率+政党支持率は内閣支持率と自民党支持率または民主党支持率の合計としている"
@@ -39,6 +59,26 @@ cat(paste("ID :", htmlID, "\n"))
 options(scipen = 999)
 ```
 
+<h4>内閣毎の初回と最後(または現職)の月例内閣支持率差</h4>
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cabinetDT<-data.frame()
+statSummary <- na.omit(tmp)
+cabinet <- unique(statSummary$'内閣')
+for(iii in 1:length(cabinet)){
+  buf <- subset(statSummary, statSummary$'内閣'==cabinet[iii])
+  cabinetDT[iii,1] <- cabinet[iii]
+  cabinetDT[iii,2] <- paste0(format(range(buf[,1]),'%Y年%m月'), collapse='~')
+  cabinetDT[iii,3] <- head(buf[,2],1)
+  cabinetDT[iii,4] <- tail(buf[,2],1)
+  cabinetDT[iii,5] <- tail(buf[,2],1)-head(buf[,2],1)
+}
+colnames(cabinetDT) <- c('内閣','政権期間(または現職)','初回(%)','最後(%)','最後 － 初回')
+knitr::kable(cabinetDT)
+```
+
+<hr>
+
 ```{r,warning=F,error=F,message=F,echo=F}
 library(lubridate)
 library(ggplot2)
@@ -48,21 +88,6 @@ library(reshape)
 library(rAmCharts)
 library(knitr)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
-```
-
-```{r,warning=F,error=F,message=F,echo=F}
-tmp <-
-  read.table(
-    "clipboard",
-    header = T,
-    sep = "\t",
-    stringsAsFactor = F,
-    na.strings = c("na", "", "-"),
-    check.names = F
-  )
-tmp[,1] <- as.Date(tmp[,1])
-tmp[,7] <- ifelse(as.Date("2013-1-1")<=tmp[,1],paste(tmp[,7],'(第2次以降)'),tmp[,7])
-tmp[,7] <- ordered(tmp[,7], levels = tmp[,7][1:nrow(tmp)])
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -83,7 +108,7 @@ if (length(unique(month(tmp[, 1]))) == 1) {
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=7,fig.width=10,results='asis'}
-cat('<h3>内閣毎の内閣支持率:時系列推移(単位:%)</h3>')
+cat('<h4>内閣毎の月例内閣支持率:時系列推移(単位:%)</h4>')
 par(mfrow=c(3,4),mar=c(3,3,3,2))
 for(pm in 1:length(unique(tmp[,7]))){
 tmp0<-na.omit(subset(tmp,tmp[,7]==unique(tmp[,7])[pm]))
@@ -105,7 +130,7 @@ axis.Date(side=1,at=tmp[,1],format=dateFormat,padj=0.0,cex.axis=1.2)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=7,fig.width=10,results='asis'}
-cat('<h3>内閣毎の内閣支持率と政党支持率の合計:時系列推移(単位:%)</h3>')
+cat('<h4>内閣毎の月例内閣支持率と月例政党支持率の合計:時系列推移(単位:%)</h4>')
 par(mfrow=c(3,4),mar=c(3,3,3,2))
 for(pm in 1:length(unique(tmp[,7]))){
 tmp0<-na.omit(subset(tmp,tmp[,7]==unique(tmp[,7])[pm]))
@@ -133,6 +158,7 @@ boxplotData <- melt(boxplotData, id = "Person")
 boxplotData <- boxplotData[, -2]
 boxplotData[, 2] <- as.numeric(boxplotData[, 2])
 colnames(boxplotData)[1] <- "variable"
+boxplotData[,1] <- ordered(boxplotData[,1], levels = boxplotData[,1][1:nrow(boxplotData)])
 g2 <- ggplot(data = boxplotData, aes(x = variable, y = value))
 g2 <- g2 + geom_boxplot(lwd = 1)
 g2 <- g2 + ggtitle(paste(BXchartTitle,format(tmp[1,1],dateFormat),'-',format(tmp[nrow(tmp),1],dateFormat)))
@@ -153,8 +179,10 @@ g2 <- g2 + ylab("")
 g2 <- g2 + scale_y_continuous(labels = comma)
 #print(g2)
 ```
-<h3>内閣毎の内閣支持率:ボックスプロット(単位:%)</h3>
+
+<h4>内閣毎の月例内閣支持率:ボックスプロット(単位:%)</h4>
 Powered By https://www.amcharts.com/
+
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=6,fig.width=10} 
 boxplotData <- tmp[, c(2, 7)]
 colnames(boxplotData)[2] <- "Person"
@@ -175,8 +203,10 @@ amBoxplot(buf, horiz = T
 )
 ```
 <hr>
-<h3>内閣毎の内閣支持率と政党支持率の合計:ボックスプロット(単位:%)</h3>
+
+<h4>内閣毎の月例内閣支持率と月例政党支持率の合計:ボックスプロット(単位:%)</h4>
 Powered By https://www.amcharts.com/
+
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=6,fig.width=10} 
 boxplotData <- tmp[, c(8, 7)]
 colnames(boxplotData)[2] <- "Person"
@@ -199,6 +229,7 @@ amBoxplot(buf, horiz = T
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=5,fig.width=10}
 startRow<-1
+colorList <- c('blue','red','black')
 for(rrr in 1:nrow(tmp)){
   if(rrr==nrow(tmp)){break}
   if(tmp[rrr,1]==tmp[rrr+1,1]){
@@ -210,20 +241,20 @@ for(rrr in 1:nrow(tmp)){
       buf[,1],
       buf[,4],
       type='o',
-      col='blue',
+      col = colorList[1],
       family='Meiryo' ,
       xlab='' ,
       ylab='' ,
       panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T,lwd = 2) ,
       xaxt='n',
-      main = paste('政党支持率(%)の時系列推移\n',format(buf[1,1],dateFormat),'-',format(buf[nrow(buf),1],dateFormat)),
+      main = paste('月例政党支持率(%)の時系列推移\n',format(buf[1,1],dateFormat),'-',format(buf[nrow(buf),1],dateFormat)),
       cex.axis=1,cex.lab=1,cex.main=1,
       ylim = c(minY,maxY)
     )
-    lines(buf[,1],buf[,5],type='o',col='red')
-    lines(buf[,1],buf[,6],type='o',col='green')
+    lines(buf[,1],buf[,5],type='o',col = colorList[2])
+    lines(buf[,1],buf[,6],type='o',col = colorList[3])
     axis.Date(side=1,at=buf[,1],format=dateFormat,padj=0.0,cex.axis=1.0)
-    graphics::legend('topleft',col=c('blue','red','green'),lty=1,legend=colnames(buf)[4:6],cex=1,bty='n')
+    graphics::legend('topleft', col = colorList, lty=1, legend=colnames(buf)[4:6], cex=1, bty='n')
   } 
 }
 buf<-subset(tmp,startRow<=index(tmp))   
@@ -233,20 +264,20 @@ plot(
   buf[,1],
   buf[,4],
   type='o',
-  col='blue',
+  col = colorList[1],
   family='Meiryo' ,
   xlab='' ,
   ylab='' ,
   panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T,lwd = 2) ,
   xaxt='n',
-  main = paste('政党支持率(%)の時系列推移\n',format(buf[1,1],dateFormat),'-',format(buf[nrow(buf),1],dateFormat)),
+  main = paste('月例政党支持率(%)の時系列推移\n',format(buf[1,1],dateFormat),'-',format(buf[nrow(buf),1],dateFormat)),
   cex.axis=1,cex.lab=1,cex.main=1,
   ylim = c(minY,maxY)
 )
-lines(buf[,1],buf[,5],type='o',col='red')
-lines(buf[,1],buf[,6],type='o',col='green')
+lines(buf[,1],buf[,5],type='o',col = colorList[2])
+lines(buf[,1],buf[,6],type='o',col = colorList[3])
 axis.Date(side=1,at=buf[,1],format=dateFormat,padj=0.0,cex.axis=1.0)
-graphics::legend('topleft',col=c('blue','red','green'),lty=1,legend=colnames(buf)[4:6],cex=1,bty='n')
+graphics::legend('topleft', col = colorList, lty=1, legend=colnames(buf)[4:6], cex=1, bty='n')
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -339,7 +370,7 @@ dataDF0<-dataDF0[,c(1,4,5,6,7)]
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(tableOBJ,cap,orderTable) {
+funDataTable <- function(tableOBJ,cap,orderTable,width01) {
   DT::datatable(
     tableOBJ,
     options = list(
@@ -353,15 +384,12 @@ funDataTable <- function(tableOBJ,cap,orderTable) {
       scrollX = T,
       lengthMenu = list(c(15, -1, 1), c("15", "All", "1")),
       orderClasses = T,
-      order = list(list(0, orderTable))#,
-#      columnDefs = list(
-#        list(width = '25%', targets = 0),
-#        list(width = '10%', targets = 1)
-#        )
-      ),
+      order = list(list(0, orderTable)),
+      columnDefs = list(list(width = '9%', targets = 0),list(width = width01, targets = 1),list(width = '25%', targets = 4))),
     rownames = F,
     caption = cap,
-    class = "display compact"
+    class = "display compact",
+    filter = 'bottom'
   )
 }
 ```
@@ -377,9 +405,9 @@ funDataTable <- function(tableOBJ,cap,orderTable) {
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 captionText<-paste('最高･最低支持率一覧. オリジナルデータソース:',dataSource)
 ordeType<-'asc'
-funDataTable(tableOBJ=dataDF, cap=captionText,orderTable=ordeType)
+funDataTable(tableOBJ=dataDF, cap=captionText,orderTable=ordeType, width01='35%')
 cat('<hr>')
 captionText<-paste('自民党の政党支持率が支持政党なしの率を上回った年月一覧. オリジナルデータソース:',dataSource)
 ordeType<-'desc'
-funDataTable(tableOBJ=dataDF0, cap=captionText,orderTable=ordeType)
+funDataTable(tableOBJ=dataDF0, cap=captionText,orderTable=ordeType, width01='20%')
 ```
