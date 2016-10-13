@@ -1,8 +1,54 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "情報化"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '学校における教育の情報化の実態等に関する調査 平成27年度'
+dataSource <- '文部科学省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :", dataTitle, "\n"))
+cat(paste("Raw Data Source :", dataSource, "\n"))
+cat(paste("Author :", Author, "\n"))
+cat(paste("作成日 :", Sys.time(), "\n"))
+cat(paste("特記 :", notes, "\n"))
+cat(paste("特記 :", notes0, "\n"))
+cat(paste("ID :", htmlID, "\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
 ```{r}
 # http://www.stat.go.jp/data/guide/1.htm
 # http://www.stat.go.jp/data/shihyou/index.htm
 # http://www.stat.go.jp/data/shihyou/naiyou.htm
 library(XLConnect)
+library(car)
+library(ggplot2)
+library(gridExtra)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/socialIndicatorsByPrefecture/")
 setwd(pathOutput)
@@ -51,4 +97,39 @@ title <- c(
 '社会生活統計指標-都道府県の指標-2016-基礎データ-安全_出所-総務省',
 '社会生活統計指標-都道府県の指標-2016-基礎データ-家計_出所-総務省'
 )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+    'clipboard',
+    header = T,
+    sep = '\t',
+    stringsAsFactor = F,
+    na.strings = c('na', '', '-', 'NA'),
+    check.names = F
+  )
+colnames(tmp) <- gsub('\n','',colnames(tmp))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+obj <- c(68)
+dataSet <- merge(allData[,c(1:2,obj)], tmp, by='都道府県')
+dataSet$Group <- 
+  ifelse(as.numeric(dataSet$ID) <= 7, '北海道･東北地方',
+  ifelse(as.numeric(dataSet$ID) <= 14,'関東地方',
+  ifelse(as.numeric(dataSet$ID) <= 23,'中部地方',
+  ifelse(as.numeric(dataSet$ID) <= 30,'関西地方',
+  ifelse(as.numeric(dataSet$ID) <= 35,'中国地方',
+  ifelse(as.numeric(dataSet$ID) <= 39,'四国地方','九州･沖縄地方'))))))
+dataSet$Group <- as.factor(dataSet$Group)
+g1 <- ggplot(dataSet, aes(dataSet[,3],dataSet[,4]))
+g1 <- g1 + geom_point(aes(colour = Group),size=4) 
+g1 <- g1 + theme(legend.position = "top")
+g1 <- g1 + theme(legend.title = element_blank())
+g1 <- g1 + xlab(colnames(dataSet)[3]) + ylab(colnames(dataSet)[4])
+g2 <- ggplot(dataSet, aes(dataSet[,3],dataSet[,4]))
+g2 <- g2 + geom_text(label=dataSet[,1])
+g2 <- g2 + xlab(colnames(dataSet)[3]) + ylab(colnames(dataSet)[4])
+grid.arrange(g1, g2, ncol = 1)
 ```
