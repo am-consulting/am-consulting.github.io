@@ -33,7 +33,7 @@ library(pipeR)
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <-
   '日本銀行が保有する国債の銘柄別残高 / Japanese Government Bonds held by the Bank of Japan-'
-subTitle <- '(2016年09月30日現在)'
+subTitle <- '(2016年10月07日現在)'
 dataSource <- '日本銀行'
 notes <- '『利付国債の保有額(受渡し完了ベース)。国債買入オペに加え、対政府取引等による増減も勘案した国債の残高。』(資料より引用)'
 notes0 <- '『額面金額ベース(億円未満四捨五入)。』(資料より引用)'
