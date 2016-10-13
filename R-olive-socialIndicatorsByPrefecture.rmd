@@ -1,0 +1,48 @@
+```{r}
+# http://www.stat.go.jp/data/guide/1.htm
+# http://www.stat.go.jp/data/shihyou/index.htm
+# http://www.stat.go.jp/data/shihyou/naiyou.htm
+library(XLConnect)
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- paste0('0000313690', 50:61)
+for(iii in 1:length(fileName)){
+  fName <- fileName[iii]
+  if(!file.exists(paste0(pathOutput, paste0(fName, '.xls')))) {
+    download.file(paste0('http://www.e-stat.go.jp/SG1/estat/Xlsdl.do?sinfid=', fName), paste0(fName, '.xls'), mode = "wb")
+  }
+  buf0 <- readWorksheetFromFile(paste0(pathOutput, paste0(fName, '.xls')), sheet = 1, check.names = F, header = F)
+  tmp <- ""
+  for(ccc in 1:ncol(buf0)){
+    if(!is.na(buf0[5,ccc])){tmp <- paste0(buf0[5,ccc], buf0[6,ccc])}
+    buf0[5,ccc] <- paste0(tmp, '-', buf0[12,ccc])
+  }
+  buf1 <- buf0[,grep('201[3-4]', buf0[12,]),drop=F]
+  colnames(buf1) <- paste0(buf1[5,], buf1[11,])
+  buf2 <- data.frame(buf0[,1:2], buf1, check.names = F, stringsAsFactors = F)
+  buf2[,2] <- gsub(' ', '', buf2[,2]) 
+  buf3 <- buf2[-(1:(which(buf2[,2]=="全国")-1)),,drop = F]
+  buf3[,-(1:2)] <- apply(buf3[,-(1:2), drop = F], 2, function(x) as.numeric(gsub(',', '', x)))
+  buf4 <- buf3[1:which(buf3[,1]==47),,drop=F]
+  colnames(buf4)[1:2] <- c('ID', '都道府県')
+  colnames(buf4) <- gsub('・', '･', gsub('］', ']', gsub('［', '[', gsub(' ', '', gsub('　', '', colnames(buf4))))))
+  assign(paste0('JapanData', iii), buf4)
+  if(iii==1){allData <- buf4}else{allData <- merge(allData, buf4, all = T, ID=ID)}
+}
+colnames(allData)
+title <- c(
+'社会生活統計指標-都道府県の指標-2016-基礎データ-人口世帯_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-自然環境_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-経済基盤_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-行政基盤_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-教育_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-労働_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-文化・スポーツ_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-居住_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-健康・医療_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-福祉・社会保障_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-安全_出所-総務省',
+'社会生活統計指標-都道府県の指標-2016-基礎データ-家計_出所-総務省'
+)
+```
