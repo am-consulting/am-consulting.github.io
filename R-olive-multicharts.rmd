@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "信用乗数"
+title : "預金通貨"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -25,7 +25,7 @@ options(width = 1000)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle <- '日本のマネーストックと信用乗数 2016年09月分. 民主党政権時と第二次安倍政権発足以降の比較'
+dataTitle <- '日本の預金通貨(マネーストック) 2016年09月分. 民主党政権時と第二次安倍政権発足以降の比較'
 dataSource <- '日本銀行'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -308,7 +308,7 @@ lineColor <- c('blue', 'red', 'black')
 chartTtpe <- 2
 if(chartTtpe==1){needYlim<-1}else{needYlim<-0}
 seriesType01<-'l'
-seriesType02<-'l'
+seriesType02<-'h'
 obj01 <- 2
 obj02 <- 3
 funSeasonal()
