@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "情報化"
+title : "工事費"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -24,8 +24,8 @@ options(width = 1000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- '学校における教育の情報化の実態等に関する調査 平成27年度'
-dataSource <- '文部科学省'
+dataTitle <- '建築着工統計調査'
+dataSource <- '国土交通省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -37,7 +37,7 @@ cat(paste("作成日 :", Sys.time(), "\n"))
 cat(paste("特記 :", notes, "\n"))
 cat(paste("特記 :", notes0, "\n"))
 cat(paste("ID :", htmlID, "\n"))
-windowsFonts(Meiryo=windowsFont("Meiryo"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
@@ -82,11 +82,12 @@ for(iii in 1:length(fileName)){
   buf4 <- buf3[1:which(buf3[,1]==47),,drop=F]
   colnames(buf4)[1:2] <- c('ID', '都道府県')
   colnames(buf4) <- gsub('・', '･', gsub('］', ']', gsub('［', '[', gsub(' ', '', gsub('　', '', colnames(buf4))))))
+  buf4[,1] <- as.numeric(buf4[,1])
   assign(paste0('JapanData', iii), buf4)
   if(iii==1){allData <- buf4}else{allData <- merge(allData, buf4, all = T, ID = ID)}
 }
-allData[,1] <- as.numeric(allData[,1])
 colnames(allData)
+idName <- allData[,1:2]
 title <- c(
 '社会生活統計指標-都道府県の指標-2016-基礎データ-人口世帯_出所-総務省',
 '社会生活統計指標-都道府県の指標-2016-基礎データ-自然環境_出所-総務省',
@@ -113,7 +114,6 @@ tmp <-
     na.strings = c('na', '', '-', 'NA'),
     check.names = F
   )
-colnames(tmp) <- gsub('\n','',colnames(tmp))
 tmp <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F, stringsAsFactors = F)
 colnames(tmp) <- gsub('・', '･', 
                       gsub('］', ']', 
@@ -123,7 +123,8 @@ colnames(tmp) <- gsub('・', '･',
                                           gsub('（', '(', 
                                                gsub('）', ')', 
                                                     gsub('％', '%', 
-                                                         gsub('／', '/', colnames(tmp))))))))))
+                                                         gsub('／', '/', 
+                                                              gsub('\n','',colnames(tmp)))))))))))
 for(sss in 1:length(twoByte)){
   colnames(tmp) <- gsub(pattern=twoByte[sss], replacement=oneByte[sss], x=colnames(tmp))
 }
@@ -133,28 +134,33 @@ oneByte <- LETTERS
 for(sss in 1:length(twoByte)){
   colnames(tmp) <- gsub(pattern=twoByte[sss], replacement=oneByte[sss], x=colnames(tmp))
 }
+tmp <- merge(idName, tmp, by='ID', all = F)
 colnames(tmp)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
 funGroup <- function(dS){
-dS$Group <- 
+dS$Group01 <- 
   ifelse(as.numeric(dS$ID) <= 7, '北海道･東北地方',
   ifelse(as.numeric(dS$ID) <= 14,'関東地方',
   ifelse(as.numeric(dS$ID) <= 23,'中部地方',
   ifelse(as.numeric(dS$ID) <= 30,'関西地方',
   ifelse(as.numeric(dS$ID) <= 35,'中国地方',
   ifelse(as.numeric(dS$ID) <= 39,'四国地方','九州･沖縄地方'))))))
-dS$Group <- as.factor(dS$Group)
+dS$Group02 <- 
+  ifelse(as.numeric(dS$ID) <= 14,'東日本','西日本')
+dS$Group03 <- 
+  ifelse(as.numeric(dS$ID) <= 14,'東日本',
+  ifelse(as.numeric(dS$ID) <= 24,'中日本','西日本'))
 colnames(dS)
 return(dS)
 }
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_plot01 <- function(obj, objX, objY){
+fun_plot01 <- function(obj, objX, objY, group){
 g1 <- ggplot(obj, aes(obj[,objX],obj[,objY]))
-g1 <- g1 + geom_point(aes(colour = Group),size=4) 
+g1 <- g1 + geom_point(aes(colour = group),size=4) 
 g1 <- g1 + theme(legend.position = "top")
 g1 <- g1 + theme(legend.title = element_blank())
 g1 <- g1 + xlab(colnames(obj)[objX]) + ylab(colnames(obj)[objY])
@@ -195,18 +201,58 @@ DT::datatable(
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
+data <- dataN <- list()
+funstripChart <- function(sss){
+switch (sss,
+  uniqN <- unique(dataset$Group01),
+  uniqN <- unique(dataset$Group02),
+  uniqN <- unique(dataset$Group03)
+)
+for(iii in 1:length(uniqN)){
+  switch (sss,
+    buf <- dataset[which(dataset$Group01 == uniqN[iii]), 2:3],
+    buf <- dataset[which(dataset$Group02 == uniqN[iii]), 2:3],
+    buf <- dataset[which(dataset$Group03 == uniqN[iii]), 2:3]
+  )  
+  data[[iii]] <- buf[,2]
+  dataN[[iii]] <- buf[,1]
+}
+par(mar=c(3,8,3,1),family='Meiryo')
+stripchart(
+  data,
+  main = paste0(dataTitle,'\n',colnames(dataset)[3]),
+  xlab = "",
+  ylab = "",
+  method = "stack",
+  col = seq(1, length(uniqN)),
+  pch = 16,
+  vertical = F,
+  log = '',
+  yaxt = 'n'
+)
+axis(2, at=seq(1, length(uniqN)), labels = uniqN, las=2)
+panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) 
+for(iii in 1:length(uniqN)){
+  text(data[[iii]], iii+0.1, labels = dataN[[iii]], srt = 90, adj = 0, cex = 0.9)
+}
+}
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 dataset <- funGroup(dS = tmp)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-```
-<hr>
-```{r warning=F, error=F, message=F, echo=F}
-funDataTable(obj = dataset[,-ncol(dataset)], width01 = '3%', width02 = '10%', order01 = 'asc')
+funstripChart(sss = 1)
+cat('<hr>')
+funstripChart(sss = 2)
+cat('<hr>')
+funstripChart(sss = 3)
 ```
 <hr>
 ```{r warning=F, error=F, message=F, echo=F}
-for(iii in 3:(ncol(dataset)-1)){
+funDataTable(obj = dataset, width01 = '3%', width02 = '10%', order01 = 'asc')
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+for(iii in 3:(ncol(dataset)-3)){
   print(summary(dataset[,iii,drop=F]))
   cat(paste0('Max / Min = ', round(max(dataset[,iii])/min(dataset[,iii]), 1)))  
   cat('\n\n')
@@ -222,7 +268,7 @@ for(iii in 3:(ncol(dataset)-1)){
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 a <- 68
 b <- 3
-objY <- seq(6,16)
+objY <- 4
 compareData <- data.frame(allData[,1:2], allData[,a]/allData[,b], check.names = F, stringsAsFactors = F)
 colnames(compareData)[3] <- paste0(colnames(allData)[a],"/",colnames(allData)[b])
 ```
@@ -231,7 +277,7 @@ colnames(compareData)[3] <- paste0(colnames(allData)[a],"/",colnames(allData)[b]
 dataSet <- merge(compareData, dataset, by = c('ID', '都道府県'))
 objX <- 3
 for(sss in objY){
-  fun_plot01(obj = dataSet, objX = objX, objY = sss)
+  fun_plot01(obj = dataSet, objX = objX, objY = sss, group = dataSet$Group01)
   cat('<hr>')
 }
 ```
