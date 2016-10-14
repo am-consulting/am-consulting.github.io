@@ -12,7 +12,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1000px;
+	max-width: 1200px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -23,7 +23,7 @@ output:
 options(width = 1000)
 ```
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- '学校における教育の情報化の実態等に関する調査 平成27年度'
 dataSource <- '文部科学省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
@@ -41,7 +41,7 @@ windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-```{r}
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
 # http://www.stat.go.jp/data/guide/1.htm
 # http://www.stat.go.jp/data/shihyou/index.htm
 # http://www.stat.go.jp/data/shihyou/naiyou.htm
@@ -49,6 +49,9 @@ library(XLConnect)
 library(car)
 library(ggplot2)
 library(gridExtra)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/socialIndicatorsByPrefecture/")
 setwd(pathOutput)
@@ -82,6 +85,7 @@ for(iii in 1:length(fileName)){
   assign(paste0('JapanData', iii), buf4)
   if(iii==1){allData <- buf4}else{allData <- merge(allData, buf4, all = T, ID = ID)}
 }
+allData[,1] <- as.numeric(allData[,1])
 colnames(allData)
 title <- c(
 '社会生活統計指標-都道府県の指標-2016-基礎データ-人口世帯_出所-総務省',
@@ -99,7 +103,7 @@ title <- c(
 )
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
 tmp <-
   read.table(
     'clipboard',
@@ -110,26 +114,124 @@ tmp <-
     check.names = F
   )
 colnames(tmp) <- gsub('\n','',colnames(tmp))
+tmp <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F, stringsAsFactors = F)
+colnames(tmp) <- gsub('・', '･', 
+                      gsub('］', ']', 
+                           gsub('［', '[', 
+                                gsub(' ', '', 
+                                     gsub('　', '', 
+                                          gsub('（', '(', 
+                                               gsub('）', ')', 
+                                                    gsub('％', '%', 
+                                                         gsub('／', '/', colnames(tmp))))))))))
+for(sss in 1:length(twoByte)){
+  colnames(tmp) <- gsub(pattern=twoByte[sss], replacement=oneByte[sss], x=colnames(tmp))
+}
+twoByte <- c("Ａ","Ｂ","Ｃ","Ｄ","Ｅ","Ｆ","Ｇ","Ｈ","Ｉ","Ｊ","Ｋ","Ｌ",
+             "Ｍ","Ｎ","Ｏ","Ｐ","Ｑ","Ｒ","Ｓ","Ｔ","Ｕ","Ｖ","Ｗ","Ｘ","Ｙ","Ｚ")
+oneByte <- LETTERS
+for(sss in 1:length(twoByte)){
+  colnames(tmp) <- gsub(pattern=twoByte[sss], replacement=oneByte[sss], x=colnames(tmp))
+}
+colnames(tmp)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
-obj <- c(68)
-dataSet <- merge(allData[,c(1:2,obj)], tmp, by='都道府県')
-dataSet$Group <- 
-  ifelse(as.numeric(dataSet$ID) <= 7, '北海道･東北地方',
-  ifelse(as.numeric(dataSet$ID) <= 14,'関東地方',
-  ifelse(as.numeric(dataSet$ID) <= 23,'中部地方',
-  ifelse(as.numeric(dataSet$ID) <= 30,'関西地方',
-  ifelse(as.numeric(dataSet$ID) <= 35,'中国地方',
-  ifelse(as.numeric(dataSet$ID) <= 39,'四国地方','九州･沖縄地方'))))))
-dataSet$Group <- as.factor(dataSet$Group)
-g1 <- ggplot(dataSet, aes(dataSet[,3],dataSet[,4]))
+```{r warning=F, error=F, message=F, echo=F}
+funGroup <- function(dS){
+dS$Group <- 
+  ifelse(as.numeric(dS$ID) <= 7, '北海道･東北地方',
+  ifelse(as.numeric(dS$ID) <= 14,'関東地方',
+  ifelse(as.numeric(dS$ID) <= 23,'中部地方',
+  ifelse(as.numeric(dS$ID) <= 30,'関西地方',
+  ifelse(as.numeric(dS$ID) <= 35,'中国地方',
+  ifelse(as.numeric(dS$ID) <= 39,'四国地方','九州･沖縄地方'))))))
+dS$Group <- as.factor(dS$Group)
+colnames(dS)
+return(dS)
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plot01 <- function(obj, objX, objY){
+g1 <- ggplot(obj, aes(obj[,objX],obj[,objY]))
 g1 <- g1 + geom_point(aes(colour = Group),size=4) 
 g1 <- g1 + theme(legend.position = "top")
 g1 <- g1 + theme(legend.title = element_blank())
-g1 <- g1 + xlab(colnames(dataSet)[3]) + ylab(colnames(dataSet)[4])
-g2 <- ggplot(dataSet, aes(dataSet[,3],dataSet[,4]))
-g2 <- g2 + geom_text(label=dataSet[,1])
-g2 <- g2 + xlab(colnames(dataSet)[3]) + ylab(colnames(dataSet)[4])
+g1 <- g1 + xlab(colnames(obj)[objX]) + ylab(colnames(obj)[objY])
+g1 <- g1 + geom_smooth(method = "lm", se = T)
+g2 <- ggplot(obj, aes(obj[,objX],obj[,objY]))
+g2 <- g2 + geom_text(label=obj[,2])
+g2 <- g2 + xlab(colnames(obj)[objX]) + ylab(colnames(obj)[objY])
+g2 <- g2 + geom_smooth(method = "lm", se = T)
 grid.arrange(g1, g2, ncol = 1)
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+funDataTable <- function(obj, width01, width02, order01) {
+DT::datatable(
+  obj,
+  options = list(
+    search.regex = F,
+    paging = T,
+    autoWidth = F,
+    info = T,
+    lengthChange = T,
+    ordering = T,
+    searching = T,
+    scrollX = T,
+    lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
+    orderClasses = T,
+    order = list(list(0, order01)),
+    columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1))
+    ),
+  rownames = F,
+  caption = paste(dataTitle,'. Source:' ,dataSource),
+  class = 'display compact',
+  escape = F, # or escape = 'v1'(特定のcolumn) テーブル内でhtmlマークアップする場合に必須
+  filter = 'bottom'
+)
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+dataset <- funGroup(dS = tmp)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+funDataTable(obj = dataset[,-ncol(dataset)], width01 = '3%', width02 = '10%', order01 = 'asc')
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+for(iii in 3:(ncol(dataset)-1)){
+  print(summary(dataset[,iii,drop=F]))
+  cat(paste0('Max / Min = ', round(max(dataset[,iii])/min(dataset[,iii]), 1)))  
+  cat('\n\n')
+}  
+```
+<hr>
+####社会生活統計指標(出所:総務書)との相関
+
+1. 擬似相関の検討は行っていません。
+1. 因果関係の検討は行っていません。
+1. 社会生活統計指標の掲載年度に注意して下さい。
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+a <- 68
+b <- 3
+objY <- seq(6,16)
+compareData <- data.frame(allData[,1:2], allData[,a]/allData[,b], check.names = F, stringsAsFactors = F)
+colnames(compareData)[3] <- paste0(colnames(allData)[a],"/",colnames(allData)[b])
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+dataSet <- merge(compareData, dataset, by = c('ID', '都道府県'))
+objX <- 3
+for(sss in objY){
+  fun_plot01(obj = dataSet, objX = objX, objY = sss)
+  cat('<hr>')
+}
 ```
