@@ -1,5 +1,5 @@
 ```{r}
-boj <- 1
+boj <- 0
 username <- Sys.info()['user']
 pathReadCSV <-
   file.path(paste0('C:/Users/', username, '/Desktop/timeSeriesCSVdata/'))
