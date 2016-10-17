@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "工事費"
+title : "出来高"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -24,7 +24,7 @@ options(width = 1000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- '建築着工統計調査'
+dataTitle <- '建設総合統計 出来高前年同月比(%) 2016年8月分'
 dataSource <- '国土交通省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -114,7 +114,13 @@ tmp <-
     na.strings = c('na', '', '-', 'NA'),
     check.names = F
   )
-tmp <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F, stringsAsFactors = F)
+# tmp <- data.frame(ID = seq(1, nrow(tmp)), tmp, check.names = F, stringsAsFactors = F)
+tmp0 <- grep('県',tmp[,1])
+tmp[-tmp0,1] <- paste0(tmp[-tmp0,1],'県')
+tmp[grep('東京'    ,tmp[,1]),1] <- '東京都'
+tmp[grep('北海道'  ,tmp[,1]),1] <- '北海道'
+tmp[grep('\\b京都' ,tmp[,1]),1] <- '京都府'
+tmp[grep('大阪'    ,tmp[,1]),1] <- '大阪府'
 colnames(tmp) <- gsub('・', '･', 
                       gsub('］', ']', 
                            gsub('［', '[', 
@@ -134,8 +140,10 @@ oneByte <- LETTERS
 for(sss in 1:length(twoByte)){
   colnames(tmp) <- gsub(pattern=twoByte[sss], replacement=oneByte[sss], x=colnames(tmp))
 }
-tmp <- merge(idName, tmp, by='ID', all = F)
+tmp <- merge(idName, tmp, by='都道府県', all = F)
 colnames(tmp)
+# 建設総合統計の様に都道府県の並びが都道府県番号順でない場合があるので注意。
+# 都道府県番号 http://www.mhlw.go.jp/topics/2007/07/dl/tp0727-1d.pdf
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -152,6 +160,16 @@ dS$Group02 <-
 dS$Group03 <- 
   ifelse(as.numeric(dS$ID) <= 14,'東日本',
   ifelse(as.numeric(dS$ID) <= 24,'中日本','西日本'))
+dS$Group04 <- 
+  ifelse(as.numeric(dS$ID) <= 1, '北海道',
+  ifelse(as.numeric(dS$ID) <= 7, '東北地方',
+  ifelse(16 <= as.numeric(dS$ID) & as.numeric(dS$ID) <= 18, '北陸地方',
+  ifelse(8  <= as.numeric(dS$ID) & as.numeric(dS$ID) <= 15, '関東甲信越地方',
+  ifelse(19 <= as.numeric(dS$ID) & as.numeric(dS$ID) <= 20, '関東甲信越地方',
+  ifelse(21 <= as.numeric(dS$ID) & as.numeric(dS$ID) <= 24, '東海地方',
+  ifelse(as.numeric(dS$ID) <= 30,'近畿地方',
+  ifelse(as.numeric(dS$ID) <= 35,'中国地方',
+  ifelse(as.numeric(dS$ID) <= 39,'四国地方','九州･沖縄地方')))))))))
 colnames(dS)
 return(dS)
 }
@@ -188,7 +206,7 @@ DT::datatable(
     scrollX = T,
     lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
     orderClasses = T,
-    order = list(list(0, order01)),
+    order = list(list(1, order01)),
     columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1))
     ),
   rownames = F,
@@ -203,24 +221,17 @@ DT::datatable(
 ```{r warning=F, error=F, message=F, echo=F}
 data <- dataN <- list()
 funstripChart <- function(sss){
-switch (sss,
-  uniqN <- unique(dataset$Group01),
-  uniqN <- unique(dataset$Group02),
-  uniqN <- unique(dataset$Group03)
-)
+uniqBuf <- dataset[,paste0('Group0',sss)]    
+uniqN <- unique(uniqBuf)  
 for(iii in 1:length(uniqN)){
-  switch (sss,
-    buf <- dataset[which(dataset$Group01 == uniqN[iii]), 2:3],
-    buf <- dataset[which(dataset$Group02 == uniqN[iii]), 2:3],
-    buf <- dataset[which(dataset$Group03 == uniqN[iii]), 2:3]
-  )  
+  buf <- dataset[which(uniqBuf == uniqN[iii]), c(1,3)]
   data[[iii]] <- buf[,2]
   dataN[[iii]] <- buf[,1]
 }
 par(mar=c(3,8,3,1),family='Meiryo')
 stripchart(
   data,
-  main = paste0(dataTitle,'\n',colnames(dataset)[3]),
+  main = paste(dataTitle,'\nSource:' ,dataSource),
   xlab = "",
   ylab = "",
   method = "stack",
@@ -240,19 +251,22 @@ for(iii in 1:length(uniqN)){
 <hr>
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 dataset <- funGroup(dS = tmp)
+dataset <- dataset[order(dataset$ID, decreasing = T),]
 funstripChart(sss = 1)
 cat('<hr>')
 funstripChart(sss = 2)
 cat('<hr>')
 funstripChart(sss = 3)
+cat('<hr>')
+funstripChart(sss = 4)
 ```
 <hr>
 ```{r warning=F, error=F, message=F, echo=F}
-funDataTable(obj = dataset, width01 = '3%', width02 = '10%', order01 = 'asc')
+funDataTable(obj = dataset, width01 = '10%', width02 = '3%', order01 = 'asc')
 ```
 <hr>
 ```{r warning=F, error=F, message=F, echo=F}
-for(iii in 3:(ncol(dataset)-3)){
+for(iii in 3:(ncol(dataset)-4)){
   print(summary(dataset[,iii,drop=F]))
   cat(paste0('Max / Min = ', round(max(dataset[,iii])/min(dataset[,iii]), 1)))  
   cat('\n\n')
