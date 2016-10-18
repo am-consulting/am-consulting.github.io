@@ -99,7 +99,7 @@ if(loadTMP==1) {
     cntDFday[ddd, 2] <- cnt
     cntDFday[ddd, 3] <- total
   }
-  colnames(cntDFday) <- c('ID', '入域日数計(日)', '入域計(隻)')
+  colnames(cntDFday) <- c('ID', '入域日数計(日)', '入域計(隻数)')
   cntDFmonth <- data.frame()
   for (ddd in 1:12) {
     buf00 <- subset(dataSet, month(dataSet[, 1]) == ddd)
@@ -109,7 +109,7 @@ if(loadTMP==1) {
     cntDFmonth[ddd, 2] <- cnt
     cntDFmonth[ddd, 3] <- total
   }
-  colnames(cntDFmonth) <- c('ID', '入域日数計(日)', '入域計(隻)')
+  colnames(cntDFmonth) <- c('ID', '入域日数計(日)', '入域計(隻数)')
   cntDFyear <- data.frame()
   for (ddd in 2012:2016) {
     buf00 <- subset(dataSet, year(dataSet[, 1]) == ddd)
@@ -120,7 +120,7 @@ if(loadTMP==1) {
     cntDFyear[ccc, 2] <- cnt
     cntDFyear[ccc, 3] <- total
   }
-  colnames(cntDFyear) <- c('ID', '入域日数計(日)', '入域計(隻)')
+  colnames(cntDFyear) <- c('ID', '入域日数計(日)', '入域計(隻数)')
   # count part
 }
 ```
@@ -228,7 +228,8 @@ funDataTable <- function() {
     ),
     rownames = F,
     caption = paste(dataTitle, '. Source:' , dataSource),
-    class = 'display compact'
+    class = 'display compact',
+    filter = 'bottom'
   )
 }
 ```
@@ -268,7 +269,7 @@ colnames(tableObj)[-1] <- c('カテゴリ:月', paste0(colnames(dataSet)[obj01],
 # 平均追加パート
 tableObj <- merge(tableObj, cntDFmonth, by = 'ID', all = T)
 tableObj$Average <- round(tableObj[, 3] / tableObj[, 4], 1)
-colnames(tableObj)[6] <- '入域日当り平均入域(隻)'
+colnames(tableObj)[6] <- '入域日当り平均入域(隻数)'
 tableObj <- tableObj[, -5]
 # 平均追加パート
 funDataTable()
@@ -300,7 +301,7 @@ colnames(tableObj)[-1] <- c('カテゴリ:日', paste0(colnames(dataSet)[obj01],
 # 平均追加パート
 tableObj <- merge(tableObj, cntDFday, by = 'ID', all = T)
 tableObj$Average <- round(tableObj[, 3] / tableObj[, 4], 1)
-colnames(tableObj)[6] <- '入域日当り平均入域(隻)'
+colnames(tableObj)[6] <- '入域日当り平均入域(隻数)'
 tableObj <- tableObj[, -5]
 # 平均追加パート
 funDataTable()
@@ -334,7 +335,7 @@ colnames(tableObj)[-1] <- c('カテゴリ:年', paste0(colnames(dataSet)[obj01],
 # 平均追加パート
 tableObj <- merge(tableObj, cntDFyear, by = 'ID', all = T)
 tableObj$Average <- round(tableObj[, 3] / tableObj[, 4], 1)
-colnames(tableObj)[6] <- '入域日当り平均入域(隻)'
+colnames(tableObj)[6] <- '入域日当り平均入域(隻数)'
 tableObj <- tableObj[, -5]
 # 平均追加パート
 funDataTable()
@@ -364,7 +365,7 @@ funTimeSeries <- function() {
       equilogs = T
     ) ,
     xaxt = 'n',
-    main = paste0('直近',tailN,'日の入域(隻):', 
+    main = paste0('直近',tailN,'日の入域(隻数):', 
                   head(dataSet1[,1],1),'~',tail(dataSet1[,1],1), '\nSource:', dataSource,'、出来事の出所はWikipedia'),
     cex.axis = 1,
     cex.lab = 1.5,
@@ -414,7 +415,7 @@ statDataSet[which(is.na(statDataSet[, 1, drop = F])), 1] <- 0
 par(mfrow = c(1, 2),
       family = 'Meiryo',mar=c(3, 3, 6, 1))
 # histogram
-hist(
+statHist <- hist(
   statDataSet[, 1],
   cex.axis = 1,
   cex.lab = 1,
@@ -456,8 +457,8 @@ acfResult <- acf(
   ),
   xlab = paste0('Lag(日)')
 )
-# 最長連続入域(日)
 statResultDF<-data.frame()
+# 最長連続入域(日)
 cnt <- 0
 cntMax<--10^100
 for (rrr in 1:nrow(statDataSet)) {
@@ -496,17 +497,27 @@ statResultDF[2,4]<-paste0(statDataSet[buf,2]-cntMax,'~',statDataSet[buf,2]-1)
 # 1日当り最多入域数
 buf0<-subset(statDataSet,max(statDataSet[,1])==statDataSet)
 statResultDF[3,1]<-2
-statResultDF[3,2]<-'直近の1日当り最多入域隻'
+statResultDF[3,2]<-'直近の1日当り最多入域隻数'
 statResultDF[3,3]<-buf0[1,1]
 statResultDF[3,4]<-as.character(buf0[1,2])
-# 平均1日当り入域隻
+# 平均1日当り入域隻数
 dateDiff<-as.numeric(last(statDataSet[, 2])-first(statDataSet[, 2])+1)
 totalShip<-sum(statDataSet[,1])
 statResultDF[4,1]<-3
-statResultDF[4,2]<-'平均1日当り入域隻'
+statResultDF[4,2]<-'平均1日当り入域隻数'
 statResultDF[4,3]<-round(totalShip/dateDiff,2)
-statResultDF[4,4]<-paste0('=',totalShip,'隻/',dateDiff,'日(',first(statDataSet[, 2]),'~',last(statDataSet[, 2]),')')
+statResultDF[4,4]<-paste0('=',totalShip,'隻数/',dateDiff,'日(',first(statDataSet[, 2]),'~',last(statDataSet[, 2]),')')
 colnames(statResultDF)<-c('ID','項目','数値','備考')
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+# histogram
+histTable <- qpcR:::cbind.na(
+  seq(1,length(statHist$breaks)), statHist$breaks, statHist$counts, round(statHist$density*100,2))
+colnames(histTable) <- c('ID','1日当り入域隻数','合計日数','構成比(%)')
+cat(paste0('ヒストグラム - ', paste0(range(statDataSet[,2]), collapse = '~'), ' - ', dateDiff,'日間'))
+tableObj <- histTable
+funDataTable()
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
