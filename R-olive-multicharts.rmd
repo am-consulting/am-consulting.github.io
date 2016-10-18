@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "North America Rig Count"
+title : "出来高"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -25,12 +25,13 @@ options(width = 1000)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 omitType <- 1
-dataTitle <- 'Baker Hughes:North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス - 2016年10月14日'
-dataSource <- 'Baker Hughes'
-notes<-'複数のワードで検索する際は半角スペースで区切ってください'
-notes0<-"表中、-9999はNAを意味します"
-Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID<-timeStamp
+dataTitle <- paste0('建設総合統計-全国-出来高総計(兆円) - 2016年08月',
+                    ' - 民主党政権時と第二次安倍政権発足以降の比較')
+dataSource <- '国土交通省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
 cat(paste("Title :",dataTitle,"\n"))
 cat(paste("Raw Data Source :",dataSource,"\n"))
 cat(paste("Author :",Author,"\n"))
@@ -264,8 +265,8 @@ if(needSA02==1) {
 graphics::legend('topleft',col=lineColor[-3],lty=1,legend=c(colnames(dataSet)[obj01],colnames(dataSet)[obj02]),cex=1,bty='n')
 axis.Date(side=1,at=dataSet[,1],format=dateFormat,padj=1,cex.axis=1.0) 
 # rect part
-rectDateL <- as.numeric(as.Date('2009-09-1'))
-rectDateR <- as.numeric(as.Date('2012-12-1'))
+rectDateL <- as.numeric(as.Date('2009-09-16'))
+rectDateR <- as.numeric(as.Date('2012-12-26'))
 rectText <- '民主党政権'
 rect(xleft = rectDateL, ybottom = par('usr')[3], xright = rectDateR, ytop = par('usr')[4], 
      col = 'dimgray', density = 10, angle = 45)
@@ -279,7 +280,6 @@ funDataTable <- function() {
   DT::datatable(
     dataSet0,
     options = list(
-      search.regex = T,
       paging = T,
       autoWidth = F,
       info = T,
@@ -290,6 +290,7 @@ funDataTable <- function() {
       lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
       orderClasses = T,
       order = list(list(0, 'desc')),
+      search = list(regex = T, caseInsensitive = T),
       columnDefs = list(
         list(width = '10%', targets = 0)#,
 #        list(width = '25%', targets = 3)
@@ -438,7 +439,7 @@ mtext(paste(colnames(dataSet)[obj01], '\n×\n', colnames(dataSet)[obj02]),side =
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-dataSet0 <- dataSetS
+dataSet0 <- dataSetS[,c(1,2,3,5,6)]
 dataSet0[is.na(dataSet0)] <- ''
 dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable()
