@@ -1,18 +1,18 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "出来高"
+title : "少年犯罪"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 8
-    fig_width: 12
+    fig_height: 7
+    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -24,8 +24,8 @@ options(width = 1000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- '建設総合統計 出来高前年同月比(%) 2016年8月分'
-dataSource <- '国土交通省'
+dataTitle <- '平成27年中における少年の補導及び保護の概況'
+dataSource <- '警察庁'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -141,9 +141,22 @@ for(sss in 1:length(twoByte)){
   colnames(tmp) <- gsub(pattern=twoByte[sss], replacement=oneByte[sss], x=colnames(tmp))
 }
 tmp <- merge(idName, tmp, by='都道府県', all = F)
+tmp <- tmp[,c(2,1,3)]
 colnames(tmp)
 # 建設総合統計の様に都道府県の並びが都道府県番号順でない場合があるので注意。
 # 都道府県番号 http://www.mhlw.go.jp/topics/2007/07/dl/tp0727-1d.pdf
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# 都度作成
+needMergedata <- 1
+if(needMergedata == 1){
+  mergeData <- merge(allData[,c(1:2,3),drop=F], tmp, by = c('ID', '都道府県'))
+  mergeData$buf0000 <- round(mergeData[,3]/mergeData[,4])
+  colnames(mergeData)[5] <- paste0(colnames(mergeData)[3],'/',colnames(mergeData)[4])
+  tmp <- mergeData[,c(1:2,5)]
+}
+# 都度作成
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -206,7 +219,7 @@ DT::datatable(
     scrollX = T,
     lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
     orderClasses = T,
-    order = list(list(1, order01)),
+    order = list(list(0, order01)),
     columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1))
     ),
   rownames = F,
@@ -219,19 +232,20 @@ DT::datatable(
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-data <- dataN <- list()
+data <- dataName <- list()
 funstripChart <- function(sss){
 uniqBuf <- dataset[,paste0('Group0',sss)]    
 uniqN <- unique(uniqBuf)  
 for(iii in 1:length(uniqN)){
-  buf <- dataset[which(uniqBuf == uniqN[iii]), c(1,3)]
+  buf <- dataset[which(uniqBuf == uniqN[iii]), c(2,3)]
   data[[iii]] <- buf[,2]
-  dataN[[iii]] <- buf[,1]
+  dataName[[iii]] <- buf[,1]
 }
 par(mar=c(3,8,3,1),family='Meiryo')
 stripchart(
   data,
-  main = paste(dataTitle,'\nSource:' ,dataSource),
+  # main = paste(dataTitle,'\nSource:' ,dataSource),
+  main = colnames(dataset)[3],
   xlab = "",
   ylab = "",
   method = "stack",
@@ -244,7 +258,7 @@ stripchart(
 axis(2, at=seq(1, length(uniqN)), labels = uniqN, las=2)
 panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) 
 for(iii in 1:length(uniqN)){
-  text(data[[iii]], iii+0.1, labels = dataN[[iii]], srt = 90, adj = 0, cex = 0.9)
+  text(data[[iii]], iii+0.1, labels = dataName[[iii]], srt = 90, adj = 0, cex = 0.9)
 }
 }
 ```
@@ -262,7 +276,7 @@ funstripChart(sss = 4)
 ```
 <hr>
 ```{r warning=F, error=F, message=F, echo=F}
-funDataTable(obj = dataset, width01 = '10%', width02 = '3%', order01 = 'asc')
+funDataTable(obj = dataset, width01 = '3%', width02 = '10%', order01 = 'asc')
 ```
 <hr>
 ```{r warning=F, error=F, message=F, echo=F}
@@ -272,12 +286,6 @@ for(iii in 3:(ncol(dataset)-4)){
   cat('\n\n')
 }  
 ```
-<hr>
-####社会生活統計指標(出所:総務書)との相関
-
-1. 擬似相関の検討は行っていません。
-1. 因果関係の検討は行っていません。
-1. 社会生活統計指標の掲載年度に注意して下さい。
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 a <- 68
@@ -288,10 +296,18 @@ colnames(compareData)[3] <- paste0(colnames(allData)[a],"/",colnames(allData)[b]
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
+needCorrplot <- 1
+if(needCorrplot == 1){ 
+cat('<hr>
+<h4>社会生活統計指標(出所:総務書)との相関<h4><br>
+1. 擬似相関の検討は行っていません。<br>
+2. 因果関係の検討は行っていません。<br>
+3. 社会生活統計指標の掲載年度に注意して下さい。<br><br><br>')
 dataSet <- merge(compareData, dataset, by = c('ID', '都道府県'))
 objX <- 3
 for(sss in objY){
   fun_plot01(obj = dataSet, objX = objX, objY = sss, group = dataSet$Group01)
   cat('<hr>')
+}
 }
 ```
