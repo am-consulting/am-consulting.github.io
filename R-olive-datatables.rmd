@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : '短観'
+title : '訪日外客数'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -19,6 +19,10 @@ output:
 }
 </style>
 
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
 ```{r,warning=F,error=F,message=F,echo=F}
 # Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
 library(DT)
@@ -28,19 +32,19 @@ library(pipeR)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-timeSeries <- 1 # 1 or 0
+timeSeries <- 0 # 1 or 0
 needID <- 1
-needAtag<-4
-needAdd<-0
-needDiff<-0
-needTrans <- 1
-pp<-0
-dataTitle<-'日銀短観 - D.I. - 業況 - 全規模 - 実績及び予測 2016年9月'
-dataSource<-'日本銀行'
-notes<-'複数のワードで検索する際は半角スペースで区切ってください'
-notes0<-'表中、-9999はNAを意味します'
-dataTail<-0 
-Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+needAtag <- 0
+needAdd <- 0
+needDiff <- 0
+needTrans <- 0
+pp <- 0
+dataTitle <- '訪日外客数の動向 - 月別推計値 - 2016年9月'
+dataSource <- '日本政府観光局'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+dataTail <- 0 
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 htmlID <- timeStamp
 cat(paste('Title :',dataTitle,'\n'))
 cat(paste('Raw Data Source :',dataSource,'\n'))
@@ -84,7 +88,6 @@ tmp <-
 
   if (dataFormat != 0 & needDiff == 1) {
     dataSetDT <- dataSet
-    
     if(pp==0){
     dataSetDT0<-data.frame(
       Date=dataSetDT[-1,1],  
@@ -99,7 +102,9 @@ tmp <-
   } else{
     dataSetDT <- dataSet
   }
+```
 
+```{r,warning=F,error=F,message=F,echo=F}
   funDataTable <- function(obj,append='') {
     DT::datatable(
       obj,
@@ -112,9 +117,10 @@ tmp <-
         ordering = T,
         searching = T,
         scrollX = F,
-        lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)),
+        lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
         orderClasses = T,
         order = list(list(0, 'asc')),
+        search = list(regex = T, caseInsensitive = T),
         columnDefs = list(
           list(width = '5%', targets = 0)
 #           ,
@@ -130,14 +136,18 @@ tmp <-
       filter = 'bottom'
     )
   }
-  
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
   fungvisTable <- function(obj) {
     PopTable <- gvisTable(      obj, 
       options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=25)
     )
     plot(PopTable,tag='chart')
   }  
+```
 
+```{r,warning=F,error=F,message=F,echo=F}
   if(needTrans == 1) {
     buf <- tail(dataSetDT, 5)
     buf <- t(buf)
@@ -154,9 +164,13 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-#funDataTable(obj = dataSetDT, append = appendTitle)
-cat(paste(dataTitle,appendTitle))
-fungvisTable(obj = dataSetDT)
+funDataTable(obj = dataSetDT, append = appendTitle)
+#cat(paste(dataTitle,appendTitle))
+#fungvisTable(obj = dataSetDT)
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F} 
+apply(dataSetDT[-1,-c(1,2)],2,summary)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
