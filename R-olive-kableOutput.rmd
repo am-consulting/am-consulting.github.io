@@ -3,7 +3,7 @@ library(xtable)
 library(lubridate)
 library(knitr)
 tailN <- 50
-needDateFormat<-1
+needDateFormat <- 0
 tmp <-
   read.table(
     "clipboard",
