@@ -16,6 +16,10 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+
+td.AMCC{
+  text-align:right;
+}
 </style>
 
 ```{r set-options, echo=F, cache=F}
@@ -34,7 +38,15 @@ colnames(origData)[-1] <- namesJ
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <-  paste0(titleJ,' - ',format(Sys.Date(),'%Y年%m月%d日'))
+origData$year <- as.numeric(substring(origData[,2],1,4))
+origData$month <- as.numeric(gsub('．','',(substring(origData[,2],6,7))))
+origData$H <- ifelse(origData$month<=6,1,2)
+origData$Q <- ifelse(origData$month<=3,1,ifelse(origData$month<=6,2,ifelse(origData$month<=9,3,4)))
+origData[,2] <- gsub('．','.',origData[,2])
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0(titleJ,' - ', head(origData[,2],1), ' ~ ', tail(origData[,2],1))
 dataSource <- '財務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -59,6 +71,9 @@ options(scipen = 999)
 	1. 非居住者による取得または処分
 	1. 場合取得超は負債増加つまり資金流入、処分超は負債減少つまり資金流出を意味します。
 
+
+<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 DT::datatable(
   origData[,c(1,2,5,8,13,16,19,24)],
@@ -74,16 +89,68 @@ DT::datatable(
     lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
     orderClasses = T,
     order = list(list(0, 'desc')),
-    columnDefs = list(list(width = '5%', targets = 0),list(width = '20%', targets = 1))
+    columnDefs = list(list(width = '5%', targets = 0),list(width = '20%', targets = 1)),
+    search = list(regex = T, caseInsensitive = T)
   ),
   rownames = F,
   caption = paste(dataTitle, '. Source:',dataSource),
-  class = 'display compact'
+  class = 'display compact',
+  filter = 'bottom'
+)
+```
+<hr>
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+tableStat <- data.frame()
+cnt <- 1
+objY <- unique(origData$year)
+for(iii in objY){
+  tmp <- subset(origData,origData$year==iii) 
+  tableStat[cnt,1] <- iii  
+  tableStat[cnt,2] <- sum(tmp$`対内-株式･投資ファンド持分-ネット`)
+  cnt <- cnt+1
+}
+
+for(iii in objY){
+  tmp <- subset(origData,origData$year==iii)
+  for(sss in 1:2){
+    tmp0 <- subset(tmp, tmp$H==sss)
+    tableStat[cnt,1] <- paste0(iii,'-H',sss)
+    tableStat[cnt,2] <- sum(tmp0$`対内-株式･投資ファンド持分-ネット`)
+    cnt <- cnt+1
+  }
+}  
+  
+for(iii in objY){
+  tmp <- subset(origData,origData$year==iii)
+  for(sss in 1:4){
+    tmp0 <- subset(tmp,tmp$Q==sss)
+    tableStat[cnt,1] <- paste0(iii,'-Q',sss)
+    tableStat[cnt,2] <- sum(tmp0$`対内-株式･投資ファンド持分-ネット`)
+    cnt <- cnt+1
+  }
+}
+
+tableStat <- data.frame(seq(1,nrow(tableStat)), tableStat, check.names = F, stringsAsFactors = F)
+tableStat[,3] <- format(tableStat[,3], big.mark=",", scientific=F)
+colnames(tableStat) <- c('ID','年･半期･四半期','億円')
+DT::datatable(
+  tableStat,
+  options = list(
+    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
+    scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)), orderClasses = T,
+    order = list(list(0, 'desc')),
+    columnDefs = list(list(width = '5%', targets = 0),
+                      list(width = '20%', targets = 1),
+                      list(className = "AMCC", targets =  2)),
+    search = list(regex = T, caseInsensitive = T)
+  ),
+  rownames = F,   class = 'display compact', filter = 'bottom',
+  caption = paste0('対内-株式･投資ファンド持分-ネット:', head(origData[,2],1), ' ~ ', tail(origData[,2],1))
 )
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=12}
-for(iii in seq(3,ncol(origData),by=2)){
+for(iii in seq(3, ncol(origData)-4, by=2)){
   par(mfrow=c(1,2),mar = c(10, 5, 2, 2),oma=c(0,0,0,0),family='Meiryo')
   for(ccc in seq(iii,min(iii+1,ncol(origData)))){
     plotData <- origData[,c(1,2,ccc),drop=F]
