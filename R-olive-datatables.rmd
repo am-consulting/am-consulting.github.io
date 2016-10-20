@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
 
-title : '訪日外客数'
+title : '人権侵犯事件'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -39,8 +39,8 @@ needAdd <- 0
 needDiff <- 0
 needTrans <- 0
 pp <- 0
-dataTitle <- '訪日外客数の動向 - 月別推計値 - 2016年9月'
-dataSource <- '日本政府観光局'
+dataTitle <- '人権侵犯事件統計 - 種類別人権侵犯事件 - 2015年'
+dataSource <- '法務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0 
@@ -140,8 +140,8 @@ tmp <-
 
 ```{r,warning=F,error=F,message=F,echo=F}
   fungvisTable <- function(obj) {
-    PopTable <- gvisTable(      obj, 
-      options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=25)
+    PopTable <- gvisTable(obj, 
+      options = list(width = 1000, height = 'automatic',  page = 'enable' ,  pageSize=25)
     )
     plot(PopTable,tag='chart')
   }  
@@ -164,13 +164,13 @@ tmp <-
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-''
-funDataTable(obj = dataSetDT, append = appendTitle)
+#funDataTable(obj = dataSetDT, append = appendTitle)
 #cat(paste(dataTitle,appendTitle))
-#fungvisTable(obj = dataSetDT)
+fungvisTable(obj = dataSetDT)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F} 
-apply(dataSetDT[-1,-c(1,2)],2,summary)
+#apply(dataSetDT[-1,-c(1,2)],2,summary)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 

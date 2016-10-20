@@ -1,0 +1,595 @@
+
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache">
+<meta http-equiv="expires" content="0">
+</head>
+<body>
+<!----> 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
+<link  href="http://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="http://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<link  href="http://knowledgevault.saecanet.com/components/pace.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/pace.min.js"></script>
+<style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
+.container{
+	width: 80%;
+	margin-left: auto;
+	margin-right: auto;
+}
+table{border-collapse:collapse;padding:0;border-spacing:1;margin-left:auto;margin-right:auto;font-size:100%;}
+tr, td, th{white-space: nowrap;}
+td.highlight{font-weight:plain;color:red;}
+.dataTables_filter input {width: 50%;}
+</style>
+<div class="container">
+<div align="right">作成日時:2016-10-20 12:16:36</div><br>
+<script type="text/javascript" charset="utf-8">
+$(document).ready(function(){
+$('#amcc_superSimpleTable1476933385').dataTable({
+"lengthMenu":[[20,10,-1],[20,10,"All"]],
+"order":[[0,"asc"]],
+"scrollX": false,
+"autoWidth": false,
+"searching":true,
+"columnDefs":[{"width":"5%","targets":0}],
+"language":{"decimal":".","thousands":","},
+initComplete: function () {
+this.api().columns().every( function () {
+var column = this;
+var select = $('<select><option value=""></option></select>')
+.appendTo( $(column.footer()).empty() )
+.on( 'change', function () {
+var val = $.fn.dataTable.util.escapeRegex(
+$(this).val()
+);
+column
+.search( val ? '^'+val+'$' : '', true, false )
+.draw();
+} );
+column.data().unique().sort().each( function ( d, j ) {
+select.append( '<option value="'+d+'">'+d+'</option>' )
+} );
+} );
+}
+,
+createdRow:function(row,data,index){
+  if ( data[0].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(0).addClass('highlight');
+ }
+ if ( data[1].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(1).addClass('highlight');
+ }
+ if ( data[2].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(2).addClass('highlight');
+ }
+ if ( data[3].replace(',' , '') * 1 < 0 ) {
+ $('td', row).eq(3).addClass('highlight');
+ }
+ }})  });</script>
+
+ <div align="center"><b> 人権侵犯事件統計 - 種類別人権侵犯事件 - 2015年 </b><br>データ出所: 法務省 </div>    <div>
+ <table id="amcc_superSimpleTable1476933385" width="100%" class="display compact">
+ <thead>
+  <tr>
+   <th style="text-align:right;"> ID </th>
+   <th style="text-align:left;"> 事件の種類 </th>
+   <th style="text-align:right;"> 受理件数-総数-2015年 </th>
+   <th style="text-align:left;"> 構成比(%) </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 総数 </td>
+   <td style="text-align:right;"> 22,312 </td>
+   <td style="text-align:left;"> 100.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 私人等に関するもの </td>
+   <td style="text-align:right;"> 15,736 </td>
+   <td style="text-align:left;"> 70.53 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 私人等に関するもの-人身売買 </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> 私人等に関するもの-売春関係 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 5 </td>
+   <td style="text-align:left;"> 私人等に関するもの-暴行
+・
+虐待-家族間に
+おけるもの-夫の妻に対するもの </td>
+   <td style="text-align:right;"> 1,383 </td>
+   <td style="text-align:left;"> 6.20 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> 私人等に関するもの-暴行
+・
+虐待-家族間に
+おけるもの-妻の夫に対するもの </td>
+   <td style="text-align:right;"> 79 </td>
+   <td style="text-align:left;"> 0.35 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> 私人等に関するもの-暴行
+・
+虐待-家族間に
+おけるもの-親の子に対するもの </td>
+   <td style="text-align:right;"> 939 </td>
+   <td style="text-align:left;"> 4.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:left;"> 私人等に関するもの-暴行
+・
+虐待-家族間に
+おけるもの-子の親に対するもの </td>
+   <td style="text-align:right;"> 375 </td>
+   <td style="text-align:left;"> 1.68 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:left;"> 私人等に関するもの-暴行
+・
+虐待-家族間に
+おけるもの-その他 </td>
+   <td style="text-align:right;"> 395 </td>
+   <td style="text-align:left;"> 1.77 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:left;"> 私人等に関するもの-暴行
+・
+虐待-家族間以外のもの </td>
+   <td style="text-align:right;"> 661 </td>
+   <td style="text-align:left;"> 2.96 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 11 </td>
+   <td style="text-align:left;"> 私人等に関するもの-私的制裁 </td>
+   <td style="text-align:right;"> 4 </td>
+   <td style="text-align:left;"> 0.02 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 12 </td>
+   <td style="text-align:left;"> 私人等に関するもの-医療関係 </td>
+   <td style="text-align:right;"> 204 </td>
+   <td style="text-align:left;"> 0.91 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 13 </td>
+   <td style="text-align:left;"> 私人等に関するもの-人身の自由関係-精神保健及び精神障害
+者福祉に関する法律関係 </td>
+   <td style="text-align:right;"> 74 </td>
+   <td style="text-align:left;"> 0.33 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 14 </td>
+   <td style="text-align:left;"> 私人等に関するもの-人身の自由関係-その他 </td>
+   <td style="text-align:right;"> 10 </td>
+   <td style="text-align:left;"> 0.04 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 15 </td>
+   <td style="text-align:left;"> 私人等に関するもの-社会福祉施設関係-施設職員によるもの </td>
+   <td style="text-align:right;"> 275 </td>
+   <td style="text-align:left;"> 1.23 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:left;"> 私人等に関するもの-社会福祉施設関係-その他 </td>
+   <td style="text-align:right;"> 38 </td>
+   <td style="text-align:left;"> 0.17 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 17 </td>
+   <td style="text-align:left;"> 私人等に関するもの-村八分 </td>
+   <td style="text-align:right;"> 28 </td>
+   <td style="text-align:left;"> 0.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 18 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-女性 </td>
+   <td style="text-align:right;"> 45 </td>
+   <td style="text-align:left;"> 0.20 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 19 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-高齢者 </td>
+   <td style="text-align:right;"> 49 </td>
+   <td style="text-align:left;"> 0.22 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-障害者 </td>
+   <td style="text-align:right;"> 288 </td>
+   <td style="text-align:left;"> 1.29 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 21 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-同和問題 </td>
+   <td style="text-align:right;"> 126 </td>
+   <td style="text-align:left;"> 0.56 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 22 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-アイヌの人々 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 23 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-外国人 </td>
+   <td style="text-align:right;"> 94 </td>
+   <td style="text-align:left;"> 0.42 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 24 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-ＨＩＶ
+感染者等-ＨＩＶ感染者 </td>
+   <td style="text-align:right;"> 3 </td>
+   <td style="text-align:left;"> 0.01 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 25 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-ＨＩＶ
+感染者等-ハンセン病患者 </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 0.01 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 26 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-ＨＩＶ
+感染者等-その他の疾病患者 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:left;"> 0.04 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 27 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-刑を終えた人々 </td>
+   <td style="text-align:right;"> 11 </td>
+   <td style="text-align:left;"> 0.05 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 28 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-ホームレス </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 29 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-性的指向 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> 0.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 30 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-性同一性障害 </td>
+   <td style="text-align:right;"> 14 </td>
+   <td style="text-align:left;"> 0.06 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 31 </td>
+   <td style="text-align:left;"> 私人等に関するもの-差別待遇-その他 </td>
+   <td style="text-align:right;"> 191 </td>
+   <td style="text-align:left;"> 0.86 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 32 </td>
+   <td style="text-align:left;"> 私人等に関するもの-参政権関係 </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 33 </td>
+   <td style="text-align:left;"> 私人等に関するもの-プライバシー関係-報道機関 </td>
+   <td style="text-align:right;"> 7 </td>
+   <td style="text-align:left;"> 0.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 34 </td>
+   <td style="text-align:left;"> 私人等に関するもの-プライバシー関係-インターネット </td>
+   <td style="text-align:right;"> 1,869 </td>
+   <td style="text-align:left;"> 8.38 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 35 </td>
+   <td style="text-align:left;"> 私人等に関するもの-プライバシー関係-相隣間 </td>
+   <td style="text-align:right;"> 271 </td>
+   <td style="text-align:left;"> 1.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 36 </td>
+   <td style="text-align:left;"> 私人等に関するもの-プライバシー関係-その他 </td>
+   <td style="text-align:right;"> 479 </td>
+   <td style="text-align:left;"> 2.15 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 37 </td>
+   <td style="text-align:left;"> 私人等に関するもの-集会，結社及び表現の自由関係 </td>
+   <td style="text-align:right;"> 8 </td>
+   <td style="text-align:left;"> 0.04 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 38 </td>
+   <td style="text-align:left;"> 私人等に関するもの-信教の自由関係 </td>
+   <td style="text-align:right;"> 51 </td>
+   <td style="text-align:left;"> 0.23 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 39 </td>
+   <td style="text-align:left;"> 私人等に関するもの-教育を受ける権利関係 </td>
+   <td style="text-align:right;"> 14 </td>
+   <td style="text-align:left;"> 0.06 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 40 </td>
+   <td style="text-align:left;"> 私人等に関するもの-労働権関係-不当労働行為 </td>
+   <td style="text-align:right;"> 28 </td>
+   <td style="text-align:left;"> 0.13 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 41 </td>
+   <td style="text-align:left;"> 私人等に関するもの-労働権関係-労働基準法違反 </td>
+   <td style="text-align:right;"> 115 </td>
+   <td style="text-align:left;"> 0.52 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 42 </td>
+   <td style="text-align:left;"> 私人等に関するもの-労働権関係-その他 </td>
+   <td style="text-align:right;"> 2,415 </td>
+   <td style="text-align:left;"> 10.82 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 43 </td>
+   <td style="text-align:left;"> 私人等に関するもの-住居・生活の安全関係-自力執行 </td>
+   <td style="text-align:right;"> 16 </td>
+   <td style="text-align:left;"> 0.07 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 44 </td>
+   <td style="text-align:left;"> 私人等に関するもの-住居・生活の安全関係-相隣間-小公害 </td>
+   <td style="text-align:right;"> 453 </td>
+   <td style="text-align:left;"> 2.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 45 </td>
+   <td style="text-align:left;"> 私人等に関するもの-住居・生活の安全関係-相隣間-その他 </td>
+   <td style="text-align:right;"> 1,139 </td>
+   <td style="text-align:left;"> 5.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 46 </td>
+   <td style="text-align:left;"> 私人等に関するもの-住居・生活の安全関係-公害 </td>
+   <td style="text-align:right;"> 23 </td>
+   <td style="text-align:left;"> 0.10 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 47 </td>
+   <td style="text-align:left;"> 私人等に関するもの-住居・生活の安全関係-不動産 </td>
+   <td style="text-align:right;"> 324 </td>
+   <td style="text-align:left;"> 1.45 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 48 </td>
+   <td style="text-align:left;"> 私人等に関するもの-住居・生活の安全関係-その他 </td>
+   <td style="text-align:right;"> 841 </td>
+   <td style="text-align:left;"> 3.77 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 49 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-家族間に
+おけるもの-夫の妻に対するもの </td>
+   <td style="text-align:right;"> 436 </td>
+   <td style="text-align:left;"> 1.95 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 50 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-家族間に
+おけるもの-妻の夫に対するもの </td>
+   <td style="text-align:right;"> 71 </td>
+   <td style="text-align:left;"> 0.32 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 51 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-家族間に
+おけるもの-親の子に対するもの </td>
+   <td style="text-align:right;"> 196 </td>
+   <td style="text-align:left;"> 0.88 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 52 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-家族間に
+おけるもの-子の親に対するもの </td>
+   <td style="text-align:right;"> 95 </td>
+   <td style="text-align:left;"> 0.43 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 53 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-家族間に
+おけるもの-その他 </td>
+   <td style="text-align:right;"> 276 </td>
+   <td style="text-align:left;"> 1.24 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 54 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-セクシュアル・ハラスメント </td>
+   <td style="text-align:right;"> 338 </td>
+   <td style="text-align:left;"> 1.51 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 55 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-ストーカー </td>
+   <td style="text-align:right;"> 229 </td>
+   <td style="text-align:left;"> 1.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 56 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-ホームレスに対するもの </td>
+   <td style="text-align:right;"> 1 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 57 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-性的指向に対するもの </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 0.01 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 58 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-性同一性障害に関するもの </td>
+   <td style="text-align:right;"> 2 </td>
+   <td style="text-align:left;"> 0.01 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 59 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-北朝鮮当局によって拉致された被害者等に対するもの </td>
+   <td style="text-align:right;"> 0 </td>
+   <td style="text-align:left;"> 0.00 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 60 </td>
+   <td style="text-align:left;"> 私人等に関するもの-強制
+・
+強要-その他 </td>
+   <td style="text-align:right;"> 549 </td>
+   <td style="text-align:left;"> 2.46 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 61 </td>
+   <td style="text-align:left;"> 私人等に関するもの-組織又は多衆の威力関係 </td>
+   <td style="text-align:right;"> 17 </td>
+   <td style="text-align:left;"> 0.08 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 62 </td>
+   <td style="text-align:left;"> 私人等に関するもの-交通事故 </td>
+   <td style="text-align:right;"> 9 </td>
+   <td style="text-align:left;"> 0.04 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 63 </td>
+   <td style="text-align:left;"> 私人等に関するもの-犯罪被害者 </td>
+   <td style="text-align:right;"> 6 </td>
+   <td style="text-align:left;"> 0.03 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 64 </td>
+   <td style="text-align:left;"> 私人等に関するもの-その他 </td>
+   <td style="text-align:right;"> 152 </td>
+   <td style="text-align:left;"> 0.68 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 65 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの </td>
+   <td style="text-align:right;"> 6,576 </td>
+   <td style="text-align:left;"> 29.47 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 66 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-特別公務員に関するもの-警察官に関するもの </td>
+   <td style="text-align:right;"> 207 </td>
+   <td style="text-align:left;"> 0.93 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 67 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-特別公務員に関するもの-その他の特別公務員に関するもの </td>
+   <td style="text-align:right;"> 20 </td>
+   <td style="text-align:left;"> 0.09 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 68 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-教育職員関係-体罰 </td>
+   <td style="text-align:right;"> 747 </td>
+   <td style="text-align:left;"> 3.35 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 69 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-教育職員関係-その他 </td>
+   <td style="text-align:right;"> 1,096 </td>
+   <td style="text-align:left;"> 4.91 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 70 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-学校におけるいじめ </td>
+   <td style="text-align:right;"> 3,978 </td>
+   <td style="text-align:left;"> 17.83 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 71 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-刑務職員関係 </td>
+   <td style="text-align:right;"> 160 </td>
+   <td style="text-align:left;"> 0.72 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 72 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-その他の公務員に
+関するもの-国家公務員に関するもの </td>
+   <td style="text-align:right;"> 46 </td>
+   <td style="text-align:left;"> 0.21 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 73 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-その他の公務員に
+関するもの-地方公務員に関するもの </td>
+   <td style="text-align:right;"> 289 </td>
+   <td style="text-align:left;"> 1.30 </td>
+  </tr>
+  <tr>
+   <td style="text-align:right;"> 74 </td>
+   <td style="text-align:left;"> 公務員等の職務執行に関するもの-その他の公務員に
+関するもの-その他 </td>
+   <td style="text-align:right;"> 33 </td>
+   <td style="text-align:left;"> 0.15 </td>
+  </tr>
+</tbody>
+ <tfoot>
+  <tr>
+   <th style="text-align:right;"> ID </th>
+   <th style="text-align:left;"> 事件の種類 </th>
+   <th style="text-align:right;"> 受理件数-総数-2015年 </th>
+   <th style="text-align:left;"> 構成比(%) </th>
+  </tr>
+ </tfoot> </table> </div>
+ Powered by<br>-DataTables( http://datatables.net/ )<br>-jQuery( https://jquery.com )<br>-PACE( http://github.hubspot.com/pace/docs/welcome/ )  
+<!---->
+<hr>
+<div align="center"><a href="http://am-consulting.co.jp" target="_blank">アセット・マネジメント・コンサルティング株式会社</a></div>
+</div>
+</body>
+</html>
