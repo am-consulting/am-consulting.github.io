@@ -1,0 +1,194 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '勤労統計'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
+library(DT)
+library(knitr)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '毎月勤労統計調査 全国調査 実数原表 2016年8月'
+dataSource <- '厚生労働省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+dataTail <- 0 
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp <-
+  read.table(
+  'clipboard',
+  header = T,
+  sep = '\t',
+  stringsAsFactor = F,
+  na.strings = c('na', '', '-', ' ---- ', '   -- ','NA'),
+  check.names = F
+  )
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj, ind, orderC = 0, orderD = 'asc') {
+DT::datatable(
+  obj,
+  options = list(
+    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
+    scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)), orderClasses = T,
+    order = list(list(orderC, orderD)),
+    columnDefs = list(list(width = '2%', targets = 0)),
+    search = list(regex = T, caseInsensitive = T)
+  ),
+  rownames = F,   class = 'display compact', filter = 'bottom',
+  caption = ind
+)
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+cnt <- 1
+dtData <- dtCaption <- list()
+dataset <- tmp[,-c(6:10,20:23)]
+as.matrix(colnames(dataset))
+industry <- unique(dataset[,2])
+for(iii in 1:length(industry)){
+  buf0 <- subset(dataset,dataset[,2]==industry[iii])
+  sex <- unique(buf0[,4])
+  for(sss in 1:length(sex)){
+    buf1 <- subset(buf0,buf0[,4]==sex[sss])
+    style <- unique(buf1[,5])
+    for(ddd in 1:length(style)){
+      buf2 <- subset(buf1,buf1[,5]==style[ddd])
+      if(nrow(buf2)!=0){
+        dtData[[cnt]] <- buf2
+        dtCaption[[cnt]] <- paste0(industry[iii],' - ',sex[sss],' - ',style[ddd]) 
+        cnt <- cnt + 1
+      }
+    }
+  }
+}
+length(dtData)
+```
+
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+outputObj <- c(1:5) 
+out = NULL
+for (iii in outputObj) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h4>',dtCaption[[",iii,"]],'</h4>'))\n\n",
+      "funDataTable(obj = dtData[[",iii,"]][,-c(2,4,5)], ind = dtCaption[[",iii,"]])\n\n",
+      "cat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded)
+}
+```
+
+`r paste(knit(text = out), collapse = '\n')`
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+statData <- subset(
+  dataset,dataset[,3]==unique(dataset[,3])[1] & dataset[,4]==unique(dataset[,4])[1] & dataset[,5]==unique(dataset[,5])[2])
+ind0 <- paste0(unique(dataset[,3])[1],' - ',unique(dataset[,4])[1],' - ',unique(dataset[,5])[2])
+buf0 <- statData[,-c(3,4,5)]
+```
+
+####規模:5人以上、性別:男女計、形態:一般労働者
+#####実労働時間.総数 Top10
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+objColumn <- 4
+buf <- head(buf0[order(buf0[,objColumn],decreasing = T),],10)
+funDataTable(obj = buf, 
+             ind = ind0,
+             orderC = objColumn-1, orderD = 'desc')
+```
+<hr>
+
+#####実労働時間.総数 Bottom10
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+objColumn <- 4
+buf <- head(buf0[order(buf0[,objColumn],decreasing = F),],10)
+funDataTable(obj = buf, 
+             ind = ind0,
+             orderC = objColumn-1, orderD = 'asc')
+```
+<hr>
+
+#####現金給与額.総額 Top10
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+objColumn <- 7
+buf <- head(buf0[order(buf0[,objColumn],decreasing = T),],10)
+funDataTable(obj = buf, 
+             ind = ind0,
+             orderC = objColumn-1, orderD = 'desc')
+```
+<hr>
+
+#####現金給与額.総額 Bottom10
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+objColumn <- 7
+buf <- head(buf0[order(buf0[,objColumn],decreasing = F),],10)
+funDataTable(obj = buf, 
+             ind = ind0,
+             orderC = objColumn-1, orderD = 'asc')
+```
+<hr>
+
+#####時給換算 Top10 (現金給与額.総額 ÷ 実労働時間.総額)
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+buf1 <- data.frame(buf0[,c(1,2)], round(buf0[,7]/buf0[,4]), check.names = F, stringsAsFactors = F)
+colnames(buf1)[3] <- '時給換算'
+buf <- head(buf1[order(buf1[,3],decreasing = T),],10)
+funDataTable(obj = buf, 
+             ind = ind0,
+             orderC = 2, orderD = 'desc')
+```
+<hr>
+
+#####時給換算 Bottom10 (現金給与額.総額 ÷ 実労働時間.総額)
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+buf <- head(buf1[order(buf1[,3],decreasing = F),],10)
+funDataTable(obj = buf, 
+             ind = ind0,
+             orderC = 2, orderD = 'asc')
+```
+<hr>
+
+```{r,warning=F,error=F,message=F,echo=F,results='hold'}
+summary(buf1[,3])
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+knitr::kable(buf[,-1],row.names = F)
+```
