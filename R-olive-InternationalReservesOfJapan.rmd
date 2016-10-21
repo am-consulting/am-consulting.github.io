@@ -91,13 +91,15 @@ funDataTable <- function(obj,dataTitle='',append='') {
       lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
       orderClasses = T,
       order = list(list(0, 'desc')),
+      search = list(regex = T, caseInsensitive = T),
       columnDefs = list(
         list(width = '10%' , targets = 0)
         )
       ),
     rownames = F,
     caption = paste(dataTitle, append),
-    class = 'display compact'
+    class = 'display compact',
+    filter = 'bottom'
   )
 }
 ```
@@ -278,3 +280,9 @@ axis.Date(
 dataSet[, 1] <- format(dataSet[, 1], '%Y-%m')
 grid.table(tail(dataSet, 5), rows = NULL)
 ```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+cat(paste0('直近(',tail(dataSet[,1],1),')のゴールド保有量\n'))
+cat(paste0(tail(dataSet[,obj01],1),'百万トロイオンス = ',tail(dataSet[,obj01],1)*(10^6)*31.1034768*(1e-6),'トン'))
+```
+<hr>
