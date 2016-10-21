@@ -1,0 +1,11 @@
+```{r}
+start <- as.Date('1990-1-1')
+tmp0 <-
+  read.table('clipboard', header = F, sep = '\t', stringsAsFactor = F, na.strings = c('na', '', '-', ' ---- ', '   -- ','NA'),
+  check.names = F)
+value <- as.vector(t(tmp0))
+Date <- seq(start, length.out = length(value), by = 'month')
+data <- na.omit(data.frame(Date,value,check.names = F,stringsAsFactors = F))
+colnames(data)[2] <- '季節調整済賃金指数 - 実質賃金指数 - 現金給与総額 - 5人以上 - 就業形態計 - 調査産業計'
+write.table(data, "clipboard", sep = "\t", row.names = F, col.names = T)
+```
