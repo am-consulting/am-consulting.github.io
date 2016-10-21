@@ -1,0 +1,110 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '地震情報'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 11
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(XML)
+library(Nippon)
+library(lubridate)
+library(xtable)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj, ind, orderC = 0, orderD = 'asc') {
+DT::datatable(
+  obj,
+  options = list(
+    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
+    scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)), orderClasses = T,
+    order = list(list(orderC, orderD)),
+    columnDefs = list(list(width = '25%', targets = 0)),
+    search = list(regex = T, caseInsensitive = T)
+  ),
+  rownames = F,   class = 'display compact', filter = 'bottom',
+  caption = ind
+)
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+sourceURL <- "http://www.jma.go.jp/jp/quake/quake_local_index.html"
+tmp <- readHTMLTable(doc=sourceURL,header=T,trim=T,stringsAsFactors=F,as.data.frame=T,which=4)
+getTime <- Sys.time()
+title <- paste0('地震情報(最近一週間の各地の震度に関する情報,震度1以上). 出所:気象庁. データ取得日時:', getTime)
+colnames(tmp) <- iconv(colnames(tmp),"utf-8")
+buf <- data.frame()
+for(rrr in 1:nrow(tmp)){
+  for(ccc in 1:ncol(tmp)){  
+    buf[rrr,ccc] <- zen2han(tmp[rrr,ccc])
+  }
+}
+year   <-as.numeric(substring(buf[,1],3,4))-28+2016
+month  <-as.numeric(substring(buf[,1],6,7))
+day    <-as.numeric(substring(buf[,1],9,10))
+hour   <-as.numeric(substring(buf[,1],12,13))
+minute <-as.numeric(substring(buf[,1],15,16))
+announcement <- as.POSIXct(paste0(year,"-",month,"-",day," ",hour,":",minute))
+colnames(buf) <- colnames(tmp)
+buf[,4] <- as.numeric(gsub('M','',buf[,4]))
+dataSet <- buf
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('地震情報(最近一週間の各地の震度に関する情報,震度1以上). データ取得日時:', getTime)
+dataSource <- '気象庁'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title :",dataTitle,"\n"))
+cat(paste("Raw Data Source :",dataSource,"\n"))
+cat(paste("Author :",Author,"\n"))
+cat(paste("作成日 :",Sys.time(),"\n"))
+cat(paste("特記 :",notes,"\n"))
+cat(paste("特記 :",notes0,"\n"))
+cat(paste("ID :",htmlID,"\n"))
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable(obj = dataSet, ind = title, orderD = 'desc')
+```
+<hr>
+```{r,warning=F,error=F,message=F,echo=F}
+epicenter <- unique(dataSet[,3])
+earthquakeTable <- data.frame()
+for(eee in 1:length(epicenter)){
+  buf0 <- subset(dataSet,dataSet[,3]==epicenter[eee])  
+  earthquakeTable[eee,1] <- epicenter[eee]
+  earthquakeTable[eee,2] <- nrow(buf0)
+  earthquakeTable[eee,3] <- max(buf0[,4])
+  earthquakeTable[eee,4] <- min(buf0[,4])
+  earthquakeTable[eee,5] <- tail(buf0[,2],1)
+  earthquakeTable[eee,6] <- head(buf0[,2],1)
+}
+colnames(earthquakeTable) <- c('震央地名', '検知総回数', '最大マグニチュード', '最小マグニチュード', '初検知', '直近検知')
+funDataTable(obj = earthquakeTable, ind = title, orderC = 1,  orderD = 'desc')
+```
+<hr>
