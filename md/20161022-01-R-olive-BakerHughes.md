@@ -16,4 +16,4 @@ published : true
 	
 ## データテーブル･チャート
 Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-20161022203543.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-20161022203543.html" width="100%" height="600px"></iframe>
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-20161022203543.html" width="100%" height="800px"></iframe>
