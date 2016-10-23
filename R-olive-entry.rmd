@@ -1,0 +1,113 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+
+title : '入国外国人'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- paste0('出入国管理統計 港別 入国外国人の国籍･地域 - ', '2016年7月分')
+dataSource <- '法務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+cat(paste('ID :',htmlID,'\n'))
+windowsFonts(Meiryo=windowsFont('Meiryo'))
+library(Nippon)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+tmp0 <-
+  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, na.strings = c('na','','-',' ---- ','   -- ','NA',' - '),
+  check.names = F)
+tmp <- tmp0
+colnames(tmp) <- gsub(' ','',gsub('\n','',colnames(tmp)))
+colnames(tmp) <- sapply(colnames(tmp),zen2han)
+tmp[,-1] <- sapply(tmp[,-1], function(x) as.numeric(gsub(',','',x)))
+# 地域データ
+region0 <- c('総数','アジア','ヨーロッパ','アフリカ','北アメリカ','南アメリカ','オセアニア','無国籍')
+region <- paste0('\\b',region0,'\\b')
+regionData0 <- tmp[sapply(region,function(x) grep(x,tmp[,1])),]
+# 入国者ゼロの港
+entryZero <- which(is.na(regionData0[1,]))
+colnames(regionData0)[entryZero]
+# 入国者ありの港
+regionData <- regionData0[,-entryZero]
+# 国ごとデータ
+countryData0 <- tmp[-sapply(region[-1],function(x) grep(x,tmp[,1])),]
+countryData <- countryData0[,-entryZero]
+# 確認用
+which(colnames(regionData)!=colnames(countryData))
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+funDataTable <- function(obj, ind = '', orderC = 0, orderD = 'asc') {
+DT::datatable(
+  obj,
+  options = list(
+    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
+    scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)), orderClasses = T,
+    order = list(list(orderC, orderD)),
+    columnDefs = list(list(width = '2%', targets = 0)),
+    search = list(regex = T, caseInsensitive = T)
+  ),
+  rownames = F,   class = 'display compact', filter = 'bottom',
+  caption = ind
+)
+}
+```
+<hr>
+### 地域別 - 港別 - 入国外国人数
+```{r warning=F, error=F, message=F, echo=F}
+buf <- t(regionData)
+buf <- data.frame(rownames(buf),buf,check.names = F,stringsAsFactors = F, row.names = NULL)
+colnames(buf) <- buf[1,]
+buf <- buf[-1,]
+buf[,-1] <- sapply(buf[,-1],as.numeric)
+buf <- data.frame(ID = seq(1,nrow(buf)), buf, check.names = F) 
+funDataTable(obj = buf)
+```
+<hr>
+### 入国外国人数ゼロの港
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+colN <- 8
+zeroPort <- colnames(regionData0)[entryZero]
+length(zeroPort) <- prod(dim(matrix(zeroPort, byrow = T, ncol = colN)))
+matrix(zeroPort, ncol = colN, byrow = T)
+```
+<hr>
+### 港別 - 国籍別入国外国人数 Top5
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(ccc in 3:ncol(countryData)){
+  buf <- na.omit(countryData[,c(1,ccc)])  
+  buf0 <- head(buf[order(buf[, 2], na.last = NA, decreasing = T), ], 6)
+  cat(paste0('<h4>',colnames(buf0)[2],'</h4>'))
+  print(knitr::kable(buf0,row.names = F))
+  cat('\n<hr>') 
+}
+```
