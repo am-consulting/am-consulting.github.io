@@ -1,0 +1,110 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+
+title : '貿易統計'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- paste0('財務省貿易統計(速報) - ', '2016年9月分')
+dataSource <- '財務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+cat(paste('ID :',htmlID,'\n'))
+windowsFonts(Meiryo=windowsFont('Meiryo'))
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+# devtools::install_github("hrbrmstr/xmlview")
+library(xml2)
+library(xmlview)
+library(XML) 
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+targetYear <- 2016
+targetMonth <- 9
+targetMonth <- formatC(targetMonth, width=2, flag='0')
+targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
+buf0 <- xmlToList(targetURL)
+names(buf0)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat(paste0('<h3>',buf0$sogakutsuki$title),'</h3>\n')
+buf <- data.frame(rbind(buf0$sogakutsuki$export,buf0$sogakutsuki$import,buf0$sogakutsuki$sashihiki))
+table01 <- sapply(buf, function(x) 
+  as.numeric(
+    gsub('△', '-',
+         gsub(',', '', x))))
+table01[,-3] <- table01[,-3]*10^-6
+colnames(table01) <- c(paste0(targetYear,'年',targetMonth,'月'),paste0(targetYear-1,'年',targetMonth,'月'),'伸率(%)')
+rownames(table01) <- c('輸入','輸出','差引')
+cat('<h4>総額(原値,兆円)</h4>\n')
+knitr::kable(table01)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+table02 <- data.frame()
+regionN <- length(buf0$chiikikunisogaku)
+for(rrr in 2:(regionN-2)){
+  tmp <- buf0$chiikikunisogaku[rrr]
+  table02[rrr-1,1] <- rrr-1 
+  for(ccc in 2:length(tmp$chiikikunisogakuinfo)){
+    table02[rrr-1,ccc] <- tmp$chiikikunisogakuinfo[ccc]
+  }
+}
+table02[,-c(1,2)] <- sapply(table02[,-c(1,2)],function(x) as.numeric(gsub(',','',x)))
+table02[,c(3,5,7)] <- sapply(table02[,c(3,5,7)],function(x) x*10^-2)
+colnames(table02) <-c('ID', '地域･国', '輸出価額(億円)', '伸率', '輸入価額(億円)', '伸率', '差引価額(億円)', '伸率')
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+funDataTable <- function(obj, ind = '', orderC = 0, orderD = 'asc', width0 = '10%') {
+DT::datatable(
+  obj,
+  options = list(
+    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
+    scrollX = F, lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)), orderClasses = T,
+    order = list(list(orderC, orderD)),
+    columnDefs = list(list(width = width0, targets = 0)),
+    search = list(regex = T, caseInsensitive = T)
+  ),
+  rownames = F,   class = 'display compact', filter = 'bottom',
+  caption = ind
+)
+}
+cat('<h4>地域(国)別輸出入</h4>\n')
+funDataTable(obj = table02, width0 = '3%')  
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+xml_view(xml2::read_xml(targetURL))
+```
