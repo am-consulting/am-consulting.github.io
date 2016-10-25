@@ -1,0 +1,123 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : 'World Economic Outlook - October 2016'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '世界経済の見通し / 『World Economic Outlook Database』(International Monetary Fund)'
+subTitle <- ' - World Economic Outlook Database October 2016'
+dataSource <- 'International Monetary Fund'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste0("Title : ", dataTitle, subTitle, "\n"))
+cat(paste0("Raw Data Source : ", dataSource, "\n"))
+cat(paste0("Author : ", Author, "\n"))
+cat(paste0("作成日 : ", Sys.time(), "\n"))
+cat(paste0("特記 : ", notes, "\n"))
+cat(paste0("特記 : ", notes0, "\n"))
+cat(paste0("ID : ", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+library(sparkline)
+library(DT)
+library(lubridate)
+library(knitr)
+# Reference https://github.com/htmlwidgets/sparkline/issues/3
+# http://www.imf.org/external/ns/cs.aspx?id=28
+tmp0 <-
+  read.table('clipboard',header = T,sep = '\t',stringsAsFactor = F,
+             na.strings = c('na','','-',' ---- ','   -- ','NA','n/a'),check.names = F,fill = T,quote = "")
+colnames(tmp0)
+targetYear <- year(Sys.Date())+1
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+tmp1 <- tmp0[,c(4,5,grep(targetYear,colnames(tmp0)):grep(2021,colnames(tmp0)),1:3,6:9,ncol(tmp0))]
+tmp1[,3:7] <- sapply(tmp1[,3:7], function(x) as.numeric(gsub(',','',x))) 
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+dataSet <- list()
+targetSub <-c(1:12,19,25)
+tmp2 <- tmp1
+tmp2[which(is.na(tmp2$Scale)),13] <- '-'
+tmp2[,2] <- paste0(tmp2[,2],'-',tmp2[,12],'(',tmp2[,13],')')
+countryN <- unique(na.omit(tmp2$Country))
+subjectN <- unique(na.omit(tmp2$`Subject Descriptor`))
+for(iii in 1:length(targetSub)){
+  tmp3 <- subset(tmp2,tmp2$`Subject Descriptor` == subjectN[targetSub[iii]])
+  tmp3$Sparkline <- apply(tmp3[,3:7,drop=F],1,function(x) paste(x,collapse = ','))
+  dataSet[[iii]] <- tmp3
+  head(dataSet[[iii]])
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_datatable <- function(obj, caption = ''){
+columnDefs = list(
+  list(targets = 6,
+       render  = JS("function(data, type, full){return '<span class=spark>' + data + '</span>'}")),
+  list(targets = 0, width = '30%'))
+fnDrawCallback = JS("function (oSettings, json) {
+  $('.spark:not(:has(canvas))').sparkline('html', {type: 'bar',highlightColor: 'orange'});}")
+dfWithSpark <- DT::datatable(
+  obj,
+  options = list(
+    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
+    scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)), orderClasses = T,
+    order = list(list(0, 'asc')),
+    columnDefs = columnDefs,
+    search = list(regex = T, caseInsensitive = T), fnDrawCallback = fnDrawCallback),
+  rownames = F,   class = 'display compact', filter = 'bottom', caption = caption)
+dfWithSpark$dependencies <- append(dfWithSpark$dependencies, htmlwidgets:::getDependency('sparkline'))
+dfWithSpark
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+#fun_datatable(obj = dataSet[[iii]][,c(1,3:7,which(colnames(dataSet[[iii]])=="Sparkline"))],
+#              caption = unique(dataSet[[iii]][,2]))
+#cat(unique(dataSet[[iii]]$`Subject Notes`))
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, include=F}
+out = NULL
+for (iii in 1:length(dataSet)) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h4>',unique(dataSet[[",iii,"]][,2]),'</h4>'))\n\n",
+      "fun_datatable(obj = dataSet[[",iii,"]][,c(1,3:7,which(colnames(dataSet[[",iii,"]])=='Sparkline'))],", 
+      "caption = unique(dataSet[[",iii,"]][,2]))\n\n",
+      "cat(paste0('<I>',unique(dataSet[[",iii,"]]$`Subject Notes`),'</I>'))\n\n",
+      "cat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded)
+}
+```
+`r paste(knit(text = out), collapse = '\n')`
