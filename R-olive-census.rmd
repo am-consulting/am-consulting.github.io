@@ -31,7 +31,7 @@ library(Nippon)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '平成27年 人口速報集計(要計表による人口集計) - 人口，人口増減(平成22年～27年)，面積，人口密度，世帯数及び世帯数増減(平成22年～27年) - 全国，全国市部・郡部，都道府県，都道府県市部・郡部，市区町村 - 公表日:平成28年2月26日'
+dataTitle <- '平成27年 人口速報集計(要計表による人口集計) - 男女別人口及び人口性比 － 全国，全国市部・郡部，都道府県，都道府県市部・郡部，市区町村 - 公表日:平成28年2月26日'
 dataSource <- '総務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
@@ -53,11 +53,14 @@ tmp0 <-
   read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, 
              na.strings = c('na', '', '-', ' ---- ', '   -- ','NA'), check.names = F, fill = T)
 tmp0[,3] <- sapply(tmp0[,3], function(x) iconv(x, to="utf8", from="cp932"))
-buf <- grep('％',colnames(tmp0))
-tmp0[,buf] <- apply(tmp0[,buf],2,function(x) round(x,2))
+tmp0[is.na(tmp0)] <- -9999
+buf <- grep('％',colnames(tmp0)) #表1
+buf <- grep('比',colnames(tmp0)) #表2
+tmp0[,buf] <- apply(tmp0[,buf,drop=F],2,function(x) round(x,2))
 colnames(tmp0) <- sapply(colnames(tmp0),zen2han)
 colnames(tmp0)[3] <- '都道府県等'
-tmp1 <- tmp0[,-c(5,11)]
+tmp1 <- tmp0[,-c(5,11)] #表1
+tmp1 <- tmp0 #表2
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
