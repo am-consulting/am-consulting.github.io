@@ -1,0 +1,135 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '国勢調査'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 20
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1200)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
+library(DT)
+library(lubridate)
+library(Nippon)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '平成27年 人口速報集計(要計表による人口集計) - 人口，人口増減(平成22年～27年)，面積，人口密度，世帯数及び世帯数増減(平成22年～27年) - 全国，全国市部・郡部，都道府県，都道府県市部・郡部，市区町村 - 公表日:平成28年2月26日'
+dataSource <- '総務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# http://www.stat.go.jp/data/kouhyou/e-stat_kokusei2015.xml
+# http://www.e-stat.go.jp/SG1/estat/List.do?bid=000001068779
+tmp0 <-
+  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, 
+             na.strings = c('na', '', '-', ' ---- ', '   -- ','NA'), check.names = F, fill = T)
+tmp0[,3] <- sapply(tmp0[,3], function(x) iconv(x, to="utf8", from="cp932"))
+buf <- grep('％',colnames(tmp0))
+tmp0[,buf] <- apply(tmp0[,buf],2,function(x) round(x,2))
+colnames(tmp0) <- sapply(colnames(tmp0),zen2han)
+colnames(tmp0)[3] <- '都道府県等'
+tmp1 <- tmp0[,-c(5,11)]
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+fun_datatable <- function(obj, append='', orderColumn=0, orderDirection='asc') {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T,
+      ordering = T, searching = T, scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), search = list(regex = T, caseInsensitive = T),
+      columnDefs = list(list(width = '5%', targets = 0))),
+    rownames = F, caption = paste(dataTitle, append), class = 'display compact', escape = F, filter = 'bottom'
+  )
+}
+```
+<hr>
+### 全国・都道府県
+```{r warning=F, error=F, message=F, echo=F}
+append <- 'a'
+assign(paste0('dataSet_',append), subset(tmp1,tmp1[,2] == append))
+appendTitle <- ''
+fun_datatable(obj = get(paste0('dataSet_',append)), append = appendTitle)
+```
+<hr>
+### 政令指定都市の区
+```{r warning=F, error=F, message=F, echo=F}
+append <- '0'
+assign(paste0('dataSet_',append), subset(tmp1,tmp1[,2] == append))
+appendTitle <- ''
+fun_datatable(obj = get(paste0('dataSet_',append)), append = appendTitle)
+```
+<hr>
+### 政令指定都市及び東京都特別区部
+```{r warning=F, error=F, message=F, echo=F}
+append <- '1'
+assign(paste0('dataSet_',append), subset(tmp1,tmp1[,2] == append))
+appendTitle <- ''
+fun_datatable(obj = get(paste0('dataSet_',append)), append = appendTitle)
+```
+<hr>
+### 政令指定都市以外の市
+```{r warning=F, error=F, message=F, echo=F}
+append <- '2'
+assign(paste0('dataSet_',append), subset(tmp1,tmp1[,2] == append))
+appendTitle <- ''
+fun_datatable(obj = get(paste0('dataSet_',append)), append = appendTitle)
+```
+<hr>
+### 町村
+```{r warning=F, error=F, message=F, echo=F}
+append <- '3'
+assign(paste0('dataSet_',append), subset(tmp1,tmp1[,2] == append))
+appendTitle <- ''
+fun_datatable(obj = get(paste0('dataSet_',append)), append = appendTitle)
+```
+<hr>
+### 支庁・振興局・郡
+```{r warning=F, error=F, message=F, echo=F}
+append <- 'c'
+assign(paste0('dataSet_',append), subset(tmp1,tmp1[,2] == append))
+appendTitle <- ''
+fun_datatable(obj = get(paste0('dataSet_',append)), append = appendTitle)
+```
+<hr>
+|コード|地域|
+|:-:|:-|
+|0|政令指定都市の区|
+|1|政令指定都市及び東京都特別区部|
+|2|政令指定都市以外の市|
+|3|町村|
+|9|平成12年(2000年)現在の市区町村|
+|a|全国・都道府県|
+|b|市部・郡部|
+|c|支庁・振興局・郡|
+|d|人口集中地区|
+<hr>
