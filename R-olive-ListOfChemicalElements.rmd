@@ -1,0 +1,178 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "元素"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1200)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- '元素の一覧表-原子番号、元素記号、元素名、周期、族、原子量、状態'
+Author    <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+notes     <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0    <- '表中、-9999はNAを意味します'
+htmlID    <- timeStamp
+cat(paste("Title  : ", dataTitle, "\n"))
+cat(paste("Author : ", Author, "\n"))
+cat(paste("作成日 : ", Sys.time(), "\n"))
+cat(paste("特記   : ", notes, "\n"))
+cat(paste("特記   : ", notes0, "\n"))
+cat(paste("ID     : ", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+library(ggplot2)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+tmp0 <- 
+  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, 
+             na.strings = c('na', '', '-', 'NA'), check.names = F)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+tmp <- tmp0
+tmp[,-c(1,5,7)] <- apply(tmp[,-c(1,5,7)], 2, function(x) iconv(x, to = "utf8", from = "cp932", toRaw = F))
+dataSet <- tmp
+```
+
+#### Source:
+1. 元素の一覧(WIKIPEDIA) - https://ja.wikipedia.org/wiki/%E5%85%83%E7%B4%A0%E3%81%AE%E4%B8%80%E8%A6%A7
+1. 周期表(WIKIPEDIA) - https://ja.wikipedia.org/wiki/%E5%91%A8%E6%9C%9F%E8%A1%A8
+
+<hr>
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable <- function(obj) {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(10, 100, -1, 1), c(10, 100, 'All', 1)),
+      orderClasses = T, order = list(list(0, 'asc')), search = list(regex = T, caseInsensitive = T),
+      columnDefs = list(list(width = '10%', targets = 0))),
+    rownames = F, caption = '', class = 'display compact', escape = F, filter = 'top'
+  )
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable(obj = dataSet)
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+# 以下のコードは冗長に過ぎており、ggplot+...をループの中で利用する方法を確認すること。
+obj <- dataSet
+obj1X <- 1; obj1Y <- 5
+g1 <- ggplot(obj, aes(obj[,obj1X], obj[,obj1Y]))
+g1 <- g1 + geom_point(aes(colour = `状態`), size = 2) 
+g1 <- g1 + theme(legend.position = "top")
+g1 <- g1 + xlab(colnames(obj)[obj1X]) + ylab(colnames(obj)[obj1Y])
+g1 <- g1 + theme(plot.title   = element_text(size = 15, family='Meiryo'))
+g1 <- g1 + theme(legend.text  = element_text(size = 15, family='Meiryo'))
+g1 <- g1 + theme(axis.title.x = element_text(size = 15, family='Meiryo'))
+g1 <- g1 + theme(axis.title.y = element_text(size = 15, family='Meiryo'))
+g1 <- g1 + theme(axis.text.x  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g1 <- g1 + theme(axis.text.y  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g1 <- g1 + theme(legend.title = element_blank()) 
+g1
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+obj2X <- 1; obj2Y <- 7
+g2 <- ggplot(obj, aes(obj[,obj2X], obj[,obj2Y]))
+g2 <- g2 + geom_point(aes(colour = `状態`), size = 2) 
+g2 <- g2 + theme(legend.position = "top")
+g2 <- g2 + xlab(colnames(obj)[obj2X]) + ylab(colnames(obj)[obj2Y])
+g2 <- g2 + theme(plot.title   = element_text(size = 15, family='Meiryo'))
+g2 <- g2 + theme(legend.text  = element_text(size = 15, family='Meiryo'))
+g2 <- g2 + theme(axis.title.x = element_text(size = 15, family='Meiryo'))
+g2 <- g2 + theme(axis.title.y = element_text(size = 15, family='Meiryo'))
+g2 <- g2 + theme(axis.text.x  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g2 <- g2 + theme(axis.text.y  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g2 <- g2 + theme(legend.title = element_blank()) 
+g2
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+obj3X <- 5; obj3Y <- 7
+g3 <- ggplot(obj, aes(obj[,obj3X], obj[,obj3Y]))
+g3 <- g3 + geom_point(aes(colour = `状態`), size = 2) 
+g3 <- g3 + theme(legend.position = "top")
+g3 <- g3 + xlab(colnames(obj)[obj3X]) + ylab(colnames(obj)[obj3Y])
+g3 <- g3 + theme(plot.title   = element_text(size = 15, family='Meiryo'))
+g3 <- g3 + theme(legend.text  = element_text(size = 15, family='Meiryo'))
+g3 <- g3 + theme(axis.title.x = element_text(size = 15, family='Meiryo'))
+g3 <- g3 + theme(axis.title.y = element_text(size = 15, family='Meiryo'))
+g3 <- g3 + theme(axis.text.x  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g3 <- g3 + theme(axis.text.y  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g3 <- g3 + theme(legend.title = element_blank()) 
+g3
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+obj4X <- 1; obj4Y <- 5
+g4 <- ggplot(obj, aes(obj[,obj4X], obj[,obj4Y]))
+g4 <- g4 + geom_point(aes(colour = `分類01`), size = 2) 
+g4 <- g4 + theme(legend.position = "top")
+g4 <- g4 + xlab(colnames(obj)[obj4X]) + ylab(colnames(obj)[obj4Y])
+g4 <- g4 + theme(plot.title   = element_text(size = 15, family='Meiryo'))
+g4 <- g4 + theme(legend.text  = element_text(size = 15, family='Meiryo'))
+g4 <- g4 + theme(axis.title.x = element_text(size = 15, family='Meiryo'))
+g4 <- g4 + theme(axis.title.y = element_text(size = 15, family='Meiryo'))
+g4 <- g4 + theme(axis.text.x  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g4 <- g4 + theme(axis.text.y  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g4 <- g4 + theme(legend.title = element_blank()) 
+g4
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+obj5X <- 1; obj5Y <- 7
+g5 <- ggplot(obj, aes(obj[,obj5X], obj[,obj5Y]))
+g5 <- g5 + geom_point(aes(colour = `分類01`), size = 2) 
+g5 <- g5 + theme(legend.position = "top")
+g5 <- g5 + xlab(colnames(obj)[obj5X]) + ylab(colnames(obj)[obj5Y])
+g5 <- g5 + theme(plot.title   = element_text(size = 15, family='Meiryo'))
+g5 <- g5 + theme(legend.text  = element_text(size = 15, family='Meiryo'))
+g5 <- g5 + theme(axis.title.x = element_text(size = 15, family='Meiryo'))
+g5 <- g5 + theme(axis.title.y = element_text(size = 15, family='Meiryo'))
+g5 <- g5 + theme(axis.text.x  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g5 <- g5 + theme(axis.text.y  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g5 <- g5 + theme(legend.title = element_blank()) 
+g5
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+obj6X <- 5; obj6Y <- 7
+g6 <- ggplot(obj, aes(obj[,obj6X], obj[,obj6Y]))
+g6 <- g6 + geom_point(aes(colour = `分類01`), size = 2) 
+g6 <- g6 + theme(legend.position = "top")
+g6 <- g6 + xlab(colnames(obj)[obj6X]) + ylab(colnames(obj)[obj6Y])
+g6 <- g6 + theme(plot.title   = element_text(size = 15, family='Meiryo'))
+g6 <- g6 + theme(legend.text  = element_text(size = 15, family='Meiryo'))
+g6 <- g6 + theme(axis.title.x = element_text(size = 15, family='Meiryo'))
+g6 <- g6 + theme(axis.title.y = element_text(size = 15, family='Meiryo'))
+g6 <- g6 + theme(axis.text.x  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g6 <- g6 + theme(axis.text.y  = element_text(size = 15, angle = 0, hjust = 0.5, vjust = 0.5, family='Meiryo'))
+g6 <- g6 + theme(legend.title = element_blank()) 
+g6
+```
+<hr>
