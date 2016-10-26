@@ -1,0 +1,154 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+
+title : '国勢調査'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 20
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1200)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
+library(DT)
+library(lubridate)
+library(Nippon)
+library(dplyr)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '平成27年 国勢調査 - 抽出速報集計 - 配偶関係(４区分)，年齢(各歳)，男女別15歳以上人口，配偶関係別割合及び平均年齢(総数及び日本人)－全国，全国市部・郡部 - 公表日:平成28年6月29日'
+dataSource <- '総務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title :',dataTitle,'\n'))
+cat(paste('Raw Data Source :',dataSource,'\n'))
+cat(paste('Author :',Author,'\n'))
+cat(paste('作成日 :',Sys.time(),'\n'))
+cat(paste('特記 :',notes,'\n'))
+cat(paste('特記 :',notes0,'\n'))
+cat(paste("ID :", htmlID, "\n"))
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# http://www.stat.go.jp/data/kouhyou/e-stat_kokusei2015.xml
+# http://www.e-stat.go.jp/SG1/estat/List.do?bid=000001068779
+tmp00 <-
+  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F, 
+             na.strings = c('na', '', '-', ' ---- ', '   -- ','NA'), check.names = F, fill = T)
+tmp0 <- tmp00[!is.na(tmp00[,1]),]
+tmp0[is.na(tmp0)] <- -9999
+buf <- grep('％',colnames(tmp0))
+tmp0[,buf] <- sapply(tmp0[,buf,drop=F],function(x) round(x,2))
+colnames(tmp0) <- sapply(colnames(tmp0),zen2han)
+colnames(tmp0)[6] <- '年齢'
+colnames(tmp0)[7:16]  <- paste0('総数-',colnames(tmp0)[7:16])
+colnames(tmp0)[17:26] <- paste0('男-',colnames(tmp0)[17:26])
+colnames(tmp0)[27:36] <- paste0('女-',colnames(tmp0)[27:36])
+colnames(tmp0) <- gsub(' 2)','',colnames(tmp0))
+tmp0 <- tmp0[!(tmp0[,6]=='平均年齢'),]
+tmp1 <- tmp0[,c(1:6,13:16,23:26,33:36)]
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+fun_datatable <- function(obj, append='', orderColumn=0, orderDirection='asc') {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T,
+      ordering = T, searching = T, scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), search = list(regex = T, caseInsensitive = T),
+      columnDefs = list(list(width = '5%', targets = 0))),
+    rownames = F, caption = paste(dataTitle, append), class = 'display compact', escape = F, filter = 'bottom'
+  )
+}
+```
+<hr>
+### 総数-全国(大項目:1,地域コード:0,地域識別コード:a)
+```{r warning=F, error=F, message=F, echo=F}
+Item <- 1
+Region0 <- 0
+Region1 <- "a"
+dataset <- subset(tmp1, tmp1[,1] == Item & tmp1[,2] == Region0 & tmp1[,3] == Region1)[,-c(1:5)]
+appendTitle <- ''
+fun_datatable(obj = dataset, append = appendTitle)
+```
+<hr>
+### 総数-全国 市部(大項目:1,地域コード:1,地域識別コード:b)
+```{r warning=F, error=F, message=F, echo=F}
+Item <- 1
+Region0 <- 1
+Region1 <- "b"
+dataset <- subset(tmp1, tmp1[,1] == Item & tmp1[,2] == Region0 & tmp1[,3] == Region1)[,-c(1:5)]
+appendTitle <- ''
+fun_datatable(obj = dataset, append = appendTitle)
+```
+<hr>
+### 総数-全国 郡部(大項目:1,地域コード:2,地域識別コード:b)
+```{r warning=F, error=F, message=F, echo=F}
+Item <- 1
+Region0 <- 2
+Region1 <- "b"
+dataset <- subset(tmp1, tmp1[,1] == Item & tmp1[,2] == Region0 & tmp1[,3] == Region1)[,-c(1:5)]
+appendTitle <- ''
+fun_datatable(obj = dataset, append = appendTitle)
+```
+<hr>
+### 日本人-全国(大項目:2,地域コード:0,地域識別コード:a)
+```{r warning=F, error=F, message=F, echo=F}
+Item <- 2
+Region0 <- 0
+Region1 <- "a"
+dataset <- subset(tmp1, tmp1[,1] == Item & tmp1[,2] == Region0 & tmp1[,3] == Region1)[,-c(1:5)]
+appendTitle <- ''
+fun_datatable(obj = dataset, append = appendTitle)
+```
+<hr>
+### 日本人-全国 市部(大項目:2,地域コード:1,地域識別コード:b)
+```{r warning=F, error=F, message=F, echo=F}
+Item <- 2
+Region0 <- 1
+Region1 <- "b"
+dataset <- subset(tmp1, tmp1[,1] == Item & tmp1[,2] == Region0 & tmp1[,3] == Region1)[,-c(1:5)]
+appendTitle <- ''
+fun_datatable(obj = dataset, append = appendTitle)
+```
+<hr>
+### 日本人-全国 郡部(大項目:2,地域コード:2,地域識別コード:b)
+```{r warning=F, error=F, message=F, echo=F}
+Item <- 2
+Region0 <- 2
+Region1 <- "b"
+dataset <- subset(tmp1, tmp1[,1] == Item & tmp1[,2] == Region0 & tmp1[,3] == Region1)[,-c(1:5)]
+appendTitle <- ''
+fun_datatable(obj = dataset, append = appendTitle)
+```
+<hr>
+|コード|地域|
+|:-:|:-|
+|0|政令指定都市の区|
+|1|政令指定都市及び東京都特別区部|
+|2|政令指定都市以外の市|
+|3|町村|
+|9|平成12年(2000年)現在の市区町村|
+|a|全国・都道府県|
+|b|市部・郡部|
+|c|支庁・振興局・郡|
+|d|人口集中地区|
+<hr>
