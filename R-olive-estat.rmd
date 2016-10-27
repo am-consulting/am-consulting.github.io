@@ -1,0 +1,158 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "e-stat"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+library(RCurl)
+library(XML)
+library(estatapi)
+library(knitr)
+library(plyr)
+iconvlist()
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- '政府統計の総合窓口(e-stat) API機能で提供するデータの政府統計コードおよび統計表ID一覧表'
+dataSource <- '総務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+htmlID <- timeStamp
+cat(paste('Title           : ', iconv(dataTitle, from='cp932'), '\n'))
+cat(paste('Raw Data Source : ', dataSource, '\n'))
+cat(paste('Author          : ', Author, '\n'))
+cat(paste('作成日          : ', Sys.time(), '\n'))
+cat(paste('特記            : ', notes, '\n'))
+cat(paste('特記            : ', notes0, '\n'))
+cat(paste('ID              : ', htmlID, '\n'))
+windowsFonts(Meiryo = windowsFont('Meiryo'))
+options(scipen = 999)
+```
+
+#### Source
+
+- http://www.e-stat.go.jp/api/api-data/
+
+<hr>
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+testMode <- 0
+if(testMode == 0){
+sourceURL <- 'www.e-stat.go.jp/api/api-data/'
+buf <- getURL(sourceURL)
+tmp <- readHTMLTable(doc=buf, header=T, trim=T, stringsAsFactors=F, as.data.frame=T, which=1)
+colnames(tmp) <- iconv(colnames(tmp), from='utf8')
+codeTable <- tmp
+# Get AppID
+username <- Sys.info()['user']
+pathInput <- paste0('C:/Users/',username,'/Desktop/e-StatAPPID/')
+folderPath <- file.path(pathInput); setwd(folderPath)
+tmp <- 
+  read.csv(file=dir(folderPath), header=F, as.is=T, skip=0, 
+           na.strings=c('', 'NA'), check.names = F, stringsAsFactors = F)
+AppID <- tmp[1,2]
+# Get AppID
+dataID <- list()
+noData <- NULL
+cnt <- 1
+for(rrr in 1:nrow(codeTable)){
+  buf <- 
+    try(data.frame(estat_getStatsList(appId = AppID, searchWord = '', statsCode = codeTable[rrr,1]),
+                   check.names = F, stringsAsFactors = F))
+    if(inherits(buf, 'try-error')){noData <- c(noData, rrr)}else{dataID[[cnt]] <- buf;cnt <- cnt+1}
+}
+for(rrr in 1:length(dataID)){
+  tmpDF <- dataID[[rrr]]
+  print(nrow(tmpDF))
+  if(rrr == 1){allDataList <- tmpDF}else{allDataList <- rbind(allDataList, tmpDF)}
+}
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable <- function(obj) {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(20, 50, -1, 1), c(20, 50, 'All', 1)),
+      orderClasses = T, order = list(list(0, 'asc')), search = list(regex = T, caseInsensitive = T),
+      columnDefs = list(list(width = '20%', targets = 0))),
+    rownames = F, caption = '統計データリスト', class = 'display compact', escape = F, filter = 'top'
+  )
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+if(testMode == 0){
+fun_dataTable(obj = codeTable)
+}  
+```
+
+<hr>
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+if(testMode == 0){
+setwd(file.path(paste0("C:/Users/",username,tmp[2,1])))
+write.csv(allDataList, "eStatAllDataList.csv", row.names=F, append=F, quote=F, fileEncoding = "UTF-8")
+}
+```
+
+#### 統計データ一覧
+
+- https://raw.githubusercontent.com/am-consulting/CSVDataAtGitHub/master/eStatAllDataList.csv
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+if(testMode == 0){
+cat(paste0('データID数 : ',nrow(allDataList),'\n'))
+count(allDataList, vars=c("GOV_ORG"))
+}
+```
+
+<hr>
+#### 統計データ例
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+if(testMode == 0){
+obj <- 1  
+print(knitr::kable(t(allDataList[obj,])))
+estat_getMetaInfo(appId = AppID, statsDataId = allDataList[obj,1])
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+if(testMode == 0){
+obj <- 10000
+print(knitr::kable(t(allDataList[obj,])))
+estat_getMetaInfo(appId = AppID, statsDataId = allDataList[obj,1])
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+if(testMode == 0){
+obj <- nrow(allDataList)  
+print(knitr::kable(t(allDataList[obj,])))
+estat_getMetaInfo(appId = AppID, statsDataId = allDataList[obj,1])
+}
+```
+<hr>
