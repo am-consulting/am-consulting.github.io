@@ -1,0 +1,145 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-TSUNAMI.html')) })
+
+title : 'TSUNAMI'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
+library(DT)
+library(lubridate)
+library(ggplot2)
+suppressPackageStartupMessages(library(googleVis))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- '発生津波ヒストリカルデータ'
+dataSource <- 'NGDC/WDS Global Historical Tsunami Database'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title           : ', dataTitle,'\n'))
+cat(paste('Raw Data Source : ', dataSource,'\n'))
+cat(paste('Author          : ', Author,'\n'))
+cat(paste('作成日          : ', Sys.time(),'\n'))
+cat(paste('特記            : ', notes,'\n'))
+cat(paste('特記            : ', notes0,'\n'))
+```
+
+<hr>
+#### Source
+- https://www.ngdc.noaa.gov/hazard/tsu_db.shtml
+- 緯度と経度ともにNAでないデータのみを抽出しています。
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataSource <- 
+  "<a href=\"https://www.ngdc.noaa.gov/hazard/tsu_db.shtml\" target=\"_blank\">NGDC/WDS Global Historical Tsunami Database</a>"
+dataUrl <- 
+  "https://www.ngdc.noaa.gov/nndc/struts/results?type_0=Exact&query_0=$ID&t=101650&s=69&d=59&dfn=tsevent.txt"
+tmp0 <- read.csv(dataUrl, header=T, skip=0, stringsAsFactor=F, na.strings=c("NA"), sep="\t", check.names=F)
+tmp <- tmp0
+dataset <- subset(tmp, is.na(tmp$LATITUDE) == F & is.na(tmp$LONGITUDE) == F)
+attach(dataset)
+dataset$DATE <- paste0(YEAR,"-",MONTH,"-",DAY)
+dataset$LATLONG <- paste(LATITUDE,LONGITUDE,sep=":")
+attach(dataset)
+dataset$INFO <- paste0("Date:", DATE, ". PrimaryMag:", PRIMARY_MAGNITUDE, 
+                       ". Location:", LOCATION_NAME, ". MaximumWaterHeight:", MAXIMUM_WATER_HEIGHT, 
+                       ". TotalDeath:", TOTAL_DEATHS)
+datasetJapan <- dataset[grep("JAPAN", COUNTRY),]
+gMap <- gvisMap(
+  datasetJapan,"LATLONG","INFO",
+  options=list(
+    height = 500, width = "100%", showTip=T, showLine=T, enableScrollWheel=T, useMapTypeControl=T, 
+    mapType = 'terrain' #'hybrid','normal','terrain','satellite'
+  )
+)
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat(paste0('<h3>日本周辺に発生した津波のみ. 期間:', 
+           paste0(head(datasetJapan$DATE,1),' ~ ',tail(datasetJapan$DATE,1)), '. n=', nrow(datasetJapan),'</h3>'))
+print(gMap,tag="chart")
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable <- function(obj, width0 = '5%', orderColumn = 0, orderDirection = 'asc') {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), search = list(regex = T, caseInsensitive = T),
+      columnDefs = list(list(width = width0, targets = 0)), responsive = T),
+    rownames = F, caption = '', class = 'display compact', escape = F, filter = 'top'
+  )
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+objColumn <- c(2:4,14:16,18)
+fun_dataTable(obj = datasetJapan[,objColumn])
+```
+
+<hr>
+<h3>全データ</h3> 
+
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=4.5, fig.width=10}
+worldMap <- borders("world", colour="gray50", fill="gray80")
+g <- ggplot() +   worldMap
+g <- g + geom_point(aes(x=dataset$LONGITUDE, y=dataset$LATITUDE) ,color="red", size=1) 
+g
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=5, fig.width=10}
+par(mfrow=c(1,2),mar=c(5,5,0,1),oma=c(0,0,3,0), family='Meiryo')
+buf01 <- hist(dataset$LATITUDE,xlab = 'Latitude', col = 'gray',main = '')
+buf02 <- hist(dataset$LONGITUDE,xlab = 'Longitude', col = 'gray',main = '')
+mtext(paste0('全データ(n=',nrow(dataset),')'), side = 3, outer = T)
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+break01 <- apply(cbind(buf01$breaks, buf01$breaks+unique(diff(buf01$breaks))), 1, paste, collapse="~")
+break02 <- apply(cbind(buf02$breaks, buf02$breaks+unique(diff(buf02$breaks))), 1, paste, collapse="~")
+tmp01 <- cbind(head(break01,-1),buf01$counts,round(buf01$counts/sum(buf01$counts)*100,1))
+tmp02 <- cbind(head(break02,-1),buf02$counts,round(buf02$counts/sum(buf02$counts)*100,1))
+tmp01 <- data.frame(ID=seq(1,nrow(tmp01)),tmp01,check.names = F)
+tmp02 <- data.frame(ID=seq(1,nrow(tmp02)),tmp02,check.names = F)
+tmp01[,c(3,4)]<-apply(tmp01[,c(3,4)],2,as.numeric)
+tmp02[,c(3,4)]<-apply(tmp02[,c(3,4)],2,as.numeric)
+colnames(tmp01) <- c('ID','緯度','発生数','構成比(%)')
+colnames(tmp02) <- c('ID','経度','発生数','構成比(%)')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_dataTable(obj = tmp01, width0 = '10%')
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_dataTable(obj = tmp02, width0 = '10%')
+```
+<hr>
+<h3>最大津波高さ上位10</h3>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+buf <- head(dataset[order(dataset$MAXIMUM_WATER_HEIGHT,decreasing = T),c(2:4,12,14:16,18)],20)
+fun_dataTable(obj = buf, orderColumn = 7, orderDirection = 'desc')
+```
+<hr>
