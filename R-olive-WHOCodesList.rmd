@@ -1,0 +1,94 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "World Health Organization - Global Health Observatory(GHO) data"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 12
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+omitType <- 1
+dataTitle <- paste0('世界保健機関 World Health Organization</b><br>Global Health Observatory (GHO) data')
+dataSource <- 'Global Health Observatory (GHO) data http://www.who.int/gho/en/'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title           : ", dataTitle,"\n"))
+cat(paste("Raw Data Source : ", dataSource,"\n"))
+cat(paste("Author          : ", Author,"\n"))
+cat(paste("作成日          : ", Sys.time(),"\n"))
+cat(paste("特記            : ", notes,"\n"))
+cat(paste("特記            : ", notes0,"\n"))
+cat(paste("ID              : ", htmlID,"\n"))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+#### Reference and Powered by
+- Global Health Observatory (GHO) data http://www.who.int/gho/en/
+- WHO : R Client for the World Health Organization API https://mran.revolutionanalytics.com/package/WHO/
+- DataTables https://datatables.net/
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+library(WHO)
+library(knitr)
+library(dplyr)
+library(xtable)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+codes <- get_codes()
+tmp <- data.frame(codes, check.names = F, stringsAsFactors = F)
+tmp[,3] <- paste0('<a href = "', tmp[,3], '" target = "_blank">', tmp[,3], '</a>')
+dataset <- tmp
+```
+
+<hr>
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable <- function(obj, orderColumn = 0, orderDirection = 'asc', caption = '', width01 = '5%') {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width01, targets = 0)),
+      buttons = c(I('colvis')), dom = 'Bfrtip'),
+    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top', extensions = 'Buttons'
+  )
+}
+fun_dataTable(obj = dataset)
+```
+
+<hr>
+
+#### Example
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_dataTable(obj = get_data("WHS2_160"), width01 = '25%')
+```
+
+<hr>
