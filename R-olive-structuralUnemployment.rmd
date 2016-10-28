@@ -1,0 +1,196 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+title : "失業率と欠員率"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1200px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+library(ggplot2)
+library(RCurl)
+library(XLConnect)
+options(download.file.method='libcurl')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+username <- Sys.info()['user']
+pathOutput <- paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
+setwd(pathOutput)
+dateFormat <- '%Y-%m'
+# 労働力調査
+dataType <- '季節調整値'
+fileName <- 'lt01-a10.xls'
+if(!file.exists(paste0(pathOutput, fileName))) {
+  download.file(paste0('http://www.stat.go.jp/data/roudou/longtime/zuhyou/',fileName), fileName, mode = "wb")
+}
+buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = dataType, check.names = F, header = F)
+buf <- buf0
+for (rrr in 1:nrow(buf)) {
+  tmp <- as.numeric(substr(buf[rrr, 1], 1, 4))
+  if (!is.na(tmp)) {break}
+}
+year <- tmp
+rrr <- rrr - 6
+bufdataSet <- buf[rrr:nrow(buf), 5:ncol(buf)]
+for (ccc in 1:ncol(bufdataSet)) {
+  if (!is.na(bufdataSet[1, ccc])) {
+    tmpcolname <- bufdataSet[1, ccc]
+  }
+  bufdataSet[3, ccc] <- paste(tmpcolname, "-",  bufdataSet[3, ccc], sep = "")
+}
+colnames(bufdataSet) <- paste0(bufdataSet[3, ],'-',dataType)
+bufdataSet <- bufdataSet[-(1:5), ]
+startDate <- as.Date(paste(year, "-1-1", sep = ""))
+ 
+labourForce <-
+  data.frame(Date = as.Date(seq(startDate, length.out = nrow(bufdataSet), by = "months")), bufdataSet, check.names = F)
+labourForce[, -1] <-
+  apply(labourForce[, -1], 2, function(x) {as.numeric(gsub("\\(|\\)|<|>", "", x))})
+# 労働力調査
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# 一般職業紹介状況(職業安定業務統計)
+# http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=extendTclass&refTarget=toukeihyo&listFormat=hierarchy&statCode=00450222&tstatCode=000001020327&tclass1=&tclass2=&tclass3=&tclass4=&tclass5=
+setwd(pathOutput)
+fileName <- '第1表.xls'
+if(!file.exists(paste0(pathOutput, fileName))) {
+  download.file('http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=xlsDownload&fileId=000007766029&releaseCount=1', 
+                fileName, mode = "wb")
+}
+buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+buf <- buf0
+dataType <- ""
+for(ccc in 1:ncol(buf)){
+  if(!is.na(buf[3,ccc])){dataType<-buf[3,ccc]}
+  buf[4,ccc]<- paste0(buf[4,ccc],'-',dataType)  
+}
+colnames(buf) <- buf[4,]
+rowS <- grep('14年1月', buf[,1])[1]-0
+rowE <- grep('昭和39',  buf[,1])[1]-2
+Date <- seq(from = as.Date('2002-1-1'), by = 'month', length.out = rowE-rowS+1)
+tmp <- buf[rowS:rowE,]
+tmp[,-1] <- as.numeric(gsub(',','',as.matrix(tmp[,-1])))
+jobOpenings <- data.frame(Date,tmp,check.names = F,stringsAsFactors = F)
+colnames(jobOpenings)[2] <- '元号'
+# 一般職業紹介状況(職業安定業務統計)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+mergeData <- merge(labourForce, jobOpenings, by = 'Date')
+tmp <- grep('元号', colnames(mergeData))
+mergeData <- data.frame(mergeData[,c(1,tmp)],mergeData[,-c(1,tmp)],check.names = F,stringsAsFactors = F)
+colnames(mergeData) <- gsub('\n','',colnames(mergeData))
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <-
+  paste0('日本の雇用失業率、欠員率 - 民主党政権時と第二次安倍政権発足以降の比較 - ', format(tail(mergeData[,1],1), '%Y年%m月'))
+dataSource <- '総務省,厚生労働省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+htmlID <- timeStamp
+cat(paste("Title           : ", dataTitle, "\n"))
+cat(paste("Raw Data Source : ", dataSource, "\n"))
+cat(paste("Author          : ", Author, "\n"))
+cat(paste("作成日          : ", Sys.time(), "\n"))
+cat(paste("特記            : ", notes, "\n"))
+cat(paste("特記            : ", notes0, "\n"))
+cat(paste("ID              : ", htmlID, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+<hr>
+
+####構造失業率の定義
+- 雇用失業率 ＝ 完全失業者数 / （雇用者数 ＋ 完全失業者数）
+- 欠員率 ＝ （有効求人数 － 就職件数） / （雇用者数 ＋ 有効求人数 － 就職件数）
+- 『欠員率と失業率が一致した状態であるにもかかわらず発生している失業となることから、需給が均衡したときの失業率という意味で均衡失業率となる。また、企業が求める資格や条件と求職者の持つ能力や希望が合致しないために発生する失業であり、解消されることのない失業であることから、構造的失業率と捉えることができる。』
+- 引用元 : http://www.meti.go.jp/statistics/toppage/report/bunseki/pdf/h13/h4a2106j054.pdf#page=3
+
+<hr>
+
+```{r warning=F, error=F, message=F, echo=F}
+obj <- grep('完全失業者-男女計|雇用者-男女計|有効求人数-季節調整値|就職件数-季節調整値',colnames(mergeData))
+suRate <- mergeData[,c(1,2,obj)]
+koyouUR <- round((suRate[,4])/(suRate[,3]+suRate[,4])*100,2)
+vaRate <- round((suRate[,5]-suRate[,6])/(suRate[,3]*10000+suRate[,5]-suRate[,6])*100,2)
+suRate0 <- data.frame(suRate$Date, suRate$`元号`, koyouUR, vaRate, round(koyouUR-vaRate,2))
+colnames(suRate0) <- c('Date','元号','雇用失業率','欠員率','雇用失業率と欠員率の差')
+```
+
+```{r,warning=F,error=F,message=F,echo=F} 
+fun_plotTimeSeries <- function(obj, obj01 = 3, obj02 = 4) {
+lineColor <- c('blue','red')  
+mainTitle<-paste(colnames(obj)[obj01],' × ',colnames(obj)[obj02])
+maxValue<-max(obj[,obj01],obj[,obj02])
+minValue<-min(obj[,obj01],obj[,obj02])
+par(mar=c(3,5,4,2),family = 'Meiryo')
+plot(
+  obj[, 1], obj[, obj01], type = 'o', col = lineColor[1], xlab = '' , ylab = '' ,
+  xaxt = 'n', ylim = c(minValue, maxValue),
+  main = paste(mainTitle,':', paste0(format(range(obj[,1]) ,dateFormat),collapse = '~'),'\nSource:',dataSource),
+  cex.axis = 1.2, cex.lab = 1.2, cex.main = 1.2, lwd = 1)
+panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) 
+lines(obj[, 1],  obj[, obj02], col = lineColor[2], lwd = 1, type = 'o')
+graphics::legend('topright', col=lineColor, lty=1, 
+                 legend=c(colnames(obj)[obj01:obj02]), cex=1.2, bty='n', lwd = 2)
+axis.Date(side=1,at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0) 
+# rect part
+rectDateL <- as.numeric(as.Date('2009-09-16'))
+rectDateR <- as.numeric(as.Date('2012-12-26'))
+rectText <- '民主党政権'
+rect(xleft = rectDateL, ybottom = par('usr')[3], xright = rectDateR, ytop = par('usr')[4], 
+     col = 'dimgray', density = 10, angle = 45)
+text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
+# rect part
+}
+fun_plotTimeSeries(obj = suRate0)
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', caption = '') {
+  DT::datatable(
+    obj,
+    options = list(search.regex = F, paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T),
+      columnDefs = list(list(width = '10%', targets = 0))),
+    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
+  )
+}
+suDT <- suRate0
+suDT[,1] <- format(suDT[,1],dateFormat)
+fun_dataTable(obj = suDT)
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+allData <- mergeData
+allData[,1] <- format(allData[,1],dateFormat)
+allData <- t(tail(allData,3))
+colnames(allData) <- allData[1,]
+allData <- allData[-c(1:2),]
+knitr::kable(allData,row.names = T)
+```
