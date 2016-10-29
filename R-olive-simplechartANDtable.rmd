@@ -77,13 +77,13 @@ notes <- '複数のワードで検索する際は半角スペースで区切っ�
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 htmlID <- timeStamp
-cat(paste("Title :", dataTitle, "\n"))
-cat(paste("Raw Data Source :", dataSource, "\n"))
-cat(paste("Author :", Author, "\n"))
-cat(paste("作成日 :", Sys.time(), "\n"))
-cat(paste("特記 :", notes, "\n"))
-cat(paste("特記 :", notes0, "\n"))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+cat(paste("特記        : ", notes, "\n"))
+cat(paste("特記        : ", notes0, "\n"))
+cat(paste("ID          : ", htmlID, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -157,31 +157,17 @@ funPlotTimeSeries <- function() {
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function() {
+funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', caption = '') {
   DT::datatable(
-    dataSet0,
-    options = list(
-      search.regex = T,
-      paging = T,
-      autoWidth = F,
-      info = T,
-      lengthChange = T,
-      ordering = T,
-      searching = T,
-      scrollX = T,
-      lengthMenu = list(c(10, -1, 1), c('10', 'All', '1')),
-      orderClasses = T,
-      order = list(list(0, 'desc')),
-      columnDefs = list(
-        list(width = '15%', targets = 0)
-        )
-      ),
-    rownames = F,
-    caption = paste(dataTitle,'. Source:' ,dataSource),
-    class = 'display compact',
-    escape = F, # or escape = 'v1'(特定のcolumn) テーブル内でhtmlマークアップする場合に必須
-    filter = 'bottom'
-  )
+    obj,
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width01, targets = 0)),
+      buttons = I('colvis'), dom = 'Blfrtip'),
+    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top', extensions = 'Buttons'
+  )  
 }
 ```
 
@@ -220,7 +206,7 @@ for (ddd in 1:2) {
 }
 mtext(datePeriod, side = 3,outer = T,cex = 1.2)
 ```
-
+<hr>
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 cat(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '))
 summary(dataSet[,-1])
@@ -241,7 +227,7 @@ pastecs::stat.desc(dataSet[,-1])
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 apply(dataSet[,-1],2,adf.test)
 ```
-
+<hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet0 <- dataSet
 dataSet0 <- data.frame(dataSet0[-1,1,drop=F],round(diff(as.matrix(dataSet0[,-1,drop=F])),10),check.names = F)
@@ -254,9 +240,21 @@ dataSet0 <- merge(dataSet0, dataSet1, by = 'Date',all = T)
 #dataSet0[is.na(dataSet0)] <- ''
 #dataframeのNAを''に置換すると、そのNAを含む列全てがcharacterに変換されてしまうので注意
 dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
-funDataTable()
+funDataTable(obj = dataSet0, width01 = '15%')
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
 knitr::kable(tail(dataSet,12),row.names = F)
 ```
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
