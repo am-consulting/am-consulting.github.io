@@ -49,13 +49,13 @@ notes<-'複数のワードで検索する際は半角スペースで区切って
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 htmlID<-timeStamp
-cat(paste("Title :",dataTitle,"\n"))
-cat(paste("Raw Data Source :",dataSource,"\n"))
-cat(paste("Author :",Author,"\n"))
-cat(paste("作成日 :",Sys.time(),"\n"))
-cat(paste("特記 :",notes,"\n"))
-cat(paste("特記 :",notes0,"\n"))
-cat(paste("ID :",htmlID,"\n"))
+cat(paste("Title       : ",dataTitle,"\n"))
+cat(paste("Data Source : ",dataSource,"\n"))
+cat(paste("Author      : ",Author,"\n"))
+cat(paste("作成日      : ",Sys.time(),"\n"))
+cat(paste("特記        : ",notes,"\n"))
+cat(paste("特記        : ",notes0,"\n"))
+cat(paste("ID          : ",htmlID,"\n"))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
@@ -207,29 +207,18 @@ for (iii in 1:length(dataset)) {
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj, append = '') {
+funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', append = '') {
   DT::datatable(
     obj,
-    options = list(
-      search.regex = T,
-      paging = T,
-      autoWidth = F,
-      info = T,
-      lengthChange = T,
-      ordering = T,
-      searching = T,
-      scrollX = T,
-      lengthMenu = list(c(5, -1, 1), c(5, 'All', 1)),
-      orderClasses = T,
-      order = list(list(0, 'desc')),
-      columnDefs = list(list(width = '10%', targets = 0))
-    ),
-    rownames = F,
-    caption = paste0(dataTitle, '. ', append),
-    class = 'display compact',
-    escape = F,
-    filter = 'bottom'
-  )
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = F, lengthMenu = list(c(5, -1, 1), c(5, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width01, targets = 0)),
+      buttons = I('colvis'), dom = 'Blfrtip'),
+    rownames = F, caption = paste0(dataTitle, '. ', append), class = 'display compact', 
+    escape = F, filter = 'top', extensions = 'Buttons'
+  )  
 }
 ```
 
@@ -252,3 +241,17 @@ for (iii in 1:length(dataset)) {
 }
 ```
 `r paste(knit(text = out), collapse = '\n')`
+
+
+
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
