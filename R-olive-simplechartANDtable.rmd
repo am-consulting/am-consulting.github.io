@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "North America Rig Count"
+title : "建築物滅失"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -71,7 +71,9 @@ if(loadTMP == 0){
 dataTitle <-
   paste0('Baker Hughes:North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス',' - ',
          format(last(tmp[, 1]), dateFormat))
+dataTitle <- '建築物滅失統計調査 月次 2016年7月' 
 dataSource <- 'Baker Hughes'
+dataSource <- '国土交通省'
 }
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -160,20 +162,21 @@ funPlotTimeSeries <- function() {
 funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', caption = '') {
   DT::datatable(
     obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
     options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = F, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
+      searching = T, scrollX = T, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
       orderClasses = T, order = list(list(orderColumn, orderDirection)), 
       search = list(regex = T, caseInsensitive = T), searchHighlight = T,
       columnDefs = list(list(width = width01, targets = 0)),
-      buttons = I('colvis'), dom = 'Blfrtip'),
-    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top', extensions = 'Buttons'
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
+    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
   )  
 }
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 lineColor <- c('blue', 'red', 'black')
-chartTtpe <- 2
+chartTtpe <- 1
 if (chartTtpe == 1) {
   needYlim <- 1
 } else{
@@ -227,8 +230,59 @@ pastecs::stat.desc(dataSet[,-1])
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 apply(dataSet[,-1],2,adf.test)
 ```
+
 <hr>
+
+```{r warning=F, error=F, message=F, results='asis', echo=F}
+if(dataSource != 'Baker Hughes'){
+dataSet0 <- dataSet
+origcolN <- ncol(dataSet0)
+dataSet0$Y  <- year(dataSet0[,1])
+dataSet0$H <- ceiling(month(dataSet0[,1])/6)
+dataSet0$Q <- ceiling(month(dataSet0[,1])/3)
+objY <- unique(dataSet0$Y)
+objH <- unique(dataSet0$H)
+objQ <- unique(dataSet0$Q)
+for(yyyy in objY){
+  buf0 <- subset(dataSet0[,-1], dataSet0$Y == yyyy)
+  buf1 <- cbind(rbind(paste0(yyyy,'(Total)'),paste0(yyyy,'(MonthlyAverage)')), 
+                rbind(colSums(buf0), round(colSums(buf0)/nrow(buf0),2)))
+  if(yyyy==objY[1]){summaryTable0 <- buf1}else{summaryTable0 <- rbind(summaryTable0, buf1)}
+  for(HH in sort(objH)){
+    buf1 <- subset(buf0, buf0$H == HH)
+    if(nrow(buf1)!=0){
+      buf2 <- cbind(rbind(paste0(yyyy,'H',HH,'(Total)'),paste0(yyyy,'H',HH,'(MonthlyAverage)')), 
+                    rbind(colSums(buf1), round(colSums(buf1)/nrow(buf1),2)))
+      summaryTable0 <- rbind(summaryTable0, buf2)
+    }
+  }
+  for(QQ in sort(objQ)){
+    buf1 <- subset(buf0, buf0$Q == QQ)
+    if(nrow(buf1)!=0){
+      buf2 <- cbind(rbind(paste0(yyyy,'Q',QQ,'(Total)'),paste0(yyyy,'Q',QQ,'(MonthlyAverage)')), 
+                    rbind(colSums(buf1), round(colSums(buf1)/nrow(buf1),2)))
+      summaryTable0 <- rbind(summaryTable0, buf2)
+    }
+  }
+}
+summaryTable <- summaryTable0[,1:origcolN]
+summaryTable <- data.frame(ID = c(1:nrow(summaryTable)), summaryTable[,1], 
+                           apply(summaryTable[,-1],2,as.numeric), check.names = F, stringsAsFactors = F)
+colnames(summaryTable)[2]<- 'Summary'
+funDataTable(obj = summaryTable, width01 = '5%', orderDirection = 'asc' )
+}
+```
+
+<hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+dataSet0 <- dataSet
+dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
+funDataTable(obj = dataSet0, width01 = '15%')
+```
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+if(dataSource == 'Baker Hughes'){
 dataSet0 <- dataSet
 dataSet0 <- data.frame(dataSet0[-1,1,drop=F],round(diff(as.matrix(dataSet0[,-1,drop=F])),10),check.names = F)
 colnames(dataSet0)[-1] <- paste0(colnames(dataSet0)[-1],'-Change From Last Data')
@@ -241,6 +295,7 @@ dataSet0 <- merge(dataSet0, dataSet1, by = 'Date',all = T)
 #dataframeのNAを''に置換すると、そのNAを含む列全てがcharacterに変換されてしまうので注意
 dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable(obj = dataSet0, width01 = '15%')
+}
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
