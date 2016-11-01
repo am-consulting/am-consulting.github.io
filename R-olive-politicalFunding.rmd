@@ -1,0 +1,125 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-politicalFunding.html')) })
+title : "政治資金情報"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 8
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table{
+ white-space: nowrap;
+}
+</style>
+
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+***
+
+#### 特記事項
+
+- データテーブルはラポール・ジャパン様( http://rapportjapan.info/index.html )が公表されているcsvファイル(『2014年国会議員関係政治団体における政治資金情報サマリー情報一覧.csv』)を利用して作成しています。
+- データテーブル中、ID欄はアセット・マネジメント・コンサルティング株式会社が追記しております。
+- 金額単位は円です。
+- 複数のワードで検索する際は半角スペースで区切ってください。
+
+***
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '政治資金集計結果' 
+dataSource <- 'ラポール・ジャパン'
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+urlToData <- 'http://rapportjapan.info/shikin_data.zip'
+fileName <- 'shikin_data_utf8.csv'
+if(!file.exists(paste0(pathOutput, fileName))) {
+  download.file(urlToData, 'shikin_data.zip', mode = 'wb')
+  unzip('shikin_data.zip')
+}
+buf0 <-
+    read.csv(fileName, header = T, skip = 0, stringsAsFactor = F, 
+             na.strings = c("", "***"), check.names = F, fileEncoding = "utf8")
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+funDataTable <- function(obj, orderColumn = 0, orderDirection = 'asc', width01 = '3%', width02 = '10%', caption = '') {
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(15, -1, 1), c(15, 'All', 1)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 2), fixedHeader = T),
+    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
+  )  
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+buf <- buf0
+colnames(buf) <- iconv(colnames(buf), from = 'cp932', to = 'utf8')
+buf[,1:2] <- apply(buf[,1:2],2,function(x){iconv(x, from = 'cp932', to = 'utf8')})
+allData <- data.frame(ID=seq(1,nrow(buf)), buf, check.names = F, stringsAsFactors = F)
+```
+<hr>
+```{r warning=F,error=F,message=F,echo=F}
+funDataTable(obj = allData)
+```
+<hr>
+
+#### 政治家毎政治資金ランキング
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+cat(paste0('<b>対象年:',unique(allData$'対象年'),'年</b>'))
+attach(allData)
+summaryData <- apply(allData[,-c(1:4)],2,function(x){by(x,`政治家`,sum)})
+colnames(summaryData) <- colnames(allData)[-c(1:4)]
+summaryData <- data.frame('政治家'=row.names(summaryData),summaryData,check.names = F,stringsAsFactors = F,row.names = NULL)
+for(ccc in 2:ncol(summaryData)){
+  tmp <- head(summaryData[base::order(summaryData[,ccc],decreasing = T),c(1,ccc)],10)
+  tmp <-data.frame(No=1:10,tmp,check.names = F,stringsAsFactors = F)
+  cat('\n\n')
+  print(knitr::kable(tmp,row.names = F))
+  cat('\n\n')
+  cat('<hr>')
+}
+# buf <- by(allData$`収入総額`, `政治家`, sum)
+# cbind(buf)
+```
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
