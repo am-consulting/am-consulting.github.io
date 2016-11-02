@@ -35,7 +35,7 @@ options(width = 1000)
 
 ```{r warning=F, error=F, message=F, echo=F}
 library(RCurl)
-library(DT)
+library(Nippon)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -72,7 +72,12 @@ lineColor <- c('blue','red')
 - 本ページ中の前月差はソースデータからの引用とせず季節調整系列(ソースデータ)の一次差分としています。
 - 以下の注記は長期時系列表(出所:内閣府)より引用
 - 『平成25年4月調査より調査方法等を変更したため、それ以前の数値と不連続が生じている。(平成25年度以降は郵送調査、平成24年度までは訪問留置調査。)』
-- 『平成16年5月から19年2月までの6、9、12、3月以外の月は調査方法が異なる(電話調査)ため、前月差については注意が必要。』						
+- 『平成16年5月から19年2月までの6、9、12、3月以外の月は調査方法が異なる(電話調査)ため、前月差については注意が必要。』	
+
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat(zen2han(paste0('<h3>',datatitle,'</h3>')))
+```
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries <- 
