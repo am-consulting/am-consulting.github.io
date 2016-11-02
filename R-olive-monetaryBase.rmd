@@ -23,6 +23,12 @@ table{
 }
 </style>
 
+ - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+ - SaECaNet http://saecanet.com/
+ - Olive http://olive.saecanet.com/
+ - twitter https://twitter.com/AMC2_Japan
+
+
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
