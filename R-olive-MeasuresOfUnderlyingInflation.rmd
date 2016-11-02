@@ -98,7 +98,7 @@ fun_plotTimeSeries <- function(obj,objColumn){
 ```{r warning=F, error=F, message=F, echo=F}
 fun_transport <- function(obj){
   obj[,1] <- format(obj[,1],'%Y年%m月')
-  buf0 <- tail(obj,1)
+  buf0 <- tail(obj,4)
   buf1 <- t(buf0[,!is.na(buf0[1,])])
   buf2 <- data.frame(row.names(buf1), buf1, check.names = F, stringsAsFactors = F, row.names = NULL)
   colnames(buf2) <- buf2[1,]
