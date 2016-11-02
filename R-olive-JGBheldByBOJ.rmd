@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-JGBheldByBOJ.html')) })
 
-title : '日本国債'
+title : 'Japanese Government Bonds held by the Bank of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -17,13 +17,26 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
+
+
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+
 
 ```{r set-options, echo=F, cache=F}
 #options(width = 1000)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
 library(DT)
 library(lubridate)
 library(googleVis)
@@ -31,22 +44,20 @@ library(pipeR)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <-
-  '日本銀行が保有する国債の銘柄別残高 / Japanese Government Bonds held by the Bank of Japan-'
-subTitle <- '(2016年10月20日現在)'
+dataTitle <- '日本銀行が保有する国債の銘柄別残高 / Japanese Government Bonds held by the Bank of Japan'
+subTitle <- '(2016年10月31日現在)'
 dataSource <- '日本銀行'
-notes <- '『利付国債の保有額(受渡し完了ベース)。国債買入オペに加え、対政府取引等による増減も勘案した国債の残高。』(資料より引用)'
-notes0 <- '『額面金額ベース(億円未満四捨五入)。』(資料より引用)'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste0('Title :', dataTitle, subTitle, '\n'))
-cat(paste('Raw Data Source :', dataSource, '\n'))
-cat(paste('Author :', Author, '\n'))
-cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste0('Title       : ', dataTitle, subTitle, '\n'))
+cat(paste0('Data Source : ', dataSource, '\n'))
+cat(paste0('Author      : ', Author, '\n'))
+cat(paste0('作成日      : ', Sys.time(), '\n'))
 ```
+
+- 『利付国債の保有額(受渡し完了ベース)。国債買入オペに加え、対政府取引等による増減も勘案した国債の残高。』(資料より引用)
+- 『額面金額ベース(億円未満四捨五入)。』(資料より引用)
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F}
 tmp <-
@@ -139,3 +150,16 @@ by(tmp[, 3], JGB, sum)
 ```{r,warning=F,error=F,message=F,echo=F}
 totalJGB
 ```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
