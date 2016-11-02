@@ -1,0 +1,157 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-consumerConfidenceSurvey.html')) })
+
+title : '消費動向調査'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table{
+ white-space: nowrap;
+}
+</style>
+
+ - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+ - SaECaNet http://saecanet.com/
+ - Olive http://olive.saecanet.com/
+ - twitter https://twitter.com/AMC2_Japan
+
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+library(RCurl)
+library(DT)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+rFile <- c(
+'importConsumerConfidenceSurvey.r')
+for(iii in 1:length(rFile)){
+script <- 
+ getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',rFile[iii]),ssl.verifypeer = F)
+eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('消費動向調査 - 消費者態度指数と消費者意識指標 - ',
+                    format(tail(consumerConfidenceIndex[,1],1),'%Y年%m月分'))
+dataSource <- '内閣府'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+dataTail <- 0 
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title       : ',dataTitle,'\n'))
+cat(paste('Data Source : ',dataSource,'\n'))
+cat(paste('Author      : ',Author,'\n'))
+cat(paste('作 成 日    : ',Sys.time(),'\n'))
+cat(paste('特    記    : ',notes,'\n'))
+cat(paste('特    記    : ',notes0,'\n'))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+lineColor <- c('blue','red')
+```
+
+##### (注記)
+- 本ページ中の前月差はソースデータからの引用とせず季節調整系列(ソースデータ)の一次差分としています。
+- 以下の注記は長期時系列表(出所:内閣府)より引用
+- 『平成25年4月調査より調査方法等を変更したため、それ以前の数値と不連続が生じている。(平成25年度以降は郵送調査、平成24年度までは訪問留置調査。)』
+- 『平成16年5月から19年2月までの6、9、12、3月以外の月は調査方法が異なる(電話調査)ため、前月差については注意が必要。』						
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plotTimeSeries <- 
+  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'l', type02 = 'h', dateFormat = '%Y-%m') {
+par(mar=c(3,5,6,5),family = 'Meiryo')
+plot(
+  obj[, objX], obj[, objY01], type = type01, col = lineColor[1], xlab = '', ylab = '', xaxt = 'n', 
+  main = paste(colnames(obj)[objY01],'\n', 
+               paste0(format(range(obj[,objX]), dateFormat),collapse = '~'),'\nSource:',dataSource),
+  cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = 2
+  )
+lo <- loess(obj[, objY01] ~ as.numeric(obj[,objX]), degree = 2)
+lines(obj[,objX] , predict(lo) , col = lineColor[1], lwd = 1, lty = 2)
+panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+par(new=T)
+plot(
+  obj[, objX], obj[, objY02], type = type02, col = lineColor[2], xlab = '', ylab = '', xaxt = 'n', yaxt = 'n', 
+  cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = 1
+  )
+panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+axis(4, cex.axis = 1, cex.lab = 1)
+mtext(colnames(obj)[objY01], side=2, line=3.2, cex=1)
+mtext(colnames(obj)[objY02], side=4, line=3.2, cex=1)
+lo <- loess(obj[, objY02] ~ as.numeric(obj[,objX]), degree = 2)
+lines(obj[,objX] , predict(lo) , col = lineColor[2], lwd = 1, lty = 2)
+graphics::legend('bottomleft',col=lineColor,lty=1,legend=colnames(obj)[objY01:objY02],cex=1,bty='n',lwd = 2)
+axis.Date(side=1, at=obj[,objX],format=dateFormat,padj=1,cex.axis=1.0) 
+# rect part
+rectDateL <- as.numeric(as.Date('2009-09-16'))
+rectDateR <- as.numeric(as.Date('2012-12-26'))
+if(as.numeric(obj[1,objX]) < rectDateR){
+rectText <- '民主党政権'
+rect(xleft = rectDateL, ybottom = par('usr')[3], 
+     xright = rectDateR, ytop = par('usr')[4], col = 'dimgray', density = 10, angle = 45)
+text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
+# rect part
+}
+  }
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_transport <- function(obj){
+  obj[,1] <- format(obj[,1],'%Y年%m月')
+  buf0 <- tail(obj,4)
+  buf1 <- t(buf0[,!is.na(buf0[1,])])
+  buf2 <- data.frame(row.names(buf1), buf1, check.names = F, stringsAsFactors = F, row.names = NULL)
+  colnames(buf2) <- buf2[1,]
+  buf3 <- buf2[-1,]
+  colnames(buf3)[1] <- '項目'
+  buf3[,-1] <- apply(buf3[,-1,drop=F], 2, as.numeric)
+  tDF <- buf3
+  return(tDF)
+}
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(ccc in 2:ncol(consumerConfidenceIndex)){
+buf <- data.frame(tail(consumerConfidenceIndex[,c(1,ccc)],-1), 
+           `前月差`=diff(consumerConfidenceIndex[,ccc]),check.names = F,stringsAsFactors = F)
+fun_plotTimeSeries(obj = buf)
+cat('\n\n')
+print(knitr::kable(fun_transport(obj = buf),row.names = F))
+cat('\n<hr>\n')
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+knitr::kable(fun_transport(obj = consumerConfidenceIndex),row.names = F)
+```
+
+<hr>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>

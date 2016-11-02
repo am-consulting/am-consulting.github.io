@@ -3,9 +3,8 @@ library(XLConnect)
 library(Nippon)
 library(lubridate)
 username <- Sys.info()['user']
-pathOutput <- paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-dateFormat <- '%Y-%m'
 dataType <- '季節調整値(seasonally adjusted) '
 fileName <- 'shouhi2.xls'
 if(!file.exists(paste0(pathOutput, fileName))) {
