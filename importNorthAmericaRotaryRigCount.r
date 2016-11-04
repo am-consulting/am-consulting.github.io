@@ -12,4 +12,5 @@ buf2 <- buf1[-(1:2),]
 buf2[,1] <- as.Date(buf2[,1])
 buf3 <- buf2[,colSums(is.na(buf2)) != nrow(buf2)]
 colnames(buf3)[1] <- 'Date'
+buf3[,-1] <- apply(buf3[,-1],2,as.numeric)
 northAmericaRotaryRigCount_BakerHughes <- buf3
