@@ -56,7 +56,6 @@ eval(parse(text = script))
 
 ```{r,warning=F,error=F,message=F,echo=F}
 tmp <- northAmericaRotaryRigCount_BakerHughes[,c(1:3)]
-tmp[,-1] <- apply(tmp[,-1],2,as.numeric)
 dataSet <- na.omit(tmp)
 ```
 
@@ -86,7 +85,7 @@ if(chartType!=0){
 mainTitle <- paste0(colnames(obj)[objY01],' × ',colnames(obj)[objY02])
 maxValue <- max(obj[,objY01],obj[,objY02])
 minValue <- min(obj[,objY01],obj[,objY02])
-}else{
+}else{ # 1系列のみの場合
 mainTitle <- colnames(obj)[objY01]
 }
 par(mar=c(3,5,4,5),family = 'Meiryo')
@@ -163,17 +162,13 @@ mtext(datePeriod, side = 3,outer = T,cex = 1.2)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-cat(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '))
+cat(datePeriod)
 cat('\n\n')
 summary(dataSet[,-1])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 psych::describe(dataSet[,-1])
-```
-
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-#Hmisc::describe(dataSet[,-1])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
