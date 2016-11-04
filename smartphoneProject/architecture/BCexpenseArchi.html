@@ -1,0 +1,410 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script src="components/loader.js"></script>
+<link rel="stylesheet" href="components/loader.css">
+<link rel="stylesheet" href="style.css">
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="basictable.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.basictable.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+  $('#table01').basictable();
+  $('#table02').basictable();
+  $('#tableCondition').basictable();
+  $('#tableResult').basictable();
+  $('#tableDetail').basictable();
+});
+
+(function($){
+$(window).on('load',function(){
+ $(".tab li").click(function() {
+     var index = $(".tab li").index(this);
+        $(".content li").css("display","none");
+    	$(".content li").eq(index).css("display","block");
+		$(".tab li").removeClass('select');
+		$(this).addClass("select")
+	});
+});
+})(jQuery);
+
+$(window).resize(function(){
+var w = $(window).width();
+var x = 1000;
+if (w <= x) {
+	$('#contents').css("width", "100%");
+} else {
+	$('#contents').css("width", x + "px");
+	$('#contents').css("margin", "0 auto");
+}
+});
+
+$(function() {
+    var w = $(window).width();
+    var x = 1000;
+if (w <= x) {
+	$('#contents').css("width", "100%");
+} else {
+	$('#contents').css("width", x + "px");
+	$('#contents').css("margin", "0 auto");
+}
+});
+</script>  
+<script src="backcalculationExpenseArchitecture.js"></script>
+<script src="thousandSeparator.js"></script>    
+<script src="reload.js"></script>
+</head>
+<style>
+table{
+ white-space: nowrap;
+}
+.input01{width:100%;}
+</style>
+<body>
+<header>公共建築工事共通費計算</header>
+<div id="contents">
+<div class="box" align="center">
+<a href="index.html">Back to Top</a>
+</div>
+<ul class="tab">
+<li class="select">条件入力</li>
+<li>工事費</li>
+<li>共通費</li>
+<li>参考資料他</li>
+</ul>
+<ul class="content">
+<li>
+<FORM name="form1">
+<table id='tableCondition'>
+<thead>
+<tr>
+<th width=20%>項目</th>
+<th>条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工事費(円)</td>
+<td><input type="number" style="ime-mode:disabled;text-align:right" name="finalcostKouji" size="15" class="input01" value=""></td>
+</tr>
+<tr>
+<td>積上分共通仮設費(円)</td>
+<td><input type="number" style="ime-mode:disabled;text-align:right" name="costTumiageKyoutsuuKasetsu" size="15" class="input01" value=""></td>
+</tr>
+<tr>
+<td>共通仮設費率補正</td>
+<td><input type="number" style="ime-mode:disabled;text-align:right" name="hoseiKyoutsuuKasetsu" size="15" class="input01" value=""></td>
+</tr>
+<tr>
+<td>現場管理費率補正</td>
+<td><input type="number" style="ime-mode:disabled;text-align:right" name="hoseiGenbaKanri" size="15" class="input01" value=""></td>
+</tr>
+<tr>
+<td>一般管理費率補正</td>
+<td><input type="number" style="ime-mode:disabled;text-align:right" name="hoseiIppanKanri" size="15" class="input01" value=""></td>
+</tr>
+<tr>
+<td>積上分現場管理費(円)</td>
+<td><input type="number" style="ime-mode:disabled;text-align:right" name="costTumiageGenbaKanri" size="15" class="input01" value=""></td>
+</tr>
+<tr>
+<td>前払金支出割合区分</td>
+<td>
+<SELECT style="width:100%" name="hoseiMaebaraikinKubun" size="1">
+<OPTION value="1.00">35％超/補正なし</OPTION>
+<OPTION value="1.05">5％以下</OPTION>
+<OPTION value="1.04">5％超15％以下</OPTION>
+<OPTION value="1.03">15％超25％以下</OPTION>
+<OPTION value="1.01">25％超35％以下</OPTION>
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>契約保証補正</td>
+<td>
+<select style="width:100%" name="hoseiKeiyakuHoshou" size="1">
+<option value="0">補正しない</option>
+<option value="0.04">補正する(+0.04%)</option> 
+</select>
+</td>
+</tr>
+<tr>
+<td>監理事務所</td>
+<td>
+<select style="width:100%" name="hoseiKanriJimusho" size="1">
+<option value="1">設ける</option>
+<option value="2">設けない</option> 
+</select>
+</td>
+</tr>
+<tr>
+<td>工事種別</td>
+<td>
+<select style="width:100%" name="KoujiShubetsu" size="1">
+<option value="1">新-建築工事</option>
+<option value="2">改-建築工事</option>
+<option value="3">新-電気設備工事</option>
+<option value="4">改-電気設備工事</option>
+<option value="5">新-機械設備工事</option>
+<option value="6">改-機械設備工事</option>
+<option value="7">昇降機設備工事</option> 
+</select>
+</td>
+</tr>
+<tr>
+<td>消費税</td>
+<td>
+<select style="width:100%" name="ConsumptionTaxRate" size="1">
+<option value="0.08">8％</option>
+<option value="0.1">10％</option>
+</select>
+</td>
+</tr>
+<tr>
+<td>工期(ヶ月)</td>
+<td>
+<input type="number" style="ime-mode:disabled;text-align:right" name="Kouki" size="15" class="input01" value="">
+</td>
+</tr>
+</tbody>
+</table>
+<div align="center">
+<INPUT type="button" value="計 算" onclick="BCcalculation();" class="box">
+<input type="button" value="入力条件のリセット" onclick="Reload()"  class="box">
+</div>
+<div class="box" align="center">
+直接工事費(円):<input type="text" style="ime-mode:disabled;text-align:right" name="costChokusetsuKouji" size="25">
+</div>
+</form>
+</li>
+<li class="hide">
+<form name="form2">
+<table id="tableResult">
+<thead>
+<tr>
+<th width=20%>項目</th>
+<th>価格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工事種別</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="KoujiType" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>工期(ヶ月)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="Kouki" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>工事費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="finalcostKouji" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>消費税(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="consumptionTax" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>工事価格(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costKouji" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>工事原価(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costKoujiGenka" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>純工事費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costJyunKouji" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>直接工事費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costChokusetsuKouji" size="15" class="input01"></td>
+</tr>
+</tbody>
+</table>
+</form>
+</li>
+<li class="hide">
+<form name="form3">
+<table id="tableDetail">
+<thead>
+<tr>
+<th width=20%>項目</th>
+<th>価格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共通仮設費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expKyoutsuuKasetsu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>うち積上分共通仮設費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costTumiageKyoutsuuKasetsu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expGenbaKanri" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>うち積上分現場管理費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costTumiageGenbaKanri" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>一般管理費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expIppanKanri" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>共通仮設費率(%、補正前)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateKyoutsuuKasetsu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費率(%、補正前)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateGenbaKanri" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>一般管理費率(%、補正前)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateIppanKanri" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>共通費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expKyoutsuu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>対直接工事費共通比率(%)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateKyoutsuu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>前払金支出割合補正値</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="hoseiMaebaraikinKubun" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>契約保証補正値</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="hoseiKeiyakuHoshou" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>監理事務所補正値</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="hoseiKanriJimushoKyoutsuuKasetsu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>共通仮設費率補正値</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="hoseiKyoutsuuKasetsu" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費率補正値</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="hoseiGenbaKanri" size="15" class="input01"></td>
+</tr>
+<tr>
+<td>一般管理費率補正値</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="hoseiIppanKanri" size="15" class="input01"></td>
+</tr>
+</tbody>
+</table>
+</form>
+</li>
+<li class="hide">
+<div class="box">
+<b>参 考 資 料</b><br>
+･国土交通省大臣官房官庁営繕部<br>
+･『公共建築工事積算基準等資料 平成26年版』<br>
+･『公共建築工事共通費積算基準 平成26年版』
+</div>
+<div class="box">
+･共通仮設費率 = 別表-1から別表-7による比率 * 監理事務所補正 * 共通仮設費率補正<br>
+･現場管理費率 = 別表-8から別表-14による比率 * 現場管理費率補正<br>
+･一般管理費率 = 別表-15から別表-17による比率 * 前払金支出割合補正 * 一般管理費率補正 + 契約保証補正
+</div>
+<div class="box">
+<b>免 責 事 項</b><br>
+本アプリケーションの使用に起因して当該使用者または第三者に発生する損失・損害・要求・責務・損害賠償責任等その他一切の法的問題・刑事責任・民事責任及び行政上の責任からアセット・マネジメント・コンサルティング株式会社、その関係会社、その取締役およびその従業員は免責されます。
+</div>
+</li>
+</ul>
+<!-- 共通パート -->
+<div class="divsrcollbar">
+<table id='table01'>
+<thead>
+<tr>
+<th width=30%>項目</th>
+<th>商号・URL等</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>商号</td>
+<td>アセット・マネジメント・コンサルティング株式会社</td>
+</tr>
+<tr>
+<td>代表取締役</td>
+<td>三竹道雄</td>
+</tr>
+<tr>
+<td>Webサイト</td>
+<td><a href="http://am-consulting.co.jp" target="_blank">http://am-consulting.co.jp</a></td>
+</tr>
+<tr>
+<td>SaECaNet</td>
+<td><a href="http://saecanet.com/" target="_blank">http://saecanet.com/</a></td>
+</tr>
+<tr>
+<td>Olive</td>
+<td><a href="http://olive.saecanet.com/" target="_blank">http://olive.saecanet.com/</a></td>
+</tr>
+<tr>
+<td>twitter <i class="fa fa-twitter fa-lg" style="color: #666"></i></td>
+<td><a href="https://twitter.com/AMC2_Japan" target="_blank">https://twitter.com/AMC2_Japan</a></td>
+</tr>
+<tr>
+<td>GitHub <i class="fa fa-github" aria-hidden="true"></i></td>
+<td><a href="https://github.com/am-consulting/ID001/tree/master/www" target="_blank">https://github.com/am-consulting/ID001/tree/master/www</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="divsrcollbar">
+<table id='table02'>
+<thead>
+<tr>
+<th width=30%>利用コード</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Font Awesome</td>
+<td><a href="http://fontawesome.io/" target="_blank">http://fontawesome.io/</a></td>
+</tr>
+<tr>
+<td>jQuery</td>
+<td><a href="http://jquery.com/" target="_blank">http://jquery.com/</a></td>
+</tr>
+<tr>
+<td>タブ切り替え機能</td>
+<td><a href="http://blog.three-co.jp/web/558/" target="_blank">http://blog.three-co.jp/web/558/</a></td>
+</tr>
+<tr>
+<td>jerrylow/basictable</td>
+<td><a href="https://github.com/jerrylow/basictable" target="_blank">https://github.com/jerrylow/basictable</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 共通パート -->
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</div>
+</body>
+</html>
