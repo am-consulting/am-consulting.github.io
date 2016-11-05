@@ -1,9 +1,12 @@
-library(excel.link)
+library(excel.link);library(XML)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 fileName <- 'NorthAmericaRotaryRigCount.xlsb'
-urlToData <- 'http://phx.corporate-ir.net/External.File?item=UGFyZW50SUQ9NjUwNzY5fENoaWxkSUQ9MzU2MzE3fFR5cGU9MQ==&t=1'
+url <- "http://phx.corporate-ir.net/phoenix.zhtml?c=79687&p=irol-reportsother"
+htmlMarkup <- htmlParse(url)
+links <- xpathSApply(htmlMarkup, "//a/@href")
+urlToData <- links[[grep('External.File\\?item=',links)[1]]]
 download.file(urlToData, fileName, mode = "wb")
 buf0 <- xl.read.file(fileName, header=F, top.left.cell = "A10", xl.sheet = 2, excel.visible = F)
 buf1 <- buf0[, c(1, grep('total', buf0[1,], ignore.case = T):ncol(buf0))]
