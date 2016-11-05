@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-CFTC.html')) })
 
 
 title : "CFTC Speculative Positions"
@@ -18,7 +18,21 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+
+table{
+ white-space: nowrap;
+}
 </style>
+
+
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+
+
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
@@ -48,14 +62,12 @@ dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. 
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID<-timeStamp
 cat(paste("Title       : ",dataTitle,"\n"))
 cat(paste("Data Source : ",dataSource,"\n"))
 cat(paste("Author      : ",Author,"\n"))
 cat(paste("作成日      : ",Sys.time(),"\n"))
 cat(paste("特記        : ",notes,"\n"))
 cat(paste("特記        : ",notes0,"\n"))
-cat(paste("ID          : ",htmlID,"\n"))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
@@ -206,18 +218,18 @@ for (iii in 1:length(dataset)) {
 }
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r warning=F, error=F, message=F, echo=F}
 funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', append = '') {
   DT::datatable(
     obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
     options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = F, lengthMenu = list(c(5, -1, 1), c(5, 'All', 1)),
+      searching = T, scrollX = T, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
       orderClasses = T, order = list(list(orderColumn, orderDirection)), 
       search = list(regex = T, caseInsensitive = T), searchHighlight = T,
       columnDefs = list(list(width = width01, targets = 0)),
-      buttons = I('colvis'), dom = 'Blfrtip'),
-    rownames = F, caption = paste0(dataTitle, '. ', append), class = 'display compact', 
-    escape = F, filter = 'top', extensions = 'Buttons'
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
+    rownames = F, caption = paste0(dataTitle, '. ', append), class = 'display compact', escape = F, filter = 'top'
   )  
 }
 ```
