@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-intrusion.html')) })
 title : "尖閣諸島接近状況統計分析"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
@@ -16,18 +16,29 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+
+table{
+ white-space: nowrap;
+}
 </style>
+
+
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- paste0('中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:',Sys.Date(),'更新')
 dataSource <- '海上保安庁 『尖閣諸島周辺海域における中国公船等の動向と我が国の対処』'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste("Title :", dataTitle, "\n"))
-cat(paste("Raw Data Source :", dataSource, "\n"))
-cat(paste("Author :", Author, "\n"))
-cat(paste("作成日 :", Sys.time(), "\n"))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 library(dplyr)
 library(lubridate)
@@ -232,6 +243,23 @@ funDataTable <- function() {
     filter = 'bottom'
   )
 }
+
+funDataTable <- 
+  function(orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '') {
+  DT::datatable(
+    tableObj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(-1, 10), c('All', 10)),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 2), fixedHeader = T),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
