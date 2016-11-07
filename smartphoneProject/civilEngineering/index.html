@@ -1,0 +1,608 @@
+﻿<!DOCTYPE HTML>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+<script src="components/loader.js"></script>
+<link rel="stylesheet" href="components/loader.css">
+<link rel="stylesheet" href="style.css">
+<link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<link rel="stylesheet" href="basictable.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.basictable.min.js"></script>
+<script type="text/javascript">
+(function($){
+$(window).on('load',function(){
+ $(".tab li").click(function() {
+     var index = $(".tab li").index(this);
+        $(".content li").css("display","none");
+    	$(".content li").eq(index).css("display","block");
+		$(".tab li").removeClass('select');
+		$(this).addClass("select")
+		calcStep1();
+		calcStep2();
+		calcStep3();
+		thousandSeparator();
+		output01();
+		output02();
+	});
+});
+})(jQuery);
+
+$(document).ready(function() {
+  $('#table01').basictable();
+  $('#table02').basictable();
+  $('#tableCondition').basictable();
+  $('#tableResult').basictable();
+  $('#tableDetail').basictable();
+  $('#tableKyoutsuuKasetsuhi').basictable();
+  $('#tableGenbaKanrihi').basictable();
+  $('#tableIppanKanrihi').basictable();
+});
+
+$(window).resize(function(){
+var w = $(window).width();
+var x = 700;
+if (w <= x) {
+	$('#contents').css("width", "100%");
+} else {
+	$('#contents').css("width", x + "px");
+	$('#contents').css("margin", "0 auto");
+}
+});
+
+$(function() {
+    var w = $(window).width();
+    var x = 700;
+if (w <= x) {
+	$('#contents').css("width", "100%");
+} else {
+	$('#contents').css("width", x + "px");
+	$('#contents').css("margin", "0 auto");
+}
+});
+
+$(function() {
+  $('#a,#b,#c,#d,#e,#f,#g,#h,#i,#j,#k,#l').on('focus', function(){
+    var num = $(this).val();
+    num = num.replace(/,/g, '');
+    $(this).val(num);
+  });
+
+  $('#a,#b,#c,#d,#e,#f,#g,#h,#i,#j,#k,#l').on('blur', function(){
+    var num = $(this).val();
+    num = num.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    $(this).val(num);
+  });
+
+});
+</script>    
+<script src="expenseCivil.js"></script>
+<script src="thousandSeparator.js"></script>    
+<script src="reload.js"></script>
+<style type="text/css">
+.input01{width:100%}
+</style>
+</head>
+<body>
+<header>公共土木工事共通費計算</header>
+<div id="contents">
+<ul class="tab">
+<li class="select">条件入力</li>
+<li>工事費</li>
+<li>共通費</li>
+<li>参考資料他</li>
+</ul>
+<ul class="content">
+<li>
+<FORM name="form1">
+<table id='tableCondition'>
+<thead>
+<tr>
+<th width=40%>項目</th>
+<th>条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工事区分</td>
+<td>
+<SELECT style="width:90%" name="constructionSegment" size="1">
+<OPTION value="0">0:河川工事</OPTION>
+<OPTION value="1">1:河川・道路構造物工事</OPTION>
+<OPTION value="2">2:海岸工事</OPTION>
+<OPTION value="3">3:道路改良工事</OPTION>
+<OPTION value="4">4:鋼橋架設工事</OPTION>
+<OPTION value="5">5:PC橋工事</OPTION>
+<OPTION value="6">6:舗装工事</OPTION>
+<OPTION value="7">7:砂防・地すべり等工事</OPTION>
+<OPTION value="8">8:公園工事</OPTION>
+<OPTION value="9">9:電線共同溝工事</OPTION>
+<OPTION value="10">10:情報BOX工事</OPTION>
+<OPTION value="11">11:道路維持工事</OPTION>
+<OPTION value="12">12:河川維持工事</OPTION>
+<OPTION value="13">13:共同溝等(1)工事</OPTION>
+<OPTION value="14">14:共同溝等(2)工事</OPTION>
+<OPTION value="15">15:トンネル工事</OPTION>
+<OPTION value="16">16:下水道工事(1)</OPTION>
+<OPTION value="17">17:下水道工事(2)</OPTION>
+<OPTION value="18">18:下水道工事(3)</OPTION>
+<OPTION value="19">19:コンクリートダム工事</OPTION>
+<OPTION value="20">20:フィルダム工事</OPTION>
+<!--2016-05-03-->
+<OPTION value="21">21:橋梁保全工事</OPTION>
+<!--2016-05-03-->
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>直接工事費(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="a" class="input01" size="30" id="a"></td>
+</tr>
+<tr>
+<td>桁等購入費(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="b" class="input01" size="30" id="b"></td>
+</tr>
+<tr>
+<td>鋼橋門扉等工場原価(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="c" class="input01" size="30" id="c"></td>
+</tr>
+<tr>
+<td>事業損失防止施設費(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="d" class="input01" size="30" id="d"></td>
+</tr>
+<tr>
+<td>無償貸与機械等評価額(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="e" class="input01" size="30" id="e"></td>
+</tr>
+<tr>
+<td>共通仮設費対象支給品費等(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="f" class="input01" size="30" id="f"></td>
+</tr>
+<tr>
+<td>イメージアップ経費対象支給品費等(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="g" class="input01" size="30" id="g"></td>
+</tr>
+<tr>
+<td>現場管理費対象支給品費等(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="h" class="input01" size="30" id="h"></td>
+</tr>
+<tr>
+<td>直接工事費に含まれる処分費(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="i" class="input01" size="30" id="i"></td>
+</tr>
+<tr>
+<td>準備費に含まれる処分費(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="j" class="input01" size="30" id="j"></td>
+</tr>
+<tr>
+<td>イメージアップ特別積上額(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="k" class="input01" size="30" id="k"></td>
+</tr>
+<tr>
+<td>その他積上分共通仮設費(円)</td>
+<td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="l" class="input01" size="30" id="l"></td>
+</tr>
+<tr>
+<td>率計算分イメージアップ経費</td>
+<td>
+<SELECT style="width:90%" name="allocateImageup" size="1">
+<OPTION value="0">計上しない</OPTION>
+<OPTION value="1">計上する</OPTION>
+</SELECT>
+</td>
+</tr>
+<!--2016-05-03-->
+<tr>
+<td>イメージアップ経費補正(加算)</td>
+<td>
+<SELECT style="width:90%" name="correctionRateImageup" size="1">
+<OPTION value="0">補正しない</OPTION>
+<OPTION value="1.5">補正する +1.5%</OPTION> 
+</SELECT>
+</td>
+</tr>
+<!--2016-05-03-->
+<tr>
+<td>施工時期・工事期間等補正(%)</td>
+<td><INPUT type="number" style="ime-mode:disabled;text-align:right" name="correctionPeriod" class="input01" size="30"></td>
+</tr>
+<tr>
+<td>契約保証補正(%)</td>
+<td><INPUT type="number" style="ime-mode:disabled;text-align:right" name="correctionContract" class="input01" size="30"></td>
+</tr>
+<tr>
+<td>前払金支出割合区分</td>
+<td>
+<SELECT style="width:90%" name="correctionMaebaraikin" size="1">
+<OPTION value="1.00">35％超40％以下</OPTION>
+<OPTION value="1.01">25％超35％以下</OPTION>
+<OPTION value="1.03">15％超25％以下</OPTION>
+<OPTION value="1.04">5％超15％以下</OPTION>
+<OPTION value="1.05">5％以下</OPTION>
+</SELECT>
+</td>
+</tr>
+<!--2016-05-03-->
+<tr>
+<td>施工地域・工事場所区分(加算)</td>
+<td>
+<SELECT style="width:90%" name="correctionArea" size="1">
+<OPTION value="0">補正非適用:共 0、現 0</OPTION>
+<OPTION value="1">市街地:共 2.0、現 1.5</OPTION>
+<OPTION value="2">山間僻地及び離島:共 1.0、現 0.5</OPTION>
+<OPTION value="3">地方部_一般交通等の影響有り:共 1.5、現 1.0</OPTION>
+<OPTION value="4">地方部_一般交通等の影響なし:共 0、現 0</OPTION> 
+</SELECT>
+</td>
+</tr>
+<!--2016-05-03-->
+<!--2016-05-03-->
+<tr>
+<td>大都市補正/市街地補正(乗算)</td>
+<td>
+<SELECT style="width:90%" name="correctionBigcity" size="1">
+<OPTION value="0">非適用:共 1.0,現 1.0</OPTION>
+<OPTION value="1">大都市補正(1):共 2.0,現 1.2</OPTION>
+<OPTION value="2">大都市補正(2):共 1.5,現 1.2</OPTION>
+<OPTION value="3">地域補正(市街地):共 1.3,現 1.1</OPTION>
+</SELECT>
+</td>
+</tr>
+<!--2016-05-03-->
+<tr>
+<td>消費税</td>
+<td>
+<SELECT style="width:90%" name="rateConsumptionTax" size="1">
+<OPTION value="8">8%</OPTION>
+<OPTION value="10">10%</OPTION>
+</SELECT>
+</td>
+</tr>
+<tr>
+<td>桁丸め</td>
+<td>
+<SELECT style="width:90%" name="ketaMarume" size="1">
+<OPTION value="3">3桁</OPTION>
+<OPTION value="0">丸め無し</OPTION>
+<OPTION value="1">1桁</OPTION>
+<OPTION value="2">2桁</OPTION>
+<OPTION value="4">4桁</OPTION>
+</SELECT>
+</td>
+</tr>
+</tbody>
+</table> 
+</FORM> 
+<div align="center">
+<input type="button" value="入力条件のリセット" onclick="Reload()"  class="box">
+</div>
+<div class="box" align="center">タブを切り替えると計算が実行されます。</div>
+</li>
+<li class="hide">
+<FORM name="form2">
+<table id="tableResult">
+<thead>
+<tr>
+<th width=40%>項目</th>
+<th>価格</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>工事種別</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="constructionSegment" size="20" class="input01"></td>
+</tr>
+<tr>
+<td>直接工事費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="a" size="20" class="input01"></td>
+</tr>
+<tr>
+<td>純工事費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costJyunkouji" size="20" class="input01"></td>
+</tr>
+<tr>
+<td>工事原価(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costKoujiGenka" size="20" class="input01"></td>
+</tr>
+<tr>
+<td>工事価格(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costKoujiKakaku" size="20" class="input01"></td>
+</tr>
+<tr>
+<td>消費税(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="consumptionTax" size="20" class="input01"></td>
+</tr>
+<tr>
+<td>工事費(円)</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="finalConstructionCost" size="20" class="input01"></td>
+</tr>
+</tbody>
+</table>
+</form>
+</li>
+<li class="hide">
+<FORM name="form3">
+<table id="tableDetail">
+<thead>
+<tr>
+<th width=40%>項目</th>
+<th>価格・条件</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共通仮設費</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expenseKyoutsuukasetsu" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expenseGenbakanri" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>一般管理費</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="expenseIppankanri" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>共通費合計</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="totalExpense" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>対直接工事費共通費比率</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateTotalExpense" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>ｲﾒｰｼﾞｱｯﾌﾟ経費率</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateImageup" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>共通仮設費率</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateKyoutsuukasetsu" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費率</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateGenbakanri" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>一般管理費率</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateIppanKanri" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>共通仮設費対象額</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="coverageKyoutsuukasetsu" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>処分費等の占める割合</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="ratio" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>計上対象処分費等</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="allocateShobunCost" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>率計算共通仮設費対象額</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="P" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>率計算分共通仮設費</td><td><input type="text" style="ime-mode:disabled;text-align:right" name="kyoutsuuKasetsuByRate" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>率計算ｲﾒｰｼﾞｱｯﾌﾟ経費対象額</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="Pi" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>率計算分ｲﾒｰｼﾞｱｯﾌﾟ経費</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="Ki" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>率計算現場管理費対象額</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="Np" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>率計算一般管理費対象額</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="Gp" size="14" class="input01"></td>
+</tr>
+</tbody>
+</table>
+</form>
+</li>
+<li class="hide">
+<div class="box">
+<div class="divsrcollbar">
+<b>参考資料</b><br>
+・<a href="http://www.mlit.go.jp/report/press/kanbo08_hh_000334.html" title="" class="ext-link ext-icon-6" target="_blank">『国土交通省土木工事積算基準等の改定について』(平成28年3月14日）</a><br>
+・<a href="http://www.mlit.go.jp/report/press/kanbo08_hh_000296.html" title="" class="ext-link ext-icon-6" target="_blank">『国土交通省土木工事積算基準等の改定について』(平成27年3月11日）</a><br>
+・国土交通省web site.『国土交通省土木工事積算基準等の改正について 平成24年3月30日 国土交通省直轄土木工事における法定福利費の確保について 別紙-3』<br>
+・国土交通省web site.『国土交通省土木工事積算基準等の改正について 平成21年3月30日 別紙-2』<br>
+・国土交通省web site.『国土交通省土木工事積算基準等の改正について 平成20年3月28日 別表-1 基準類改正』<br>
+・国土交通省大臣官房技術調査課監修.『国土交通書土木工事積算基準　平成19年度版』<br>
+・財団法人建設物価調査会.『土木工事積算基準マニュアル　平成19年度版』
+</div>
+</div>
+<table id="tableKyoutsuuKasetsuhi">
+<thead>
+<tr>
+<th width=30%>項目</th>
+<th>構成</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>共通仮設費対象額</td>
+<td>直接工事費-桁等購入費-鋼橋門扉等工場原価+事業損失防止施設費+無償貸与機械等評価額+共通仮設費対象支給品費等</td>
+</tr>
+<tr>
+<td>処分費等の占める割合</td>
+<td>(直接工事費に含まれる準備費+準備費に含まれる処分費)/(共通仮設費対象額+準備費に含まれる処分費)</td>
+</tr>
+<tr>
+<td>率計算共通仮設費対象額</td>
+<td>共通仮設費対象額-直接工事費に含まれる処分費+計上対象処分費</td>
+</tr>
+<tr>
+<td>共通仮設費率</td>
+<td>共通仮設費率(補正前)*大都市補正+施工地域･工事場所区分補正</td>
+</tr>
+<tr>
+<td>率計算分共通仮設費</td>
+<td>率計算共通仮設費対象額*共通仮設費率</td>
+</tr>
+<tr>
+<td>率計算ｲﾒｰｼﾞｱｯﾌﾟ経費対象額</td>
+<td>直接工事費-直接工事費に含まれる処分費+無償貸与機械等評価額+ｲﾒｰｼﾞｱｯﾌﾟ経費対象支給品費等</td>
+</tr>
+<tr>
+<td>ｲﾒｰｼﾞｱｯﾌﾟ経費率</td>
+<td>ｲﾒｰｼﾞｱｯﾌﾟ経費率(補正前)+施工地域･工事場所区分補正</td>
+</tr>
+<tr>
+<td>率計算分ｲﾒｰｼﾞｱｯﾌﾟ経費</td>
+<td>率計算ｲﾒｰｼﾞｱｯﾌﾟ経費対象額*ｲﾒｰｼﾞｱｯﾌﾟ経費率</td>
+</tr>
+<tr>
+<td>共通仮設費合計</td>
+<td>率計算分共通仮設費+率計算分ｲﾒｰｼﾞｱｯﾌﾟ経費+事業損失防止施設費+ｲﾒｰｼﾞｱｯﾌﾟ特別計上額+その他積上共通仮設費</td>
+</tr>
+</tbody>
+</table>
+<table id="tableGenbaKanrihi">
+<thead>
+<tr>
+<th width=30%>項目</th>
+<th>構成</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>率計算現場管理費対象額</td>
+<td>直接工事費-鋼橋門扉等工場原価+無償貸与機械等評価額+共通仮設費+現場管理費対象支給品費等-直接工事費に含まれる準備費-準備費に含まれる処分費+計上対象処分費</td>
+</tr>
+<tr>
+<td>現場管理費率</td>
+<td>現場管理費率(補正前)*大都市補正+施工地域･工事場所区分補正+施工時期･工事期間補正</td>
+</tr>
+<tr>
+<td>現場管理費</td>
+<td>率計算現場管理費対象額*現場管理費率</td>
+</tr>
+</tbody>
+</table>
+<table id="tableIppanKanrihi">
+<thead>
+<tr>
+<th width=30%>項目</th>
+<th>構成</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>率計算一般管理費対象額</td>
+<td>直接工事費+共通仮設費+現場管理費-直接工事費に含まれる準備費-準備費に含まれる処分費+計上対象処分費</td>
+</tr>
+<tr>
+<td>一般管理費率</td>
+<td>一般管理費(補正前)*前払金支出割合補正+契約保証補正</td>
+</tr>
+<tr>
+<td>一般管理費</td>
+<td>率計算一般管理費対象額*一般管理費率</td>
+</tr>
+</tbody>
+</table>
+<div class="box">
+<b>免責事項</b><br>
+本アプリケーションの使用に起因して当該使用者または第三者に発生する損失・損害・要求・責務・損害賠償責任等その他一切の法的問題・刑事責任・民事責任及び行政上の責任からアセット・マネジメント・コンサルティング株式会社、その関係会社、その取締役およびその従業員は免責されます。
+</div>
+</li>
+</ul>
+<!-- 共通パート -->
+<div class="divsrcollbar">
+<table id='table01'>
+<thead>
+<tr>
+<th width=30%>項目</th>
+<th>商号・URL等</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>商号</td>
+<td>アセット・マネジメント・コンサルティング株式会社</td>
+</tr>
+<tr>
+<td>代表取締役</td>
+<td>三竹道雄</td>
+</tr>
+<tr>
+<td>Webサイト</td>
+<td><a href="http://am-consulting.co.jp" target="_blank">http://am-consulting.co.jp</a></td>
+</tr>
+<tr>
+<td>SaECaNet</td>
+<td><a href="http://saecanet.com/" target="_blank">http://saecanet.com/</a></td>
+</tr>
+<tr>
+<td>Olive</td>
+<td><a href="http://olive.saecanet.com/" target="_blank">http://olive.saecanet.com/</a></td>
+</tr>
+<tr>
+<td>twitter <i class="fa fa-twitter fa-lg" style="color: #666"></i></td>
+<td><a href="https://twitter.com/AMC2_Japan" target="_blank">https://twitter.com/AMC2_Japan</a></td>
+</tr>
+<tr>
+<td>GitHub <i class="fa fa-github" aria-hidden="true"></i></td>
+<td><a href="https://github.com/am-consulting/ID004/tree/master/www" target="_blank">https://github.com/am-consulting/ID004/tree/master/www</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="divsrcollbar">
+<table id='table02'>
+<thead>
+<tr>
+<th width=30%>利用コード</th>
+<th>URL</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Font Awesome</td>
+<td><a href="http://fontawesome.io/" target="_blank">http://fontawesome.io/</a></td>
+</tr>
+<tr>
+<td>jQuery</td>
+<td><a href="http://jquery.com/" target="_blank">http://jquery.com/</a></td>
+</tr>
+<tr>
+<td>タブ切り替え機能</td>
+<td><a href="http://blog.three-co.jp/web/558/" target="_blank">http://blog.three-co.jp/web/558/</a></td>
+</tr>
+<tr>
+<td>jerrylow/basictable</td>
+<td><a href="https://github.com/jerrylow/basictable" target="_blank">https://github.com/jerrylow/basictable</a></td>
+</tr>
+<tr>
+<td>桁区切り</td>
+<td><a href="http://qiita.com/sdsk/items/02920759a99c23d68552" target="_blank">http://qiita.com/sdsk/items/02920759a99c23d68552</a></td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- 共通パート -->
+</div>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</body>
+</html>
