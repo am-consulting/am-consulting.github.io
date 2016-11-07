@@ -20,12 +20,12 @@ function getConditions(){//要parseFloat処理.
 		case 7://昇降機設備工事
 			KoujiType="昇降機設備工事";break;
 	}
-	costChokusetsuKouji=parseFloat(document.form1.costChokusetsuKouji.value);
-	costTumiageKyoutsuuKasetsu=parseFloat(document.form1.costTumiageKyoutsuuKasetsu.value);
+	costChokusetsuKouji=parseFloat(document.form1.costChokusetsuKouji.value.replace(/,/g, ''));
+	costTumiageKyoutsuuKasetsu=parseFloat(document.form1.costTumiageKyoutsuuKasetsu.value.replace(/,/g, ''));
 	hoseiKyoutsuuKasetsu=parseFloat(document.form1.hoseiKyoutsuuKasetsu.value);
 	hoseiGenbaKanri=parseFloat(document.form1.hoseiGenbaKanri.value);
 	hoseiIppanKanri=parseFloat(document.form1.hoseiIppanKanri.value);
-	costTumiageGenbaKanri=parseFloat(document.form1.costTumiageGenbaKanri.value);
+	costTumiageGenbaKanri=parseFloat(document.form1.costTumiageGenbaKanri.value.replace(/,/g, ''));
 	hoseiKeiyakuHoshou=parseFloat(document.form1.hoseiKeiyakuHoshou.value);
 	hoseiKanriJimusho=parseFloat(document.form1.hoseiKanriJimusho.value);
 	hoseiMaebaraikinKubun=parseFloat(document.form1.hoseiMaebaraikinKubun.value);

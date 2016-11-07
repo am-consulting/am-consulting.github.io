@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -21,7 +22,7 @@ $(document).ready(function() {
 
 $(window).resize(function(){
 var w = $(window).width();
-var x = 1000;
+var x = 800;
 if (w <= x) {
 	$('#contents').css("width", "100%");
 } else {
@@ -32,7 +33,7 @@ if (w <= x) {
 
 $(function() {
     var w = $(window).width();
-    var x = 1000;
+    var x = 800;
 if (w <= x) {
 	$('#contents').css("width", "100%");
 } else {
@@ -129,6 +130,10 @@ table{
 <tr>
 <td>jerrylow/basictable</td>
 <td><a href="https://github.com/jerrylow/basictable" target="_blank">https://github.com/jerrylow/basictable</a></td>
+</tr>
+<tr>
+<td>桁区切り</td>
+<td><a href="http://qiita.com/sdsk/items/02920759a99c23d68552" target="_blank">http://qiita.com/sdsk/items/02920759a99c23d68552</a></td>
 </tr>
 </tbody>
 </table>

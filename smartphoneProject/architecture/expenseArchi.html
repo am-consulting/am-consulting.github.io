@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta http-equiv="Content-Security-Policy" content="default-src * data:; style-src * 'unsafe-inline'; script-src * 'unsafe-inline' 'unsafe-eval'">
 <meta http-equiv="Pragma" content="no-cache">
 <meta http-equiv="Cache-Control" content="no-cache">
 <meta http-equiv="Expires" content="0">
@@ -36,7 +37,7 @@ $(window).on('load',function(){
 
 $(window).resize(function(){
 var w = $(window).width();
-var x = 1000;
+var x = 800;
 if (w <= x) {
 	$('#contents').css("width", "100%");
 } else {
@@ -47,13 +48,28 @@ if (w <= x) {
 
 $(function() {
     var w = $(window).width();
-    var x = 1000;
+    var x = 800;
 if (w <= x) {
 	$('#contents').css("width", "100%");
 } else {
 	$('#contents').css("width", x + "px");
 	$('#contents').css("margin", "0 auto");
 }
+});
+
+$(function() {
+  $('#costChokusetsuKouji,#costTumiageKyoutsuuKasetsu,#costTumiageGenbaKanri').on('focus', function(){
+    var num = $(this).val();
+    num = num.replace(/,/g, '');
+    $(this).val(num);
+  });
+
+  $('#costChokusetsuKouji,#costTumiageKyoutsuuKasetsu,#costTumiageGenbaKanri').on('blur', function(){
+    var num = $(this).val();
+    num = num.replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
+    $(this).val(num);
+  });
+
 });
 </script>    
 <script src="expenseArchitecture.js"></script>
@@ -64,7 +80,7 @@ if (w <= x) {
 table{
  white-space: nowrap;
 }
-.input01{width:100%;}
+.input01{width:100%}
 </style>
 <body>
 <header>公共建築工事共通費計算</header>
@@ -91,11 +107,11 @@ table{
 <tbody>
 <tr>
 <td>直接工事費(円)</td>
-<td><input type="number" style="ime-mode:disabled;text-align:right" name="costChokusetsuKouji" size="15" class="input01"></td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costChokusetsuKouji" size="15" class="input01" id="costChokusetsuKouji"></td>
 </tr>
 <tr>
 <td>積上分共通仮設費(円)</td>
-<td><input type="number" style="ime-mode:disabled;text-align:right" name="costTumiageKyoutsuuKasetsu" size="15" class="input01"></td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costTumiageKyoutsuuKasetsu" size="15" class="input01" id="costTumiageKyoutsuuKasetsu"></td>
 </tr>
 <tr>
 <td>共通仮設費率補正</td>
@@ -111,7 +127,7 @@ table{
 </tr>
 <tr>
 <td>積上分現場管理費(円)</td>
-<td><input type="number" style="ime-mode:disabled;text-align:right" name="costTumiageGenbaKanri" size="15" class="input01"></td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="costTumiageGenbaKanri" size="15" class="input01" id="costTumiageGenbaKanri"></td>
 </tr>
 <tr>
 <td>前払金支出割合区分</td>
@@ -238,7 +254,7 @@ table{
 <li class="hide">
 <form name="form3">
 <table id="tableDetail">
-<thead><tr><th width=20%>項目</th><th>価格</th></tr></thead>
+<thead><tr><th width=20%>項目</th><th>価格・条件</th></tr></thead>
 <tbody>
 <tr>
 <td>共通仮設費(円)</td>
@@ -316,9 +332,11 @@ table{
 ･『公共建築工事共通費積算基準 平成26年版』
 </div>
 <div class="box">
+<div class="divsrcollbar">
 ･共通仮設費率 = 別表-1から別表-7による比率 * 監理事務所補正 * 共通仮設費率補正<br>
 ･現場管理費率 = 別表-8から別表-14による比率 * 現場管理費率補正<br>
 ･一般管理費率 = 別表-15から別表-17による比率 * 前払金支出割合補正 * 一般管理費率補正 + 契約保証補正
+</div>
 </div>
 <div class="box">
 <b>免 責 事 項</b><br>
@@ -391,6 +409,10 @@ table{
 <tr>
 <td>jerrylow/basictable</td>
 <td><a href="https://github.com/jerrylow/basictable" target="_blank">https://github.com/jerrylow/basictable</a></td>
+</tr>
+<tr>
+<td>桁区切り</td>
+<td><a href="http://qiita.com/sdsk/items/02920759a99c23d68552" target="_blank">http://qiita.com/sdsk/items/02920759a99c23d68552</a></td>
 </tr>
 </tbody>
 </table>
