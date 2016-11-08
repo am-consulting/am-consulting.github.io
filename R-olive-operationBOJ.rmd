@@ -1,0 +1,120 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-operationBOJ.html')) })
+title : "Operation of Bank of Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table{
+ white-space: nowrap;
+}
+</style>
+
+
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+
+
+```{r set-options, echo=F, cache=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(XML);library(XLConnect);library(lubridate);library(Nippon)
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+url <- "http://www.boj.or.jp/statistics/boj/fm/ope/ope.htm/"
+htmlMarkup <- htmlParse(url)
+fileName <- 'operationBOJ'
+links <- xpathSApply(htmlMarkup, "//a/@href")
+urlToData <- paste0('http://www.boj.or.jp',links[[grep('.zip',links)[1]]])
+download.file(urlToData, paste0(fileName, '.zip'), mode = 'wb')
+unzip(paste0(fileName,'.zip'))
+fileName <- dir(pathOutput)[grep('.xls',dir(pathOutput),ignore.case = T)[1]]
+buf0 <-
+  readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 2, check.names = F, header = F)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+keyWord <- '実行日'
+bufR <- which(apply(buf0,1,function(x){(length(grep(keyWord,x)))})!=0)
+colnames(buf0) <- gsub('\\W','',buf0[bufR,])
+buf1 <- buf0[-c(1:bufR),]
+keyWord <- '種類'
+bufC <- which(colnames(buf1)==keyWord)
+buf2 <- buf1[!is.na(buf1[,bufC]),]
+yy <- unique(year(buf2[,1]))
+mm <- unique(month(buf2[,1]))
+keyWord <- '落札額'
+bufC <- which(colnames(buf2)==keyWord)
+buf2[,bufC] <- as.numeric(gsub(',','',buf2[, bufC]))
+attach(buf2)
+keyWord <- '種類'
+opeTable <- cbind(by(buf2[,bufC],`種類`,sum))
+opeTable <- data.frame(row.names(opeTable),opeTable,check.names = F,stringsAsFactors = F,row.names = NULL)
+opeTable[,1] <- sapply(opeTable[,1],zen2han)
+colnames(opeTable) <- c('種類',paste0('落札額(億円)-',yy,'年',mm,'月'))
+jgb <- opeTable[grep('国債買入',opeTable[,1]),,drop=F]
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+opeTable$`構成比(%)` <- round(opeTable[,2]/sum(opeTable[,2])*100,2)
+jgb$`構成比(%)` <- round(jgb[,2]/sum(jgb[,2])*100,2)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- paste0('日本銀行オペレーション - ',yy,'年',mm,'月')
+dataSource <- '日本銀行'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title       : ',dataTitle,'\n'))
+cat(paste('Data Source : ',dataSource,'\n'))
+cat(paste('Author      : ',Author,'\n'))
+cat(paste('作 成 日    : ',Sys.time(),'\n'))
+cat(paste('特    記    : ',notes,'\n'))
+cat(paste('特    記    : ',notes0,'\n'))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+#### 国債買入、国庫短期証券買入・売却、社債等買入、ＣＰ等買入、指数連動型上場投資信託受益権買入、不動産投資法人投資口買入オペレーション
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(opeTable)
+cat('<b>落札額合計(億円):</b>',sum(opeTable[,2]))
+cat('<hr>')
+knitr::kable(jgb,row.names = F)
+cat('<b>国債買入合計(億円):</b>',sum(jgb[,2]))
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
