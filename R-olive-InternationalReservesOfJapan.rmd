@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-internationalReservesOfJapan.html')) })
 
-title : '外貨準備'
+title : 'International Reserves of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -17,7 +17,24 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+
+table{
+ white-space: nowrap;
+}
 </style>
+
+
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+
+```{r set-options, echo=F, cache=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+options(width = 1000)
+```
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(DT)
@@ -47,14 +64,12 @@ dataSource <- '財務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste('Title :', dataTitle, '\n'))
-cat(paste('Raw Data Source :', dataSource, '\n'))
-cat(paste('Author :', Author, '\n'))
-cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste('Title       : ', dataTitle, '\n'))
+cat(paste('Data Source : ', dataSource, '\n'))
+cat(paste('Author      : ', Author, '\n'))
+cat(paste('作成日      : ', Sys.time(), '\n'))
+cat(paste('特  記      : ', notes, '\n'))
+cat(paste('特  記      : ', notes0, '\n'))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -102,6 +117,24 @@ funDataTable <- function(obj,dataTitle='',append='') {
     filter = 'bottom'
   )
 }
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='', append='') {
+  cat(paste('<h4>', dataTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -199,7 +232,7 @@ obj02lwd <- 1
 lineColor <- c('blue', 'red')
 chartTtpe <- 1
 mainTitle <- paste(colnames(origData1)[obj01], ' × ', colnames(origData1)[obj02])
-par(mfrow = c(1, 2), mar = c(3, 4, 3, 3), family = 'Meiryo', oma = c(0, 0, 3, 0))
+par(mfrow = c(1, 2), mar = c(3, 4, 3, 1), family = 'Meiryo', oma = c(0, 0, 3, 0))
 funPlotTimeSeries(dataSet = origData1, append = 'ドル建て(百万ドル)')
 funPlotTimeSeries(dataSet = origData3, append = '円建て(兆円)')
 mtext(paste(mainTitle, '\n', format(first(origData1[, 1]), dateFormat), '~', format(last(origData1[, 1]), dateFormat),
@@ -282,7 +315,19 @@ grid.table(tail(dataSet, 5), rows = NULL)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-cat(paste0('直近(',tail(dataSet[,1],1),')のゴールド保有量\n'))
+cat(paste0('直近(',tail(dataSet[,1],1),')のゴールド保有量 : '))
 cat(paste0(tail(dataSet[,obj01],1),'百万トロイオンス = ',tail(dataSet[,obj01],1)*(10^6)*31.1034768*(1e-6),'トン'))
 ```
-<hr>
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
