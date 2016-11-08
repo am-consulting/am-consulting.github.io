@@ -45,7 +45,7 @@ url <- "http://www.boj.or.jp/statistics/boj/fm/ope/ope.htm/"
 htmlMarkup <- htmlParse(url)
 fileName <- 'operationBOJ'
 links <- xpathSApply(htmlMarkup, "//a/@href")
-urlToData <- paste0('http://www.boj.or.jp',links[[grep('.zip',links)[1]]])
+urlToData <- paste0('http://www.boj.or.jp',links[grep('.zip',links)[1]])
 download.file(urlToData, paste0(fileName, '.zip'), mode = 'wb')
 unzip(paste0(fileName,'.zip'))
 fileName <- dir(pathOutput)[grep('.xls',dir(pathOutput),ignore.case = T)[1]]
