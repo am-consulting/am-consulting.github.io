@@ -1,11 +1,11 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-InternationalBalanceofPayments.html')) })
 
-title : '国際収支'
+title : 'International Balance of Payments of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 6
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -17,7 +17,21 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+
+table{
+ white-space: nowrap;
+}
 </style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+options(width = 1000)
+```
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(DT)
@@ -47,14 +61,13 @@ dataSource <- '財務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste('Title :', dataTitle, '\n'))
-cat(paste('Raw Data Source :', dataSource, '\n'))
-cat(paste('Author :', Author, '\n'))
-cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste('Title       : ', dataTitle, '\n'))
+cat(paste('Data Source : ', dataSource, '\n'))
+cat(paste('Author      : ', Author, '\n'))
+cat(paste('作成日      : ', Sys.time(), '\n'))
+cat(paste('特  記      : ', notes, '\n'))
+cat(paste('特  記      : ', notes0, '\n'))
+dateFormat <- '%Y年%m月'
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -103,11 +116,95 @@ funDataTable <- function(obj,dataTitle='',append='') {
     filter = 'bottom'
   )
 }
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='', append='') {
+  cat(paste('<h4>', dataTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 ```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plotTimeSeries <- function(obj,ccc = 2,type = 'h') {
+  obj <- na.omit(obj[,c(1,ccc)])
+  title <- paste0(colnames(obj)[2],' - ',paste0(format(range(obj[,1]),dateFormat),collapse = '~'))  
+  par(family='Meiryo',mar=c(4,4,4,2))
+  plot(obj[,1],obj[,2],type=type,col='blue',xlab='',ylab='',xaxt='n',
+       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=1,main = title)
+  Date <- as.numeric(obj[,1])
+  Value <- obj[,2]
+  lo <- lm(Value ~ Date)
+  lines(obj[,1] , predict(lo) , col = 'red', lwd = 1, lty = 2)
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  axis.Date(side=1, at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0)
+  # 民主党パート
+  rectDateL <- as.numeric(as.Date('2009-09-16'))
+  rectDateR <- as.numeric(as.Date('2012-12-26'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '民主党政権'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'dimgray', density = 10, angle = 45)
+    text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
+  }
+  # 民主党パート
+  # 3%パート
+  rectDateL <- as.numeric(as.Date('1989-04-01'))
+  rectDateR <- as.numeric(as.Date('1997-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n3%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'darksalmon', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 3%パート
+  # 5%パート
+  rectDateL <- as.numeric(as.Date('1997-04-01'))
+  rectDateR <- as.numeric(as.Date('2014-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n5%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'yellowgreen', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 5%パート
+  # 8%パート
+  rectDateL <- as.numeric(as.Date('2014-04-01'))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n8%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'skyblue', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 8%パート
+  cat(title)
+  print(summary(lo))
+  print(confint(lo, 'Date', level=0.95))
+  cat('\n\n\n\n\n')
+}
+```
+
 ####日本の国際収支(単位：億円)
-######注)経常収支＋資本移転等収支－金融収支＋誤差脱漏＝0
-######注)金融収支の額は棒グラフに表示されている数値の符号を逆にして下さい。
-######Powered by https://www.amcharts.com/
+- 注)経常収支＋資本移転等収支－金融収支＋誤差脱漏＝0
+- 注)金融収支の額は棒グラフに表示されている数値の符号を逆にして下さい。
+- Powered by https://www.amcharts.com/
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 bop0 <- origData1[, c(1, 2, 10, 11, 17), drop = F]
 bop0[, 1] <- as.character(format(bop0[, 1], '%Y-%m'))
@@ -115,32 +212,47 @@ bop <- tail(bop0, 12)
 bop[, 4] <- bop[, 4] * -1
 funamBarplot(obj = bop, mainTitle = '日本の国際収支(単位：億円)' )
 ```
+
 <hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 titleDT<-'日本の国際収支'
 appendTitle<-'単位：億円'
 funDataTable(obj = bop0, append = paste0(titleDT,'-',appendTitle))
 ```
+
 <hr>
 ####日本の経常収支(単位：億円)
-######Powered by https://www.amcharts.com/
+- Powered by https://www.amcharts.com/
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 currentAccount0 <- origData1[, c(1,4,7:9), drop = F]
 currentAccount0[, 1] <- as.character(format(currentAccount0[, 1], '%Y-%m'))
 currentAccount <- tail(currentAccount0, 12)
 funamBarplot(obj = currentAccount, mainTitle = '日本の経常収支(単位：億円)' )
 ```
+
 <hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 titleDT<-'日本の経常収支'
 appendTitle<-'単位：億円'
 funDataTable(obj = currentAccount0, append = paste0(titleDT,'-',appendTitle))
 ```
+
+***
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+currentAccount0 <- origData1[, c(1,2), drop = F]
+fun_plotTimeSeries(obj = currentAccount0)
+```
+
 <hr>
 ####日本の貿易収支(単位：億円)
-######注)貿易収支＝輸出 －輸入
-######注)輸入の額は棒グラフに表示されている数値の符号を逆にして下さい。
-######Powered by https://www.amcharts.com/
+- 注)貿易収支＝輸出 －輸入
+- 注)輸入の額は棒グラフに表示されている数値の符号を逆にして下さい。
+- Powered by https://www.amcharts.com/
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 goods0 <- origData1[, c(1,5:6), drop = F]
 goods0[, 1] <- as.character(format(goods0[, 1], '%Y-%m'))
@@ -148,9 +260,33 @@ goods <- tail(goods0, 12)
 goods[, 3] <- goods[, 3] * -1
 funamBarplot(obj = goods, mainTitle = '日本の貿易収支(単位：億円)' )
 ```
+
 <hr>
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 titleDT<-'日本の貿易収支'
 appendTitle<-'単位：億円'
 funDataTable(obj = goods0, append = paste0(titleDT,'-',appendTitle))
 ```
+
+***
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+goods0 <- origData1[, c(1,4:6), drop = F]
+fun_plotTimeSeries(obj = goods0, ccc = 2)
+fun_plotTimeSeries(obj = goods0, ccc = 3, type = 'l')
+fun_plotTimeSeries(obj = goods0, ccc = 4, type = 'l')
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
