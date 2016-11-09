@@ -1,0 +1,197 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-bankruptcyData.html')) })
+title : "Number of Corporate Bankruptcies in Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width   : 1000px;
+	margin-left : auto;
+	margin-right: auto;
+}
+
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(lubridate)
+dateFormat <- '%Y年%m月'
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+tmp0 <-
+  read.csv('bankruptcyData.csv', header = T, skip = 0, stringsAsFactor = F, na.strings = c("", "***"), check.names = F, fileEncoding = "cp932")
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+tmp1 <- tmp0
+tmp1[,1] <- as.Date(tmp1[,1])
+tmp2 <- tmp1[order(tmp1[,1],decreasing = F),]
+tmp3 <- data.frame(tail(tmp2[,1],-12),
+                   round(diff(tmp2[,2],lag = 12,differences = 1)/head(tmp2[,2],-12)*100,1),check.names = F,stringsAsFactors = F)
+dataSet <- tmp2
+colnames(tmp3) <- c('Date',paste0(colnames(tmp2)[2],'-前年同月比(%)'))
+dataSetYoY <- tmp3
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- paste0('企業倒産件数 - ',format(tail(dataSet[,1],1),dateFormat))
+dataSource <- '株式会社東京商工リサーチ'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title       : ',dataTitle,'\n'))
+cat(paste('Data Source : ',dataSource,'\n'))
+cat(paste('Author      : ',Author,'\n'))
+cat(paste('作 成 日    : ',Sys.time(),'\n'))
+cat(paste('特    記    : ',notes,'\n'))
+cat(paste('特    記    : ',notes0,'\n'))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plotTimeSeries <- function(obj,ccc = 2,type = 'l') {
+  obj <- na.omit(obj[,c(1,ccc)])
+  title <- paste0(colnames(obj)[2],' - ',paste0(format(range(obj[,1]),dateFormat),collapse = '~'),'\nデータ出所:',dataSource)  
+  par(family='Meiryo',mar=c(4,4,4,2))
+  plot(obj[,1],obj[,2],type=type,col='blue',xlab='',ylab='',xaxt='n',
+       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=1,main = title)
+  Date <- as.numeric(obj[,1])
+  Value <- obj[,2]
+  lo <- lm(Value ~ Date)
+  lines(obj[,1] , predict(lo) , col = 'red', lwd = 1, lty = 2)
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  axis.Date(side=1, at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0)
+  # 民主党パート
+  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2012-12-26'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '民主党政権'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'dimgray', density = 10, angle = 45)
+    text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
+  }
+  # 民主党パート
+  # 3%パート
+  rectDateL <- max(as.numeric(as.Date('1989-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('1997-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n3%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'darksalmon', density = 5, angle = 135)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n\n',rectText), pos = 2)
+  }
+  # 3%パート
+  # 5%パート
+  rectDateL <- max(as.numeric(as.Date('1997-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2014-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n5%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'yellowgreen', density = 5, angle = 135)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n\n',rectText), pos = 2)
+  }
+  # 5%パート
+  # 8%パート
+  rectDateL <- max(as.numeric(as.Date('2014-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n8%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'skyblue', density = 5, angle = 135)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n\n',rectText), pos = 2)
+  }
+  # 8%パート
+  cat(title)
+  print(summary(lo))
+  print(confint(lo, 'Date', level=0.95))
+  cat('\n\n\n\n\n')
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_plotTimeSeries(dataSet)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_plotTimeSeries(dataSetYoY,type = 'h')
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F}
+for(iii in 1:12) {
+  buf <- subset(dataSet[,2,drop=F], month(dataSet[, 1]) == iii)
+  colnames(buf)[1] <- paste0(iii, '月')
+  if (iii == 1) {
+    boxData <- buf
+  } else{
+    boxData <-  qpcR:::cbind.na(boxData, buf[, 1, drop = F])
+  }
+}
+rAmCharts::amBoxplot(boxData)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+buf <- tail(merge(dataSet,dataSetYoY,by = 'Date'),6)
+buf[,1] <- format(buf[,1],dateFormat)
+mergeData <- buf
+cat('<h4>直近6ヶ月分の倒産件数と前年同月比</h4>')
+knitr::kable(mergeData,row.names = F)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+orderData <- dataSet[order(dataSet[,2],decreasing = T),]
+orderData[,1] <- format(orderData[,1],dateFormat)
+cat('<h4>倒産件数Top5</h4>')
+knitr::kable(head(orderData,5),row.names = F)
+cat('<hr>')
+cat('<h4>倒産件数Bottom5</h4>')
+knitr::kable(tail(orderData,5),row.names = F)
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
