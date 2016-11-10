@@ -9,6 +9,11 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
+
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="no-cache">
+<meta http-equiv="Expires" content="0">
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
