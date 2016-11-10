@@ -10,6 +10,7 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
@@ -33,7 +34,7 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- paste0('アメリカ合衆国大統領および政党(民主党、共和党)毎の経済指標 - 日経平均株価,10年もの米国債利回り,ドル円為替レート,ユーロドル為替レート,ポンドドル為替レート,米国失業率,米国失業保険申請件数4週間移動平均')
+dataTitle <- paste0('アメリカ合衆国大統領および政党(民主党、共和党)毎の経済指標')
 dataSource <- 'Federal Reserve Bank of St. Louis'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -149,13 +150,15 @@ fun_plotTimeSeries <- function(ddd=2){
 }  
 ```
 
+<!--
 ***
 #### Nikkei Stock Average, Nikkei 225 / 日経平均株価
+-->
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_plotTimeSeries(ddd = 1)
-rAmCharts::amBoxplot(boxData,horiz=T)
-rAmCharts::amBoxplot(boxDataParty,horiz=T)
+# fun_plotTimeSeries(ddd = 1)
+# rAmCharts::amBoxplot(boxData,horiz=T)
+# rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
 
 ***
@@ -176,22 +179,26 @@ rAmCharts::amBoxplot(boxData,horiz=T)
 rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
 
+<!--
 ***
 #### U.S. / Euro Foreign Exchange Rate / ユーロドル為替レート
+-->
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_plotTimeSeries(ddd = 4)
-rAmCharts::amBoxplot(boxData,horiz=T)
-rAmCharts::amBoxplot(boxDataParty,horiz=T)
+# fun_plotTimeSeries(ddd = 4)
+# rAmCharts::amBoxplot(boxData,horiz=T)
+# rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
 
+<!--
 ***
 #### U.S. / U.K. Foreign Exchange Rate / ポンドドル為替レート
+-->
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_plotTimeSeries(ddd = 5)
-rAmCharts::amBoxplot(boxData,horiz=T)
-rAmCharts::amBoxplot(boxDataParty,horiz=T)
+# fun_plotTimeSeries(ddd = 5)
+# rAmCharts::amBoxplot(boxData,horiz=T)
+# rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
 
 ***
