@@ -86,7 +86,7 @@ knitr::kable(potusDF,row.names = F)
 fredData <- list()
 cnt <- 0
 importData <- c(
-    'NIKKEI225','Nikkei Stock Average, Nikkei 225&copy;',
+    'NIKKEI225','Nikkei Stock Average, Nikkei 225',
     'DGS10','10-Year Treasury Constant Maturity Rate',
     'DEXJPUS','Japan / U.S. Foreign Exchange Rate',
     'DEXUSEU','U.S. / Euro Foreign Exchange Rate',
@@ -114,7 +114,7 @@ fun_plotTimeSeries <- function(ddd=2){
   par(family='Meiryo',mar=c(3,3,3,2))
   plot(obj[,1],obj[,2],type='l',col='black',xlab='',ylab='',xaxt='n',
        cex.axis=1.2,cex.lab=1.2,cex.main=1.2,
-       lwd=1,main = paste0(colnames(obj)[2],'\n',paste0(format(range(obj[,1]),dateFormat),collapse = '~')))
+       lwd=2,main = paste0(colnames(obj)[2],'\n',paste0(format(range(obj[,1]),dateFormat),collapse = '~')))
   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
   axis.Date(side=1, at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0)  
   cnt <- 0
@@ -124,7 +124,7 @@ fun_plotTimeSeries <- function(ddd=2){
     if(as.numeric(obj[1,1]) < rectDateR){
       rect(xleft  = rectDateL, ybottom = par('usr')[3], 
            xright = rectDateR, ytop    = par('usr')[4], 
-           col    = potusDF[rrr,4], density = 5, angle = 45)
+           col    = potusDF[rrr,4], density = 10, angle = 45, lty = 2, lwd = 1,border = T)
       # rectText <- potusDF[rrr,3]
       # text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
     }
@@ -184,6 +184,7 @@ fun_plotTimeSeries(ddd = 4)
 rAmCharts::amBoxplot(boxData,horiz=T)
 rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
+
 ***
 #### U.S. / U.K. Foreign Exchange Rate / ポンドドル為替レート
 
@@ -192,6 +193,7 @@ fun_plotTimeSeries(ddd = 5)
 rAmCharts::amBoxplot(boxData,horiz=T)
 rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
+
 ***
 #### Civilian Unemployment Rate / 米国失業率
 
@@ -200,6 +202,7 @@ fun_plotTimeSeries(ddd = 6)
 rAmCharts::amBoxplot(boxData,horiz=T)
 rAmCharts::amBoxplot(boxDataParty,horiz=T)
 ```
+
 ***
 #### 4-Week Moving Average of Initial Claims / 米国失業保険申請件数4週間移動平均
 
