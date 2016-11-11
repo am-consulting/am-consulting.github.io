@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-tradeStatisticsOfJAPAN.html')) })
 
-title : '貿易統計'
+title : '貿易統計 / Trade Statistics Of JAPAN'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -17,7 +17,19 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+options(width = 100)
+```
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(DT)
@@ -45,14 +57,12 @@ notes <- '複数のワードで検索する際は半角スペースで区切っ�
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste('Title :', dataTitle, '\n'))
-cat(paste('Raw Data Source :', dataSource, '\n'))
-cat(paste('Author :', Author, '\n'))
-cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste('Title       : ', dataTitle, '\n'))
+cat(paste('Data Source : ', dataSource, '\n'))
+cat(paste('Author      : ', Author, '\n'))
+cat(paste('作成日      : ', Sys.time(), '\n'))
+cat(paste('特  記      : ', notes, '\n'))
+cat(paste('特  記      : ', notes0, '\n'))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
@@ -144,6 +154,17 @@ funPlotTimeSeries <- function() {
     )
   }
   axis.Date(side = 1, at = dataSet[, 1], format = dateFormat, padj = 1, cex.axis = 1.0)
+  # 民主党パート
+  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(dataSet[1, 1]))
+  rectDateR <- as.numeric(as.Date('2012-12-26'))
+  if(as.numeric(dataSet[1,1]) < rectDateR){
+    rectText <- '民主党政権'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'dimgray', density = 10, angle = 45)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 2)
+  }
+  # 民主党パート  
 }
 ```
 
@@ -160,6 +181,8 @@ dataSet <- origData1
 dataSet <- tail(dataSet, dataTail)
 funSeasonal()
 ```
+
+***
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=10}
 mainTitle <- paste(colnames(dataSet)[obj01], ' × ', colnames(dataSet)[obj02])
@@ -196,7 +219,9 @@ dataSet <- origData4
 dataSet <- tail(dataSet, dataTail)
 funSeasonal()
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=10}
 dataSet$col <- ifelse(dataSet[, 2] < 0, 'red', 'blue')
 dataSetSA$col <- ifelse(dataSetSA[, 2] < 0, 'red', 'blue')
@@ -246,15 +271,35 @@ fungvisTable <- function(obj) {
     options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=10)
   )
   plot(PopTable,tag='chart')
-}  
+}
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle = '', append ='') {
+  cat(paste0('<h5>',dataTitle,append,'<h5>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 appendTitle<-'(原数値、単位:兆円)'
 dataSet<-merge(origData1,origData4)
 dataSet[,1]<-format(dataSet[,1],dateFormat)
 dataSet[,-1]<-round(dataSet[,-1],4)
-funDataTable(obj = dataSet, append = appendTitle)
+funDataTable(obj = dataSet, dataTitle = dataTitle, append = appendTitle)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
@@ -262,7 +307,9 @@ funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
   amBoxplot(obj, horiz = T, names = colnames(obj)) %>>% amOptions(theme = "none" , main = bigTitle)
 }
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,echo=F} 
 funPlotBoxplotAmcharts(obj = dataSet[, -1],
                        bigTitle = paste0(
@@ -273,7 +320,9 @@ funPlotBoxplotAmcharts(obj = dataSet[, -1],
                        tail(dataSet[, 1], 1)
                        ))
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 compareData<-merge(origData1,origData4)
 compareData[,-1]<-round(compareData[,-1],4)
@@ -293,9 +342,13 @@ funPlotBoxplotAmcharts(obj = compareData0,
                        ))
 ```
 
+***
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 summary(compareData0)
 ```
+
+***
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf <- tail(na.omit(origData2), 3)
@@ -308,7 +361,9 @@ expItem <- data.frame(ID = seq(1,nrow(buf1)), Item = row.names(buf0), buf1, chec
 colnames(expItem)[-c(1,2)] <- paste0(colnames(expItem)[-c(1,2)],'(億円)')
 fungvisTable(expItem)
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf <- tail(na.omit(origData3), 3)
 buf0 <- t(buf)
@@ -320,3 +375,16 @@ impItem <- data.frame(ID = seq(1,nrow(buf1)), Item = row.names(buf0), buf1, chec
 colnames(impItem)[-c(1,2)] <- paste0(colnames(impItem)[-c(1,2)],'(億円)')
 fungvisTable(impItem)
 ```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
