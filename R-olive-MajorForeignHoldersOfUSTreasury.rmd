@@ -1,23 +1,35 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MajorForeignHoldersUSTreasury.html')) })
 
-title : '米国債保有額'
+title : '米国債保有額 / Major Foreign Holders of US Treasury'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 10
-    fig_width: 16
+    fig_height: 5
+    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(choroplethrAdmin1)
@@ -46,14 +58,12 @@ dataSource <- 'U.S. Department of the Treasury'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste('Title :', dataTitle, '\n'))
-cat(paste('Raw Data Source :', dataSource, '\n'))
-cat(paste('Author :', Author, '\n'))
-cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste('Title       : ', dataTitle, '\n'))
+cat(paste('Data Source : ', dataSource, '\n'))
+cat(paste('Author      : ', Author, '\n'))
+cat(paste('作成日      : ', Sys.time(), '\n'))
+cat(paste('特  記      : ', notes, '\n'))
+cat(paste('特  記      : ', notes0, '\n'))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
@@ -124,14 +134,14 @@ dataFor_plotly[, 3] <- dataFor_plotly[, 3] * (10 ^ 6)
 colnames(dataFor_plotly)[3]  <- 'Holdings' 
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,fig.height=6,fig.width=12} 
+```{r,warning=F,error=F,message=F,echo=F,fig.height=5,fig.width=10} 
 l <- list(color = toRGB("grey"), width = 0.5)
 g <- list(
-  showframe = F,
-  showcoastlines = F,
+  showframe = T,
+  showcoastlines = T,
   projection = list(type = 'Mercator')
 )
-
+attach(dataFor_plotly)
 plot_ly(
   dataFor_plotly,
   z = Holdings,
@@ -184,6 +194,24 @@ funDataTable <- function(obj,append='',width='') {
       caption = paste(dataTitle, append),
       class = 'display compact'
     )
+}
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle = '', append = '') {
+  cat(paste('<h4>', dataTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
   }
 ```
 
@@ -192,8 +220,7 @@ appendTitle <- '(単位:兆ドル)'
 buf <- JvsC
 buf[, 1] <- format(buf[, 1], dateFormat)
 funDataTable(obj = buf,
-             append = appendTitle,
-             width = '10%')
+             append = appendTitle)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
@@ -211,8 +238,7 @@ buf <-
     check.names = F
   )
 funDataTable(obj = buf,
-             append = appendTitle,
-             width = '5%')
+             append = appendTitle)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F} 
@@ -300,7 +326,7 @@ funPlotTimeSeries <- function(dataSet, append = '') {
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 lineColor <- c('red', 'blue', 'black')
 chartTtpe <- 1
 if (chartTtpe == 1) {
@@ -316,7 +342,19 @@ obj01lwd <- 1
 obj02lwd <- 1
 needloess01 <- 1
 needloess02 <- 1
-par(mar = c(3, 5, 6, 5), family = 'Meiryo')
+par(mar = c(3, 3, 6, 1), family = 'Meiryo')
 funPlotTimeSeries(dataSet = JvsC, append = '\n単位：兆ドル')
 ```
-<hr>
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
