@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-structuralUnemployment.html')) })
 title : "失業率と欠員率"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
@@ -13,11 +13,19 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -109,14 +117,12 @@ dataSource <- '総務省,厚生労働省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID <- timeStamp
-cat(paste("Title           : ", dataTitle, "\n"))
-cat(paste("Raw Data Source : ", dataSource, "\n"))
-cat(paste("Author          : ", Author, "\n"))
-cat(paste("作成日          : ", Sys.time(), "\n"))
-cat(paste("特記            : ", notes, "\n"))
-cat(paste("特記            : ", notes0, "\n"))
-cat(paste("ID              : ", htmlID, "\n"))
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+cat(paste("特記        : ", notes, "\n"))
+cat(paste("特記        : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -181,16 +187,50 @@ fun_dataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', caption
     rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
   )
 }
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', dataTitle = '') {
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 suDT <- suRate0
 suDT[,1] <- format(suDT[,1],dateFormat)
-fun_dataTable(obj = suDT)
+funDataTable(obj = suDT,orderDirection = 'desc')
 ```
 <hr>
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 allData <- mergeData
 allData[,1] <- format(allData[,1],dateFormat)
-allData <- t(tail(allData,3))
+allData <- t(tail(allData,6))
 colnames(allData) <- allData[1,]
 allData <- allData[-c(1:2),]
-knitr::kable(allData,row.names = T)
+allData0 <- 
+  data.frame(ID=seq(1,nrow(allData)),`項目`=row.names(allData),
+             allData,check.names = F,stringsAsFactors = F,row.names = NULL)
+allData0[,-c(1,2)] <- apply(allData0[,-c(1,2)], 2, as.numeric)
+funDataTable(obj = allData0,orderDirection = 'asc')
 ```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
