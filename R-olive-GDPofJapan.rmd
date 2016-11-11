@@ -1,41 +1,34 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-GDPofJapan.html')) })
 
-title : '国内総生産'
+title : '国内総生産 / Gross Domestic Product(GDP) of Japan'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 output: 
   html_document:
     fig_height: 5
-    fig_width: 12
+    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1200px;
+	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- "日本の国内総生産-名目GDP、実質GDP、年率換算、GDPデフレーター"
-dataTitle0 <- '2016年4-6月期. 単位:兆円'
-dataSource <- "財務省"
-notes <- "複数のワードで検索する際は半角スペースで区切ってください"
-dataTail <- 0
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-BXchartTitle <- '歴代内閣毎の内閣支持率(%)'
-htmlID <- timeStamp
-cat(paste("Title :", dataTitle, dataTitle0, "\n"))
-cat(paste("Raw Data Source :", dataSource, "\n"))
-cat(paste("Author :", Author, "\n"))
-cat(paste("作成日 :", Sys.time(), "\n"))
-cat(paste("特記 :", notes, "\n"))
-cat(paste("ID :", htmlID, "\n"))
-windowsFonts(Meiryo = windowsFont("Meiryo"))
-options(scipen = 999)
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -49,6 +42,23 @@ script <-
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- "日本の国内総生産(単位:兆円)-名目GDP、実質GDP、年率換算、GDPデフレーター"
+dataTitle0 <- paste0(format(c(tail(origData[,1],1)%m-%months(2),tail(origData[,1],1)),'%Y年%m月'),collapse='~')
+dataSource <- "財務省"
+notes <- "複数のワードで検索する際は半角スペースで区切ってください"
+dataTail <- 0
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+BXchartTitle <- '歴代内閣毎の内閣支持率(%)'
+cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -111,12 +121,6 @@ funPlotTimeSeries01 <- function() {
     type = 'l',
     xlab = '' ,
     ylab = '' ,
-    panel.first = grid(
-      nx = NULL,
-      ny = NULL,
-      lty = 2,
-      equilogs = T
-    ) ,
     xaxt = 'n',
     ylim = c(minValue, maxValue),
     main = paste(mainTitle, '\nSource:', dataSource),
@@ -126,6 +130,7 @@ funPlotTimeSeries01 <- function() {
     lwd = 1,
     col = lineColor[1]
   )
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
   lines(dataSet0[, 1], dataSet0[, obj02], col = lineColor[2], lwd = 1)
   par(new = T)
   plot(
@@ -135,12 +140,6 @@ funPlotTimeSeries01 <- function() {
     type = 'h',
     xlab = '' ,
     ylab = '' ,
-    panel.first = grid(
-      nx = NULL,
-      ny = NULL,
-      lty = 2,
-      equilogs = T
-    ) ,
     xaxt = 'n',
     yaxt = 'n',
     cex.axis = 1,
@@ -148,6 +147,7 @@ funPlotTimeSeries01 <- function() {
     cex.main = 1,
     lwd = 1
   )
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
   axis(4, cex.axis = 1, cex.lab = 1)
   mtext(colnames(dataSet0)[obj01], side = 2, line = 3.2, cex = 1)
   mtext(colnames(dataSet0)[obj03], side = 4, line = 3.2, cex = 1)
@@ -193,6 +193,25 @@ funDataTable <- function(obj,title='',append='') {
     class = 'display compact'
   )
 }
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='',title='',append='') {
+  cat(paste('<h4>', title, append, '</h4>'))  
+  obj[,1] <- format(obj[,1],'%Y-%m')  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -211,11 +230,11 @@ funFilter()
 funPlotTimeSeries01()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj=gdp1,title = titleJ[1],append = '(単位:兆円)')
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj=gdp2,title = titleJ[2],append = '(単位:兆円)')
 ```
 <hr>
@@ -239,11 +258,11 @@ buf1[, -1] <- apply(buf1[, -1], 2, function(x) round(x, 4))
 funPlotTimeSeries01()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj=buf0,title = titleJ[1],append = '')
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj=buf1,title = titleJ[2],append = '')
 ```
 <hr>
@@ -253,7 +272,7 @@ funPlotTimeSeries02 <- function() {
     paste0(format(dataSet0[1, 1], '%Y-%m'), '~', format(dataSet0[nrow(dataSet0), 1], '%Y-%m'))
   mainTitle <-
     paste0(append, '\n', colnames(dataSet0)[obj01], '. ', dataPeriod)
-  par(mar = c(3, 5, 4, 5), family = 'Meiryo')
+  par(mar = c(3, 3, 4, 2), family = 'Meiryo')
   plot(
     dataSet0[, 1],
     dataSet0[, obj01],
@@ -298,13 +317,13 @@ lineType <- 'l'
 funPlotTimeSeries02()
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj = gdp3,
              title = titleJ[3],
              append = '(単位:%)')
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj = gdp4,
              title = titleJ[4],
              append = '(単位:%)')
@@ -352,3 +371,16 @@ obj <- tail(obj, 10)
 mainTitle <- ''
 funamBarplot(obj, mainTitle)
 ```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
