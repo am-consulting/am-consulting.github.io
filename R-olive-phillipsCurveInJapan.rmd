@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-Phillipscurve.html')) })
 title : "フィリップス曲線"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
@@ -16,10 +16,18 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
 
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 100)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -57,14 +65,12 @@ dataSource <- '総務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-htmlID <- timeStamp
-cat(paste("Title           : ", dataTitle, "\n"))
-cat(paste("Raw Data Source : ", dataSource, "\n"))
-cat(paste("Author          : ", Author, "\n"))
-cat(paste("作成日          : ", Sys.time(), "\n"))
-cat(paste("特記            : ", notes, "\n"))
-cat(paste("特記            : ", notes0, "\n"))
-cat(paste("ID              : ", htmlID, "\n"))
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -98,7 +104,7 @@ for (iii in 1:3) {
   x <- dataSet[, 2]
   y <- dataSet[, 3]
   if(iii==1){  
-    resultNLS <- summary(nls(y ~ a * x ^ b, start = list(a = 1, b = 1)))
+    resultNLS <- summary(nls(y  ~ a * x ^ b , start = list(a = 1, b = 1)))
     a <- resultNLS$coefficients[1]
     b <- resultNLS$coefficients[2]
     z <- a * x ^ b
@@ -114,12 +120,6 @@ for (iii in 1:3) {
     col = 'black',
     xlab = colnames(dataSet)[2] ,
     ylab = colnames(dataSet)[3] ,
-    panel.first = grid(
-      nx = NULL,
-      ny = NULL,
-      lty = 2,
-      equilogs = T
-    ) ,
     ylim = if (iii == 1) {yRange},
     xlim = if (iii == 1) {xRange},
     main = subTitle,
@@ -128,6 +128,7 @@ for (iii in 1:3) {
     cex.main = 1.4,
     lwd = 1
   )
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
   abline(lm(y ~ x), col = "red")
   if (iii == 1) {
     par(new = T)
@@ -180,12 +181,6 @@ for (iii in 1:3) {
     col = 'blue',
     xlab = '' ,
     ylab = '' ,
-    panel.first = grid(
-      nx = NULL,
-      ny = NULL,
-      lty = 2,
-      equilogs = T
-    ) ,
     xaxt = 'n',
     main = subTitle,
     cex.axis = 1.2,
@@ -193,6 +188,7 @@ for (iii in 1:3) {
     cex.main = 1.4,
     lwd = 1
   )
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
   lo <- loess(dataSet[, obj01]~as.numeric(dataSet[, 1]), degree = 2)
   lines(dataSet[, 1] , predict(lo) , col='blue', lwd=2,lty=2)
   par(new=T)
@@ -203,12 +199,12 @@ for (iii in 1:3) {
     type='l',
     xlab='' ,
     ylab='' ,
-    panel.first=grid(nx=NULL,ny=NULL,lty=2,equilogs=T) ,
     xaxt='n',
     yaxt='n',
     cex.axis=1,cex.lab=1,cex.main=1,
     lwd = 1
   )    
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
   lo <- loess(dataSet[, obj02]~as.numeric(dataSet[, 1]), degree = 2)
   lines(dataSet[, 1] , predict(lo) , col='red', lwd=2,lty=2)
   axis(4,cex.axis=1,cex.lab=1)
@@ -269,11 +265,31 @@ fun_dataTable <- function(obj, width0 = '5%', orderColumn = 0, orderDirection = 
   )
 }
 
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', dataTitle = '') {
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
+
 dtData <- mergeData
 dtData[,1] <- format(dtData[,1], dateFormat) 
-fun_dataTable(obj = dtData, width0 = '15%', orderDirection = 'desc')
+funDataTable(obj = dtData, orderDirection = 'desc')
 ```
-<hr>
+
+***
+
+#### 民主党政権発足時、政権交代時およびそれ以降の比較
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 compareDT <- subset(mergeData,mergeData[,1]==as.Date('2009-09-01') | 
@@ -283,4 +299,15 @@ compareDT[,1] <- format(compareDT[,1],dateFormat)
 knitr::kable(compareDT,row.names = F)
 ```
 
-<hr>
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
