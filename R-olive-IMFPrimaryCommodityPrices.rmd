@@ -1,24 +1,31 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-IMFPrimaryCommodityPrices.html')) })
 
 title : 'IMF Primary Commodity Prices'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
     fig_height: 5
-    fig_width: 10
+    fig_width: 13
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
 .main-container {
-	max-width: 1000px;
+	max-width: 1300px;
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
 
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -52,14 +59,12 @@ dataSource <- 'International Monetary Fund'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID <- timeStamp
-cat(paste0('Title :', dataTitle, subTitle, '\n'))
-cat(paste('Raw Data Source :', dataSource, '\n'))
-cat(paste('Author :', Author, '\n'))
-cat(paste('作成日 :', Sys.time(), '\n'))
-cat(paste('特記 :', notes, '\n'))
-cat(paste('特記 :', notes0, '\n'))
-cat(paste("ID :", htmlID, "\n"))
+cat(paste0('Title       : ', dataTitle, subTitle, '\n'))
+cat(paste0('Data Source : ', dataSource, '\n'))
+cat(paste0('Author      : ', Author, '\n'))
+cat(paste0('作成日      : ', Sys.time(), '\n'))
+cat(paste0('特  記      : ', notes, '\n'))
+cat(paste0('特  記      : ', notes0, '\n'))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
@@ -84,6 +89,58 @@ funPlotTimeSeries <- function() {
   axis.Date(side = 1, at = dataSet[, 1], format = dateFormat, padj = 1, cex.axis = 1.0)  
 }
 ```
+
+```{r warning=F,error=F,message=F,echo=F}
+funDataTable <- 
+  function(obj, orderColumn = 1, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='', append='') {
+  cat(paste('<h4>', dataTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(5,-1), c(5,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T),# fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
+```
+
+***
+#### 直近月の原数値 / Latest Raw Data
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+tDF <- origData
+tDF <- t(tail(tDF,1))
+tDF <- data.frame(row.names(tDF),tDF,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(tDF) <- tDF[1,]
+colnames(tDF) <- c('Item',format(as.Date(colnames(tDF)[-1]),dateFormat))
+tDF <- tDF[-1,]
+tDF[,-1] <- as.numeric(tDF[,-1])
+funDataTable(tDF)
+```
+
+***
+#### 直近月の前年同月比(%) / Year over Year of Latest Data
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'} 
+yoy <- round(diff(as.matrix(origData[,-1]),lag = 12,differences = 1)/head(as.matrix(origData[,-1]),-12)*100,2)
+yoyDF0 <- data.frame(tail(origData[,1],-12),yoy,check.names = F,stringsAsFactors = F)
+tDF <- yoyDF0
+tDF <- t(tail(tDF,1))
+tDF <- data.frame(row.names(tDF),tDF,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(tDF) <- tDF[1,]
+colnames(tDF) <- c('Item',format(as.Date(colnames(tDF)[-1]),dateFormat))
+tDF <- tDF[-1,]
+tDF[,-1] <- as.numeric(tDF[,-1])
+funDataTable(tDF)
+```
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'} 
 par(  mar = c(3, 3, 3, 1),  family = 'Meiryo',  oma = c(0, 0, 0, 0),  mfrow = c(1, 2))
@@ -116,6 +173,7 @@ for (iii in 2:ncol(origData)) {
       objlwd <- 1
       dataSet$col <- ifelse(dataSet[, 2] < 0, 'red', 'blue')
       append <- '前年同月比(%)'
+      colnames(dataSet)[2] <- paste0('YoY-',colnames(dataSet0)[2])
     } else{
       dataSet$col <- 'blue'
       append <- '原数値'
@@ -129,3 +187,14 @@ for (iii in 2:ncol(origData)) {
   cat('<hr>')
 }
 ```
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
