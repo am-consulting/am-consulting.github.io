@@ -41,14 +41,23 @@ library(DT)
 library(lubridate)
 library(googleVis)
 library(pipeR)
+library(RCurl)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importJGBheldByBOJ.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '日本銀行が保有する国債の銘柄別残高 / Japanese Government Bonds held by the Bank of Japan'
-subTitle <- '(2016年10月31日現在)'
+dataTitle <- title
 dataSource <- '日本銀行'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste0('Title       : ', dataTitle, subTitle, '\n'))
+cat(paste0('Title       : ', dataTitle, '\n'))
 cat(paste0('Data Source : ', dataSource, '\n'))
 cat(paste0('Author      : ', Author, '\n'))
 cat(paste0('作成日      : ', Sys.time(), '\n'))
@@ -60,16 +69,17 @@ cat(paste0('作成日      : ', Sys.time(), '\n'))
 ***
 
 ```{r,warning=F,error=F,message=F,echo=F}
-tmp <-
-  read.table(
-    "clipboard",
-    header = F,
-    sep = "\t",
-    stringsAsFactor = F,
-    na.strings = c("NA", "-", "－", "… ", ".", ""),
-    check.names = F
-  )
-tmp[, 3] <- as.numeric(gsub(',','',tmp[, 3]))
+# tmp <-
+#   read.table(
+#     "clipboard",
+#     header = F,
+#     sep = "\t",
+#     stringsAsFactor = F,
+#     na.strings = c("NA", "-", "－", "… ", ".", ""),
+#     check.names = F
+#   )
+tmp <- JGBheldByBOJ
+# tmp[, 3] <- as.numeric(gsub(',','',tmp[, 3]))
 tmp[, 3] <- tmp[, 3] * 10 ^ -4
 colnames(tmp) <- c('JGB', '銘柄', '保有残高(兆円)')
 ```
