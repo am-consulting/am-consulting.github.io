@@ -329,7 +329,7 @@ funDataTable(obj = gdp4,
              append = '(単位:%)')
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj = gdp5,
              title = titleJ[5],
              append = '')
