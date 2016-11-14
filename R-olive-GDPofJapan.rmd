@@ -47,7 +47,7 @@ eval(parse(text = script))
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- "日本の国内総生産(単位:兆円)-名目GDP、実質GDP、年率換算、GDPデフレーター"
 dataTitle0 <- paste0(format(c(tail(origData[,1],1)%m-%months(2),tail(origData[,1],1)),'%Y年%m月'),collapse='~')
-dataSource <- "財務省"
+dataSource <- "内閣府"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
 dataTail <- 0
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
