@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-yieldCurve.html')) })
 
-title : 'イールドカーブ'
+title : 'イールドカーブ / Yield Curve of JGB'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -17,7 +17,15 @@ output:
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -41,14 +49,12 @@ notes<-'複数のワードで検索する際は半角スペースで区切って
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
 Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-htmlID<-timeStamp
-cat(paste('Title :',dataTitle,'\n'))
-cat(paste('Raw Data Source :',dataSource,'\n'))
-cat(paste('Author :',Author,'\n'))
-cat(paste('作成日 :',Sys.time(),'\n'))
-cat(paste('特記 :',notes,'\n'))
-cat(paste('特記 :',notes0,'\n'))
-cat(paste("ID :",htmlID,"\n"))
+cat(paste('Title       : ',dataTitle,'\n'))
+cat(paste('Data Source : ',dataSource,'\n'))
+cat(paste('Author      : ',Author,'\n'))
+cat(paste('作成日      : ',Sys.time(),'\n'))
+cat(paste('特記        : ',notes,'\n'))
+cat(paste('特記        : ',notes0,'\n'))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
@@ -127,6 +133,7 @@ cnt <- cnt + 1
 colnames(slopeTable)<-c('Date','Slope:1-40Y','C.I.95%-lwr','C.I.95%-upr','Slope:1-10Y','Slope:10Y-40Y')
 slopeTable[,1] <- as.Date(slopeTable[,1])
 ```
+
 ####注意
 
 1. イールドカーブの線形回帰は説明変数を数値の1から15(1Y、2Y・・・40Y)、応答変数を金利データとして算出したものである。
@@ -157,8 +164,28 @@ funDataTable <- function(obj,tableTitle='',append='') {
     class = 'display compact'
   )
 }
+
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', tableTitle = '', append = '') {
+  cat(paste('<h4>', tableTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(15,-1), c(15,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,echo=F}
 par(mar=c(3,4,4,1),family = 'Meiryo')
 plot(
@@ -190,22 +217,52 @@ lines(slopeTable[, 1] , predictResult$fit - qt(0.975,predictResult$df)*predictRe
 lines(slopeTable[, 1] , predictResult$fit + qt(0.975,predictResult$df)*predictResult$se, lty=2, col='blue')
 axis.Date(side=1,at=slopeTable[,1],format='%Y-%m-%d',padj=1,cex.axis=1.0) 
 ```
-<hr>
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable(obj = slopeTable, tableTitle = '線形回帰Slope')
+
+***
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+tailN <- 100
+funDataTable(obj = tail(slopeTable,tailN), tableTitle = paste0('線形回帰Slope.直近', tailN, '日分'))
 ```
-<hr>
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable(obj = jgbData, tableTitle = '日本国債金利情報')
+
+***
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable(obj = tail(jgbData,tailN), tableTitle = paste0('日本国債金利情報.直近', tailN, '日分'))
 ```
-<hr>
-####「長短金利操作付き量的・質的金融緩和」導入時(2016年09月21日)と直近の10年物日本国債金利の比較 
-```{r,warning=F,error=F,message=F,echo=F}
-col10Y <- grep('10Y', colnames(jgbData))
-buf01 <- tail(jgbData[, c(1, col10Y)], 1)
-buf02 <- subset(jgbData, jgbData[, 1] == '2016-09-21')[, c(1, col10Y)]
-buf03 <- data.frame(rbind(buf01, buf02), row.names = NULL, check.names = F)
-print(buf03)
-print(paste0('直近と導入時の金利差(pp) = ', buf03[1, 2] - buf03[2, 2]))
+
+***
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+buf01 <- tail(jgbData, 1)
+buf02 <- subset(jgbData, jgbData[, 1] == '2016-09-21')
+tmp01 <- rbind(buf01,buf02)
+tmp01[,1] <- as.character(tmp01[,1])
+tmp02 <- buf01-buf02
+tmp02[,1] <- paste0('Diff(PP,',as.character(tmp02[,1]),'days)')
+tmp <- rbind(tmp01,tmp02)
+tmp[,-1] <- round(tmp[,-1],3)
+tmp0 <- t(tmp)
+tmp0 <- data.frame(row.names(tmp0),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(tmp0) <- tmp0[1,]
+tmp0 <- tmp0[-1,]
+
+tmp0 <- data.frame(No=seq(1,nrow(tmp0)),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(tmp0)[2] <- 'Year'
+tmp0[,-c(1,2)] <- apply(tmp0[,-c(1,2)],2,as.numeric)
+funDataTable(obj = tmp0, orderDirection = 'asc',
+             tableTitle = '「長短金利操作付き量的・質的金融緩和」導入時(2016年09月21日)と直近の日本国債金利の比較')
 ```
-<hr>
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
