@@ -1,0 +1,201 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ConstructionStatistics.html')) })
+
+title : '建築着工統計調査 / Construction Statistics'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/importConstructionStatistics.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- "建築着工統計調査 - 新設住宅着工戸数とその前年比 - "
+dataTitle0 <- paste0(format(range(NSAData[,1]),'%Y年%m月'),collapse='~')
+dataSource <- "国土交通省"
+notes <- "複数のワードで検索する際は半角スペースで区切ってください"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+mergeData <- merge(NSAData,SAData,by='Date')
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plotTimeSeries <- 
+  function(obj, x = 1, y01 = 2, y02 = 4, type01 = 'l', type02 = 'l', dateFormat = '%Y-%m', tailN = nrow(obj), needRect = 0) {
+  lineColor <- c('blue','red')
+  obj <- tail(obj,tailN)
+  yMax <- max(obj[,c(y01,y02)])
+  yMin <- min(obj[,c(y01,y02)])
+  title <- paste0(paste0(format(range(obj[,x]),dateFormat),collapse = '~'),'\nデータ出所:',dataSource)  
+  par(family='Meiryo',mar=c(4,4,4,2))
+  plot(obj[,x],obj[,y01],type=type01,col=lineColor[1],xlab='',ylab='',xaxt='n',
+       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2,main = title,ylim=c(yMin,yMax))
+  Date <- as.numeric(obj[,x])
+  Value <- obj[,y01]
+  lo <- loess(Value ~ Date, degree = 2)
+  lines(obj[,x] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)  
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  axis.Date(side=1, at=obj[,x],format=dateFormat,padj=1,cex.axis=1.0)
+  lines(obj[,x],obj[,y02],type = type02,col=lineColor[2],xlab='',ylab='',xaxt='n',
+       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2)
+  Value <- obj[,y02]
+  lo <- loess(Value ~ Date, degree = 2)
+  lines(obj[,x] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)  
+  graphics::legend('topleft',col=lineColor,lty=1,legend=colnames(obj)[c(y01,y02)],cex=1,bty='n',lwd = 2)
+  if(needRect!=0){
+  # 民主党パート
+  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2012-12-26'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '民主党政権'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'dimgray', density = 10, angle = 45)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
+  }
+  # 民主党パート
+  # 3%パート
+  rectDateL <- max(as.numeric(as.Date('1989-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('1997-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n3%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'darksalmon', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 3%パート
+  # 5%パート
+  rectDateL <- max(as.numeric(as.Date('1997-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2014-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n5%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'yellowgreen', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 5%パート
+  # 8%パート
+  rectDateL <- max(as.numeric(as.Date('2014-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n8%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'skyblue', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 8%パート
+  # 東京オリンピック決定後パート
+  rectDateL <- max(as.numeric(as.Date('2013-9-8')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '東京オリンピック決定後'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'orange', density = 5, angle = 45)
+    text(rectDateR, (par('usr')[3]+par('usr')[4])/2, labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 東京オリンピック決定後パート
+  # エコポイントパート
+  rectDateL <- max(as.numeric(as.Date('2009-5-15')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2011-3-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- 'エコポイント'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'red', density = 5, angle = 45)
+    text(rectDateR, (par('usr')[3]+par('usr')[4])/2*1.1, labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # エコポイントパート
+  }
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=7,fig.width=10}
+fun_plotTimeSeries(obj = mergeData)
+cat('<hr>')
+fun_plotTimeSeries(obj = mergeData,tailN = 12*10,needRect = 1)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+funDataTable <- 
+  function(obj,orderColumn = 0,orderDirection = 'desc',width00 = '5%',caption = '',title = '',append = '') {
+  cat(paste('<h4>', title, append, '</h4>'))  
+  obj[,1] <- format(obj[,1],'%Y-%m')  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
+```
+
+***
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable(obj =mergeData, title = dataTitle, append = dataTitle0)
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
