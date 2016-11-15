@@ -92,7 +92,7 @@ fun_plotTimeSeries <-
     rect(xleft  = rectDateL, ybottom = par('usr')[3], 
          xright = rectDateR, ytop    = par('usr')[4], 
          col    = 'dimgray', density = 10, angle = 45)
-    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 2)
   }
   # 民主党パート
   # 3%パート
