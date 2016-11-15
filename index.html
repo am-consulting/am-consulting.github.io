@@ -15,9 +15,26 @@
 <link  href="components/bxslider/jquery.bxslider.css" rel="stylesheet" />
 <!--bxslider-->
 <!-- Textillate.js -->
+<script src="components/textillate.js/jquery.textillate.js"></script>
 <script src="components/textillate.js/jquery.lettering.js"></script>
-<script src="components/textillate.js/jquery.fittext.js"></script>
 <link  href="components/textillate.js/animate.css" rel="stylesheet" />
+<script>
+$(function(){
+	$('.tlt').textillate({
+		in : {
+			effect: 'bounce',
+			shuffle: true,
+			sync: true
+		},
+		out: {
+			effect: 'swing',
+			shuffle: true,
+			sync: true
+		},
+		loop: true
+	});
+});
+</script>
 <!-- Textillate.js -->
 <style>
 body {
@@ -188,9 +205,20 @@ $(document).ready(function(){
 	<p>SaECaNet - Knowledge Vault</p>
 </div>
 <div class="footer" align="center">
-	<p><a href="http://am-consulting.co.jp" target="_blank">Asset Management Consulting Corporation</p>
-	<p><a href="http://www.saecanet.com" target="_blank">SaECaNet - Science and Engineering Cafe on the Net</p>
+	<p><a href="http://am-consulting.co.jp" target="_blank">Asset Management Consulting Corporation</a></p>
+	<p><a href="http://www.saecanet.com" target="_blank">SaECaNet - Science and Engineering Cafe on the Net</a></p>
 </div>
+<hr>
+<!-- Textillate.js -->
+<div class="tlt" align="center">
+    <ul class="texts">
+        <li>アセット･マネジメント･コンサルティング株式会社</li>
+        <li>http://am-consulting.co.jp</li>
+        <li>Asset Management Consulting Corporation</li>
+        <li>http://am-consulting.co.jp</li>
+    </ul>
+</div>
+<!-- Textillate.js -->
 </div>
 </body>
 </html>
