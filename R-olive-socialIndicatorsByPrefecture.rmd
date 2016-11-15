@@ -139,11 +139,11 @@ funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 
     obj,
     extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
     options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(15, -1, 1), c(15, 'All', 1)),
+      searching = T, scrollX = T, lengthMenu = list(c(20, -1, 1), c(20, 'All', 1)),
       orderClasses = T, order = list(list(orderColumn, orderDirection)), 
       search = list(regex = T, caseInsensitive = T), searchHighlight = T,
       columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 2), fixedHeader = T),
     rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
   )  
 }
