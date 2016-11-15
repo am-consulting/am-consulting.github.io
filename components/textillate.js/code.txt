@@ -1,0 +1,4 @@
+利用コードURL
+http://textillate.js.org/
+https://daneden.github.io/animate.css/
+http://letteringjs.com/
