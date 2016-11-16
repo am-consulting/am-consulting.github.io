@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',timeStamp,'.html')) })
-title : "建築物滅失"
+title : "総貸出"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
@@ -12,12 +12,19 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1000px;
+	max-width: 1200px;
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
 
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -66,14 +73,10 @@ if(loadTMP==1){
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-omitType <- 1
+omitType <- 0
 if(loadTMP == 0){
-dataTitle <-
-  paste0('Baker Hughes:North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス',' - ',
-         format(last(tmp[, 1]), dateFormat))
-dataTitle <- '建築物滅失統計調査 月次 2016年7月' 
-dataSource <- 'Baker Hughes'
-dataSource <- '国土交通省'
+dataTitle <- paste0('貸出先別貸出金 - ',format(tail(tmp[,1],1),dateFormat)) 
+dataSource <- '日本銀行'
 }
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -98,68 +101,111 @@ if(omitType==1) {
 }
 ```
 
-```{r,warning=F,error=F,message=F,echo=F} 
-funPlotTimeSeries <- function() {
-  mainTitle <-
-    paste(colnames(dataSet)[obj01], '\n×\n', colnames(dataSet)[obj02])
-  maxValue <- max(dataSet[, obj01], dataSet[, obj02])
-  minValue <- min(dataSet[, obj01], dataSet[, obj02])
-  par(mar = c(3, 5, 6, 5), family = 'Meiryo')
-  plot(
-    dataSet[, 1],
-    dataSet[, obj01],
-    type = seriesType01,
-    col = lineColor[1],
-    xlab = '' ,
-    ylab = '' ,
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-    xaxt = 'n',
-    ylim = if (needYlim == 1) {c(minValue, maxValue)},
-    main = paste(mainTitle, '\n', datePeriod, '\nSource:', dataSource),
-    cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = obj01lwd
-  )
-  if (needloess01 == 1) {
-    lo <- loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
-    lines(dataSet[, 1] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)
-  }
-  if (chartTtpe == 1) {
-    lines(dataSet[, 1], dataSet[, obj02], col = lineColor[2], lwd = obj02lwd)
-  } else{
+```{r warning=F,error=F,message=F,echo=F} 
+funPlotTimeSeries <- 
+function(obj, x = 1, y01 = 2, y02 = 3, type01 = 'l', type02 = 'l', dateFormat = '%Y-%m', tailN = nrow(obj), needRect = 1, chartType = 2) {
+  lineColor <- c('blue','red')
+  obj <- tail(obj,tailN)
+  yMax <- max(obj[,c(y01,y02)])
+  yMin <- min(obj[,c(y01,y02)])
+  title <- paste0(paste0(format(range(obj[,x]),dateFormat),collapse = '~'),'\nデータ出所:',dataSource)  
+  par(family='Meiryo',mar=c(4,5,4,5))
+  plot(obj[,x],obj[,y01],type=type01,col=lineColor[1],xlab='',ylab='',xaxt='n',
+       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2,main = title,ylim = if(chartType == 1){c(yMin,yMax)})
+  Date <- as.numeric(obj[,x])
+  Value <- obj[,y01]
+  lo <- loess(Value ~ Date, degree = 2)
+  # lines(obj[,x] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)  
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  axis.Date(side=1, at=obj[,x],format=dateFormat,padj=1,cex.axis=1.0)
+  if (chartType == 1) {
+    lines(obj[,x],obj[,y02],type = type02,col=lineColor[2],xlab='',ylab='',xaxt='n',
+         cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2)
+  } else {  
     par(new = T)
-    plot(
-      dataSet[, 1],
-      dataSet[, obj02],
-      col = lineColor[2],
-      type = seriesType02,
-      xlab = '' ,
-      ylab = '' ,
-      panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-      xaxt = 'n',
-      yaxt = 'n',
-      cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = obj02lwd
-    )
-    axis(4, cex.axis = 1, cex.lab = 1)
-    mtext(colnames(dataSet)[obj01], side = 2, line = 3.2, cex = 1)
-    mtext(colnames(dataSet)[obj02], side = 4, line = 3.2, cex = 1)
+    plot(obj[,x],obj[,y02],type=type02,col=lineColor[2],xlab='',ylab='',xaxt='n',yaxt = 'n',
+         cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2,main = title,ylim = if(chartType == 1){c(yMin,yMax)})
+    axis(4, cex.axis = 1.2, cex.lab = 1.2)
+    mtext(colnames(obj)[y01], side = 2, line = 3.2, cex = 1)
+    mtext(colnames(obj)[y02], side = 4, line = 3.2, cex = 1)
   }
-  if (needloess02 == 1) {
-    lo <- loess(dataSet[, obj02] ~ as.numeric(dataSet[, 1]), degree = 2)
-    lines(dataSet[, 1] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)
+  Value <- obj[,y02]
+  lo <- loess(Value ~ Date, degree = 2)
+  # lines(obj[,x] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)  
+  graphics::legend('topleft',col=lineColor,lty=1,legend=colnames(obj)[c(y01,y02)],cex=1,bty='n',lwd = 2)
+  if(needRect!=0){
+  # 民主党パート
+  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2012-12-26'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '民主党政権'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'dimgray', density = 10, angle = 45)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 2)
   }
-  graphics::legend(
-    'topleft',
-    col = lineColor[-3],
-    lty = 1,
-    legend = c(colnames(dataSet)[obj01], colnames(dataSet)[obj02]),
-    cex = 1,
-    bty = 'n'
-  )
-  axis.Date(side = 1, at = dataSet[, 1], format = dateFormat, padj = 1, cex.axis = 1.0)
+  # 民主党パート
+  # 3%パート
+  rectDateL <- max(as.numeric(as.Date('1989-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('1997-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n3%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'darksalmon', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 3%パート
+  # 5%パート
+  rectDateL <- max(as.numeric(as.Date('1997-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2014-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n5%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'yellowgreen', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 5%パート
+  # 8%パート
+  rectDateL <- max(as.numeric(as.Date('2014-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n8%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'skyblue', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 8%パート
+  # 東京オリンピック決定後パート
+  rectDateL <- max(as.numeric(as.Date('2013-9-8')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '東京オリンピック決定後'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'orange', density = 5, angle = 45)
+    text(rectDateR, (par('usr')[3]+par('usr')[4])/2, labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 東京オリンピック決定後パート
+  # エコポイントパート
+  rectDateL <- max(as.numeric(as.Date('2009-5-15')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2011-3-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- 'エコポイント'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'red', density = 5, angle = 45)
+    text(rectDateR, (par('usr')[3]+par('usr')[4])/2*1.1, labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # エコポイントパート
+  }
 }
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', caption = '') {
+funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', caption = '', fixedcolumns = 1) {
   DT::datatable(
     obj,
     extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
@@ -168,13 +214,13 @@ funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 
       orderClasses = T, order = list(list(orderColumn, orderDirection)), 
       search = list(regex = T, caseInsensitive = T), searchHighlight = T,
       columnDefs = list(list(width = width01, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = fixedcolumns), fixedHeader = T),
     rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
   )  
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=8,fig.width=12}
 lineColor <- c('blue', 'red', 'black')
 chartTtpe <- 1
 if (chartTtpe == 1) {
@@ -193,10 +239,10 @@ needloess02 <- 1
 dataTail <- 12 * 20000
 dataSet <- tail(dataSet, dataTail)
 datePeriod <- paste0(format(first(dataSet[, 1]), dateFormat), '~', format(last(dataSet[, 1]), dateFormat))
-funPlotTimeSeries()
+funPlotTimeSeries(obj = dataSet,tailN = 4*30)
 ```
 <hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=12}
 par(mfrow = c(1, 2), mar = c(3, 3, 3, 3), family = 'Meiryo', oma = c(0, 0, 3, 0))
 for (ddd in 1:2) {
   bufN <- get(paste0('obj0', ddd))
@@ -211,12 +257,15 @@ mtext(datePeriod, side = 3,outer = T,cex = 1.2)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-cat(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '))
-summary(dataSet[,-1])
+y01 <- 2
+y02 <- 3
+cat(paste0(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '),'\n\n'))
+summary(dataSet[,c(y01,y02)])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-psych::describe(dataSet[,-1])
+cat(paste0(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '),'\n\n'))
+psych::describe(dataSet[,c(y01,y02)])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -224,17 +273,17 @@ psych::describe(dataSet[,-1])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-pastecs::stat.desc(dataSet[,-1]) 
+cat(paste0(paste0(as.Date(range(dataSet[,1])),collapse = ' ~ '),'\n\n'))
+pastecs::stat.desc(dataSet[,c(y01,y02)]) 
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-apply(dataSet[,-1],2,adf.test)
+# apply(dataSet[,-1],2,adf.test)
 ```
 
 <hr>
 
 ```{r warning=F, error=F, message=F, results='asis', echo=F}
-if(dataSource != 'Baker Hughes'){
 dataSet0 <- dataSet
 origcolN <- ncol(dataSet0)
 dataSet0$Y  <- year(dataSet0[,1])
@@ -269,11 +318,8 @@ summaryTable <- summaryTable0[,1:origcolN]
 summaryTable <- data.frame(ID = c(1:nrow(summaryTable)), summaryTable[,1], 
                            apply(summaryTable[,-1],2,as.numeric), check.names = F, stringsAsFactors = F)
 colnames(summaryTable)[2]<- 'Summary'
-funDataTable(obj = summaryTable, width01 = '5%', orderDirection = 'asc' )
-}
+# funDataTable(obj = summaryTable, width01 = '5%', orderDirection = 'asc',fixedcolumns = 2)
 ```
-
-<hr>
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet0 <- dataSet
@@ -281,22 +327,6 @@ dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
 funDataTable(obj = dataSet0, width01 = '15%')
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-if(dataSource == 'Baker Hughes'){
-dataSet0 <- dataSet
-dataSet0 <- data.frame(dataSet0[-1,1,drop=F],round(diff(as.matrix(dataSet0[,-1,drop=F])),10),check.names = F)
-colnames(dataSet0)[-1] <- paste0(colnames(dataSet0)[-1],'-Change From Last Data')
-dataSet1 <- dataSet
-dataSet1[,-1] <- apply(dataSet1[,-1,drop=F],2,function(x){round(x/max(x)*100,1)})
-colnames(dataSet1)[-1] <- paste0(colnames(dataSet1)[-1],'-Ratio to Peak')
-dataSet0 <- merge(dataSet, dataSet0, by = 'Date',all = T)
-dataSet0 <- merge(dataSet0, dataSet1, by = 'Date',all = T)
-#dataSet0[is.na(dataSet0)] <- ''
-#dataframeのNAを''に置換すると、そのNAを含む列全てがcharacterに変換されてしまうので注意
-dataSet0[, 1] <- format(dataSet0[, 1], dateFormat)
-funDataTable(obj = dataSet0, width01 = '15%')
-}
-```
 <hr>
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
 knitr::kable(tail(dataSet,12),row.names = F)
