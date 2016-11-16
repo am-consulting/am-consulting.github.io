@@ -1,0 +1,268 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-SurveyofSelectedServiceIndustries.html')) })
+
+title : 'Survey of Selected Service Industries - Sales Index'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10  
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
+library(DT)
+library(lubridate)
+library(rvest)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- '特定サービス産業動態売上高指数-対事業所サービス業(調査10業種),対個人サービス業(調査9業種)の指数推移-季節調整済指数'
+dataSource <- '経済産業省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title       : ', dataTitle,'\n'))
+cat(paste('Data Source : ', dataSource,'\n'))
+cat(paste('Author      : ', Author,'\n'))
+cat(paste('作成日      : ', Sys.time(),'\n'))
+cat(paste('特  記      : ', notes,'\n'))
+cat(paste('特  記      : ', notes0,'\n'))
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- 'SurveyofSelectedServiceIndustries.xls'
+baseURL <- 'http://www.e-stat.go.jp/SG1/estat/'
+keyword1 <- '特定サービス産業動態売上高指数'
+keyword1 <- iconv(keyword1,'shift_jis','utf8')
+url <- paste0('http://www.e-stat.go.jp/SG1/estat/GL02010201.do?method=searchTop&andKeyword=', URLencode(keyword1))
+htmlMarkup <- read_html(url, encoding = "utf8")
+trList <- htmlMarkup %>% html_nodes(xpath = "//tr")
+funDownloadXLS <- function(objWord = keyword2,cnt = 1){
+  objTr <- gsub('\n|\t','',trList[grep(objWord,trList)])
+  pattern <- "<a\\shref=\".*?xlsDownload.*?\""
+  objHref <- unlist(regmatches(objTr, gregexpr(pattern, objTr, fixed = F)))
+  pattern <- "./.*?\\.do"
+  objDo <- gsub('(./)','',unlist(regmatches(objHref, gregexpr(pattern, objHref, fixed = F))))
+  pattern <- "fileId=[0-9]+"
+  objID <- unlist(regmatches(objHref, gregexpr(pattern, objHref, fixed = F)))
+  pattern <- "releaseCount=[0-9]+"
+  objCount <- unlist(regmatches(objHref, gregexpr(pattern, objHref, fixed = F)))
+  fileURL <- paste0(baseURL,objDo,'?method=xlsDownload&',objID,'&',objCount)
+  download.file(fileURL, fileName, mode = "wb")
+  assign(paste0('SSI',cnt),
+         XLConnect::readWorksheetFromFile(paste0(pathOutput, fileName),sheet = 6,check.names = F,header = F),envir = .GlobalEnv)
+}
+keyword201 <- '対事業所サービス'
+funDownloadXLS(objWord = keyword201, cnt =1)
+keyword202 <- '対個人サービス業'
+funDownloadXLS(objWord = keyword202, cnt =2)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+funTimeSeries <- function(obj,cnt){
+  assign(paste0('title',cnt),paste(na.omit(obj[,2]),collapse="-"),envir = .GlobalEnv)
+  obj[,4] <- as.numeric(gsub('月','',obj[,4]))
+  tmp <- NA
+  for(rrr in 1:nrow(obj)){
+   if(!is.na(obj[rrr,3])){tmp <- obj[rrr,3]}
+    obj[rrr,3] <- tmp
+    if(length(grep('平成[0-9]+',obj[rrr,3]))!=0){obj[rrr,3] <- 1988 + as.numeric(gsub('平成|年','',obj[rrr,3]))}
+  }
+  colnames(obj) <- obj[7,]
+  obj <- obj[-c(1:grep('ウェイト',obj[,3])[1]),]
+  obj[,3] <- as.numeric(obj[,3])
+  obj[,1] <- as.Date(paste0(obj[,3],'-',obj[,4],'-1'))
+  obj <- obj[,-c(2:4)]
+  colnames(obj)[1] <- 'Date'
+  obj <- obj[,-grep('NA',colnames(obj))]
+  obj <- na.omit(obj)
+  obj[,-1] <- apply(obj[,-1],2,as.numeric)
+  assign(paste0('dataSet',cnt),obj,envir = .GlobalEnv)
+}
+funTimeSeries(obj = SSI1, cnt = 1)
+funTimeSeries(obj = SSI2, cnt = 2)
+title1;title2
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_dataTable <- 
+  function(obj,orderColumn = 0,orderDirection = 'desc',
+           width00 = '5%',caption = '',title = '',append = '',leftcolumns = 1,dateFormat = '%Y-%m') {
+  cat(paste0('<h4>', title, append, '</h4>'))
+  obj[,1] <- format(obj[,1],dateFormat)  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, 
+      fixedHeader = T, fixedColumns = list(leftColumns = leftcolumns)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_dataTable(obj = dataSet1,title = keyword201)
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_dataTable(obj = dataSet2,title = keyword202)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+mergeData <- merge(dataSet1,dataSet2,by='Date')
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plotTimeSeries <- 
+  function(obj, x = 1, y01 = 2, y02 = 4, type01 = 'l', type02 = 'l', dateFormat = '%Y-%m', tailN = nrow(obj), needRect = 1) {
+  lineColor <- c('blue','red')
+  obj <- tail(obj,tailN)
+  yMax <- max(obj[,c(y01,y01)])
+  yMin <- min(obj[,c(y01,y01)])
+  title <- paste0(colnames(obj)[y01],'\n',paste0(format(range(obj[,x]),dateFormat),collapse = '~'),'\nデータ出所:',dataSource)  
+  par(family='Meiryo',mar=c(4,4,5,2))
+  plot(obj[,x],obj[,y01],type=type01,col=lineColor[1],xlab='',ylab='',xaxt='n',
+       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2,main = title,ylim=c(yMin,yMax))
+  Date <- as.numeric(obj[,x])
+  Value <- obj[,y01]
+  lo <- loess(Value ~ Date, degree = 2)
+  lines(obj[,x] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)  
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  axis.Date(side=1, at=obj[,x],format=dateFormat,padj=1,cex.axis=1.0)
+  
+  # lines(obj[,x],obj[,y02],type = type02,col=lineColor[2],xlab='',ylab='',xaxt='n',
+  #      cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2)
+  # Value <- obj[,y02]
+  # lo <- loess(Value ~ Date, degree = 2)
+  # lines(obj[,x] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)  
+  # graphics::legend('topleft',col=lineColor,lty=1,legend=colnames(obj)[c(y01,y02)],cex=1,bty='n',lwd = 2)
+  if(needRect!=0){
+  # 民主党パート
+  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2012-12-26'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '民主党政権'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'dimgray', density = 10, angle = 45)
+    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 2)
+  }
+  # 民主党パート
+  # 3%パート
+  rectDateL <- max(as.numeric(as.Date('1989-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('1997-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n3%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'darksalmon', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 3%パート
+  # 5%パート
+  rectDateL <- max(as.numeric(as.Date('1997-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2014-03-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n5%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'yellowgreen', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 5%パート
+  # 8%パート
+  rectDateL <- max(as.numeric(as.Date('2014-04-01')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '消費税\n8%'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'skyblue', density = 5, angle = 135)
+    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 8%パート
+  # 東京オリンピック決定後パート
+  rectDateL <- max(as.numeric(as.Date('2013-9-8')),as.numeric(obj[1,1]))
+  rectDateR <- tail(obj[,1],1)
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- '東京オリンピック決定後'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'orange', density = 5, angle = 45)
+    text(rectDateR, (par('usr')[3]+par('usr')[4])/2, labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # 東京オリンピック決定後パート
+  # エコポイントパート
+  rectDateL <- max(as.numeric(as.Date('2009-5-15')),as.numeric(obj[1,1]))
+  rectDateR <- as.numeric(as.Date('2011-3-31'))
+  if(as.numeric(obj[1,1]) < rectDateR){
+    rectText <- 'エコポイント'
+    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
+         xright = rectDateR, ytop    = par('usr')[4], 
+         col    = 'red', density = 5, angle = 45)
+    text(rectDateR, (par('usr')[3]+par('usr')[4])/2, labels = paste0(rectText,'\n\n\n'), pos = 2)
+  }
+  # エコポイントパート
+  }
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=7,fig.width=10}
+for(ccc in 2:(ncol(mergeData)-1)){
+  cat('<hr>')
+  cat('<h4>',colnames(mergeData)[ccc],'</h4>')
+  fun_plotTimeSeries(obj = mergeData,y01 = ccc)
+}
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
