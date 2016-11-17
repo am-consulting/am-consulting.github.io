@@ -40,20 +40,6 @@ windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- '特定サービス産業動態売上高指数-対事業所サービス業(調査10業種),対個人サービス業(調査9業種)の指数推移-季節調整済指数'
-dataSource <- '経済産業省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ', dataTitle,'\n'))
-cat(paste('Data Source : ', dataSource,'\n'))
-cat(paste('Author      : ', Author,'\n'))
-cat(paste('作成日      : ', Sys.time(),'\n'))
-cat(paste('特  記      : ', notes,'\n'))
-cat(paste('特  記      : ', notes0,'\n'))
-```
-
 ```{r warning=F,error=F,message=F,echo=F}
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
@@ -111,6 +97,49 @@ funTimeSeries(obj = SSI1, cnt = 1)
 funTimeSeries(obj = SSI2, cnt = 2)
 title1;title2
 ```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- 
+  paste0('特定サービス産業動態売上高指数-対事業所サービス業(調査10業種),対個人サービス業(調査9業種)の指数推移-季節調整済指数 - ',
+         format(tail(dataSet1[,1],1),'%Y年%m月分'))
+dataSource <- '経済産業省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title       : ', dataTitle,'\n'))
+cat(paste('Data Source : ', dataSource,'\n'))
+cat(paste('Author      : ', Author,'\n'))
+cat(paste('作成日      : ', Sys.time(),'\n'))
+cat(paste('特  記      : ', notes,'\n'))
+cat(paste('特  記      : ', notes0,'\n'))
+```
+
+- 特定サービス産業動態統計調査(調査19業種)総合:`r colnames(dataSet1)[2]`
+- 対事業所サービス業(調査10業種)総合:`r colnames(dataSet1)[3]`
+- 対個人サービス業(調査9業種)総合:`r colnames(dataSet2)[2]`
+- 物品賃貸業(リース):`r colnames(dataSet1)[4]`	
+- 物品賃貸業(レンタル):`r colnames(dataSet1)[5]`		
+- 情報サービス業:`r colnames(dataSet1)[6]`	
+- 広告業:`r colnames(dataSet1)[7]`	
+- クレジットカード業:`r colnames(dataSet1)[8]`	
+- エンジニアリング業:`r colnames(dataSet1)[9]`	
+- インターネット附随サービス業:`r colnames(dataSet1)[10]`	
+- 機械設計業:`r colnames(dataSet1)[11]`	
+- 自動車賃貸業:`r colnames(dataSet1)[12]`	
+- 環境計量証明業:`r colnames(dataSet1)[13]` 
+- 趣味・娯楽関連(調査5業種):`r colnames(dataSet2)[3]`
+- ゴルフ場:`r colnames(dataSet2)[4]`	
+- ゴルフ練習場:`r colnames(dataSet2)[5]`	
+- ボウリング場:`r colnames(dataSet2)[6]`	
+- 遊園地・テーマパーク:`r colnames(dataSet2)[7]`	
+- パチンコホール:`r colnames(dataSet2)[8]`		
+- 教養・生活関連(調査4業種):`r colnames(dataSet2)[9]`
+- 葬儀業:`r colnames(dataSet2)[10]`	
+- 外国語会話教室:`r colnames(dataSet2)[11]`	
+- フィットネスクラブ:`r colnames(dataSet2)[12]`	
+- 学習塾:`r colnames(dataSet2)[13]`
+
+
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_dataTable <- 
