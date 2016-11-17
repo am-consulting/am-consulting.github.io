@@ -191,14 +191,17 @@ cat(paste0(head(statData[,2],1),' - ',tail(statData[,2],1),'\n'))
 apply(statData[,c(3,5,6,8)],2,summary)
 ```
 <hr>
-```{r,warning=F,error=F,message=F,results='hide',echo=F}
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf <- tail(origData, 3)
 buf <- t(buf)
 buf <- data.frame(rownames(buf), buf)
 colnames(buf) <- unlist(buf[2, ])
 buf <- buf[-(1:2), ]
 colnames(buf)[1] <- '対象'
-knitr::kable(buf, row.names = F)
+buf[,-1] <- apply(buf[,-1],2,as.numeric)
+buf <- data.frame(ID=seq(1,nrow(buf)),buf,check.names = F,stringsAsFactors = F)
+fun_datatabls(obj = buf,orderDirection = 'asc')
+#knitr::kable(buf, row.names = F)
 ```
 
 ***
