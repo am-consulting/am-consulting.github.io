@@ -1,11 +1,11 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-intrusion.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);pathToFolder000<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,pathToFolder000[2,1],'charts/','am-consulting.co.jp-intrusion.html')) })
 title : "尖閣諸島接近状況統計分析"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
     fig_height: 6
-    fig_width: 12
+    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
@@ -22,14 +22,10 @@ table{
 }
 </style>
 
-
-
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- paste0('中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:',Sys.Date(),'更新')
@@ -47,6 +43,10 @@ library(scales)
 library(tseries)
 library(pipeR)
 library(zoo)
+library(XLConnect)
+library(excel.link)
+library(xts)
+library(dygraphs)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -74,7 +74,7 @@ eventData<-c(
 '2016-06-09','中国-尖閣沖接続水域に初めて軍艦侵入',
 '2016-07-10','日本-第24回参議院議員通常選挙'
 )
-
+eventData <- iconv(eventData,'shift_jis','utf8')
 eventDataDF <- data.frame()
 for (eee in seq(0, length(eventData) / 2 - 1, by = 1)) {
   eventDataDF[eee + 1, 1] <- eventData[eee * 2 + 1]
@@ -87,15 +87,29 @@ colnames(eventDataDF) <- c('Date', 'Event')
 
 ```{r,warning=F,error=F,message=F,echo=F}
 if(loadTMP==1) {
-  tmp <-
-    read.table(
-      'clipboard',
-      header = T,
-      sep = '\t',
-      stringsAsFactor = F,
-      na.strings = c('na', '', '-'),
-      check.names = F
-    )
+  # tmp <-
+  #   read.table(
+  #     'clipboard',
+  #     header = T,
+  #     sep = '\t',
+  #     stringsAsFactor = F,
+  #     na.strings = c('na', '', '-'),
+  #     check.names = F
+  #   )
+  # ソース読み込みパート
+  fileName <-'defaultPath.csv'
+  username <- Sys.info()['user']
+  pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+  setwd(pathToFile)
+  buf000 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+  pathOutput <- paste0("C:/Users/", username, buf000[3,1])
+  setwd(pathOutput)
+  fileName <- dir(pathOutput)[grep('公船による',dir(pathOutput))]
+  tmp <- xl.read.file(fileName, header=T, top.left.cell = "A1", xl.sheet = 1, excel.visible = F)
+  tmp <- tmp[,-ncol(tmp)]
+  rrEnd <- tail(which(sapply(tmp[,2],function(x){!is.na(x)})),1)
+  tmp <- tmp[1:rrEnd,]
+  # ソース読み込みパート
   dataSet0 <- tmp
   dataSet0[, 1] <- as.Date(dataSet0[, 1])
   dataSet <- na.omit(dataSet0[,-3,drop=F])
@@ -434,7 +448,42 @@ funTimeSeries <- function() {
 
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=10} 
 obj01 <- 2
-funTimeSeries()
+# funTimeSeries()
+```
+
+```{r warning=F,error=F,message=F,echo=F,fig.height=10,fig.width=10}
+dyBarChart <- function(dygraph) {
+  dyPlotter(dygraph = dygraph,
+            name = "BarChart",
+            path = system.file("examples/plotters/barchart.js",package = "dygraphs"))
+}
+
+fun_dygraph <- function(obj = dataSet, ccc = 2){
+  timeSeries0 <- na.omit(dataSet[,c(1,ccc)])
+  timeSeries <- xts(timeSeries0[,-1], order.by=timeSeries0[,1])
+  colnames(timeSeries)[1] <- colnames(timeSeries0)[2]
+  dygraph(timeSeries,xlab = 'Date',main = paste0(colnames(timeSeries0)[-1],collapse = ' × '))  %>% 
+    dyLegend(width = 500) %>% dyRangeSelector() %>% dyBarChart() %>% 
+    dyEvent(eventDataDF[1,1], eventDataDF[1,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[2,1], eventDataDF[2,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[3,1], eventDataDF[3,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[4,1], eventDataDF[4,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[5,1], eventDataDF[5,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[6,1], eventDataDF[6,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[7,1], eventDataDF[7,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[8,1], eventDataDF[8,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[9,1], eventDataDF[9,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[10,1], eventDataDF[10,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[11,1], eventDataDF[11,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[12,1], eventDataDF[12,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[13,1], eventDataDF[13,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[14,1], eventDataDF[14,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[15,1], eventDataDF[15,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[16,1], eventDataDF[16,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[17,1], eventDataDF[17,2], labelLoc = "top") %>%
+    dyEvent(eventDataDF[18,1], eventDataDF[18,2], labelLoc = "top")
+}
+fun_dygraph()
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=4} 
