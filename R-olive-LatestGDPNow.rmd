@@ -73,7 +73,30 @@ importData <-
 	'IMPORTSERVICESCONTRIBNOW','Contributions to percent change in GDPNow: Real Imports of Services',
 	'GOVCONTRIBNOW','Contributions to percent change in GDPNow: Real Gross Government Investment',
 	'PCESERVICESCONTRIBNOW','Contributions to percent change in GDPNow: Real Personal Consumption Expenditures: Services',
-	'FIXINVESTCONTRIBNOW','Contributions to percent change in GDPNow: Real Gross Private Domestic Investment: Fixed Investment'
+	'FIXINVESTCONTRIBNOW','Contributions to percent change in GDPNow: Real Gross Private Domestic Investment: Fixed Investment',
+  'BUSFIXINVESTNOW','Nowcast for Real Gross Private Domestic Investment: Fixed Investment: Business',
+  'EQUIPNOW','Nowcast for Real Gross Private Domestic Investment: Fixed Investment: Business: Equipment',
+  'CHNGNETINVENTNOW','Nowcast for Real Change of Inventory Investment',
+  'PCENOW','Nowcast for Real Personal Consumption Expenditures',
+  'GDPINOW','Nowcast for Real Gross Private Domestic Investment',
+  'CHNGNETEXPORTSNOW','Nowcast for Real Change of Net Exports of Goods and Services',
+  'PCESERVICESNOW','Nowcast for Real Personal Consumption Expenditures: Services',
+  'STRUCTNOW','Nowcast for Real Gross Private Domestic Investment: Fixed Investment: Business: Structures',
+  'IMPORTSNOW','Nowcast for Real Imports of Goods and Services',
+  'RESNOW','Nowcast for Real Gross Private Domestic Investment: Fixed Investment: Residential',
+  'GOVNOW','Nowcast for Real Gross Government Investment',
+  'FINSALESNOW','Nowcast for Real Final Sales of Domestic Product',
+  'FEDGOVNOW','Nowcast for Real Gross Government Investment: Federal Government',
+  'IMPORTSGOODSNOW','Nowcast for Real Imports of Goods',
+  'EXPORTSGOODSNOW','Nowcast for Real Exports of Goods',
+  'EXPORTSSERVICESNOW','Nowcast for Real Exports of Services',
+  'IMPORTSERVICESNOW','Nowcast for Real Imports of Services',
+  'FINSALESDOMPURNOW','Nowcast for Real Final Sales of Domestic Purchasers',
+  'PCEGOODSNOW','Nowcast for Real Personal Consumption Expenditures: Goods',
+  'FINSALESDOMPRIVPUR','Nowcast for Real Final Sales of Private Domestic Purchasers',
+  'FIXINVESTNOW','Nowcast for Real Gross Private Domestic Investment: Fixed Investment',
+  'SLGOVNOW','Nowcast for Real Gross Government Investment: State and Local Government',
+  'IPPNOW','Nowcast for Real Gross Private Domestic Investment: Fixed Investment: Business: Intellectual Property Products'
   )
 for (lll in seq(1, length(importData), by = 2)) {
   cnt <- cnt + 1
@@ -94,13 +117,13 @@ colnames(GDPNow0) <- GDPNow0[1,]
 GDPNow0 <- GDPNow0[-1,]
 colnames(GDPNow0)[1] <- 'Observation Date'
 GDPNow0[,2] <- as.numeric(GDPNow0[,2])
+componentGDPNow <- GDPNow0[-grep('contributions to',GDPNow0[,1],ignore.case = T),]
+contributionsGDPNow <- GDPNow0[grep('contributions to',GDPNow0[,1],ignore.case = T),]
 ```
-
-***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable <- 
-  function(obj,orderColumn = 0,orderDirection = 'desc',width00 = '5%',caption = '',dataTitle='',title='',append='') {
+  function(obj,orderColumn = 0,orderDirection = 'asc',width00 = '5%',caption = '',dataTitle='',title='',append='') {
   cat(paste('<h4>GDPNow. データ取得日時:', dataTitle, '</h4>'))  
   DT::datatable(
     obj,
@@ -116,8 +139,23 @@ funDataTable <-
     # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
   )  
   }
-funDataTable(obj = GDPNow0, dataTitle = dataImportedTime)
 ```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable(obj = componentGDPNow, dataTitle = dataImportedTime)
+```
+
+##### Unit：Percent Change at Annual Rate,Seasonally Adjusted Annual Rate.
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable(obj = contributionsGDPNow, dataTitle = dataImportedTime)
+```
+
+##### Unit：Percentage Points,Seasonally Adjusted.
 
 ***
 
