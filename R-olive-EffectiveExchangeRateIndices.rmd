@@ -4,7 +4,7 @@ title : "実効為替レート"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 output: 
   html_document:
-    fig_height: 4
+    fig_height: 6
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -85,34 +85,143 @@ dataSet <- buf4
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph <- function(grepWord = 'JP'){
+fun_dygraph <- function(grepWord = 'Japan'){
   obj <- grep(grepWord,colnames(dataSet),ignore.case = T)
   timeSeries0 <- na.omit(dataSet[,c(1,obj)])
   timeSeries <- xts(timeSeries0[,-1], order.by=timeSeries0[,1])
+  assign('df', data.frame(Date = index(timeSeries),timeSeries,check.names = F,stringsAsFactors = F),envir = .GlobalEnv)
   dygraph(timeSeries,xlab = 'Date',main = paste0(colnames(timeSeries0)[-1],collapse = ' × '))  %>% 
-    dyLegend(width = 500) %>% dyRangeSelector()
+    dyLegend(width = 500) %>% dyRangeSelector() %>% 
+    dyEvent("2016-11-09", "United States presidential election of 2016", labelLoc = "bottom") %>% 
+    dyEvent("2008-09-15", "Bankruptcy of Lehman Brothers", labelLoc = "bottom") %>% 
+    dyEvent("2011-03-11", "Tohoku earthquake and tsunami", labelLoc = "bottom")
 }
+areaList <- c('Japan','United States','Euro area','Australia','China','United Kingdom','New Zealand','Korea','South Africa') 
 ```
+
+`r targetArea <- 1` 
+##### Reference area:`r areaList[targetArea]`
 
 ```{r warning=F,error=F,message=F,echo=F}
 # colnames(dataSet)
-fun_dygraph(grepWord = 'Japan')
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
 ```
 
 ***
+`r targetArea <- 2` 
+##### Reference area:`r areaList[targetArea]`
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = 'United States')
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
 ```
 
 ***
+`r targetArea <- 3` 
+##### Reference area:`r areaList[targetArea]`
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = 'Euro area')
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
+```
+
+***
+`r targetArea <- 4` 
+##### Reference area:`r areaList[targetArea]`
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
+```
+***
+`r targetArea <- 5` 
+##### Reference area:`r areaList[targetArea]`
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
+```
+***
+`r targetArea <- 6` 
+##### Reference area:`r areaList[targetArea]`
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
+```
+***
+`r targetArea <- 7` 
+##### Reference area:`r areaList[targetArea]`
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
+```
+***
+`r targetArea <- 8` 
+##### Reference area:`r areaList[targetArea]`
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
+```
+***
+`r targetArea <- 9` 
+##### Reference area:`r areaList[targetArea]`
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_dygraph(grepWord = areaList[targetArea])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+cat(paste0(range(df[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(df[,-1])
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '3%', width02 = '10%', caption = '') {
+funDataTable <- function(obj, orderColumn = 0, orderDirection = 'asc', width01 = '3%', caption = '') {
   DT::datatable(
     obj,
     extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
@@ -120,7 +229,7 @@ funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 
       searching = T, scrollX = T, lengthMenu = list(c(15, -1, 1), c(15, 'All', 1)),
       orderClasses = T, order = list(list(orderColumn, orderDirection)), 
       search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1)),
+      columnDefs = list(list(width = width01, targets = 0)),
       dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
     rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
   )  
@@ -130,8 +239,12 @@ funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F}
-# df <- data.frame(Date = index(timeSeries),timeSeries,check.names = F,stringsAsFactors = F)
-# funDataTable(obj = df)
+df <- t(tail(na.omit(dataSet),3))
+colnames(df) <- df[1,]
+df <- data.frame(`Reference Area`=row.names(df),df,check.names = F,stringsAsFactors = F,row.names = NULL)
+df <- df[-1,]
+df[,-1] <- as.numeric(as.matrix(df[,-1]))
+funDataTable(obj = df)
 ```
 
 ***
