@@ -1,0 +1,183 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-DGSversusJGB.html')) })
+title : "Treasury Constant Maturity Rate vs. Japanese Government Bonds Interest Rate"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 9
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 900px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(knitr)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('日米国債金利差')
+dataSource <- '財務省、Federal Reserve Bank of St.Louis'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("作成日      : ", Sys.time(), "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+cat(paste("特  記      : ", notes0, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+eventData<-c(
+  "2016-11-09", "United States presidential election of 2016",
+  "2008-09-15", "Bankruptcy of Lehman Brothers",
+  "2011-03-11", "Tohoku earthquake and tsunami"
+)
+eventData <- iconv(eventData,'shift_jis','utf8')
+eventDataDF <- data.frame()
+for (eee in seq(0, length(eventData) / 2 - 1, by = 1)) {
+  eventDataDF[eee + 1, 1] <- eventData[eee * 2 + 1]
+  eventDataDF[eee + 1, 2] <- eventData[eee * 2 + 2]
+}
+eventDataDF[, 1] <- as.Date(eventDataDF[, 1])
+eventDataDF[, 2] <- paste0(eventDataDF[, 1],':',eventDataDF[,2])
+colnames(eventDataDF) <- c('Date', 'Event')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(quantmod)
+fredData <- list()
+cnt <- 0
+treasuryRate <-
+  c(
+    'DGS1',  '01-Year Treasury Constant Maturity Rate(%)',
+    'DGS2',  '02-Year Treasury Constant Maturity Rate(%)',
+    'DGS3',  '03-Year Treasury Constant Maturity Rate(%)',
+    'DGS5',  '05-Year Treasury Constant Maturity Rate(%)',
+    'DGS7',  '07-Year Treasury Constant Maturity Rate(%)',
+    'DGS10', '10-Year Treasury Constant Maturity Rate(%)',
+    'DGS20', '20-Year Treasury Constant Maturity Rate(%)',
+    'DGS30', '30-Year Treasury Constant Maturity Rate(%)'
+  )
+for (lll in seq(1, length(treasuryRate), by = 2)) {
+  cnt <- cnt + 1
+  tmp <- getSymbols(treasuryRate[lll], src = 'FRED', auto.assign = F)
+  tmp <-
+    data.frame(Date = as.Date(index(tmp)),tmp[, 1],check.names = F,row.names = NULL,stringsAsFactors = F)
+  colnames(tmp)[2] <- treasuryRate[lll + 1]
+  fredData[[cnt]] <- tmp
+  tail(fredData[[cnt]])
+  if(lll == 1){allDGSData <- tmp}else{allDGSData <- merge(allDGSData, tmp, by='Date', all=T)}
+}
+```
+
+- DGS:Daily Treasury Constant Maturity Rate(%)
+- JGB:Japanese Government Bonds Interest Rate(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_JGBInterestRate.r",
+    ssl.verifypeer = F)
+eval(parse(text = script))
+colnames(jgbData)[-1] <- paste0('JGB-',colnames(jgbData)[-1],'(%)')
+jgbData0 <- jgbData
+jgbData <- na.omit(jgbData0)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+rawData <- diffData <- list()
+totalData <- merge(allDGSData,jgbData0,by = 'Date',all = T)
+for(ccc1 in 2:(ncol(allDGSData))){
+  n <- as.numeric(substring(colnames(allDGSData)[ccc1],1,2))  
+  ccc2 <- grep(paste0('\\b',n,'y\\b'),colnames(totalData),ignore.case = T)  
+  rawData[[ccc1-1]] <- na.omit(totalData[,c(1,ccc1,ccc2)])
+  diffData[[ccc1-1]] <- 
+    data.frame(Date=rawData[[ccc1-1]][,1],rawData[[ccc1-1]][,2]-rawData[[ccc1-1]][,3],check.names = F,stringsAsFactors = F)
+  colnames(diffData[[ccc1-1]])[2] <- paste0(colnames(rawData[[ccc1-1]])[2],' - ',colnames(rawData[[ccc1-1]])[3])
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(dygraphs)
+dyBarChart <- function(dygraph) {
+  dyPlotter(dygraph = dygraph,
+            name = "BarChart",
+            path = system.file("examples/plotters/barchart.js",package = "dygraphs"))
+}
+dyUnzoom <-function(dygraph) {
+  dyPlugin(dygraph = dygraph,
+           name = "Unzoom",
+           path = system.file("examples/plugins/unzoom.js", package = "dygraphs"))
+}
+dyCrosshair <- function(dygraph,direction = c("both", "horizontal", "vertical")) {
+  dyPlugin(dygraph = dygraph,
+           name = "Crosshair",
+           path = system.file("examples/plugins/crosshair.js",package = "dygraphs"),
+           options = list(direction = match.arg(direction)))
+}
+fun_dygraph <- function(obj = buf){
+  timeSeries0 <- na.omit(obj)
+  timeSeries0 <- subset(timeSeries0,as.Date('2007-1-1')<=timeSeries0[,1])
+  timeSeries <- xts(timeSeries0[,-1], order.by=timeSeries0[,1])
+  colnames(timeSeries) <- colnames(timeSeries0)[-1]
+  dygraph(timeSeries,main = paste0(colnames(timeSeries0)[-1],collapse = ' × '))  %>% 
+    dyLegend(width = 600) %>% dyRangeSelector() %>% 
+    dyUnzoom() %>% dyCrosshair(direction = "both") %>% 
+    dyLimit(0, color = "red") %>% 
+    dyEvent(eventDataDF[1,1], eventDataDF[1,2], labelLoc = "bottom") %>%
+    dyEvent(eventDataDF[2,1], eventDataDF[2,2], labelLoc = "bottom") %>%
+    dyEvent(eventDataDF[3,1], eventDataDF[3,2], labelLoc = "bottom")
+  }
+```
+
+```{r,warning=F,error=F,message=F,echo=F,include=F}
+out1 = NULL
+for (iii in 1:length(rawData)) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h4>',paste0(colnames(rawData[[",iii,"]][-1]),collapse = ' × '),'</h4>'))\n\n",
+      "fun_dygraph(obj = rawData[[",iii,"]])\n\n",
+      "fun_dygraph(obj = diffData[[",iii,"]])\n\ncat('<hr>')\n\n```"
+    )
+  out1 = c(out1, knit_expanded)
+}
+```
+`r paste(knit(text = out1), collapse = '\n')`
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
