@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-','suicide','.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-','suiciderate','.html')) })
 
 title : 'Suicide Rate in Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -38,10 +38,11 @@ options(width = 1000)
 ```{r,warning=F,error=F,message=F,echo=F}
 library(dygraphs)
 library(xts)
+library(lubridate)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '日本の自殺率'
+dataTitle <- '日本の自殺率:人口10万人当たりの自殺者数'
 dataSource <- '厚生労働省、警察庁、総務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -55,6 +56,8 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+- 年次データの日付は××××年12月31日としています。
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 tmp0 <-
   read.table('clipboard',header = T,sep = '\t',stringsAsFactor = F,na.strings = c('','NA'),check.names = F,fill = T,quote = "",fileEncoding="cp932")#,fileEncoding="UTF-8")
@@ -64,11 +67,12 @@ head(tmp0)
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 tmp <- tmp0
 tmp[,1] <- as.Date(tmp[,1])
+tmp[,1] <- as.Date(paste0(year(tmp[,1]),'-12-31'))
 head(tmp)
+dataSet <- tmp
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-
 dyBarChart <- function(dygraph) {
   dyPlotter(dygraph = dygraph,
             name = "BarChart",
@@ -93,29 +97,29 @@ dyMultiColumn <- function(dygraph) {
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph <- function(obj = tmp, mainTitle = ""){
+fun_dygraph <- function(obj = dataSet, mainTitle = ""){
   timeSeries0 <- obj
   timeSeries <- xts(timeSeries0[,-1], order.by=timeSeries0[,1])
   colnames(timeSeries) <- colnames(timeSeries0)[-1]
   dygraphPlot <<- 
     dygraph(timeSeries,main = mainTitle,group = 'amcc') %>% 
-    dyLegend(width = 600) %>% 
+    dyLegend(width = 300) %>% 
     dyRangeSelector() %>% 
     dyUnzoom() %>% dyCrosshair(direction = "both")
 } 
+fun_dygraph(obj = dataSet,mainTitle = '')
 ```
 
 #### 消費税と`r dataTitle`
 
 ```{r warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=10}
-fun_dygraph(obj = tmp,mainTitle = '人口10万人当たりの自殺者数')
 dygraphPlot %>%
     dyShading(from = "1989-04-01", to = "1997-03-31", color = "#FFE6E6") %>%
     dyShading(from = "1997-04-01", to = "2014-03-31", color = "#CCEBD6") %>%
-    dyShading(from = "2014-04-01", to = tail(tmp[,1],1), color = "#FFE6E6") %>%
+    dyShading(from = "2014-04-01", to = tail(dataSet[,1],1), color = "#FFE6E6") %>%
     dyEvent("1997-03-31", "消費税3%", labelLoc = "bottom") %>%
     dyEvent("2014-03-31", "消費税5%", labelLoc = "bottom") %>%
-    dyEvent(tail(tmp[,1],1), "消費税8%", labelLoc = "bottom")
+    dyEvent(tail(dataSet[,1],1), "消費税8%", labelLoc = "bottom")
 ```
 
 ***
@@ -216,9 +220,9 @@ for(rrr in 1:nrow(pmTable)){
   if(rrr %% 2 == 0){col <- '#FFE6E6'}else{col <- '#CCEBD6'}
   tmp1 <- paste0('dyShading(from = \'',pmTable[rrr,1],'\', to = \'',pmTable[rrr,2],'\', color = \'',col,'\') %>% ') 
   if(rrr!=nrow(pmTable)){
-    tmp2 <- paste0('dyEvent(\'',pmTable[rrr,2],'\',\'',pmTable[rrr,3],'\', labelLoc = "bottom") %>% ')
+    tmp2 <- paste0('dyEvent(\'',pmTable[rrr,2],'\',\'',pmTable[rrr,3],'\', labelLoc = \'bottom\') %>% ')
   }else{
-    tmp2 <- paste0('dyEvent(\'',tmp[nrow(tmp),1],'\',\'',pmTable[rrr,3],'\', labelLoc = \'bottom\')')
+    tmp2 <- paste0('dyEvent(\'',dataSet[nrow(dataSet),1],'\',\'',pmTable[rrr,3],'\', labelLoc = \'bottom\')')
   }
   out <- c(out, tmp1, tmp2)
 }
@@ -226,15 +230,133 @@ buf0 <-paste(out, collapse = '')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=10}
-fun_dygraph(obj = tmp,mainTitle = '人口10万人当たりの自殺者数')
 eval(parse(text = paste0('dygraphPlot %>% ',buf0)))
 ```
 
 ***
-#### 経済イベントと`r dataTitle`
+#### 日銀総裁と`r dataTitle`
+
+```{r warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=10}
+boj <- c(
+  "1882-10-6" ,    "Shigetoshi Yoshihara",
+  "1888-2-21" ,    "Tetsunosuke Tomita",
+  "1889-9-3"  ,    "Koichiro Kawada",
+  "1896-11-11",    "Yanosuke Iwasaki",
+  "1898-10-20",    "Tatsuo Yamamoto",
+  "1903-10-20",    "Shigeyoshi Matsuo",
+  "1911-6-1"  ,    "Korekiyo Takahashi",
+  "1913-2-28" ,    "Yataro Mishima",
+  "1919-3-13" ,    "Junnosuke Inoue(1)",
+  "1923-9-5"  ,    "Otohiko Ichiki",
+  "1927-5-10" ,    "Junnosuke Inoue(2)",
+  "1928-6-12" ,    "Hisaakira Hijikata",
+  "1935-6-4"  ,    "Eigo Fukai",
+  "1937-2-9"  ,    "Shigeaki Ikeda",
+  "1937-7-27" ,    "Toyotaro Yuki",
+  "1944-3-18" ,    "Keizo Shibusawa",
+  "1945-10-9" ,    "Eikichi Araki(1)",
+  "1946-6-1"  ,    "Hisato Ichimada",
+  "1954-12-11",    "Eikichi Araki(2)",
+  "1956-11-30",    "Masamichi Yamagiwa",
+  "1964-12-17",    "Makoto Usami",
+  "1969-12-17",    "Tadashi Sasaki",
+  "1974-12-17",    "森永貞一郎",
+  "1979-12-17",    "前川春夫",
+  "1984-12-17",    "澄田智",
+  "1989-12-17",    "三重野康",
+  "1994-12-17",    "松下康夫",
+  "1998-3-20" ,    "速水優",
+  "2003-3-20" ,    "福井俊彦",
+  "2008-4-9"  ,    "白川正明",
+  "2013-3-20" ,    "黒田東彦"
+)
+cnt <- 1
+bojTable <- data.frame()
+for(rrr in seq(1,length(boj),by = 2)){
+  bojTable[cnt,1] <- as.character(as.Date(boj[rrr]))  
+  bojTable[cnt,2] <- as.character(as.Date(boj[rrr+2]))
+  bojTable[cnt,3] <- boj[rrr+1]
+  cnt <- cnt +1 
+}
+bojTable[nrow(bojTable),2] <- as.character(Sys.Date())
+write.table(bojTable, "clipboard", sep = "\t", row.names = F, col.names = T)
+out <- NULL
+for(rrr in 1:nrow(bojTable)){
+  if(rrr %% 2 == 0){col <- '#FFE6E6'}else{col <- '#CCEBD6'}
+  tmp1 <- paste0('dyShading(from = \'',bojTable[rrr,1],'\', to = \'',bojTable[rrr,2],'\', color = \'',col,'\') %>% ') 
+  if(rrr!=nrow(bojTable)){
+    tmp2 <- paste0('dyEvent(\'',bojTable[rrr,2],'\',\'',bojTable[rrr,3],'\', labelLoc = \'bottom\') %>% ')
+  }else{
+    tmp2 <- paste0('dyEvent(\'',dataSet[nrow(dataSet),1],'\',\'',bojTable[rrr,3],'\', labelLoc = \'bottom\')')
+  }
+  out <- c(out, tmp1, tmp2)
+}
+buf0 <-paste(out, collapse = '')
+```
+
+```{r warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=10}
+eval(parse(text = paste0('dygraphPlot %>% ',buf0)))
+```
 
 ***
-#### 日銀総裁と`r dataTitle`
+#### 出来事と`r dataTitle`
+
+```{r warning=F,error=F,message=F,echo=F,}
+eventRange <-c(
+  "2013-09-08",as.character(dataSet[nrow(dataSet),1]),"2020年東京オリンピック決定",
+  "1986-12-01","1991-02-01","バブル景気",
+  "1997-01-01","1998-01-01","アジア通貨危機"
+)  
+event <- c(
+  as.character(dataSet[nrow(dataSet),1]),"2020年東京オリンピック決定",
+  "1998-01-01","アジア通貨危機",
+  "1991-02-01","バブル景気",
+  "2008-09-15","リーマン･ブラザーズ破綻",
+  "2016-11-08","2016年アメリカ合衆国大統領選挙",
+  "2011-03-11","東日本大震災",
+  "1995-01-17","阪神･淡路大震災",
+  "1985-09-22","プラザ合意",
+  "1971-12-18","スミソニアン協定",
+  "1990-03-27","総量規制",
+  "1987-10-19","ブラックマンデー",
+  "1987-02-22","ルーブル合意"
+)
+event <- iconv(event,'shift_jis','utf8')
+cnt <- 1
+eventTable <- data.frame()
+for(rrr in seq(1,length(event),by = 2)){
+  eventTable[cnt,1] <- as.character(as.Date(event[rrr]))  
+  eventTable[cnt,2] <- event[rrr+1]
+  cnt <- cnt +1 
+}
+cnt <- 1
+eventRangeTable <- data.frame()
+for(rrr in seq(1,length(eventRange),by = 3)){
+  eventRangeTable[cnt,1] <- as.character(as.Date(eventRange[rrr]))  
+  eventRangeTable[cnt,2] <- as.character(as.Date(eventRange[rrr+1]))  
+  eventRangeTable[cnt,3] <- eventRange[rrr+2]
+  cnt <- cnt +1 
+}
+out <- NULL
+for(rrr in 1:nrow(eventRangeTable)){
+  if(rrr %% 2 == 0){col <- '#FFE6E6'}else{col <- '#CCEBD6'}
+  tmp <- paste0('dyShading(from = \'',eventRangeTable[rrr,1],'\', to = \'',eventRangeTable[rrr,2],'\', color = \'',col,'\')') 
+  out <- c(out, tmp)
+}
+buf0 <-paste(out, collapse = ' %>% ')
+out <- NULL
+for(rrr in seq(1,length(event),by=2)){
+  if(dataSet[1,1]<= event[rrr]){
+    tmp <- paste0('dyEvent(\'',event[rrr],'\',\'',event[rrr+1],'\', labelLoc = \'bottom\')')
+    out <- c(out, tmp)
+  }
+}
+buf1 <-paste(out, collapse = ' %>% ')
+```
+
+```{r warning=F,error=F,message=F,echo=F,fig.height=4,fig.width=10}
+eval(parse(text = paste0('dygraphPlot %>% ',buf0,' %>% ',buf1)))
+```
 
 ***
 
