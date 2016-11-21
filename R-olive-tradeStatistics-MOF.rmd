@@ -74,7 +74,7 @@ table01 <- sapply(buf, function(x)
          gsub(',', '', x))))
 table01[,-3] <- table01[,-3]*10^-6
 colnames(table01) <- c(paste0(targetYear,'年',targetMonth,'月'),paste0(targetYear-1,'年',targetMonth,'月'),'伸率(%)')
-rownames(table01) <- c('輸入','輸出','差引')
+rownames(table01) <- c('輸出','輸入','差引')
 cat('<h5>総額(原値,兆円)</h5>\n')
 knitr::kable(table01)
 ```
