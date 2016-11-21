@@ -44,3 +44,5 @@ buf0[,1] <- as.Date(buf0[,1],tz = 'Asia/Tokyo')
 colnames(buf0) <- gsub('NA-','',colnames(buf0))
 RealExportsAndRealImports02 <- buf0
 # sheet2
+allData <- merge(RealExportsAndRealImports01,RealExportsAndRealImports02,by = 'Date',all = T)
+write.table(allData, "clipboard", sep = "\t", row.names = F, col.names = T)
