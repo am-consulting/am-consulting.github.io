@@ -65,6 +65,7 @@ head(tmp0)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+barPlot <- 0; quarterly <- 0
 tmp <- tmp0
 tmp[,1] <- as.Date(tmp[,1])
 dateFormat <- '%Y年%m月'
@@ -74,9 +75,11 @@ dateFormat <- '%Y年'
 }
 head(tmp)
 objCC <- seq(1,ncol(tmp))
-objCC <- seq(1,3)
-objCC <- c(1,5,6,7)
+objCC <- seq(1,4)
+#objCC <- c(1,5,6,7)
 dataSet <- na.omit(tmp[,objCC])
+if(length(dataSet[,-1][dataSet[,-1]>=0])!=0 & length(dataSet[,-1][dataSet[,-1]<0])!=0){barPlot <- 1}
+if(length(unique(month(dataSet[,1]))) == 4){quarterly <- 1}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -108,12 +111,14 @@ fun_dygraph <- function(obj = dataSet, mainTitle = ""){
   timeSeries0 <- obj
   timeSeries <- xts(timeSeries0[,-1], order.by=timeSeries0[,1])
   colnames(timeSeries) <- colnames(timeSeries0)[-1]
-  dygraphPlot <<- 
+  dygraphPlot <- 
     dygraph(timeSeries,main = mainTitle,group = 'amcc') %>% 
     dyLegend(width = 600) %>% 
     dyRangeSelector() %>% 
     dyUnzoom() %>% dyCrosshair(direction = "both")
-} 
+    if(barPlot == 1){dygraphPlot <- dygraphPlot %>% dyMultiColumn()}
+  dygraphPlot <<- dygraphPlot
+}
 fun_dygraph(obj = dataSet,mainTitle = '')
 ```
 
@@ -369,6 +374,9 @@ eval(parse(text = paste0('dygraphPlot %>% ',buf0,' %>% ',buf1)))
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 bufDF <- dataSet[c(nrow(dataSet),nrow(dataSet)-1,nrow(dataSet)-12),]
+if(quarterly==1){
+bufDF <- dataSet[c(nrow(dataSet),nrow(dataSet)-1,nrow(dataSet)-4),]
+}
 bufDF[,1] <- format(bufDF[,1],dateFormat)
 knitr::kable(bufDF,row.names = F)
 ```
