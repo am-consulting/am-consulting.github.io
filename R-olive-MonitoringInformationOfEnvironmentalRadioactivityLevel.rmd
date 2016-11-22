@@ -55,7 +55,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
+```{r warning=F,error=F,message=F,echo=F}
 prefecturesList <- fromJSON("http://radioactivity.nsr.go.jp/data/ja/master/prefectures.json")
 prefecturesDetail <- paste0('http://radioactivity.nsr.go.jp',prefecturesList$prefectures$detail)
 jsonDF <- data.frame()
@@ -73,16 +73,18 @@ for(iii in 1:length(prefecturesDetail)){
   }
 }
 jsonDF <- jsonDF[,c(1,8:9,2:7)]  
+```
+
+```{r warning=F,error=F,message=F,echo=F}
 weekSummary <- data.frame()
 for(iii in 1:nrow(jsonDF)){
   buf0 <- fromJSON(paste0('http://radioactivity.nsr.go.jp',jsonDF[iii,9]))
   buf <- cbind(jsonDF[iii,2:6],rbind(summary(buf0$week$air$value)))
-  buf$lasttime <- as.POSIXct(buf0$last$air$time)
+  buf$lasttime <- buf0$last$air$time
   buf$n <- length(buf0$week$air$value)
   weekSummary <- rbind(weekSummary,buf)
 }
 weekSummary <- data.frame(ID = seq(1,nrow(weekSummary)),weekSummary,check.names = F,stringsAsFactors = F)
-beep(8)
 ```
 
 #### Example
@@ -91,10 +93,10 @@ beep(8)
 - 10分毎の線量:μSv/h(マイクロシーベルト毎時)
 - 1日当りのデータ数:`r length(buf0$day$air$value)`
 - 1週間当りのデータ数:`r length(buf0$day$air$value)` × 7日間 = `r length(buf0$day$air$value)*7`
-- jsonファイル中、week$air$valueのデータ数:`r length(buf0$week$air$value)`
+- jsonファイル中、week\$air\$valueのデータ数:`r length(buf0$week$air$value)`
 - `r length(buf0$day$air$value)*7` / `r length(buf0$week$air$value)` = `r length(buf0$day$air$value)*7/length(buf0$week$air$value)`
 - 1ヶ月当りのデータ数:`r length(buf0$day$air$value)` × 30日間 = `r length(buf0$day$air$value)*30`
-- jsonファイル中、month$air$valueのデータ数:`r length(buf0$month$air$value)`
+- jsonファイル中、month\$air\$valueのデータ数:`r length(buf0$month$air$value)`
 - `r length(buf0$day$air$value)*30` / `r length(buf0$month$air$value)` = `r length(buf0$day$air$value)*30/length(buf0$month$air$value)`
 
 ***
