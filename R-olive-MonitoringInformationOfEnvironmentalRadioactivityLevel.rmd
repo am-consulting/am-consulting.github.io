@@ -1,19 +1,19 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MonitoringInformationOfEnvironmentalRadioactivityLevel.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-EnvironmentalRadioactivityLevel.html')) })
 title : "Monitoring Information Of Environmental Radioactivity Level"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 7
-    fig_width: 12
+    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
 .main-container {
-	max-width: 1000px;
+	max-width: 1100px;
 	margin-left: auto;
 	margin-right: auto;
 }
@@ -41,7 +41,7 @@ library(beepr)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- '放射線モニタリング情報 - 全国及び福島県の空間線量測定結果 - 期間:週間'
+dataTitle <- '放射線モニタリング情報 - 全国及び福島県の空間線量測定結果 - 期間:過去1週間 - 単位:μSv/h(マイクロシーベルト毎時)'
 dataSource <- '原子力規制庁'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -77,17 +77,32 @@ weekSummary <- data.frame()
 for(iii in 1:nrow(jsonDF)){
   buf0 <- fromJSON(paste0('http://radioactivity.nsr.go.jp',jsonDF[iii,9]))
   buf <- cbind(jsonDF[iii,2:6],rbind(summary(buf0$week$air$value)))
-  buf$time <- buf0$time
+  buf$lasttime <- as.POSIXct(buf0$last$air$time)
+  buf$n <- length(buf0$week$air$value)
   weekSummary <- rbind(weekSummary,buf)
 }
 weekSummary <- data.frame(ID = seq(1,nrow(weekSummary)),weekSummary,check.names = F,stringsAsFactors = F)
 beep(8)
 ```
 
+#### Example
+
+- `r paste0(jsonDF[4056,2:4],collapse = '-')`
+- 10分毎の線量:μSv/h(マイクロシーベルト毎時)
+- 1日当りのデータ数:`r length(buf0$day$air$value)`
+- 1週間当りのデータ数:`r length(buf0$day$air$value)` × 7日間 = `r length(buf0$day$air$value)*7`
+- jsonファイル中、week$air$valueのデータ数:`r length(buf0$week$air$value)`
+- `r length(buf0$day$air$value)*7` / `r length(buf0$week$air$value)` = `r length(buf0$day$air$value)*7/length(buf0$week$air$value)`
+- 1ヶ月当りのデータ数:`r length(buf0$day$air$value)` × 30日間 = `r length(buf0$day$air$value)*30`
+- jsonファイル中、month$air$valueのデータ数:`r length(buf0$month$air$value)`
+- `r length(buf0$day$air$value)*30` / `r length(buf0$month$air$value)` = `r length(buf0$day$air$value)*30/length(buf0$month$air$value)`
+
+***
+
 ```{r warning=F,error=F,message=F,echo=F}
 funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', dataTitle = '', ind = '') {
-  cat(paste('<h5>', ind, '</h5>'))  
+  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '3%', caption = '', dataTitle = '') {
+  cat(paste('<h5>', dataTitle, '</h5>'))  
   DT::datatable(
     obj,
     extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
@@ -104,8 +119,8 @@ funDataTable <-
   }
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
-funDataTable(obj = weekSummary)
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable(obj = weekSummary,dataTitle = dataTitle)
 ```
 
 ***
