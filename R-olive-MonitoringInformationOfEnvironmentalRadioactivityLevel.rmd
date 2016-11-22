@@ -1,0 +1,26 @@
+```{r}
+library(curl);library(jsonlite)
+prefecturesList <- fromJSON("http://radioactivity.nsr.go.jp/data/ja/master/prefectures.json")
+prefecturesDetail <- paste0('http://radioactivity.nsr.go.jp',prefecturesList$prefectures$detail)
+jsonDF <- data.frame()
+for(iii in 1:length(prefecturesDetail)){
+  areasList <- fromJSON(prefecturesDetail[iii])
+  bufPrefecture <- areasList$place$name
+  areasDF <- areasList$areas
+  for(iiii in 1:nrow(areasDF)){
+    bufArea <- areasDF[iiii,2]
+    areasDetail <- fromJSON(paste0('http://radioactivity.nsr.go.jp',areasDF[iiii,6]))
+    locationsList <- areasDetail$real$locations
+    locationsList$prefecture <- bufPrefecture
+    locationsList$area <- bufArea
+    jsonDF <- rbind(jsonDF,locationsList)
+  }
+}
+jsonDF <- jsonDF[,c(1,8:9,2:7)]  
+weekSummary <- data.frame()
+for(iii in 1:nrow(jsonDF)){
+  buf <- fromJSON(paste0('http://radioactivity.nsr.go.jp',jsonDF[iii,9]))
+  buf <- cbind(jsonDF[iii,2:6],rbind(summary(buf$week$air$value)))
+  weekSummary <- rbind(weekSummary,buf)
+}
+```
