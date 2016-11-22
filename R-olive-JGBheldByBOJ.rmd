@@ -3,6 +3,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 title : 'Japanese Government Bonds held by the Bank of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 10
@@ -29,6 +30,8 @@ table{
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
 
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 
 ```{r set-options, echo=F, cache=F}
@@ -60,7 +63,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste0('Title       : ', dataTitle, '\n'))
 cat(paste0('Data Source : ', dataSource, '\n'))
 cat(paste0('Author      : ', Author, '\n'))
-cat(paste0('作成日      : ', Sys.time(), '\n'))
 ```
 
 - 『利付国債の保有額(受渡し完了ベース)。国債買入オペに加え、対政府取引等による増減も勘案した国債の残高。』(資料より引用)
