@@ -1,0 +1,20 @@
+```{r warning=F,error=F,message=F,echo=F}
+library(RCurl)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+import <- c('importAssessmentOfIncomeTax','importWithholdingIncomeTax','importCorporateTax','importConsumptionTax')
+for(iii in 1:length(import)){
+script <-
+  getURL(paste0(
+    'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',import[iii],'.r'),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+allData <- merge(merge(merge(assessmentOfIncomeTax,consumptionTax,by='Date',all=T),
+    corporateTax,by='Date',all=T),withholdingIncomeTax,by='Date',all=T)
+write.table(allData, "clipboard-16384", sep = "\t", row.names = F, col.names = T, quote = F)
+```
