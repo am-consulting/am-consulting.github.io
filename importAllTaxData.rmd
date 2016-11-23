@@ -17,4 +17,10 @@ eval(parse(text = script))
 allData <- merge(merge(merge(assessmentOfIncomeTax,consumptionTax,by='Date',all=T),
     corporateTax,by='Date',all=T),withholdingIncomeTax,by='Date',all=T)
 write.table(allData, "clipboard-16384", sep = "\t", row.names = F, col.names = T, quote = F)
+colnames(allData)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+obj <- c(1,7,16,35,51)
+write.table(allData[,obj], "clipboard-16384", sep = "\t", row.names = F, col.names = T, quote = F)
 ```
