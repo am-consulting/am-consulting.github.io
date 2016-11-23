@@ -36,6 +36,6 @@ buf3[,1] <- as.Date(paste0(buf3[,1],'-12-31'))
 colnames(buf3)[1] <- 'Date'
 buf4 <- buf3[,-ncol(buf3)]
 buf4[,-1] <- apply(buf4[,-1],2,function(x) as.numeric(gsub(',|\\s|－','',x)))
-colnames(buf4) <- paste0('申告所得税-',colnames(buf4))
+colnames(buf4)[-1] <- paste0('申告所得税-',colnames(buf4)[-1])
 assign('assessmentOfIncomeTax',buf4,envir = .GlobalEnv)
 write.csv(assessmentOfIncomeTax,paste0('check_',gsub('xls','csv',fileName)),row.names = F)
