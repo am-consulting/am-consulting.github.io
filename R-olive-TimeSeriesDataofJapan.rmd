@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-','nationalTaxes','.html')) })
 
-title : 'Output Gap and Potential Growth Rate in Japan'
+title : "National Taxes"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -42,7 +42,7 @@ library(lubridate)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税'
+dataTitle <- '日本の国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税'
 dataSource <- '国税庁'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -374,6 +374,9 @@ eval(parse(text = paste0('dygraphPlot %>% ',buf0,' %>% ',buf1)))
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 bufDF <- dataSet[c(nrow(dataSet),nrow(dataSet)-1,nrow(dataSet)-12),]
+if(dateFormat == '%Y年'){
+bufDF <- dataSet[c(nrow(dataSet),nrow(dataSet)-1,nrow(dataSet)-2),]
+}
 if(quarterly==1){
 bufDF <- dataSet[c(nrow(dataSet),nrow(dataSet)-1,nrow(dataSet)-4),]
 }
