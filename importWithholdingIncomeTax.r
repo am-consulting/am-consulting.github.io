@@ -34,5 +34,9 @@ colnames(buf3)[1] <- 'Date'
 buf4 <- buf3[,-ncol(buf3)]
 buf4[,-1] <- apply(buf4[,-1],2,function(x) as.numeric(gsub(',|\\s|－','',x)))
 colnames(buf4)[-1] <- paste0('源泉所得税-',colnames(buf4)[-1])
+# 単位変換
+buf4[,-1] <- apply(buf4[,-1],2,function(x){x*10^-6})
+colnames(buf4)[-1] <- gsub('百万','兆',colnames(buf4)[-1])
+# 単位変換
 assign('withholdingIncomeTax',buf4,envir = .GlobalEnv)
 write.csv(withholdingIncomeTax,paste0('check_',gsub('xls','csv',fileName)),row.names = F)
