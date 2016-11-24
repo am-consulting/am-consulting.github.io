@@ -1,4 +1,4 @@
-library(dygraphs)
+library(dygraphs);library(xts)
 dyBarChart <- function(dygraph) {
   dyPlotter(dygraph = dygraph,
             name = "BarChart",
