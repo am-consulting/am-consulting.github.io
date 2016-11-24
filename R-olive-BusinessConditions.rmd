@@ -23,8 +23,6 @@ table{
 }
 </style>
 
-
-
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
@@ -32,11 +30,19 @@ table{
 
 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
-
-
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
 options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -98,7 +104,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作 成 日    : ',Sys.time(),'\n'))
 cat(paste('特    記    : ',notes,'\n'))
 cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
@@ -193,6 +198,35 @@ fun_plotTimeSeries <- function(obj,ccc = 2) {
 fun_plotTimeSeries(obj = dataSet, ccc = 2)
 fun_plotTimeSeries(obj = dataSet, ccc = 3)
 fun_plotTimeSeries(obj = dataSet, ccc = 4)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plot_dygraph <- function(obj = buf0){
+  obj <- na.omit(obj)
+  buf <- data.frame(tail(obj[,1],-1),diff(obj[,2]),check.names = F,stringsAsFactors = F)
+  colnames(buf) <- colnames(obj)
+  fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[2], '-前月差(ポイント)'))
+  fun_consumptionTax(obj = buf)
+  eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',ConsumptionTax)))
+}
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plot_dygraph(obj = dataSet[,c(1,2)])
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plot_dygraph(obj = dataSet[,c(1,3)])
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plot_dygraph(obj = dataSet[,c(1,4)])
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
