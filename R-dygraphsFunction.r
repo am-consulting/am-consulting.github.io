@@ -36,12 +36,12 @@ fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDi
 }
 
 fun_consumptionTax <- function(obj = dataSet){
-  borderDate <- tail(dataSet[,1],1)
-  ConsumptionTax <- paste0(
+  borderDate <- tail(obj[,1],1)
+  assign(ConsumptionTax, paste0(
     'dyShading(from = "1989-04-01", to = "1997-03-31",color = "#FFE6E6") %>%
     dyShading(from = "1997-04-01", to = "2014-03-31",color = "#CCEBD6") %>%
     dyShading(from = "2014-04-01", to = ', borderDate, ', color = "#FFE6E6") %>%
     dyEvent("1997-03-31", "消費税3%", labelLoc = "bottom") %>%
     dyEvent("2014-03-31", "消費税5%", labelLoc = "bottom") %>%
-    dyEvent(', borderDate, ', "消費税8%", labelLoc = "bottom")')
+    dyEvent(', borderDate, ', "消費税8%", labelLoc = "bottom")'), envir = .GlobalEnv)
 }
