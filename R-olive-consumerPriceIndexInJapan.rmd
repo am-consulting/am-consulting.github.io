@@ -48,7 +48,8 @@ eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Csvdl.do?sinfid=000031431706' # 中分類指数 前年同月比（1971年1月～最新月）
+# targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Csvdl.do?sinfid=000031431706' # 中分類指数 前年同月比（1971年1月～最新月）
+# データ取得コード中のURLを2015年基準に変更
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/Rscript/master/consumerPriceIndexofJapan.r",
