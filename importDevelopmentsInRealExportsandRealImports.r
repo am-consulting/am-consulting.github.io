@@ -46,3 +46,4 @@ RealExportsAndRealImports02 <- buf0
 # sheet2
 allData <- merge(RealExportsAndRealImports01,RealExportsAndRealImports02,by = 'Date',all = T)
 write.table(allData, "clipboard-16384", sep = "\t", row.names = F, col.names = T, quote = F)
+assign('developmentsInRealExportsAndRealImports',allData,envir = .GlobalEnv)
