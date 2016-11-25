@@ -3,6 +3,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 title : 'Japanese Government Bond Yield Curve'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 5
@@ -54,7 +55,6 @@ Author<-'アセット･マネジメント･コンサルティング株式会�
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作成日      : ',Sys.time(),'\n'))
 cat(paste('特記        : ',notes,'\n'))
 cat(paste('特記        : ',notes0,'\n'))
 ```
