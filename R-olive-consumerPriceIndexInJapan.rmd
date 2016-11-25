@@ -61,7 +61,7 @@ consumerpriceindex <- origData0
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-dataTitle <- paste0('日本の消費者物価指数前年同月比(%):総合、コアCPI、コアコアCPI - ',format(tail(consumerpriceindex[,1],1),dateFormat))
+dataTitle <- paste0('日本の消費者物価指数前年同月比(%、2015年基準):総合、コアCPI、コアコアCPI - ',format(tail(consumerpriceindex[,1],1),dateFormat))
 dataSource <- '総務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
