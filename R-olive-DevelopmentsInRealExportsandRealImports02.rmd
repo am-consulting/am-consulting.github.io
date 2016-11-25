@@ -113,7 +113,8 @@ funDataTable(obj = buf0,tableTitle = dataTitle)
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plot_dygraph <- function(obj = tmp){
   buf <- na.omit(obj)  
-  fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[-1], collapse =  ' × '))
+  # fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[-1], collapse =  ' × '))
+  fun_dygraph(obj = buf, mainTitle = dataTitle)
   fun_consumptionTax(obj = buf)
   fun_primeMinisterOfJapan(obj = buf)
   fun_boj(obj = buf)
