@@ -46,6 +46,7 @@ fun_consumptionTax <- function(obj = dataSet){
     dyEvent(\'', borderDate, '\', \'消費税8%\', labelLoc = \'bottom\')'), envir = .GlobalEnv)
 }
 
+fun_primeMinisterOfJapan <- function(obj = dataSet){
 primeMinisterOfJapan <- c(
   "1885-12-22",    "Hirobumi Ito(1)",
   "1888-4-30" ,    "Kiyotaka Kuroda",
@@ -142,13 +143,15 @@ for(rrr in 1:nrow(pmTable)){
   if(rrr!=nrow(pmTable)){
     tmp2 <- paste0('dyEvent(\'',pmTable[rrr,2],'\',\'',pmTable[rrr,3],'\', labelLoc = \'bottom\') %>% ')
   }else{
-    tmp2 <- paste0('dyEvent(\'',dataSet[nrow(dataSet),1],'\',\'',pmTable[rrr,3],'\', labelLoc = \'bottom\')')
+    tmp2 <- paste0('dyEvent(\'',obj[nrow(obj),1],'\',\'',pmTable[rrr,3],'\', labelLoc = \'bottom\')')
   }
   out <- c(out, tmp1, tmp2)
 }
 buf0 <-paste(out, collapse = '')
-primeMinisterOfJapan_dygraph <- buf0
+assign(primeMinisterOfJapan_dygraph, buf0, envir = .GlobalEnv)
+}
 
+fun_boj <- function(obj = dataSet){
 boj <- c(
   "1882-10-6" ,    "Shigetoshi Yoshihara",
   "1888-2-21" ,    "Tetsunosuke Tomita",
@@ -199,20 +202,22 @@ for(rrr in 1:nrow(bojTable)){
   if(rrr!=nrow(bojTable)){
     tmp2 <- paste0('dyEvent(\'',bojTable[rrr,2],'\',\'',bojTable[rrr,3],'\', labelLoc = \'bottom\') %>% ')
   }else{
-    tmp2 <- paste0('dyEvent(\'',dataSet[nrow(dataSet),1],'\',\'',bojTable[rrr,3],'\', labelLoc = \'bottom\')')
+    tmp2 <- paste0('dyEvent(\'',obj[nrow(obj),1],'\',\'',bojTable[rrr,3],'\', labelLoc = \'bottom\')')
   }
   out <- c(out, tmp1, tmp2)
 }
 buf0 <-paste(out, collapse = '')
-boj_dygraph <- buf0
+assign(boj_dygraph, buf0, envir = .GlobalEnv)
+}
 
+fun_event <- function(obj = dataSet){
 eventRange <-c(
-  "2013-09-08",as.character(dataSet[nrow(dataSet),1]),"2020年東京オリンピック決定",
+  "2013-09-08",as.character(obj[nrow(obj),1]),"2020年東京オリンピック決定",
   "1986-12-01","1991-02-01","バブル景気",
   "1997-01-01","1998-01-01","アジア通貨危機"
 )
 event <- c(
-  as.character(dataSet[nrow(dataSet),1]),"2020年東京オリンピック決定",
+  as.character(obj[nrow(obj),1]),"2020年東京オリンピック決定",
   "1998-01-01","アジア通貨危機",
   "1991-02-01","バブル景気",
   "2008-09-15","リーマン･ブラザーズ破綻",
@@ -250,10 +255,11 @@ for(rrr in 1:nrow(eventRangeTable)){
 buf0 <-paste(out, collapse = ' %>% ')
 out <- NULL
 for(rrr in seq(1,length(event),by=2)){
-  if(dataSet[1,1]<= event[rrr]){
+  if(obj[1,1]<= event[rrr]){
     tmp <- paste0('dyEvent(\'',event[rrr],'\',\'',event[rrr+1],'\', labelLoc = \'bottom\')')
     out <- c(out, tmp)
   }
 }
 buf1 <-paste(out, collapse = ' %>% ')
-event_dygraph <- buf1
+assign(event_dygraph, buf1,envir = .GlobalEnv)
+}
