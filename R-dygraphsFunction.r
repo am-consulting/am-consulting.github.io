@@ -148,7 +148,7 @@ for(rrr in 1:nrow(pmTable)){
   out <- c(out, tmp1, tmp2)
 }
 buf0 <-paste(out, collapse = '')
-assign(primeMinisterOfJapan_dygraph, buf0, envir = .GlobalEnv)
+assign('primeMinisterOfJapan_dygraph', buf0, envir = .GlobalEnv)
 }
 
 fun_boj <- function(obj = dataSet){
@@ -207,7 +207,7 @@ for(rrr in 1:nrow(bojTable)){
   out <- c(out, tmp1, tmp2)
 }
 buf0 <-paste(out, collapse = '')
-assign(boj_dygraph, buf0, envir = .GlobalEnv)
+assign('boj_dygraph', buf0, envir = .GlobalEnv)
 }
 
 fun_event <- function(obj = dataSet){
@@ -261,5 +261,5 @@ for(rrr in seq(1,length(event),by=2)){
   }
 }
 buf1 <-paste(out, collapse = ' %>% ')
-assign(event_dygraph, buf1,envir = .GlobalEnv)
+assign('event_dygraph', buf1,envir = .GlobalEnv)
 }
