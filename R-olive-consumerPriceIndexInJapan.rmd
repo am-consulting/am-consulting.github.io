@@ -1,0 +1,220 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-consumerpriceindexInJapan.html')) })
+title : "Consumer Price Index in Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+# ― ソ Ы 噂 浬 欺 圭 構 蚕 十 申 曾 箪 貼 能 表 暴 予 禄
+# 兔 喀 媾 彌 拿 杤 歃 濬 畚 秉 綵 臀 藹 觸 軆 鐔 饅 鷭		
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Csvdl.do?sinfid=000031431706' # 中分類指数 前年同月比（1971年1月～最新月）
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/Rscript/master/consumerPriceIndexofJapan.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+consumerpriceindex <- origData0
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y年%m月'
+dataTitle <- paste0('日本の消費者物価指数前年同月比(%):総合、コアCPI、コアコアCPI - ',format(tail(consumerpriceindex[,1],1),dateFormat))
+dataSource <- '総務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+cat(paste("特  記      : ", notes0, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', tableTitle = '', append = '') {
+  cat(paste('<h4>', tableTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      columnDefs = list(list(width = width00, targets = 0)),
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
+buf0 <- t(tail(consumerpriceindex,4))
+buf0 <- data.frame(row.names(buf0),buf0,row.names = NULL,stringsAsFactors = F,check.names = F)
+colnames(buf0) <- buf0[1,] 
+buf0 <- buf0[-1,]
+buf0 <- data.frame(ID = seq(1,nrow(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names=NULL)
+colnames(buf0)[-c(1,2)] <- format(as.Date(colnames(buf0)[-c(1,2)]),'%Y年%m月')
+colnames(buf0)[2] <- '項目'
+buf0[,-c(1,2)] <- apply(buf0[,-c(1,2)],2,as.numeric)
+
+funDataTable(obj = buf0,tableTitle = dataTitle)
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plot_dygraph <- function(obj = tmp){
+  buf <- na.omit(obj)  
+  fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[2]))
+  fun_consumptionTax(obj = buf)
+  fun_primeMinisterOfJapan(obj = buf)
+  fun_boj(obj = buf)
+  fun_event(obj = buf)
+}
+```
+
+#### 消費者物価指数: `r  cc <- 2;colnames(consumerpriceindex)[cc]`
+
+```{r warning=F, error=F, message=F, echo=F}
+tmp <- consumerpriceindex[,c(1,cc)]
+fun_plot_dygraph(obj = tmp)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',ConsumptionTax)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',boj_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',event_dygraph_point,' %>%  ',event_dygraph_range)))
+```
+
+***
+#### 消費者物価指数: `r  cc <- 3;colnames(consumerpriceindex)[cc]`
+
+```{r warning=F, error=F, message=F, echo=F}
+tmp <- consumerpriceindex[,c(1,cc)]
+fun_plot_dygraph(obj = tmp)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',ConsumptionTax)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',boj_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',event_dygraph_point,' %>%  ',event_dygraph_range)))
+```
+
+***
+#### 消費者物価指数: `r  cc <- 6;colnames(consumerpriceindex)[cc]`
+
+```{r warning=F, error=F, message=F, echo=F}
+tmp <- consumerpriceindex[,c(1,cc)]
+fun_plot_dygraph(obj = tmp)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',ConsumptionTax)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',boj_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',event_dygraph_point,' %>%  ',event_dygraph_range)))
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
