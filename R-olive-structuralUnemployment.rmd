@@ -1,7 +1,8 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-structuralUnemployment.html')) })
-title : "失業率と欠員率"
+title : "Structural Unemployment"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 5
@@ -26,6 +27,8 @@ table{
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -112,7 +115,7 @@ colnames(mergeData) <- gsub('\n','',colnames(mergeData))
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <-
-  paste0('日本の雇用失業率、欠員率 - 民主党政権時と第二次安倍政権発足以降の比較 - ', format(tail(mergeData[,1],1), '%Y年%m月'))
+  paste0('日本の雇用失業率、欠員率、構造的失業率 - 民主党政権時と第二次安倍政権発足以降の比較 - ', format(tail(mergeData[,1],1), '%Y年%m月'))
 dataSource <- '総務省,厚生労働省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -120,7 +123,6 @@ Author <- "アセット･マネジメント･コンサルティング株式会
 cat(paste("Title       : ", dataTitle, "\n"))
 cat(paste("Data Source : ", dataSource, "\n"))
 cat(paste("Author      : ", Author, "\n"))
-cat(paste("作成日      : ", Sys.time(), "\n"))
 cat(paste("特記        : ", notes, "\n"))
 cat(paste("特記        : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
