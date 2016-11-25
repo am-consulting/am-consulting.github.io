@@ -253,6 +253,7 @@ for(rrr in 1:nrow(eventRangeTable)){
   out <- c(out, tmp)
 }
 buf0 <-paste(out, collapse = ' %>% ')
+assign('event_dygraph_range', buf0,envir = .GlobalEnv)
 out <- NULL
 for(rrr in seq(1,length(event),by=2)){
   if(obj[1,1]<= event[rrr]){
@@ -261,5 +262,5 @@ for(rrr in seq(1,length(event),by=2)){
   }
 }
 buf1 <-paste(out, collapse = ' %>% ')
-assign('event_dygraph', buf1,envir = .GlobalEnv)
+assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 }
