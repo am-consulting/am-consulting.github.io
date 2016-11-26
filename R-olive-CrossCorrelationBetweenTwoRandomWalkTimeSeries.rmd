@@ -1,0 +1,86 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-CrossCorrelationBetweenTwoRandomWalkTimeSeries.html')) })
+title : "Cross-Correlation Between Two Random Walk Time Series"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r warning = F, error = F, message = F, echo = F, results = 'hold'}
+dataTitle <- 'Cross-Correlation Between Two Random Walk Time Series / 2つのランダムウォーク時系列データの相互相関係数'
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title  : ", dataTitle, "\n"))
+cat(paste("Author : ", Author, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+```{r warning = F, error = F, message = F, echo = T, results = 'asis'}
+funRW <- function(n = 100, lineColor = c('blue', 'red'), variableNames = c('randomWalk01', 'randomWalk02')){
+  assign(variableNames[1], cumsum(rnorm(n)))
+  assign(variableNames[2], cumsum(rnorm(n)))
+  x1 <- get(variableNames[1])
+  x2 <- get(variableNames[2])
+  par(mfrow = c(1, 3), family = 'Meiryo')
+# CCF Part
+  resultCCF <-
+    ccf(x1, x2, lag = 36, main = paste0('Cross-Correlation Function\n', paste0(variableNames, collapse = ' × ')))
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+# CCF Part
+# Time Series Part
+  plot(x1, type = 'l', col = lineColor[1], 
+       ylim = c(min(x1, x2), max(x1, x2)), xlab = '', ylab = '', 
+       main = paste0('Time Series Plot\n', paste0(variableNames, collapse = ' × '),'\n'))
+  lines(x2, type = 'l', col = lineColor[2])
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  graphics::legend('topleft', col = lineColor, lty = 1, legend = variableNames, cex = 1, bty = 'n')
+# Time Series Part
+  buf0 <- data.frame(resultCCF$lag,resultCCF$acf)
+  buf <- buf0[order(buf0[,2],decreasing = T),][c(1,nrow(buf0)),]
+  colnames(buf) <- c('lag','ccf')
+  ccfResult <- buf
+# Scatter Part
+  ccf0 <- buf0[buf0[,1]==0,][,2]
+  plot(x1, x2, xlab = '', ylab = '', 
+       main = paste0('Scatter Plot:Lag = 0, r = ', ccf0, '\n', paste0(variableNames, collapse = ' × '),'\n'))
+  abline(lm(x2~x1),col = 'red')
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+# Scatter Part
+  print(knitr::kable(ccfResult,row.names = F))
+}
+for(iii in 1:20){funRW(); cat('\n<hr>')}
+```
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
