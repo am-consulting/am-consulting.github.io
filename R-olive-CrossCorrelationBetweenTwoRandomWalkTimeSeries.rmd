@@ -39,15 +39,16 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
 ```{r warning = F, error = F, message = F, echo = T, results = 'asis'}
-funRW <- function(n = 100, lineColor = c('blue', 'red'), variableNames = c('randomWalk01', 'randomWalk02')){
+funRW <- function(n = 10*12, lineColor = c('blue', 'red'), variableNames = c('randomWalk01', 'randomWalk02')){
   assign(variableNames[1], cumsum(rnorm(n)))
   assign(variableNames[2], cumsum(rnorm(n)))
   x1 <- get(variableNames[1])
   x2 <- get(variableNames[2])
+  cat(paste0('<h4>Test'), formatC(iii, width=2, flag="0"), '</h4>')
   par(mfrow = c(1, 3), family = 'Meiryo')
 # CCF Part
   resultCCF <-
-    ccf(x1, x2, lag = 36, main = paste0('Cross-Correlation Function\n', paste0(variableNames, collapse = ' × ')))
+    ccf(x1, x2, lag = 3*12, main = paste0('Cross-Correlation Function\n', paste0(variableNames, collapse = ' × ')))
   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
 # CCF Part
 # Time Series Part
@@ -59,7 +60,8 @@ funRW <- function(n = 100, lineColor = c('blue', 'red'), variableNames = c('rand
   graphics::legend('topleft', col = lineColor, lty = 1, legend = variableNames, cex = 1, bty = 'n')
 # Time Series Part
   buf0 <- data.frame(resultCCF$lag,resultCCF$acf)
-  buf <- buf0[order(buf0[,2],decreasing = T),][c(1,nrow(buf0)),]
+  buf <- buf0[order(buf0[,2],decreasing = T),]
+  buf <- buf[c(1,which(buf[,1]==0),nrow(buf)),]
   colnames(buf) <- c('lag','ccf')
   ccfResult <- buf
 # Scatter Part
@@ -70,9 +72,24 @@ funRW <- function(n = 100, lineColor = c('blue', 'red'), variableNames = c('rand
   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
 # Scatter Part
   print(knitr::kable(ccfResult,row.names = F))
+# count Part
+  assign('CCFlag0', buf0[buf0[,1]==0,], envir = .GlobalEnv)
+# count Part
 }
-for(iii in 1:20){funRW(); cat('\n<hr>')}
 ```
+
+```{r warning = F, error = F, message = F, echo = F, results = 'asis'}
+CCFlag0DF <- NULL
+for(iii in 1:50){funRW(); cat('\n<hr>'); CCFlag0DF <- rbind(CCFlag0DF,CCFlag0)}
+ccf0.4 <- CCFlag0DF[which(0.4 <= abs(CCFlag0DF[,2])),]
+ccf0.7 <- CCFlag0DF[which(0.7 <= abs(CCFlag0DF[,2])),]
+cat(paste0('<h3>計',iii,'回の試行中、ラグ = 0の場合の相互相関係数の絶対値が0.4以上であったのは計',nrow(ccf0.4),'回(',round(nrow(ccf0.4)/iii*100),'%)。0.7以上であったのは計',nrow(ccf0.7),'回(',round(nrow(ccf0.7)/iii*100),'%)。</h3>\n'))
+CCFlag0DF <- data.frame(Test = seq(1,nrow(CCFlag0DF)),CCFlag0DF)
+colnames(CCFlag0DF)[-1] <- c('lag','ccf')
+knitr::kable(CCFlag0DF,row.names = F)
+```
+
+***
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
