@@ -29,7 +29,7 @@ fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDi
   colnames(xtsData) <- colnames(obj)[-1]
   dygraphPlot <-
     dygraph(xtsData, main = mainTitle, group = 'amcc') %>%
-    dyLegend(width = legendWidth) %>%
+    dyLegend(width = legendWidth, show = "follow") %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection)
   assign(paste0('dygraphPlot',n), dygraphPlot, envir = .GlobalEnv)
