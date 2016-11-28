@@ -85,12 +85,16 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+##### 単位
+- 労働力人口、就業者、雇用者、完全失業者、非労働力人口:万人
+- 完全失業率:%
+
 ```{r warning=F, error=F, message=F, echo=F}
 fun_generateKnit <- function(n1 = 1){
   objColumn <- c(1,grep(paste0('\\b', objTitle), colnames(dataSet0), ignore.case = T))
   dataSet <- na.omit(dataSet0[,objColumn])
   colnames(dataSet)
-  fun_plot_dygraph(obj = dataSet, n0 = n1, dygraphTitle = paste0(objTitle,'(季節調整値,万人)'), legendWidth = 300)
+  fun_plot_dygraph(obj = dataSet, n0 = n1, dygraphTitle = paste0(objTitle,'(季節調整値)'), legendWidth = 300)
   fun_dygraph_shade(n = n1)
 }  
 ```
