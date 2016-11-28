@@ -264,3 +264,29 @@ for(rrr in seq(1,length(event),by=2)){
 buf1 <-paste(out, collapse = ' %>% ')
 assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 }
+
+fun_plot_dygraph <- function(obj = tmp, n0 = 1, dygraphTitle = '', legendWidth = 600){
+  buf <- na.omit(obj)
+  fun_dygraph(obj = buf, mainTitle = dygraphTitle, n = n0, legendWidth = legendWidth)
+  fun_consumptionTax(obj = buf)
+  fun_primeMinisterOfJapan(obj = buf)
+  fun_boj(obj = buf)
+  fun_event(obj = buf)
+}
+
+fun_dygraph_shade <- function(n){
+  assign(paste0('knit_expanded',n),
+         paste0(
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", n," %>% ', ConsumptionTax)))",
+           "\n\ncat('<hr>')\n\n```",
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", n," %>% ', primeMinisterOfJapan_dygraph)))",
+           "\n\ncat('<hr>')\n\n```",
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", n," %>% ', boj_dygraph)))",
+           "\n\ncat('<hr>')\n\n```",
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", n," %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))",
+           "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+}
