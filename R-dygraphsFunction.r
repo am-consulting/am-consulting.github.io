@@ -24,7 +24,7 @@ dyMultiColumn <- function(dygraph) {
             path = system.file("examples/plotters/multicolumn.js", package = "dygraphs"))
 }
 
-fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both'){
+fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', n = 1){
   xtsData <- xts(obj[,-1], order.by=obj[,1])
   colnames(xtsData) <- colnames(obj)[-1]
   dygraphPlot <-
@@ -32,7 +32,7 @@ fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDi
     dyLegend(width = legendWidth) %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection)
-  assign('dygraphPlot', dygraphPlot, envir = .GlobalEnv)
+  assign(paste0('dygraphPlot',n), dygraphPlot, envir = .GlobalEnv)
 }
 
 fun_consumptionTax <- function(obj = dataSet){
