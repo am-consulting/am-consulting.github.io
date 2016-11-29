@@ -40,29 +40,29 @@ library(XLConnect);library(RCurl);library(lubridate);library(Nippon);library(kni
 ```{r warning=F, error=F, message=F, echo=F}
 # 一般職業紹介状況(職業安定業務統計)
 # http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=extendTclass&refTarget=toukeihyo&listFormat=hierarchy&statCode=00450222&tstatCode=000001020327&tclass1=&tclass2=&tclass3=&tclass4=&tclass5=
-username <- Sys.info()['user']
-pathOutput <- paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
-setwd(pathOutput)
-fileName <- '第1表.xls'
-if(!file.exists(paste0(pathOutput, fileName))) {
-  download.file('http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=xlsDownload&fileId=000007804175&releaseCount=1', 
-                fileName, mode = "wb")
-}
-buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
-buf <- buf0
-dataType <- ""
-for(ccc in 1:ncol(buf)){
-  if(!is.na(buf[3,ccc])){dataType<-buf[3,ccc]}
-  buf[4,ccc]<- paste0(buf[4,ccc],'-',dataType)  
-}
-colnames(buf) <- buf[4,]
-rowS <- grep('14年1月', buf[,1])[1]-0
-rowE <- grep('昭和39',  buf[,1])[1]-2
-Date <- seq(from = as.Date('2002-1-1'), by = 'month', length.out = rowE-rowS+1)
-tmp <- buf[rowS:rowE,]
-tmp[,-1] <- as.numeric(gsub(',','',as.matrix(tmp[,-1])))
-jobOpenings <- data.frame(Date,tmp,check.names = F,stringsAsFactors = F)
-colnames(jobOpenings)[2] <- '元号'
+# username <- Sys.info()['user']
+# pathOutput <- paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
+# setwd(pathOutput)
+# fileName <- '第1表.xls'
+# if(!file.exists(paste0(pathOutput, fileName))) {
+#   download.file('http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=xlsDownload&fileId=000007804175&releaseCount=1', 
+#                 fileName, mode = "wb")
+# }
+# buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+# buf <- buf0
+# dataType <- ""
+# for(ccc in 1:ncol(buf)){
+#   if(!is.na(buf[3,ccc])){dataType<-buf[3,ccc]}
+#   buf[4,ccc]<- paste0(buf[4,ccc],'-',dataType)  
+# }
+# colnames(buf) <- buf[4,]
+# rowS <- grep('14年1月', buf[,1])[1]-0
+# rowE <- grep('昭和39',  buf[,1])[1]-2
+# Date <- seq(from = as.Date('2002-1-1'), by = 'month', length.out = rowE-rowS+1)
+# tmp <- buf[rowS:rowE,]
+# tmp[,-1] <- as.numeric(gsub(',','',as.matrix(tmp[,-1])))
+# jobOpenings <- data.frame(Date,tmp,check.names = F,stringsAsFactors = F)
+# colnames(jobOpenings)[2] <- '元号'
 # 一般職業紹介状況(職業安定業務統計)
 ```
 
@@ -70,6 +70,13 @@ colnames(jobOpenings)[2] <- '元号'
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importEmploymentReferralsForGeneralWorkers.r",
     ssl.verifypeer = F
   )
 eval(parse(text = script))
