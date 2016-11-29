@@ -187,6 +187,22 @@ funDataTable(obj = dataSet, orderDirection = 'desc')
 ```
 
 ***
+#### 前月差(単位:万人、%ポイント)
+
+```{r warning=F, error=F, message=F, echo=F}
+diffDataset <- 
+  data.frame(tail(dataSet[,1],-1),diff(as.matrix(dataSet[,-1])),check.names = F,stringsAsFactors = F)
+diffDataset <- t(tail(diffDataset,6))
+diffDataset <- 
+  data.frame(row.names(diffDataset),diffDataset,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(diffDataset) <- diffDataset[1,]
+diffDataset <- diffDataset[-1,]
+diffDataset[,-1] <- apply(diffDataset[,-1],2,as.numeric)
+colnames(diffDataset)[1] <- '項目'
+knitr::kable(diffDataset,row.names = F)
+```
+
+***
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
