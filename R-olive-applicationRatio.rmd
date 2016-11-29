@@ -45,7 +45,7 @@ pathOutput <- paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
 setwd(pathOutput)
 fileName <- '第1表.xls'
 if(!file.exists(paste0(pathOutput, fileName))) {
-  download.file('http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=xlsDownload&fileId=000007766029&releaseCount=1', 
+  download.file('http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=xlsDownload&fileId=000007804175&releaseCount=1', 
                 fileName, mode = "wb")
 }
 buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
@@ -165,6 +165,23 @@ funDataTable <-
 dataSet <- dataSet0
 dataSet[,1] <- format(dataSet[,1], dateFormat) 
 funDataTable(obj = dataSet, orderDirection = 'desc')
+```
+
+***
+#### 前月差(単位:万人、ポイント)
+
+```{r warning=F, error=F, message=F, echo=F}
+dataSet <- dataSet[,grep('Date|季節調整値',colnames(dataSet))]
+diffDataset <- 
+  data.frame(tail(dataSet[,1],-1),diff(as.matrix(dataSet[,-1])),check.names = F,stringsAsFactors = F)
+diffDataset <- t(tail(diffDataset,6))
+diffDataset <- 
+  data.frame(row.names(diffDataset),diffDataset,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(diffDataset) <- diffDataset[1,]
+diffDataset <- diffDataset[-1,]
+diffDataset[,-1] <- apply(diffDataset[,-1],2,as.numeric)
+colnames(diffDataset)[1] <- '項目'
+knitr::kable(diffDataset,row.names = F)
 ```
 
 ***
