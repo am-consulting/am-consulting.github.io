@@ -1,9 +1,14 @@
 # http://www.mlit.go.jp/sogoseisaku/jouhouka/sosei_jouhouka_tk4_000112.html
-library(XLConnect);library(Nippon)
+library(RCurl);library(XLConnect);library(Nippon)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileName <- '001150301.xls'
+sourceURL <- 'http://www.mlit.go.jp/sogoseisaku/jouhouka/sosei_jouhouka_tk4_000112.html'
+htmlMarkup <- getURL(sourceURL,.encoding = 'utf-8')
+pattern <- "(<a\\shref=\".*?\\.xls\".+?>)+?.+?</a>"
+buf <- unlist(regmatches(htmlMarkup, gregexpr(pattern, htmlMarkup, fixed = F)))
+pattern <- '[0-9].+?\\.xls'
+fileName <- unlist(regmatches(buf, gregexpr(pattern, buf, fixed = F)))
 fileURL <- 'http://www.mlit.go.jp/common/'
 if(!file.exists(paste0(pathOutput, fileName))) {
   download.file(paste0(fileURL,fileName), fileName, mode = "wb")
