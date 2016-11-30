@@ -1,0 +1,115 @@
+```{r warning=F,error=F,message=F,echo=F}
+library(quantmod);library(xts)
+# tmp <- getSymbols('DEXJPUS', src = 'FRED', auto.assign = F)
+tmp <- getSymbols('USD/JPY', src = "oanda", auto.assign = F, from = Sys.Date()-365*5, to = Sys.Date())
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+buf0 <- tmp
+buf <- data.frame(Date = as.Date(index(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names = NULL)
+dataSet <- na.omit(buf)
+knitr::kable(tail(dataSet,6),row.names = F)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+objCCC <- 2
+lagN <- 1
+diffN <- 1
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+# 原データ 基本統計量 Part
+summaryTable <- cbind(summary(dataSet[,objCCC]))
+latestValue <- tail(dataSet[,objCCC],1)
+dataRange <- paste0(as.character(range(dataSet[,1])),collapse = ' ~ ')
+statisticsTable <- 
+  data.frame(cbind(
+    summaryTable, 
+    round(latestValue/summaryTable*100,1),
+    round(latestValue-summaryTable,1)))
+colnames(statisticsTable) <- c(colnames(dataSet)[objCCC],'Latest to Summary(%)','Latest to Summary(Diff)')
+cat(paste0('<h4>', dataRange, '</h4>'))
+knitr::kable(statisticsTable)
+# 原データ 基本統計量 Part
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+# 差分データ 基本統計量 Part
+dataSetDiff <- data.frame(tail(dataSet[,1],-lagN),diff(dataSet[,objCCC],lag = lagN,  differences = diffN))
+appendTitle <- paste0('-lag=',lagN,',diff=',diffN)
+colnames(dataSetDiff) <- c('Date',paste0(colnames(dataSet)[objCCC],appendTitle))
+dataSet01Plus  <-subset(dataSetDiff,0 <= dataSetDiff[,2])
+dataSet01Minus <-subset(dataSetDiff,0 >  dataSetDiff[,2])
+statisticsTableDiff <- 
+  data.frame(cbind(cbind(summary(dataSet01Plus[,-1])),cbind(summary(dataSet01Minus[,-1]))))
+colnames(statisticsTableDiff) <- paste0(colnames(dataSet)[objCCC], paste0(appendTitle,c('-Plus','-Minus')))
+knitr::kable(statisticsTableDiff)
+ratioPlus <- round(nrow(dataSet01Plus)/nrow(dataSetDiff)*100)
+ratioMinus <- round(nrow(dataSet01Minus)/nrow(dataSetDiff)*100)
+statisticsTableDiffRatio <- data.frame(rbind(ratioPlus,ratioMinus),check.names = F,stringsAsFactors = F)
+colnames(statisticsTableDiffRatio)[1] <- paste0(colnames(dataSet)[objCCC],appendTitle)
+knitr::kable(statisticsTableDiffRatio)
+statisticsTableDiffMaxMin <- 
+  data.frame(rbind(dataSetDiff[which.max(dataSetDiff[,2]),],dataSetDiff[which.min(dataSetDiff[,2]),]),check.names = F,stringsAsFactors = F)
+knitr::kable(statisticsTableDiffMaxMin,row.names = F)
+# 差分データ 基本統計量 Part
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+for(rrr in 1:nrow(dataSetDiff)){
+  if(0 <= dataSetDiff[rrr,objCCC]){
+    dataSetDiff[rrr,3] <- 1;dataSetDiff[rrr,4] <- 0
+  }else{
+    dataSetDiff[rrr,3] <- 0;dataSetDiff[rrr,4] <- 1
+  }
+}
+colnames(dataSetDiff)[3:4] <- c('Plus','Minus')
+head(dataSetDiff);tail(dataSetDiff)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+dataSetDiff0 <- dataSetDiff
+for(rrr in 2:nrow(dataSetDiff0)){
+  if(dataSetDiff0[rrr,3]==1){dataSetDiff0[rrr,3] <- dataSetDiff0[rrr-1,3]+dataSetDiff0[rrr,3]}  
+  if(dataSetDiff0[rrr,4]==1){dataSetDiff0[rrr,4] <- dataSetDiff0[rrr-1,4]+dataSetDiff0[rrr,4]}  
+}
+head(dataSetDiff0);tail(dataSetDiff0)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+dataSetDiff0Plus <- dataSetDiff0[which(dataSetDiff0[,3]==0)-1,c(1,2,3)]
+tail(dataSetDiff0Plus)
+dataSetDiff0Plus <- dataSetDiff0Plus[which(dataSetDiff0Plus[,3]!=0),]
+tail(dataSetDiff0Plus)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+dataSetDiff0Minus <- dataSetDiff0[which(dataSetDiff0[,4]==0)-1,c(1,2,4)]
+tail(dataSetDiff0Minus)
+dataSetDiff0Minus <- dataSetDiff0Minus[which(dataSetDiff0Minus[,3]!=0),]
+tail(dataSetDiff0Minus)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+statSequencePlus <- data.frame()
+seqList <- unique(dataSetDiff0Plus[,3])[order(unique(dataSetDiff0Plus[,3]))]
+for(iii in 1:length(seqList)){
+  statSequencePlus[iii,1] <- iii
+  statSequencePlus[iii,2] <- nrow(subset(dataSetDiff0Plus,dataSetDiff0Plus[,3]==iii))
+}
+colnames(statSequencePlus) <- c('days','N')
+statSequencePlus$Ratio <- round(statSequencePlus[,2]/sum(statSequencePlus[,2])*100,1)
+knitr::kable(statSequencePlus)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+statSequenceMinus <- data.frame()
+seqList <- unique(dataSetDiff0Minus[,3])[order(unique(dataSetDiff0Minus[,3]))]
+for(iii in 1:length(seqList)){
+  statSequenceMinus[iii,1] <- iii
+  statSequenceMinus[iii,2] <- nrow(subset(dataSetDiff0Minus,dataSetDiff0Minus[,3]==iii))
+}
+colnames(statSequenceMinus) <- c('days','N')
+statSequenceMinus$Ratio <- round(statSequenceMinus[,2]/sum(statSequenceMinus[,2])*100,1)
+knitr::kable(statSequenceMinus)
+```
