@@ -52,7 +52,7 @@ eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- "建設工事費デフレーター - 住宅、倉庫、事務所、工場 - "
+dataTitle <- "建設工事費デフレーター - 住宅、倉庫、事務所、工場、学校 - "
 dataTitle0 <- paste0(format(range(ConstructionCostDeflator[,1]),'%Y年%m月'),collapse='~')
 dataSource <- "国土交通省"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
@@ -67,14 +67,17 @@ options(scipen = 999)
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_generateKnit <- function(objDF = dataSet, n1 = 1){
-  fun_plot_dygraph(obj = objDF, n0 = n1, dygraphTitle = paste0(colnames(objDF)[-1], collapse = ' × '), legendWidth = 300)
+  fun_plot_dygraph(obj = objDF, n0 = n1, 
+                   dygraphTitle = 
+                     paste0(gsub('建設工事費デフレーター\\(2005年度基準\\)-', '', 
+                                 colnames(objDF)[-1]),collapse = ' × '), legendWidth = 300)
   fun_dygraph_shade(n = n1)
 }  
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
-fun_generateKnit(objDF = ConstructionCostDeflator[,c(1,2:7)], n1 = n1)
+fun_generateKnit(objDF = ConstructionCostDeflator[,c(1,2,10,11)], n1 = n1)
 ```
 
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
