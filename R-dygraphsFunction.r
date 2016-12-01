@@ -32,6 +32,7 @@ fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDi
     dyLegend(width = legendWidth, show = "follow") %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection)
+  if(barPlot == 1){dygraphPlot %>% dyBarChart()}
   assign(paste0('dygraphPlot',n), dygraphPlot, envir = .GlobalEnv)
 }
 
@@ -265,7 +266,7 @@ buf1 <-paste(out, collapse = ' %>% ')
 assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 }
 
-fun_plot_dygraph <- function(obj = tmp, n0 = 1, dygraphTitle = '', legendWidth = 600){
+fun_plot_dygraph <- function(obj = tmp, n0 = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0){
   buf <- na.omit(obj)
   fun_dygraph(obj = buf, mainTitle = dygraphTitle, n = n0, legendWidth = legendWidth)
   fun_consumptionTax(obj = buf)
