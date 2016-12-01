@@ -1,5 +1,43 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-USDJPY.html')) })
+
+title : 'Froreign Exchange Rate - USD/JPY(Source : https://www.oanda.com/)'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {max-width: 1000px;	margin-left: auto; margin-right: auto;}
+table { white-space: nowrap; }
+td.negative { color : red; }
+</style>
+<script>
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
 ```{r warning=F,error=F,message=F,echo=F}
-library(quantmod);library(xts)
+library(quantmod);#library(xts)
 # tmp <- getSymbols('DEXJPUS', src = 'FRED', auto.assign = F)
 tmp <- getSymbols('USD/JPY', src = "oanda", auto.assign = F, from = Sys.Date()-365*5, to = Sys.Date())
 ```
@@ -7,8 +45,7 @@ tmp <- getSymbols('USD/JPY', src = "oanda", auto.assign = F, from = Sys.Date()-3
 ```{r warning=F,error=F,message=F,echo=F}
 buf0 <- tmp
 buf <- data.frame(Date = as.Date(index(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names = NULL)
-dataSet <- na.omit(buf)
-knitr::kable(tail(dataSet,6),row.names = F)
+dataSet <- dataSet0 <- na.omit(buf)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -18,44 +55,97 @@ diffN <- 1
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
+# 日付フォーマット確認 Part
+library(lubridate)
+dateFormat <- '%Y-%m-%d'
+dateUnit <- 'Day'
+if(length(unique(month(dataSet[,1]))) == 1){
+  dateFormat <- '%Y'
+  dateUnit <- 'Year'
+}else if(length(unique(day(dataSet[,1]))) == 1){
+  dateFormat <- '%Y-%m'
+  dateUnit <- 'Month'
+}
+# 日付フォーマット確認 Part
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+colnames(dataSet0)[2] <- 
+  paste0(colnames(dataSet0)[2],':n=',nrow(dataSet0),':',paste0(format(range(dataSet0[,1]),dateFormat),collapse = '~'))
+knitr::kable(tail(dataSet0),row.names = F)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F}
 # 原データ 基本統計量 Part
 summaryTable <- cbind(summary(dataSet[,objCCC]))
 latestValue <- tail(dataSet[,objCCC],1)
-dataRange <- paste0(as.character(range(dataSet[,1])),collapse = ' ~ ')
+latestDate <- format(tail(dataSet[,1],1),dateFormat)
+dataRange <- paste0(as.character(range(dataSet[,1])),collapse = '~')
 statisticsTable <- 
   data.frame(cbind(
     summaryTable, 
     round(latestValue/summaryTable*100,1),
-    round(latestValue-summaryTable,1)))
-colnames(statisticsTable) <- c(colnames(dataSet)[objCCC],'Latest to Summary(%)','Latest to Summary(Diff)')
-cat(paste0('<h4>', dataRange, '</h4>'))
+    latestValue-summaryTable))
+colnames(statisticsTable) <- 
+  c(colnames(dataSet)[objCCC],
+    paste0('Latest(',latestDate,':', latestValue,') to Summary(%)'),
+    paste0('Latest(',latestDate,':', latestValue,') to Summary(Diff)'))
+colnames(statisticsTable)[1] <- paste0(colnames(statisticsTable)[1],':',paste0(format(range(dataSet[,1]),dateFormat),collapse = '~'))
 knitr::kable(statisticsTable)
 # 原データ 基本統計量 Part
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 # 差分データ 基本統計量 Part
 dataSetDiff <- data.frame(tail(dataSet[,1],-lagN),diff(dataSet[,objCCC],lag = lagN,  differences = diffN))
-appendTitle <- paste0('-lag=',lagN,',diff=',diffN)
+dataRangeDiff <- paste0(as.character(range(dataSetDiff[,1])),collapse = '~')
+appendTitle <- paste0(':lag=',lagN,',diff=',diffN)
 colnames(dataSetDiff) <- c('Date',paste0(colnames(dataSet)[objCCC],appendTitle))
-dataSet01Plus  <-subset(dataSetDiff,0 <= dataSetDiff[,2])
-dataSet01Minus <-subset(dataSetDiff,0 >  dataSetDiff[,2])
+knitr::kable(tail(dataSetDiff),row.names = F)
+cat('<hr>')
+dataSet01Positive  <-subset(dataSetDiff,0 <= dataSetDiff[,2])
+dataSet01Negative <-subset(dataSetDiff,0 >  dataSetDiff[,2])
 statisticsTableDiff <- 
-  data.frame(cbind(cbind(summary(dataSet01Plus[,-1])),cbind(summary(dataSet01Minus[,-1]))))
-colnames(statisticsTableDiff) <- paste0(colnames(dataSet)[objCCC], paste0(appendTitle,c('-Plus','-Minus')))
+  data.frame(cbind(cbind(summary(dataSet01Positive[,-1])),cbind(summary(dataSet01Negative[,-1]))))
+colnames(statisticsTableDiff) <- paste0(colnames(dataSet)[objCCC], paste0(appendTitle,c(':Positive',':Negative')),':',dataRangeDiff)
 knitr::kable(statisticsTableDiff)
-ratioPlus <- round(nrow(dataSet01Plus)/nrow(dataSetDiff)*100)
-ratioMinus <- round(nrow(dataSet01Minus)/nrow(dataSetDiff)*100)
-statisticsTableDiffRatio <- data.frame(rbind(ratioPlus,ratioMinus),check.names = F,stringsAsFactors = F)
-colnames(statisticsTableDiffRatio)[1] <- paste0(colnames(dataSet)[objCCC],appendTitle)
-knitr::kable(statisticsTableDiffRatio)
-statisticsTableDiffMaxMin <- 
-  data.frame(rbind(dataSetDiff[which.max(dataSetDiff[,2]),],dataSetDiff[which.min(dataSetDiff[,2]),]),check.names = F,stringsAsFactors = F)
-knitr::kable(statisticsTableDiffMaxMin,row.names = F)
 # 差分データ 基本統計量 Part
 ```
 
+***
+
 ```{r warning=F,error=F,message=F,echo=F}
+# 差分データの正負構成比(%)
+RatioPositive <- round(nrow(dataSet01Positive)/nrow(dataSetDiff)*100)
+RatioNegative <- round(nrow(dataSet01Negative)/nrow(dataSetDiff)*100)
+statisticsTableDiffRatio <- 
+  data.frame(rbind(NumberPositive=nrow(dataSet01Positive),
+                   RatioPositive,
+                   NumberNegative=nrow(dataSet01Negative),
+                   RatioNegative),check.names = F,stringsAsFactors = F)
+colnames(statisticsTableDiffRatio)[1] <- paste0(colnames(dataSet)[objCCC],appendTitle,':',dataRangeDiff)
+knitr::kable(statisticsTableDiffRatio)
+# 差分データの正負構成比(%)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F}
+# 差分データの最大値、最小値
+statisticsTableDiffMaxMin <- 
+  data.frame(rbind(dataSetDiff[which.max(dataSetDiff[,2]),],dataSetDiff[which.min(dataSetDiff[,2]),]),
+             check.names = F,stringsAsFactors = F)
+colnames(statisticsTableDiffMaxMin)[2] <- paste0(colnames(statisticsTableDiffMaxMin)[2],':Max&Min',':',dataRangeDiff)
+knitr::kable(statisticsTableDiffMaxMin,row.names = F)
+# 差分データの最大値、最小値
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# Step1:正負の識別
 for(rrr in 1:nrow(dataSetDiff)){
   if(0 <= dataSetDiff[rrr,objCCC]){
     dataSetDiff[rrr,3] <- 1;dataSetDiff[rrr,4] <- 0
@@ -63,53 +153,89 @@ for(rrr in 1:nrow(dataSetDiff)){
     dataSetDiff[rrr,3] <- 0;dataSetDiff[rrr,4] <- 1
   }
 }
-colnames(dataSetDiff)[3:4] <- c('Plus','Minus')
+colnames(dataSetDiff)[3:4] <- c('Positive','Negative')
 head(dataSetDiff);tail(dataSetDiff)
+# Step1:正負の識別
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# Step2:正負それぞれの連続回数を判定
 dataSetDiff0 <- dataSetDiff
 for(rrr in 2:nrow(dataSetDiff0)){
   if(dataSetDiff0[rrr,3]==1){dataSetDiff0[rrr,3] <- dataSetDiff0[rrr-1,3]+dataSetDiff0[rrr,3]}  
   if(dataSetDiff0[rrr,4]==1){dataSetDiff0[rrr,4] <- dataSetDiff0[rrr-1,4]+dataSetDiff0[rrr,4]}  
 }
 head(dataSetDiff0);tail(dataSetDiff0)
+# Step2:正負それぞれの連続回数を判定
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
-dataSetDiff0Plus <- dataSetDiff0[which(dataSetDiff0[,3]==0)-1,c(1,2,3)]
-tail(dataSetDiff0Plus)
-dataSetDiff0Plus <- dataSetDiff0Plus[which(dataSetDiff0Plus[,3]!=0),]
-tail(dataSetDiff0Plus)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# Step3:正の連続が途切れる列を抽出
+dataSetDiff0Positive <- 
+  rbind(dataSetDiff0[which(dataSetDiff0[,3]==0)-1,c(1,2,3)],tail(dataSetDiff0[,c(1,2,3)],1))
+head(dataSetDiff0Positive);tail(dataSetDiff0Positive)
+dataSetDiff0Positive <- dataSetDiff0Positive[which(dataSetDiff0Positive[,3]!=0),]
+tail(dataSetDiff0Positive)
+# Step3:正の連続が途切れる列を抽出
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
-dataSetDiff0Minus <- dataSetDiff0[which(dataSetDiff0[,4]==0)-1,c(1,2,4)]
-tail(dataSetDiff0Minus)
-dataSetDiff0Minus <- dataSetDiff0Minus[which(dataSetDiff0Minus[,3]!=0),]
-tail(dataSetDiff0Minus)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# Step4:負の連続が途切れる列を抽出
+dataSetDiff0Negative <- 
+  rbind(dataSetDiff0[which(dataSetDiff0[,4]==0)-1,c(1,2,4)],tail(dataSetDiff0[,c(1,2,4)],1))
+head(dataSetDiff0Negative);tail(dataSetDiff0Negative)
+dataSetDiff0Negative <- dataSetDiff0Negative[which(dataSetDiff0Negative[,3]!=0),]
+tail(dataSetDiff0Negative)
+# Step4:負の連続が途切れる列を抽出
 ```
 
+***
+
 ```{r warning=F,error=F,message=F,echo=F}
-statSequencePlus <- data.frame()
-seqList <- unique(dataSetDiff0Plus[,3])[order(unique(dataSetDiff0Plus[,3]))]
+# Step5:正の連続の頻度
+statSequencePositive <- data.frame()
+seqList <- unique(dataSetDiff0Positive[,3])[order(unique(dataSetDiff0Positive[,3]))]
 for(iii in 1:length(seqList)){
-  statSequencePlus[iii,1] <- iii
-  statSequencePlus[iii,2] <- nrow(subset(dataSetDiff0Plus,dataSetDiff0Plus[,3]==iii))
+  statSequencePositive[iii,1] <- seqList[iii]
+  statSequencePositive[iii,2] <- nrow(subset(dataSetDiff0Positive,dataSetDiff0Positive[,3]==seqList[iii]))
 }
-colnames(statSequencePlus) <- c('days','N')
-statSequencePlus$Ratio <- round(statSequencePlus[,2]/sum(statSequencePlus[,2])*100,1)
-knitr::kable(statSequencePlus)
+colnames(statSequencePositive) <- c(paste0('x Straight Positive ',dateUnit),'N')
+statSequencePositive$Ratio <- round(statSequencePositive[,2]/sum(statSequencePositive[,2])*100,1)
+colnames(statSequencePositive)[3] <- paste0(colnames(dataSet)[objCCC],appendTitle,':',colnames(statSequencePositive)[3],':',dataRangeDiff)
+knitr::kable(statSequencePositive)
+# Step5:正の連続の頻度
 ```
 
+***
+
 ```{r warning=F,error=F,message=F,echo=F}
-statSequenceMinus <- data.frame()
-seqList <- unique(dataSetDiff0Minus[,3])[order(unique(dataSetDiff0Minus[,3]))]
+# Step6:負の連続の頻度
+statSequenceNegative <- data.frame()
+seqList <- unique(dataSetDiff0Negative[,3])[order(unique(dataSetDiff0Negative[,3]))]
 for(iii in 1:length(seqList)){
-  statSequenceMinus[iii,1] <- iii
-  statSequenceMinus[iii,2] <- nrow(subset(dataSetDiff0Minus,dataSetDiff0Minus[,3]==iii))
+  statSequenceNegative[iii,1] <- seqList[iii]
+  statSequenceNegative[iii,2] <- nrow(subset(dataSetDiff0Negative,dataSetDiff0Negative[,3]==seqList[iii]))
 }
-colnames(statSequenceMinus) <- c('days','N')
-statSequenceMinus$Ratio <- round(statSequenceMinus[,2]/sum(statSequenceMinus[,2])*100,1)
-knitr::kable(statSequenceMinus)
+colnames(statSequenceNegative) <- c(paste0('x Straight Negative ',dateUnit),'N')
+statSequenceNegative$Ratio <- round(statSequenceNegative[,2]/sum(statSequenceNegative[,2])*100,1)
+colnames(statSequenceNegative)[3] <- paste0(colnames(dataSet)[objCCC],appendTitle,':',colnames(statSequenceNegative)[3],':',dataRangeDiff)
+knitr::kable(statSequenceNegative)
+# Step6:負の連続の頻度
 ```
+
+***
+
+<script>
+  MakeNegative();
+</script>
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
