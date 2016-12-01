@@ -24,7 +24,7 @@ dyMultiColumn <- function(dygraph) {
             path = system.file("examples/plotters/multicolumn.js", package = "dygraphs"))
 }
 
-fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', n = 1){
+fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', n = 1, barPlot0 = 0){
   xtsData <- xts(obj[,-1], order.by=obj[,1])
   colnames(xtsData) <- colnames(obj)[-1]
   dygraphPlot <-
@@ -32,7 +32,7 @@ fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDi
     dyLegend(width = legendWidth, show = "follow") %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection)
-  if(barPlot == 1){dygraphPlot %>% dyBarChart()}
+  if(barPlot0 == 1){dygraphPlot %>% dyBarChart()}
   assign(paste0('dygraphPlot',n), dygraphPlot, envir = .GlobalEnv)
 }
 
@@ -268,7 +268,7 @@ assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 
 fun_plot_dygraph <- function(obj = tmp, n0 = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0){
   buf <- na.omit(obj)
-  fun_dygraph(obj = buf, mainTitle = dygraphTitle, n = n0, legendWidth = legendWidth)
+  fun_dygraph(obj = buf, mainTitle = dygraphTitle, n = n0, legendWidth = legendWidth, barPlot0 = barPlot)
   fun_consumptionTax(obj = buf)
   fun_primeMinisterOfJapan(obj = buf)
   fun_boj(obj = buf)
