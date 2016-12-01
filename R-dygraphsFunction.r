@@ -32,7 +32,7 @@ fun_dygraph <- function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDi
     dyLegend(width = legendWidth, show = "follow") %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection)
-  if(barPlot0 == 1){dygraphPlot %>% dyBarChart()}
+  if(barPlot0 == 1){dygraphPlot <- dygraphPlot %>% dyBarChart()}
   assign(paste0('dygraphPlot',n), dygraphPlot, envir = .GlobalEnv)
 }
 
