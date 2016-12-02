@@ -1,8 +1,9 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-monetaryBase.html')) })
 
-title : 'マネタリーベース'
+title : 'Monetary Base In Japan & USA'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
@@ -12,22 +13,28 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-table{
- white-space: nowrap;
-}
+.main-container {max-width: 1000px;	margin-left: auto; margin-right: auto;}
+table { white-space: nowrap; }
+td.negative { color : red; }
 </style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
 
  - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
  - SaECaNet http://saecanet.com/
  - Olive http://olive.saecanet.com/
  - twitter https://twitter.com/AMC2_Japan
 
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -55,11 +62,18 @@ monetaryBase_Japan <- tail(monetaryBase_Japan,12*20)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
+YoYJapan <- 
+  round(diff(as.matrix(monetaryBase_Japan[,-1]),lag = 12,differences = 1)/head(as.matrix(monetaryBase_Japan[,-1]),-12)*100,1)
+YoYJapan <- data.frame(tail(monetaryBase_Japan[,1],-12),YoYJapan,check.names = F,stringsAsFactors = F)
+colnames(YoYJapan)[1] <- 'Date'
+```
+
+```{r warning=F, error=F, message=F, echo=F}
 fredData <- list()
 cnt <- 0
 importData <-
   c(
-    'AMBNS',    'St. Louis Adjusted Monetary Base(Billions of Dollars,Not Seasonally Adjusted)',
+    'AMBNS',    'St. Louis Adjusted Monetary Base\n(Billions of Dollars,Not Seasonally Adjusted)',
     'BOGMBASE', 'Monetary Base; Total(Millions of Dollars,Not Seasonally Adjusted)'
   )
 for (lll in seq(1, length(importData), by = 2)) {
@@ -77,7 +91,7 @@ mbUSA <- tail(mbUSA,12*20)
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- paste0('日本と米国のマネタリーベース - ',format(tail(monetaryBase_Japan[,1],1),'%Y年%m月分'))
-dataSource <- '日本銀行Federal Reserve Bank of St. Louis'
+dataSource <- '日本銀行,Federal Reserve Bank of St. Louis'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0 
@@ -85,7 +99,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作 成 日    : ',Sys.time(),'\n'))
 cat(paste('特    記    : ',notes,'\n'))
 cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
@@ -103,7 +116,7 @@ minValue <- min(obj[,objY01],obj[,objY02])
 }else{
 mainTitle <- colnames(obj)[objY01]
 }
-par(mar=c(3,5,6,5),family = 'Meiryo')
+par(mar=c(3,6,6,5),family = 'Meiryo')
 plot(
   obj[, objX]  , obj[, objY01], type = type01, col = lineColor[1], xlab = '', ylab = '', xaxt = 'n', 
   ylim = if(needylim == 1){c(minValue, maxValue)},
@@ -159,13 +172,20 @@ fun_transport <- function(obj){
 }
 ```
 
-***
-
 ### 日本のマネタリーベース
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries(obj = monetaryBase_Japan, chartType = 0, type01 = 'l')
 knitr::kable(fun_transport(obj = monetaryBase_Japan), row.names = F)
+```
+
+***
+
+### 日本のマネタリーベース:前年同月比(%)
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_plotTimeSeries(obj = YoYJapan, chartType = 0, type01 = 'h')
+knitr::kable(fun_transport(obj = YoYJapan), row.names = F)
 ```
 
 ***
