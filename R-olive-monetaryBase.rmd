@@ -73,7 +73,7 @@ fredData <- list()
 cnt <- 0
 importData <-
   c(
-    'AMBNS',    'St. Louis Adjusted Monetary Base\n(Billions of Dollars,Not Seasonally Adjusted)',
+    'AMBNS',    'St. Louis Adjusted Monetary Base(Billions of Dollars,Not Seasonally Adjusted)',
     'BOGMBASE', 'Monetary Base; Total(Millions of Dollars,Not Seasonally Adjusted)'
   )
 for (lll in seq(1, length(importData), by = 2)) {
@@ -137,14 +137,14 @@ if(chartType!=0){
     )
   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
   axis(4, cex.axis = 1, cex.lab = 1)
-  mtext(colnames(obj)[objY02], side=4, line=3.2, cex=1)
+  mtext(gsub('\\(B','\n\\(B',colnames(obj)[objY02]), side=4, line=3.2, cex=1)
   }
   lo <- loess(obj[, objY02] ~ as.numeric(obj[,objX]), degree = 2)
   lines(obj[,objX] , predict(lo) , col = lineColor[2], lwd = 1, lty = 2)
   graphics::legend('topleft',col=lineColor,lty=1,legend=c(colnames(obj)[objY01],colnames(obj)[objY02]),cex=1,bty='n',lwd = 2)
 }
 axis.Date(side=1, at=obj[,objX],format=dateFormat,padj=1,cex.axis=1.0) 
-mtext(colnames(obj)[objY01], side=2, line=3.2, cex=1)
+mtext(gsub('\\(B','\n\\(B',colnames(obj)[objY01]), side=2, line=3.2, cex=1)
 # rect part
 rectDateL <- as.numeric(as.Date('2009-09-16'))
 rectDateR <- as.numeric(as.Date('2012-12-26'))
