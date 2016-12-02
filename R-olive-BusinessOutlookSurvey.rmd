@@ -1,0 +1,58 @@
+```{r warning=F,error=F,message=F,echo=F}
+library(XLConnect);library(Nippon)
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- 'jikeiretsu.xls'
+baseURL <- 'http://www.mof.go.jp/pri/reference/bos/results/'
+if(!file.exists(paste0(pathOutput, fileName))) {
+  download.file(paste0(baseURL,fileName), fileName , mode = 'wb')
+}
+buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, header = F)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+buf <- buf0
+bsiTitle <- vector()
+origbsiData <- bsiData <- list()
+buf[,1] <- unlist(lapply(buf[,1], zen2han))
+buf[,2] <- unlist(lapply(buf[,2], zen2han))
+bsiCCC <- c(grep('bsi', buf[,1], ignore.case = T)[-1], nrow(buf)+1)
+for(iii in 1:(length(bsiCCC)-1)){
+  origbsiData[[iii]] <- buf[bsiCCC[iii]:(bsiCCC[iii+1]-1),]
+  bsiTitle <- c(bsiTitle,origbsiData[[iii]][1,1])
+  print(head(origbsiData[[iii]][,1:5,drop=F]))
+  print(tail(origbsiData[[iii]][,1:5,drop=F]))
+}  
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+for(iii in 1:length(origbsiData)){
+  tmp0 <- origbsiData[[iii]]
+  tmp0 <- tmp0[-1,]
+  tmp0[,1] <- as.numeric(gsub('年','',tmp0[,1]))
+  tmp0[,1] <- unlist(lapply(tmp0[,1],function(x){if(is.numeric(x)){x+1988}else{NA}}))
+  buf <- NA
+  for(rrr in 1:nrow(tmp0)){
+    if(!is.na(tmp0[rrr,1])){buf <- tmp0[rrr,1]}
+    tmp0[rrr,1] <- buf
+  }
+  tmp0[,2] <- as.numeric(substring(gsub('月','',tmp0[,2]), unlist(gregexpr('~',gsub('月','',tmp0[,2])))+1))
+  tmp0[,1] <- paste0(tmp0[,1],'-',tmp0[,2],'-1')
+  for(rrr in 1:2){
+    buf <- NA
+    for(ccc in 1:ncol(tmp0)){
+      if(!is.na(tmp0[rrr,ccc])){buf<-tmp0[rrr,ccc]}
+      tmp0[rrr,ccc]<-buf
+    }
+  }
+  colnames(tmp0) <- paste0(tmp0[1,],'-',tmp0[2,],'-',tmp0[3,])
+  tmp0<-tmp0[-c(1:3),-2]
+  tmp0[,-1]<-apply(tmp0[,-1],2,function(x)as.numeric(gsub('▲ ','-',x)))
+  colnames(tmp0)[1] <- 'Date'
+  tmp0[,1] <- as.Date(tmp0[,1])
+  bsiData[[iii]] <- na.omit(tmp0)
+  print(head(bsiData[[iii]][,1:5,drop=F]))
+  print(tail(bsiData[[iii]][,1:5,drop=F]))
+}
+```
