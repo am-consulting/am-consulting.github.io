@@ -47,7 +47,8 @@ for(iii in 1:length(origbsiData)){
     }
   }
   colnames(tmp0) <- paste0(tmp0[1,],'-',tmp0[2,],'-',tmp0[3,])
-  tmp0<-tmp0[-c(1:3),-2]
+  rrrRemove <- which(sapply(as.numeric(tmp0[,2]),function(x){!is.na(x)}))[1]-1
+  tmp0<-tmp0[-c(1:rrrRemove),-2]
   tmp0[,-1]<-apply(tmp0[,-1],2,function(x)as.numeric(gsub('▲ ','-',x)))
   colnames(tmp0)[1] <- 'Date'
   tmp0[,1] <- as.Date(tmp0[,1])
