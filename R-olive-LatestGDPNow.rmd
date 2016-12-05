@@ -143,8 +143,6 @@ funDataTable <-
   }
 ```
 
-***
-
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 funDataTable(obj = componentGDPNow, dataTitle = dataImportedTime)
 ```
