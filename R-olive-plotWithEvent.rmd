@@ -2,6 +2,7 @@
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);pathToFolder000<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,pathToFolder000[2,1],'charts/','am-consulting.co.jp-intrusion.html')) })
 title : "尖閣諸島接近状況統計分析"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
@@ -27,6 +28,8 @@ table{
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
 
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- paste0('中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:',Sys.Date(),'更新')
 dataSource <- '海上保安庁 『尖閣諸島周辺海域における中国公船等の動向と我が国の対処』'
@@ -34,7 +37,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste("Title       : ", dataTitle, "\n"))
 cat(paste("Data Source : ", dataSource, "\n"))
 cat(paste("Author      : ", Author, "\n"))
-cat(paste("作成日      : ", Sys.time(), "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 library(dplyr)
 library(lubridate)
