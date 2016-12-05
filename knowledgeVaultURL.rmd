@@ -30,7 +30,13 @@ $(document).ready(function() {
 
 <style>
 table{white-space: nowrap;}
-img.flag {max-width:20px; max-height:20px; width:auto; height:auto;}
+.entry-content table {border: 0px;}
+.entry-content table > thead > tr > th, 
+.entry-content table > tbody > tr > th, 
+.entry-content table > tfoot > tr > th, 
+.entry-content table > thead > tr > td, 
+.entry-content table > tbody > tr > td, 
+.entry-content table > tfoot > tr > td {border-left: none; border-right: none;}
 </style>
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -48,10 +54,12 @@ tmp0 <- read.table(fileName, sep = ',', fileEncoding = 'utf8', header = T)
 
 ```{r warning=F,error=F,message=F,echo=F}
 buf <- tmp0
-buf[,grep('url',colnames(buf),ignore.case = T)] <- 
-  paste0('<a href="',buf[,grep('url',colnames(buf),ignore.case = T)],'" target="_blank">Move to Data</a>')
-countryCCC <- grep('country',colnames(buf),ignore.case = T)
-buf <- buf[,-countryCCC]
+buf[,grep('title',colnames(buf),ignore.case = T)] <- 
+  paste0('<a href="',buf[,grep('url',colnames(buf),ignore.case = T)],
+         '" target="_blank">',
+         buf[,grep('title',colnames(buf),ignore.case = T)],
+         '</a>')
+buf <- buf[,-grep('url',colnames(buf),ignore.case = T)]
 ```
 
 ***
@@ -59,7 +67,7 @@ buf <- buf[,-countryCCC]
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 knitr::kable(buf, row.names = F, format = "html", 
              table.attr = "id='amcc' class='display compact' width='100%' cellspacing='0'", escape = F, 
-             align = c("r", "l", "c", "c"))
+             align = c("r", "l", "c"))
 ```
 
 ***
