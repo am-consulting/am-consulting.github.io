@@ -1,50 +1,53 @@
-No.,Title,Period,Country,URL
-1,実効為替レート,Daily,日本:ユーロ:イギリス:オーストラリア,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EffectiveExchangeRateIndices.html
-2,日本国債イールドカーブ,Daily,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-yieldCurve.html
-3,米国債利回り,Daily,アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGS.html
-4,直近のGDPNow,Daily,アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html
-5,日米国債金利差,Daily,日本:アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html
-6,対外及び対内証券売買契約等の状況,Weekly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html
-7,北米ロータリー・リグカウント 石油とガス,Weekly,アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html
-8,IMM･CFTC投機筋ポジション,Weekly,日本:ユーロ:イギリス:オーストラリア,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html
-9,日本銀行営業毎旬報告,Weekly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html
-10,日本銀行が保有する国債の銘柄別残高,Weekly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-JGBheldByBOJ.html
-11,外国為替平衡操作の実施状況(月次ベース),Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html
-12,株式関連月次統計情報,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html
-13,日本と米国のマネタリーベース,Monthly,日本:アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monetaryBase.html
-14,基調的なインフレ率を捕捉するための指標,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-measuresOfUnderlyingInflation.html
-15,消費動向調査,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerConfidenceSurvey.html
-16,株式月間売買高･売買代金,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyTradingVolumeAndValue.html
-17,日本銀行オペレーション,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-operationBOJ.html
-18,日本の外貨準備高,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalReservesOfJapan.html
-19,日本の景気動向指数,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessConditions.html
-20,日本の国際収支,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-InternationalBalanceofPayments.html
-21,日本の企業倒産件数(データ出所：株式会社東京商工リサーチ),Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-bankruptcyData.html
-22,景気ウォッチャー調査,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EconomyWatchersSurvey.html
-23,アメリカ合衆国大統領および政党(民主党、共和党)毎の経済指標,Monthly,アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-POTUS.html
-24,IMF Primary Commodity Prices,Monthly,アメリカ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IMFPrimaryCommodityPrices.html
-25,購買力平価,Monthly,日本:ユーロ,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECDPPP.html
-26,国内総生産,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html
-27,米国債保有額,Monthly,日本:中国,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MajorForeignHoldersUSTreasury.html
-28,毎月勤労統計調査 全国調査 実数原表,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyLabourSurvey.html
-29,財務省貿易統計(速報),Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatistics.html
-30,日本の雇用失業率、欠員率,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-structuralUnemployment.html
-31,日本の失業率と消費者物価指数,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-Phillipscurve.html
-32,財務省貿易統計,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatisticsOfJAPAN.html
-33,内閣支持率,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-cabinetApprovalRating.html
-34,建築着工統計調査,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionStatistics.html
-35,特定サービス産業動態売上高指数,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SurveyofSelectedServiceIndustries.html
-36,全産業活動指数,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IAA.html
-37,実質輸出入の動向 - 実質輸出、実質輸入,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports01.html
-38,実質輸出入の動向 - 対アメリカ、EU、中国,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports02.html
-39,需給ギャップと潜在成長率,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OutputGapAndPotentialGrowthRate.html
-40,日本の消費者物価指数,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerpriceindexInJapan.html
-41,建設労働需給調査 - 建設技能労働者過不足率,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LaborSupplyAndDemand.html
-42,日本のマネーストックと信用乗数:M2、M3、広義流動性,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html
-43,日本の企業物価指数,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html
-44,日本の労働力調査,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LabourForceSurveyInJapan.html
-45,日本の一般職業紹介状況,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html
-46,建設工事費デフレーター,Monthly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionCostDeflator.html
-47,法人企業統計,Quarterly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html
-48,日本の国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税,Yearly,日本,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html
-49,世界経済の見通し(2016年10月版) 2017年から2021年の予測,Yearly,日本:アメリカ,http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html
+No.,Title,Period,URL
+1,実効為替レート:日本、米国、ユーロ圏、オーストラリア、中国、英国、ニュージーランド、韓国、南アフリカ,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EffectiveExchangeRateIndices.html
+2,日本国債イールドカーブ,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-yieldCurve.html
+3,米国債利回り,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGS.html
+4,直近のGDPNow,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html
+5,日米国債金利差,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html
+6,対外及び対内証券売買契約等の状況,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html
+7,北米ロータリー・リグカウント 石油とガス,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html
+8,IMM･CFTC投機筋ポジション,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html
+9,日本銀行営業毎旬報告,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html
+10,日本銀行が保有する国債の銘柄別残高,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-JGBheldByBOJ.html
+11,外国為替平衡操作の実施状況(月次ベース),Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html
+12,株式関連月次統計情報:市場別時価総額、株式平均利回り、PER･PBRおよび日経平均株価,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html
+13,日本と米国のマネタリーベース,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monetaryBase.html
+14,基調的なインフレ率を捕捉するための指標:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-measuresOfUnderlyingInflation.html
+15,消費動向調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerConfidenceSurvey.html
+16,株式月間売買高･売買代金:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyTradingVolumeAndValue.html
+17,日本銀行オペレーション,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-operationBOJ.html
+18,外貨準備高:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalReservesOfJapan.html
+19,景気動向指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessConditions.html
+20,国際収支:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-InternationalBalanceofPayments.html
+21,企業倒産件数(データ出所：株式会社東京商工リサーチ),Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-bankruptcyData.html
+22,景気ウォッチャー調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EconomyWatchersSurvey.html
+23,アメリカ合衆国大統領および政党(民主党、共和党)毎の経済指標:米国財務省証券10年もの利回り、ドル円為替レート、米国失業率、米国失業保険申請件数4週間移動平均,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-POTUS.html
+24,IMF Primary Commodity Prices,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IMFPrimaryCommodityPrices.html
+25,購買力平価:日本円、ユーロ、ポンド,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECDPPP.html
+26,国内総生産:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html
+27,米国債保有額:日本、中国,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MajorForeignHoldersUSTreasury.html
+28,毎月勤労統計調査 全国調査 実数原表:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyLabourSurvey.html
+29,財務省貿易統計(速報):日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatistics.html
+30,雇用失業率、欠員率:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-structuralUnemployment.html
+31,失業率と消費者物価指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-Phillipscurve.html
+32,財務省貿易統計:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatisticsOfJAPAN.html
+33,内閣支持率:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-cabinetApprovalRating.html
+34,建築着工統計調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionStatistics.html
+35,特定サービス産業動態売上高指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SurveyofSelectedServiceIndustries.html
+36,全産業活動指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IAA.html
+37,実質輸出入の動向:実質輸出、実質輸入:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports01.html
+38,実質輸出入の動向:対アメリカ、EU、中国:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports02.html
+39,需給ギャップと潜在成長率:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OutputGapAndPotentialGrowthRate.html
+40,消費者物価指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerpriceindexInJapan.html
+41,建設労働需給調査: 建設技能労働者過不足率:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LaborSupplyAndDemand.html
+42,マネーストックと信用乗数:M2、M3、広義流動性:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html
+43,企業物価指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html
+44,労働力調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LabourForceSurveyInJapan.html
+45,一般職業紹介状況:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html
+46,建設工事費デフレーター:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionCostDeflator.html
+47,法人企業統計:日本,Quarterly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html
+48,国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税:日本,Yearly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html
+49,世界経済の見通し(2016年10月版) 2017年から2021年の予測,Yearly,http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html
+50,政治資金情報(データ出所:ラポール・ジャパン),,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-politicalFunding.html
+51,2016年アメリカ大統領選挙一般投票の結果と各州の寄与度,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-2016NationalPopularVoteTracker.html
+52,尖閣諸島接近状況統計分析,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html

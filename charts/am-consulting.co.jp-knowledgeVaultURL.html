@@ -22,7 +22,13 @@ $(document).ready(function() {
 </script>
 <style>
 table{white-space: nowrap;}
-img.flag {max-width:20px; max-height:20px; width:auto; height:auto;}
+.entry-content table {border: 0px;}
+.entry-content table > thead > tr > th, 
+.entry-content table > tbody > tr > th, 
+.entry-content table > tfoot > tr > th, 
+.entry-content table > thead > tr > td, 
+.entry-content table > tbody > tr > td, 
+.entry-content table > tfoot > tr > td {border-left: none; border-right: none;}
 </style>
 <hr />
 <table id="amcc" class="display compact" width="100%" cellspacing="0">
@@ -37,9 +43,6 @@ Title
 <th style="text-align:center;">
 Period
 </th>
-<th style="text-align:center;">
-URL
-</th>
 </tr>
 </thead>
 <tbody>
@@ -48,13 +51,10 @@ URL
 1
 </td>
 <td style="text-align:left;">
-実効為替レート
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EffectiveExchangeRateIndices.html" target="_blank">実効為替レート:日本、米国、ユーロ圏、オーストラリア、中国、英国、ニュージーランド、韓国、南アフリカ</a>
 </td>
 <td style="text-align:center;">
 Daily
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EffectiveExchangeRateIndices.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -62,13 +62,10 @@ Daily
 2
 </td>
 <td style="text-align:left;">
-日本国債イールドカーブ
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-yieldCurve.html" target="_blank">日本国債イールドカーブ</a>
 </td>
 <td style="text-align:center;">
 Daily
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-yieldCurve.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -76,13 +73,10 @@ Daily
 3
 </td>
 <td style="text-align:left;">
-米国債利回り
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGS.html" target="_blank">米国債利回り</a>
 </td>
 <td style="text-align:center;">
 Daily
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGS.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -90,13 +84,10 @@ Daily
 4
 </td>
 <td style="text-align:left;">
-直近のGDPNow
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html" target="_blank">直近のGDPNow</a>
 </td>
 <td style="text-align:center;">
 Daily
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -104,13 +95,10 @@ Daily
 5
 </td>
 <td style="text-align:left;">
-日米国債金利差
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html" target="_blank">日米国債金利差</a>
 </td>
 <td style="text-align:center;">
 Daily
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -118,13 +106,10 @@ Daily
 6
 </td>
 <td style="text-align:left;">
-対外及び対内証券売買契約等の状況
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html" target="_blank">対外及び対内証券売買契約等の状況</a>
 </td>
 <td style="text-align:center;">
 Weekly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -132,13 +117,10 @@ Weekly
 7
 </td>
 <td style="text-align:left;">
-北米ロータリー・リグカウント 石油とガス
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html" target="_blank">北米ロータリー・リグカウント 石油とガス</a>
 </td>
 <td style="text-align:center;">
 Weekly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -146,13 +128,10 @@ Weekly
 8
 </td>
 <td style="text-align:left;">
-IMM･CFTC投機筋ポジション
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html" target="_blank">IMM･CFTC投機筋ポジション</a>
 </td>
 <td style="text-align:center;">
 Weekly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -160,13 +139,10 @@ Weekly
 9
 </td>
 <td style="text-align:left;">
-日本銀行営業毎旬報告
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html" target="_blank">日本銀行営業毎旬報告</a>
 </td>
 <td style="text-align:center;">
 Weekly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -174,13 +150,10 @@ Weekly
 10
 </td>
 <td style="text-align:left;">
-日本銀行が保有する国債の銘柄別残高
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-JGBheldByBOJ.html" target="_blank">日本銀行が保有する国債の銘柄別残高</a>
 </td>
 <td style="text-align:center;">
 Weekly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-JGBheldByBOJ.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -188,13 +161,10 @@ Weekly
 11
 </td>
 <td style="text-align:left;">
-外国為替平衡操作の実施状況(月次ベース)
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html" target="_blank">外国為替平衡操作の実施状況(月次ベース)</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -202,13 +172,10 @@ Monthly
 12
 </td>
 <td style="text-align:left;">
-株式関連月次統計情報
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html" target="_blank">株式関連月次統計情報:市場別時価総額、株式平均利回り、PER･PBRおよび日経平均株価</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -216,13 +183,10 @@ Monthly
 13
 </td>
 <td style="text-align:left;">
-日本と米国のマネタリーベース
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monetaryBase.html" target="_blank">日本と米国のマネタリーベース</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monetaryBase.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -230,13 +194,10 @@ Monthly
 14
 </td>
 <td style="text-align:left;">
-基調的なインフレ率を捕捉するための指標
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-measuresOfUnderlyingInflation.html" target="_blank">基調的なインフレ率を捕捉するための指標:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-measuresOfUnderlyingInflation.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -244,13 +205,10 @@ Monthly
 15
 </td>
 <td style="text-align:left;">
-消費動向調査
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerConfidenceSurvey.html" target="_blank">消費動向調査:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerConfidenceSurvey.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -258,13 +216,10 @@ Monthly
 16
 </td>
 <td style="text-align:left;">
-株式月間売買高･売買代金
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyTradingVolumeAndValue.html" target="_blank">株式月間売買高･売買代金:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyTradingVolumeAndValue.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -272,13 +227,10 @@ Monthly
 17
 </td>
 <td style="text-align:left;">
-日本銀行オペレーション
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-operationBOJ.html" target="_blank">日本銀行オペレーション</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-operationBOJ.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -286,13 +238,10 @@ Monthly
 18
 </td>
 <td style="text-align:left;">
-日本の外貨準備高
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalReservesOfJapan.html" target="_blank">外貨準備高:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalReservesOfJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -300,13 +249,10 @@ Monthly
 19
 </td>
 <td style="text-align:left;">
-日本の景気動向指数
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessConditions.html" target="_blank">景気動向指数:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessConditions.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -314,13 +260,10 @@ Monthly
 20
 </td>
 <td style="text-align:left;">
-日本の国際収支
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-InternationalBalanceofPayments.html" target="_blank">国際収支:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-InternationalBalanceofPayments.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -328,13 +271,10 @@ Monthly
 21
 </td>
 <td style="text-align:left;">
-日本の企業倒産件数(データ出所：株式会社東京商工リサーチ)
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-bankruptcyData.html" target="_blank">企業倒産件数(データ出所：株式会社東京商工リサーチ)</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-bankruptcyData.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -342,13 +282,10 @@ Monthly
 22
 </td>
 <td style="text-align:left;">
-景気ウォッチャー調査
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EconomyWatchersSurvey.html" target="_blank">景気ウォッチャー調査:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EconomyWatchersSurvey.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -356,13 +293,10 @@ Monthly
 23
 </td>
 <td style="text-align:left;">
-アメリカ合衆国大統領および政党(民主党、共和党)毎の経済指標
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-POTUS.html" target="_blank">アメリカ合衆国大統領および政党(民主党、共和党)毎の経済指標:米国財務省証券10年もの利回り、ドル円為替レート、米国失業率、米国失業保険申請件数4週間移動平均</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-POTUS.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -370,13 +304,10 @@ Monthly
 24
 </td>
 <td style="text-align:left;">
-IMF Primary Commodity Prices
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IMFPrimaryCommodityPrices.html" target="_blank">IMF Primary Commodity Prices</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IMFPrimaryCommodityPrices.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -384,13 +315,10 @@ Monthly
 25
 </td>
 <td style="text-align:left;">
-購買力平価
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECDPPP.html" target="_blank">購買力平価:日本円、ユーロ、ポンド</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECDPPP.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -398,13 +326,10 @@ Monthly
 26
 </td>
 <td style="text-align:left;">
-国内総生産
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html" target="_blank">国内総生産:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -412,13 +337,10 @@ Monthly
 27
 </td>
 <td style="text-align:left;">
-米国債保有額
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MajorForeignHoldersUSTreasury.html" target="_blank">米国債保有額:日本、中国</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MajorForeignHoldersUSTreasury.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -426,13 +348,10 @@ Monthly
 28
 </td>
 <td style="text-align:left;">
-毎月勤労統計調査 全国調査 実数原表
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyLabourSurvey.html" target="_blank">毎月勤労統計調査 全国調査 実数原表:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monthlyLabourSurvey.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -440,13 +359,10 @@ Monthly
 29
 </td>
 <td style="text-align:left;">
-財務省貿易統計(速報)
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatistics.html" target="_blank">財務省貿易統計(速報):日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatistics.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -454,13 +370,10 @@ Monthly
 30
 </td>
 <td style="text-align:left;">
-日本の雇用失業率、欠員率
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-structuralUnemployment.html" target="_blank">雇用失業率、欠員率:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-structuralUnemployment.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -468,13 +381,10 @@ Monthly
 31
 </td>
 <td style="text-align:left;">
-日本の失業率と消費者物価指数
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-Phillipscurve.html" target="_blank">失業率と消費者物価指数:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-Phillipscurve.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -482,13 +392,10 @@ Monthly
 32
 </td>
 <td style="text-align:left;">
-財務省貿易統計
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatisticsOfJAPAN.html" target="_blank">財務省貿易統計:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-tradeStatisticsOfJAPAN.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -496,13 +403,10 @@ Monthly
 33
 </td>
 <td style="text-align:left;">
-内閣支持率
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-cabinetApprovalRating.html" target="_blank">内閣支持率:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-cabinetApprovalRating.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -510,13 +414,10 @@ Monthly
 34
 </td>
 <td style="text-align:left;">
-建築着工統計調査
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionStatistics.html" target="_blank">建築着工統計調査:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionStatistics.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -524,13 +425,10 @@ Monthly
 35
 </td>
 <td style="text-align:left;">
-特定サービス産業動態売上高指数
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SurveyofSelectedServiceIndustries.html" target="_blank">特定サービス産業動態売上高指数:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SurveyofSelectedServiceIndustries.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -538,13 +436,10 @@ Monthly
 36
 </td>
 <td style="text-align:left;">
-全産業活動指数
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IAA.html" target="_blank">全産業活動指数:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IAA.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -552,13 +447,10 @@ Monthly
 37
 </td>
 <td style="text-align:left;">
-実質輸出入の動向 - 実質輸出、実質輸入
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports01.html" target="_blank">実質輸出入の動向:実質輸出、実質輸入:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports01.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -566,13 +458,10 @@ Monthly
 38
 </td>
 <td style="text-align:left;">
-実質輸出入の動向 - 対アメリカ、EU、中国
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports02.html" target="_blank">実質輸出入の動向:対アメリカ、EU、中国:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports02.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -580,13 +469,10 @@ Monthly
 39
 </td>
 <td style="text-align:left;">
-需給ギャップと潜在成長率
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OutputGapAndPotentialGrowthRate.html" target="_blank">需給ギャップと潜在成長率:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OutputGapAndPotentialGrowthRate.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -594,13 +480,10 @@ Monthly
 40
 </td>
 <td style="text-align:left;">
-日本の消費者物価指数
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerpriceindexInJapan.html" target="_blank">消費者物価指数:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerpriceindexInJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -608,13 +491,10 @@ Monthly
 41
 </td>
 <td style="text-align:left;">
-建設労働需給調査 - 建設技能労働者過不足率
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LaborSupplyAndDemand.html" target="_blank">建設労働需給調査: 建設技能労働者過不足率:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LaborSupplyAndDemand.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -622,13 +502,10 @@ Monthly
 42
 </td>
 <td style="text-align:left;">
-日本のマネーストックと信用乗数:M2、M3、広義流動性
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html" target="_blank">マネーストックと信用乗数:M2、M3、広義流動性:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -636,13 +513,10 @@ Monthly
 43
 </td>
 <td style="text-align:left;">
-日本の企業物価指数
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html" target="_blank">企業物価指数:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -650,13 +524,10 @@ Monthly
 44
 </td>
 <td style="text-align:left;">
-日本の労働力調査
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LabourForceSurveyInJapan.html" target="_blank">労働力調査:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LabourForceSurveyInJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -664,13 +535,10 @@ Monthly
 45
 </td>
 <td style="text-align:left;">
-日本の一般職業紹介状況
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html" target="_blank">一般職業紹介状況:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -678,13 +546,10 @@ Monthly
 46
 </td>
 <td style="text-align:left;">
-建設工事費デフレーター
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionCostDeflator.html" target="_blank">建設工事費デフレーター:日本</a>
 </td>
 <td style="text-align:center;">
 Monthly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionCostDeflator.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -692,13 +557,10 @@ Monthly
 47
 </td>
 <td style="text-align:left;">
-法人企業統計
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html" target="_blank">法人企業統計:日本</a>
 </td>
 <td style="text-align:center;">
 Quarterly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -706,13 +568,10 @@ Quarterly
 48
 </td>
 <td style="text-align:left;">
-日本の国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html" target="_blank">国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税:日本</a>
 </td>
 <td style="text-align:center;">
 Yearly
-</td>
-<td style="text-align:center;">
-<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html" target="_blank">Move to Data</a>
 </td>
 </tr>
 <tr>
@@ -720,13 +579,40 @@ Yearly
 49
 </td>
 <td style="text-align:left;">
-世界経済の見通し(2016年10月版) 2017年から2021年の予測
+<a href="http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html" target="_blank">世界経済の見通し(2016年10月版) 2017年から2021年の予測</a>
 </td>
 <td style="text-align:center;">
 Yearly
 </td>
+</tr>
+<tr>
+<td style="text-align:right;">
+50
+</td>
+<td style="text-align:left;">
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-politicalFunding.html" target="_blank">政治資金情報(データ出所:ラポール・ジャパン)</a>
+</td>
 <td style="text-align:center;">
-<a href="http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html" target="_blank">Move to Data</a>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+51
+</td>
+<td style="text-align:left;">
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-2016NationalPopularVoteTracker.html" target="_blank">2016年アメリカ大統領選挙一般投票の結果と各州の寄与度</a>
+</td>
+<td style="text-align:center;">
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+52
+</td>
+<td style="text-align:left;">
+<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html" target="_blank">尖閣諸島接近状況統計分析</a>
+</td>
+<td style="text-align:center;">
 </td>
 </tr>
 </tbody>
