@@ -3,17 +3,9 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 output: html_fragment
 ---
-<!--
-<meta charset="utf-8">
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
--->
-
 <!-- knowledgeVaultへのリンク-->
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
-<link  href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
-<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+
 <script>
 $(document).ready(function() {
   $('#amcc').DataTable( {
