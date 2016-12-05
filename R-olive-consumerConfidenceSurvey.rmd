@@ -1,8 +1,9 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-consumerConfidenceSurvey.html')) })
 
-title : '消費動向調査'
+title : 'Consumer Confidence Survey'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
@@ -28,6 +29,7 @@ table{
  - Olive http://olive.saecanet.com/
  - twitter https://twitter.com/AMC2_Japan
 
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -50,7 +52,7 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('消費動向調査 - 消費者態度指数と消費者意識指標 - ',
+dataTitle <- paste0('消費動向調査 - 消費者態度指数と消費者意識指標(暮らし向き、収入の増え方、雇用環境、耐久消費財の買い時判断、資産価値) - ',
                     format(tail(consumerConfidenceIndex[,1],1),'%Y年%m月分'))
 dataSource <- '内閣府'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
@@ -60,7 +62,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作 成 日    : ',Sys.time(),'\n'))
 cat(paste('特    記    : ',notes,'\n'))
 cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
@@ -76,18 +77,18 @@ lineColor <- c('blue','red')
 
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-cat(zen2han(paste0('<h3>',datatitle,'</h3>')))
+cat(zen2han(paste0('<h4>',datatitle,'</h4>')))
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries <- 
-  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'l', type02 = 'h', dateFormat = '%Y-%m') {
-par(mar=c(3,5,6,5),family = 'Meiryo')
+  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'o', type02 = 'h', dateFormat = '%Y-%m') {
+par(mar=c(3,5,4,5),family = 'Meiryo')
 plot(
   obj[, objX], obj[, objY01], type = type01, col = lineColor[1], xlab = '', ylab = '', xaxt = 'n', 
   main = paste(colnames(obj)[objY01],'\n', 
                paste0(format(range(obj[,objX]), dateFormat),collapse = '~'),'\nSource:',dataSource),
-  cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = 2
+  cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = 1
   )
 lo <- loess(obj[, objY01] ~ as.numeric(obj[,objX]), degree = 2)
 lines(obj[,objX] , predict(lo) , col = lineColor[1], lwd = 1, lty = 2)
