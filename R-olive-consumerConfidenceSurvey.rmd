@@ -13,16 +13,21 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-table{
- white-space: nowrap;
-}
+.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
+table{white-space : nowrap;}
+td.negative {color : red;}
 </style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
 
  - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
  - SaECaNet http://saecanet.com/
@@ -150,7 +155,7 @@ knitr::kable(fun_transport(obj = consumerConfidenceIndex),row.names = F)
 ```
 
 <hr>
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
