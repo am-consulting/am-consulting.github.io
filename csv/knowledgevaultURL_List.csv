@@ -46,8 +46,15 @@ No.,Title,Period,URL
 45,一般職業紹介状況:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html
 46,建設工事費デフレーター:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionCostDeflator.html
 47,法人企業統計:日本,Quarterly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html
-48,国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税:日本,Yearly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html
-49,世界経済の見通し(2016年10月版) 2017年から2021年の予測,Yearly,http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html
-50,政治資金情報(データ出所:ラポール・ジャパン),,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-politicalFunding.html
-51,2016年アメリカ大統領選挙一般投票の結果と各州の寄与度,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-2016NationalPopularVoteTracker.html
-52,尖閣諸島接近状況統計分析,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html
+48,法人企業景気予測調査 - 景況判断、売上高判断、経常利益判断他,Quarterly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-R-olive-BusinessOutlookSurvey
+49,国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税:日本,Yearly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html
+50,世界経済の見通し(2016年10月版) 2017年から2021年の予測,Yearly,http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html
+51,政治資金情報(データ出所:ラポール・ジャパン),,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-politicalFunding.html
+52,2016年アメリカ大統領選挙一般投票の結果と各州の寄与度,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-2016NationalPopularVoteTracker.html
+53,尖閣諸島接近状況統計分析,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html
+54,公共建築工事･土木工事共通費計算,,http://olive.saecanet.com/p/blog-page_26.html
+55,元素の一覧表-原子番号、元素記号、元素名、周期、族、原子量、状態,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-20161026223533.html
+56,発生津波ヒストリカルデータ,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-TSUNAMI.html
+57,社会生活統計指標-都道府県の指標-2016-基礎データ,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-socialIndicatorsByPrefecture.html
+58,放射線モニタリング情報 - 全国及び福島県の空間線量測定結果,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EnvironmentalRadioactivityLevel.html
+59,2つのランダムウォーク時系列データの間の相互相関係数,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CrossCorrelationBetweenTwoRandomWalkTimeSeries.html
