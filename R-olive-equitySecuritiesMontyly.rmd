@@ -2,6 +2,7 @@
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-equitySecurities.html')) })
 title : "株式関連月次統計情報"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
@@ -11,13 +12,23 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
+body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
 .main-container {
 	max-width: 1000px;
 	margin-left: auto;
 	margin-right: auto;
 }
+table{
+ white-space: nowrap;
+}
 </style>
 
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -53,7 +64,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作 成 日    : ',Sys.time(),'\n'))
 cat(paste('特    記    : ',notes,'\n'))
 cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
@@ -113,25 +123,20 @@ text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_transport <- function(obj){
-  buf <- t(tail(obj,1))
-  buf <- data.frame(row.names(buf), buf, check.names = F, stringsAsFactors = F, row.names = NULL)
-  colnames(buf) <- buf[1,]
-  buf <- buf[-1,]
-  colnames(buf)[1] <- '項目'
-  buf[,-1] <- apply(buf[,-1,drop=F], 2, as.numeric)
-  tDF <- buf
-  return(tDF)
-}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+tailN <- 3
 ```
-
-***
 
 ### PER･PBR
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries(obj = PERPBR)
-knitr::kable(fun_transport(obj = PERPBR),row.names = F)
+knitr::kable(fun_transposeDataFrame(obj = PERPBR,tailN = tailN,dateFormat = '%Y年%m月%d日'),row.names = F)
 ```
 
 ***
@@ -141,8 +146,7 @@ knitr::kable(fun_transport(obj = PERPBR),row.names = F)
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries(obj = averageYield, objY02 = 4, chartTtpe = 1, needylim = 1)
 averageYield0 <- averageYield
-averageYield0[,1] <- format(averageYield0[,1],'%Y-%m')
-knitr::kable(fun_transport(obj = averageYield0),row.names = F)
+knitr::kable(fun_transposeDataFrame(obj = averageYield0,tailN = tailN,dateFormat = '%Y年%m月'),row.names = F)
 ```
 
 ***
@@ -151,7 +155,7 @@ knitr::kable(fun_transport(obj = averageYield0),row.names = F)
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries(obj = marketCapitalization, objY02 = 8, chartTtpe = 1, needylim = 1)
-knitr::kable(fun_transport(obj =marketCapitalization),row.names = F)
+knitr::kable(fun_transposeDataFrame(obj = marketCapitalization,tailN = tailN,dateFormat = '%Y年%m月%d日'),row.names = F)
 ```
 
 ***
@@ -161,8 +165,7 @@ knitr::kable(fun_transport(obj =marketCapitalization),row.names = F)
 ```{r warning=F, error=F, message=F, echo=F}
 nikkeiMonthly0 <- head(nikkeiMonthly,-1)
 fun_plotTimeSeries(obj = nikkeiMonthly0, objY02 = 3, chartTtpe = 1, needylim = 1)
-nikkeiMonthly0[,1] <- format(nikkeiMonthly0[,1],'%Y-%m')
-knitr::kable(fun_transport(obj = nikkeiMonthly0),row.names = F)
+knitr::kable(fun_transposeDataFrame(obj = nikkeiMonthly0,tailN = tailN,dateFormat = '%Y年%m月'),row.names = F)
 ```
 
 ***
