@@ -1,0 +1,146 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MonthlyLabourSurveyInJapanCashEarnings.html')) })
+
+title : 'Monthly Labour Survey In Japan - Cash Earnings'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+table{
+ white-space: nowrap;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0('毎月勤労統計調査 - 月間現金給与額')
+dataSource <- '厚生労働省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+cat(paste('Title       : ', dataTitle, '\n'))
+cat(paste('Data Source : ', dataSource, '\n'))
+cat(paste('Author      : ', Author, '\n'))
+cat(paste('特  記      : ', notes, '\n'))
+cat(paste('特  記      : ', notes0, '\n'))
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+library(XLConnect);library(Nippon)
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+baseURL <- 'http://www.mhlw.go.jp/toukei/itiran/roudou/monthly'
+fileName <- list()
+yyyy <- c(2016)
+mm <- c(10)
+type <- 'p'
+cnt <- 0
+for(y in 1:length(yyyy)){
+  for(m in 1:length(mm)){
+    gengou <- yyyy[y]-1988
+    mmC <- formatC(mm[m], width=2, flag="0")
+    cnt <- cnt + 1
+    fileName[[cnt]] <- paste0(gengou,mmC,'c01',type,'.xls')
+    folderName <- paste0('/',gengou,'/',gengou,mmC,type,'/xls/')
+    if(!file.exists(paste0(pathOutput, fileName[[cnt]]))) {
+      download.file(paste0(baseURL,folderName,fileName[[cnt]]), fileName[[cnt]] , mode = 'wb')
+    }
+  }
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+titleName <- vector()
+for(iii in 1:cnt){
+  iii <- 1
+  buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName[[iii]]), sheet = 1, header = F)
+  buf0[,1] <- sapply(buf0[,1],function(x)gsub('\\s','',x))
+  titleName <- c(titleName, zen2han(paste0(buf0[1,1],'-',buf0[2,1])))
+  buf0 <- buf0[-c(1,2),]
+  cccS <- which(apply(buf0,2,function(x)length(grep('現金給与総額',x)))!=0)
+  rrrS <- which(apply(buf0,1,function(x)length(grep('現金給与総額',x)))!=0)
+  buf0[which(apply(buf0,1,function(x)length(grep('きまって',x)))!=0),
+       which(apply(buf0,2,function(x)length(grep('きまって',x)))!=0)] <- 'きまって支給する給与'
+  buf0[which(apply(buf0,1,function(x)length(grep('特別に',x)))!=0),
+       which(apply(buf0,2,function(x)length(grep('特別に',x)))!=0)] <- '特別に支払われた給与'
+  for(rrr in 1:3){
+    tmp <- NA
+    for(ccc in cccS:ncol(buf0)){
+      if(!is.na(buf0[rrr,ccc])){tmp <- buf0[rrr,ccc]}
+      buf0[rrr,ccc] <- tmp
+    }
+  }
+  colnames(buf0) <- sapply(gsub('-NA','',paste0(buf0[1,],'-',buf0[2,],'-',buf0[3,],'(',buf0[5,],')')),
+                           function(x)gsub('\\s','',x))
+  colnames(buf0) <- sapply(colnames(buf0),zen2han)
+  objWord <- '前年比'
+  bufCCC <- grep(objWord,buf0[4,])
+  colnames(buf0)[bufCCC] <- sapply(colnames(buf0)[bufCCC],function(x)gsub('%',paste0(objWord,',%'),x))
+  buf1 <- buf0[-c(1:5),-2]
+  buf1[,-1] <- apply(buf1[,-1],2,function(x)as.numeric(gsub(',','',x)))
+  buf2 <- buf1[,apply(buf1,2,function(x)sum(is.na(x)))!=nrow(buf1)]
+  colnames(buf2)[1] <- '産業'
+  buf2 <- na.omit(buf2)
+  buf3 <- data.frame(ID=seq(1,nrow(buf2)),buf2,check.names = F,stringsAsFactors = F)
+  assign(paste0('CashEarnings',iii),buf3,envir = .GlobalEnv)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}   
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'asc', caption = '', dataTitle = '', append = '') {
+  cat(paste('<h4>', dataTitle, append, '</h4>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(15,-1), c(15,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
+  )  
+  }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}   
+funDataTable(CashEarnings1,dataTitle =  titleName[1])
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
