@@ -3,6 +3,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 title : 'International Reserves of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 5
@@ -29,6 +30,8 @@ table{
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 
 ```{r set-options, echo=F, cache=F}
@@ -67,7 +70,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ', dataTitle, '\n'))
 cat(paste('Data Source : ', dataSource, '\n'))
 cat(paste('Author      : ', Author, '\n'))
-cat(paste('作成日      : ', Sys.time(), '\n'))
 cat(paste('特  記      : ', notes, '\n'))
 cat(paste('特  記      : ', notes0, '\n'))
 ```
@@ -219,7 +221,7 @@ funPlotTimeSeries <- function(dataSet,append='') {
   )
 }
 ```
-<hr>
+
 ####日本の外貨準備高
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dateFormat <- '%Y-%m'
