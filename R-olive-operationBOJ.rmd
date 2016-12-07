@@ -2,6 +2,7 @@
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-operationBOJ.html')) })
 title : "Operation of Bank of Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 5
@@ -29,11 +30,18 @@ table{
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
 
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
 
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
 options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+# Editor font:Consolas
+# Editor theme:Clouds
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -89,11 +97,21 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作 成 日    : ',Sys.time(),'\n'))
 cat(paste('特    記    : ',notes,'\n'))
 cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+# 注記パート
+cat('以下の注記はソースからの引用。\n')
+notion <- buf0[grep('注',buf0[,1]),1]
+if(length(notion)!=0){
+  cat(paste0('\n',notion,'\n'))
+}  
+cat('<hr>')
+# 注記パート
 ```
 
 #### 国債買入、国庫短期証券買入・売却、社債等買入、ＣＰ等買入、指数連動型上場投資信託受益権買入、不動産投資法人投資口買入オペレーション
@@ -102,6 +120,7 @@ options(scipen = 999)
 knitr::kable(opeTable)
 cat('<b>落札額合計(億円):</b>',sum(opeTable[,2]))
 cat('<hr>')
+cat('<h4>国債買入のみ</h4>')
 knitr::kable(jgb,row.names = F)
 cat('<b>国債買入合計(億円):</b>',sum(jgb[,2]))
 ```
