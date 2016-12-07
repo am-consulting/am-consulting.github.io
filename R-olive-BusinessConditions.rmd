@@ -201,17 +201,17 @@ fun_plotTimeSeries(obj = dataSet, ccc = 4)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_plot_dygraph <- function(obj = buf0){
+fun_plot_dygraph <- function(obj = buf0, n = 1){
   obj <- na.omit(obj)
   buf <- data.frame(tail(obj[,1],-1),diff(obj[,2]),check.names = F,stringsAsFactors = F)
   colnames(buf) <- colnames(obj)
-  fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[2], '-前月差(ポイント)'))
+  fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[2], '-前月差(ポイント)'), n = n)
   fun_consumptionTax(obj = buf)
-  eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',ConsumptionTax)))
+  eval(parse(text = paste0('dygraphPlot',n,' %>% dyBarChart() %>%  ',ConsumptionTax)))
 }
 ```
 
-***
+
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plot_dygraph(obj = dataSet[,c(1,2)])
