@@ -15,8 +15,6 @@ output:
 .main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
 table{white-space : nowrap;}
 td.negative {color : red;}
-table.amcc tr:nth-child(odd) {background-color: #F5F5F5;}
-table.amcc tr:nth-child(even){background-color: #FFFFFF;}
 </style>
 
 <script>
@@ -42,33 +40,83 @@ options(width = 1000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-sampleSize <- c(10,30,100,1000)
-repeatCount <- c(10,30,100,1000)
+sampleSize <- c(10,100,1000)
+repeatCount <- c(10,100,1000)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('中心極限定理')
+dataTitle <- paste0('中心極限定理のシミュレーション')
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Author      : ',Author,'\n'))
+cat(paste('Title  : ',dataTitle,'\n'))
+cat(paste('Author : ',Author,'\n'))
 ```
-- Normality Test:shapiro.test {stats}. Null hypothesis:"The sample data come from a normal distribution." 
+- Normality Test:shapiro.test {stats}. Null hypothesis:"The sample data come from a normal distribution."
+- 各分布毎に、
+    1. 乱数を"サンプルサイズ"の個数分生成。
+    1. その乱数ベクター(n="サンプルサイズ")の平均値を算出。
+    1. 1~2を"試行回数"だけ繰り返し、平均値ベクター(n="試行回数")を生成。
+    1. 平均値ベクター(n="試行回数")のヒストグラムとQ-Qプロットを表示。
+    1. 同時に最終試行(試行回数が100の場合は100回目)の場合の乱数ベクター(n="サンプルサイズ")をプロット。
+    1. 最後にサンプルサイズ、試行回数毎の正規性検定結果(shapiro.test {stats}、p値)を一覧。
 
 ***
-### 一様分布
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_centralLimitTheorem <- function(dist = 'unif'){
 resultTable <- data.frame()
 for(sss in 1:length(sampleSize)) {
   for (rrr in 1:length(repeatCount)) {
-    means <- sapply(seq(repeatCount[rrr]), function(x) {distribution <<- runif(sampleSize[sss]);mean(distribution)})
+    x <- seq(repeatCount[rrr])
+    if(dist=='unif'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        runif(n=sampleSize[sss],min=min,max=max);mean(SampleVector)})
+    }else if(dist=='beta'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rbeta(n=sampleSize[sss],shape1=shape1,shape2=shape2);mean(SampleVector)})
+    }else if(dist=='gamma'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rgamma(n=sampleSize[sss],shape=shape,rate=rate);mean(SampleVector)})
+    }else if(dist=='cauchy'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rcauchy(n=sampleSize[sss],location=location,scale=scale);mean(SampleVector)})
+    }else if(dist=='norm'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rnorm(n=sampleSize[sss],mean=mean,sd=sd);mean(SampleVector)})
+    }else if(dist=='logis'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rlogis(n=sampleSize[sss],location=location,scale=scale);mean(SampleVector)})
+    }else if(dist=='pois'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rpois(n=sampleSize[sss],lambda=lambda);mean(SampleVector)})
+    }else if(dist=='weibull'){
+      means <- sapply(x, 
+                      function(x) {SampleVector <<- 
+                        rweibull(n=sampleSize[sss],shape=shape,scale=scale);mean(SampleVector)})
+    }
     title <- paste("サンプルサイズ = ", sampleSize[sss],"\n試行回数 = ", repeatCount[rrr])
     par(mfrow=c(1,3),family='Meiryo')
-    plot(distribution,main = paste0('サンプルサイズ = ',sampleSize[sss],'\n試行',repeatCount[rrr],'回目'))
+    plot(SampleVector,main = paste0('サンプルサイズ = ',sampleSize[sss],'\n試行',repeatCount[rrr],'回目'))
     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    hist(means, main = title, breaks = 20, col = 'powderblue')
+    histBreak <- 25
+    histData <- hist(means, breaks = histBreak, plot = F)
+    xfit <- seq(min(means), max(means), length=100)
+    yfit <- dnorm(xfit, mean = mean(means), sd = sd(means))
+    yfit <- yfit * diff(histData$mids[1:2])*length(means)
+    hist(means, main = title, 
+         breaks = histBreak, col = 'powderblue',plot = T, 
+         ylim = c(min(histData$counts,yfit),ceiling(max(histData$counts,yfit))))
+    lines(xfit, yfit, col="red", lwd=2)
+    # lines(density(means), col="red", lwd=2)
+    # lines(density(means, adjust=2), lty="dotted", col="darkgreen", lwd=2)
     qqnorm(means, main = title)
     qqline(means, col = "red", lwd = 2)
     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
@@ -80,87 +128,62 @@ resultTable <- data.frame(as.integer(sampleSize),resultTable)
 colnames(resultTable) <- c("サンプルサイズ", paste0("試行回数:", repeatCount))
 cat('shapiro.test p-value\n')
 knitr::kable(resultTable, row.names=F)
+}
+```
+
+### 一様分布:`r min <- 0; max <- 1; paste0('min=',min,',max=',max)`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_centralLimitTheorem(dist = 'unif')
 ```
 
 ***
-### ベータ分布
+### ベータ分布:`r shape1 <- 0.5; shape2 <- 0.5; paste0('shape1=',shape1,',shape2=',shape2)`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-alpha <- 0.5;beta <- 0.5
-resultTable <- data.frame()
-for(sss in 1:length(sampleSize)) {
-  for (rrr in 1:length(repeatCount)) {
-    means <- sapply(seq(repeatCount[rrr]), function(x) {distribution <<- rbeta(sampleSize[sss],alpha,beta);mean(distribution)})
-    title <- paste("サンプルサイズ = ", sampleSize[sss],"\n試行回数 = ", repeatCount[rrr])
-    par(mfrow=c(1,3),family='Meiryo')
-    plot(distribution,main = paste0('サンプルサイズ = ',sampleSize[sss],'\n試行',repeatCount[rrr],'回目'))
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    hist(means, main = title, breaks = 20, col = 'powderblue')
-    qqnorm(means, main = title)
-    qqline(means, col = "red", lwd = 2)
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    cat('<hr>')
-    resultTable[sss, rrr] <- shapiro.test(means)$p.value
-  }
-}
-resultTable <- data.frame(as.integer(sampleSize),resultTable)
-colnames(resultTable) <- c("サンプルサイズ", paste0("試行回数:", repeatCount))
-cat('shapiro.test p-value\n')
-knitr::kable(resultTable, row.names=F)
+fun_centralLimitTheorem(dist = 'beta')
 ```
 
 ***
-### ガンマ分布
+### ガンマ分布:`r shape <- 5;rate <- 0.1;paste0('shape=',shape,',rate=',rate)`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-shape <- 5;rate <- 0.1
-resultTable <- data.frame()
-for(sss in 1:length(sampleSize)) {
-  for (rrr in 1:length(repeatCount)) {
-    means <- sapply(seq(repeatCount[rrr]), function(x) {distribution <<- rgamma(sampleSize[sss], shape, rate);mean(distribution)})
-    title <- paste("サンプルサイズ = ", sampleSize[sss],"\n試行回数 = ", repeatCount[rrr])
-    par(mfrow=c(1,3),family='Meiryo')
-    plot(distribution,main = paste0('サンプルサイズ = ',sampleSize[sss],'\n試行',repeatCount[rrr],'回目'))
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    hist(means, main = title, breaks = 20, col = 'powderblue')
-    qqnorm(means, main = title)
-    qqline(means, col = "red", lwd = 2)
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    cat('<hr>')
-    resultTable[sss, rrr] <- shapiro.test(means)$p.value
-  }
-}
-resultTable <- data.frame(as.integer(sampleSize),resultTable)
-colnames(resultTable) <- c("サンプルサイズ", paste0("試行回数:", repeatCount))
-cat('shapiro.test p-value\n')
-knitr::kable(resultTable, row.names=F)
+fun_centralLimitTheorem(dist = 'gamma')
 ```
 
 ***
-### コーシー分布
+### コーシー分布:`r location <- 0;scale <- 0.5;paste0('location=',location,',scale=',scale)`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-x0 <- 0;gamma <- 0.5
-resultTable <- data.frame()
-for(sss in 1:length(sampleSize)) {
-  for (rrr in 1:length(repeatCount)) {
-    means <- sapply(seq(repeatCount[rrr]), function(x) {distribution <<- rcauchy(sampleSize[sss],x0,gamma);mean(distribution)})
-    title <- paste("サンプルサイズ = ", sampleSize[sss],"\n試行回数 = ", repeatCount[rrr])
-    par(mfrow=c(1,3),family='Meiryo')
-    plot(distribution,main = paste0('サンプルサイズ = ',sampleSize[sss],'\n試行',repeatCount[rrr],'回目'))
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    hist(means, main = title, breaks = 20, col = 'powderblue')
-    qqnorm(means, main = title)
-    qqline(means, col = "red", lwd = 2)
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-    cat('<hr>')
-    resultTable[sss, rrr] <- shapiro.test(means)$p.value
-  }
-}
-resultTable <- data.frame(as.integer(sampleSize),resultTable)
-colnames(resultTable) <- c("サンプルサイズ", paste0("試行回数:", repeatCount))
-cat('shapiro.test p-value\n')
-knitr::kable(resultTable, row.names=F)
+fun_centralLimitTheorem(dist = 'cauchy')
+```
+
+***
+### 正規分布:`r mean <- 0;sd <- 1;paste0('mean=',mean,',sd=',sd)`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_centralLimitTheorem(dist = 'norm')
+```
+
+***
+### ロジスティック分布:`r location <- 3;scale <- 2;paste0('location=',location,',scale=',scale)`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_centralLimitTheorem(dist = 'logis')
+```
+
+***
+### ポアソン分布:`r lambda <- 3;paste0('lambda=',lambda)`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_centralLimitTheorem(dist = 'pois')
+```
+
+***
+### ワイブル分布分布:`r shape <- 3;scale <- 3;paste0('shape=',shape,'scale=',scale)`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_centralLimitTheorem(dist = 'weibull')
 ```
 
 ***
