@@ -3,6 +3,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 title : '国内総生産 / Gross Domestic Product(GDP) of Japan'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 5
@@ -26,6 +27,8 @@ table{
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -54,11 +57,13 @@ Author <- "アセット･マネジメント･コンサルティング株式会
 cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
 cat(paste("Data Source : ", dataSource, "\n"))
 cat(paste("Author      : ", Author, "\n"))
-cat(paste("作成日      : ", Sys.time(), "\n"))
 cat(paste("特  記      : ", notes, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
+
+- 2016年12月8日以降、2009年に国連で合意された国際基準である「2008SNA」に基づいて推計が行われています。
+- Source : http://www.esri.cao.go.jp/jp/sna/data/data_list/kakuhou/files/h27/sankou/pdf/tyui27.pdf
 
 ```{r,warning=F,error=F,message=F,echo=F}
 colnames(gdp1)[-1] <- colnames(gdp2)[-1] <- colnames(gdp3)[-1] <- colnames(gdp4)[-1] <- colnames(gdp5)[-1] <- colnameDataJ
