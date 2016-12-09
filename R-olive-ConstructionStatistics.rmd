@@ -57,7 +57,7 @@ dataTitle0 <- paste0(format(range(NSAData[,1]),'%Y年%m月'),collapse='~')
 dataSource <- "国土交通省"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
+cat(paste0("Title       : ", dataTitle, dataTitle0, "\n"))
 cat(paste("Data Source : ", dataSource, "\n"))
 cat(paste("Author      : ", Author, "\n"))
 cat(paste("特  記      : ", notes, "\n"))
@@ -65,20 +65,15 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+- Source : http://www.mlit.go.jp/sogoseisaku/jouhouka/sosei_jouhouka_tk4_000002.html
+
 ```{r warning=F,error=F,message=F,echo=F}
 mergeData <- merge(NSAData,SAData,by='Date')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_generateKnit <- function(objDF = dataSet, n1 = 1){
-  fun_plot_dygraph(obj = objDF, n0 = n1, dygraphTitle = paste0(colnames(objDF)[-1], collapse = ' × '), legendWidth = 300)
-  fun_dygraph_shade(n = n1)
-}  
-```
-
-```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
-fun_generateKnit(objDF = mergeData[,c(1,2,4)], n1 = n1)
+fun_generateKnit(objDF = mergeData[,c(1,2,4)], plotNum = n1)
 ```
 
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
