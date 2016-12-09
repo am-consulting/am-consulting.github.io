@@ -60,7 +60,7 @@ script <-
 eval(parse(text = script))
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hold'}
+```{r warning=F,error=F,message=F,echo=F}
 library(XLConnect);library(excel.link)
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 username <- Sys.info()['user']
@@ -72,7 +72,7 @@ download.file(fileURL, fileName, mode = "wb")
 buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hold'}
+```{r warning=F,error=F,message=F,echo=F}
 setwd(pathOutput)
 bufRow <- grep('date',buf0[,1],ignore.case = T)
 buf <- xl.read.file(fileName, header=T, top.left.cell = paste0("A",bufRow), xl.sheet = 1, excel.visible = F)
@@ -115,6 +115,7 @@ knitr::kable(fun_transposeDataFrame(obj = dataSet), row.names = F)
 #### Week over Week
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataSet <- buf
 dataSetDiff <- 
   data.frame(tail(dataSet[,1],-1),round(diff(as.matrix(dataSet[,-1])),1),check.names = F,stringsAsFactors = F)
 knitr::kable(fun_transposeDataFrame(obj = dataSetDiff), row.names = F)
