@@ -102,7 +102,7 @@ funDataTable(obj = resultTable, dataTitle = '信頼水準(%)と許容誤差(&plu
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 buf <- sapply(sampleSize,function(x){100*z/(x/(p*(1-p)))^0.5})
-resultTable <- data.frame(confidenceLevel, z, round(buf,2),stringsAsFactors = F)
+resultTable <- data.frame(confidenceLevel, z, floor(buf*10^2)/10^2,stringsAsFactors = F)
 colnames(resultTable) <- c('信頼水準(%)', 'z', paste0('標本サイズ:', sampleSize))
 funDataTable(obj = resultTable, dataTitle = '信頼水準(%)と標本サイズ(n)から許容誤差(&plusmn;%)を設計',fixed = 2)
 ```
@@ -115,7 +115,7 @@ funDataTable(obj = resultTable, dataTitle = '信頼水準(%)と標本サイズ(n
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 buf <- sapply(sampleSize,
               function(x){z <- samplingError/100*(x/(p*(1-p)))^0.5;100-pnorm(z, mean=0, sd=1, lower.tail=F)*2*100}) 
-resultTable <- data.frame(samplingError, round(buf,4),stringsAsFactors = F)
+resultTable <- data.frame(samplingError, floor(buf*10^4)/10^4,stringsAsFactors = F)
 colnames(resultTable) <- c('許容誤差(&plusmn;%)', paste0('標本サイズ:', sampleSize))
 funDataTable(obj = resultTable, dataTitle = '標本サイズ(n)と許容誤差(&plusmn;%)から信頼水準(%)を設計',fixed = 1)
 ```
