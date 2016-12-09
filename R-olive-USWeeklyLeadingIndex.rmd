@@ -1,0 +1,47 @@
+
+```{r warning=F,error=F,message=F,echo=F}
+library(RCurl);library(knitr)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/plotTimeSeries.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+library(XLConnect)
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- 'ECRI_wliw_free.xls'
+fileURL <- 'https://www.businesscycle.com/download/index/WLIW_f'
+download.file(fileURL, fileName, mode = "wb")
+buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+dataSource <- 'Economic Cycle Research Institute. https://www.businesscycle.com'
+dataTitle <- 'U.S. Weekly Leading Index(weekly)'
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+buf <- buf0
+bufRow <- grep('date',buf[,1],ignore.case = T)
+colnames(buf) <- buf[bufRow,]
+buf <- buf[-c(1:bufRow),]
+buf[,1] <- as.Date(buf[,1])
+buf <- buf[,apply(buf,2,function(x)sum(is.na(x)))!=nrow(buf)]
+buf <- buf[!is.na(buf[,1]),]
+buf[,-1] <- apply(buf[,-1],2,as.numeric)
+dataSet <- buf
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+fun_plotTimeSeries(obj = tail(na.omit(dataSet),4*12*5),objX = 1,objYL = 3,objYR = 2,typeL = 'h',typeR = 'l')
+```
