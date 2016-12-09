@@ -56,11 +56,15 @@ buf <- buf[,-grep('url',colnames(buf),ignore.case = T)]
 
 ***
 
+<!-- table part -->
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 knitr::kable(buf, row.names = F, format = "html", 
              table.attr = "id='amcc' class='display compact' width='100%' cellspacing='0'", escape = F, 
              align = c("r", "l", "c"))
 ```
+
+<!-- table part -->
 
 ***
 
