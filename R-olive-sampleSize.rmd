@@ -1,0 +1,146 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-sampleSize.html')) })
+
+title : 'Sample Size,Confidence Level and Sampling Error'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+    latex_engine: xelatex
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
+table{white-space : nowrap;}
+td.negative {color : red;}
+</style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- '信頼水準、許容誤差および標本サイズ'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title  : ", dataTitle, "\n"))
+cat(paste("Author : ", Author, "\n"))
+cat(paste("特  記 : ", notes, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 9999999)
+```
+
+$$\textrm{標本サイズ(n)} =\left(\frac{z}{\textrm{許容誤差}( \pm \%)} \right )^{2}\times p\left ( 1-p \right ).\;p=0.5$$
+$$\textrm{標準正規分布:}\;z\sim \textrm{N}\left(μ=0,\;σ=1\right )$$
+
+##### 信頼水準(%)と標準正規分布:z
+
+```{r warning=F,error=F,message=F,echo=T}
+confidenceLevel <- c(99.9999, 99.999, 99.99, 99.9, 99, seq(95, 50, by=-5)) # Unit:%
+z <- round(qnorm((100 - confidenceLevel)/2/100, mean=0, sd=1, lower.tail=F), 3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F}
+samplingError <- c(0.01, 0.1, 0.5, 1, 2, 3, 4, 5, 10) # Unit:%
+sampleSize <- c(10, 20, 50, 100, 500, 1000, 10000, 50000, 100000)
+p <- 0.5
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'desc', dataTitle='', fixed = 1) {
+    cat(paste('<h4>', dataTitle, '</h4>'))  
+    DT::datatable(
+      obj,
+      extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+      options = list(paging = F, autoWidth = F, info = T, lengthChange = T, ordering = T,
+        searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+        orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+        search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+        dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = fixed)),
+      rownames = F, class = 'display compact', escape = F, filter = 'top'
+    )  
+  }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+buf <- sapply(samplingError,function(x){p*(1-p)*(z/(x/100))^2})
+resultTable <- data.frame(confidenceLevel, z, ceiling(buf),stringsAsFactors = F)
+colnames(resultTable) <- c('信頼水準(%)', 'z', paste0('許容誤差(&plusmn;%):', samplingError))
+funDataTable(obj = resultTable, dataTitle = '信頼水準(%)と許容誤差(&plusmn;%)から必要最小標本サイズ(n)を設計',fixed = 2)
+```
+
+- 例)標本調査の目標精度を信頼水準=95%、許容誤差(標本誤差の許容範囲)=±5%とする場合の必要最小標本サイズはn=385。
+- 母集団の統計量(例えば平均値)が標本から得た同統計量の許容誤差(±%)の範囲内に信頼水準(%)の確率で収まる必要最小標本サイズ。
+- 本ページでは標本サイズを小数点以下切り上げとしている。
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+buf <- sapply(sampleSize,function(x){100*z/(x/(p*(1-p)))^0.5})
+resultTable <- data.frame(confidenceLevel, z, round(buf,2),stringsAsFactors = F)
+colnames(resultTable) <- c('信頼水準(%)', 'z', paste0('標本サイズ:', sampleSize))
+funDataTable(obj = resultTable, dataTitle = '信頼水準(%)と標本サイズ(n)から許容誤差(&plusmn;%)を設計',fixed = 2)
+```
+
+- 例)標本調査の信頼水準に95%を求め標本サイズを500とした場合の許容誤差(標本誤差の許容範囲)は±4.38%。
+- 本ページでは標本誤差は小数点第2位止め。
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+buf <- sapply(sampleSize,
+              function(x){z <- samplingError/100*(x/(p*(1-p)))^0.5;100-pnorm(z, mean=0, sd=1, lower.tail=F)*2*100}) 
+resultTable <- data.frame(samplingError, round(buf,4),stringsAsFactors = F)
+colnames(resultTable) <- c('許容誤差(&plusmn;%)', paste0('標本サイズ:', sampleSize))
+funDataTable(obj = resultTable, dataTitle = '標本サイズ(n)と許容誤差(&plusmn;%)から信頼水準(%)を設計',fixed = 1)
+```
+
+- 例)標本調査の許容誤差に±5%を求めサンプルサイズを500とした場合の信頼水準は97.46527%。
+- 本ページでは信頼水準は小数点第4位止め。
+- 注意)表示桁数の関係で信頼水準が100%と表示されるセルがあります。
+
+***
+
+- 前提01:無作為標本抽出その他により標本は『母集団のよい縮図』( http://www.stat.go.jp/teacher/c2hyohon.htm )となっていること。
+- 前提02:中心極限定理の成立。
+- 参考資料
+    1. http://repository.dl.itc.u-tokyo.ac.jp/dspace/bitstream/2261/52469/7/micro_6.pdf
+    1. http://www.stat.go.jp/teacher/c2hyohon.htm
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
