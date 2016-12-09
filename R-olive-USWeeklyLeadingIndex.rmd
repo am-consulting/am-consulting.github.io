@@ -1,3 +1,40 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-USWeeklyLeadingIndex.html')) })
+
+title : 'U.S. Weekly Leading Index(weekly).Source:Economic Cycle Research Institute'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 7
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
+table{white-space : nowrap;}
+td.negative {color : red;}
+</style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r warning=F,error=F,message=F,echo=F}
 library(RCurl);library(knitr)
@@ -14,10 +51,17 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-library(XLConnect)
+library(XLConnect);library(excel.link)
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
@@ -26,15 +70,12 @@ fileName <- 'ECRI_wliw_free.xls'
 fileURL <- 'https://www.businesscycle.com/download/index/WLIW_f'
 download.file(fileURL, fileName, mode = "wb")
 buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
-dataSource <- 'Economic Cycle Research Institute. https://www.businesscycle.com'
-dataTitle <- 'U.S. Weekly Leading Index(weekly)'
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-buf <- buf0
-bufRow <- grep('date',buf[,1],ignore.case = T)
-colnames(buf) <- buf[bufRow,]
-buf <- buf[-c(1:bufRow),]
+setwd(pathOutput)
+bufRow <- grep('date',buf0[,1],ignore.case = T)
+buf <- xl.read.file(fileName, header=T, top.left.cell = paste0("A",bufRow), xl.sheet = 1, excel.visible = F)
 buf[,1] <- as.Date(buf[,1])
 buf <- buf[,apply(buf,2,function(x)sum(is.na(x)))!=nrow(buf)]
 buf <- buf[!is.na(buf[,1]),]
@@ -43,5 +84,51 @@ dataSet <- buf
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y年%m月%d日分'
+dataTitle <- paste0('U.S. Weekly Leading Index(weekly) - ', format(tail(dataSet[, 1], 1), dateFormat))
+dataSource <- 'Economic Cycle Research Institute. https://www.businesscycle.com'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+cat(paste("特  記      : ", notes0, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+- Source : `r dataSource`
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
 fun_plotTimeSeries(obj = tail(na.omit(dataSet),4*12*5),objX = 1,objYL = 3,objYR = 2,typeL = 'h',typeR = 'l')
 ```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataSet[,-1] <- round(dataSet[,-1],1)
+knitr::kable(fun_transposeDataFrame(obj = dataSet), row.names = F)
+```
+
+***
+#### Week over Week
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataSetDiff <- 
+  data.frame(tail(dataSet[,1],-1),round(diff(as.matrix(dataSet[,-1])),1),check.names = F,stringsAsFactors = F)
+knitr::kable(fun_transposeDataFrame(obj = dataSetDiff), row.names = F)
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
