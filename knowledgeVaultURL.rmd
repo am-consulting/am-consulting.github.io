@@ -52,6 +52,7 @@ buf[,grep('title',colnames(buf),ignore.case = T)] <-
          buf[,grep('title',colnames(buf),ignore.case = T)],
          '</a>')
 buf <- buf[,-grep('url',colnames(buf),ignore.case = T)]
+buf <- data.frame(`No.`=seq(1,nrow(buf)),buf,check.names = F,stringsAsFactors = F)
 ```
 
 ***
