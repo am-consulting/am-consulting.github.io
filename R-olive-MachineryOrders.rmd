@@ -139,8 +139,11 @@ lo <- loess(formula = dataSet[,bufCCC] ~ as.numeric(dataSet[,1]),degree = 2)
 SA <- stl(ts(dataSet[,bufCCC],start=c(year(dataSet[1,1]),month(dataSet[1,1])),frequency=12),s.window="periodic")
 SeasonalAdjustment <- dataSet[,bufCCC] - SA$time.series[,1]
 # SeasonalAdjustment <- SA$time.series[,2] + SA$time.series[,3]
-objDF <- data.frame(dataSet[,c(1,bufCCC)],Fit = predict(lo),SeasonalAdjustment,check.names = F,stringsAsFactors = F)
-fun_generateKnit(objDF = objDF,plotNum = n1,barPlot = 0, dygraphTitle = '機械受注額合計(億円)')
+objDF <- 
+  data.frame(dataSet[,c(1,bufCCC)],Fit = predict(lo),SeasonalAdjustment,check.names = F,stringsAsFactors = F)
+objDF[,-1] <- apply(objDF[,-1],2,function(x)x*10^-4)
+fun_generateKnit(objDF = objDF,plotNum = n1,barPlot = 0, 
+                 dygraphTitle = '機械受注額合計(兆円)', color = c('blue','red','darkorange'))
 ```
 
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
@@ -159,7 +162,25 @@ YoY <-
   data.frame(tail(dataSet[,1],-12),
              round(diff(as.matrix(dataSet[,-1]),lag = 12)/head(dataSet[,-1],-12)*100,2),
              check.names = F,stringsAsFactors = F)
-knitr::kable(fun_transposeDataFrame(obj = YoY,tailN = 8, dateFormat = '%Y年%m月'),row.names = F)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+tmp <- fun_transposeDataFrame(obj = YoY,tailN = 8, dateFormat = '%Y年%m月')
+dataSetN <- tmp %>% dplyr::filter(tmp[,ncol(tmp)]<0)
+dataSetP <- tmp %>% dplyr::filter(tmp[,ncol(tmp)]>=0)
+```
+
+##### 直近前年同月比:プラス
+
+```{r warning=F,error=F,message=F,echo=F}
+knitr::kable(dataSetP,row.names = F)
+```
+
+***
+##### 直近前年同月比:マイナス
+
+```{r warning=F,error=F,message=F,echo=F}
+knitr::kable(dataSetN,row.names = F)
 ```
 
 ***
