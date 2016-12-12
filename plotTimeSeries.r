@@ -9,7 +9,8 @@ fun_plotTimeSeries <-
            chartType = 2,
            lineColor = c('blue', 'lightcoral', 'black'),
            lwdL = 1,
-           lwdR = 2) {
+           lwdR = 2,
+           dataTitle = '') {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
