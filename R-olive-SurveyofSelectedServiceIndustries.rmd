@@ -13,15 +13,21 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-table{
- white-space: nowrap;
-}
+.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
+table{white-space : nowrap;}
+td.negative {color : red;}
 </style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -116,34 +122,35 @@ cat(paste('特  記      : ', notes,'\n'))
 cat(paste('特  記      : ', notes0,'\n'))
 ```
 
-- 特定サービス産業動態統計調査(調査19業種)総合:`r colnames(dataSet1)[2]`
-- 対事業所サービス業(調査10業種)総合:`r colnames(dataSet1)[3]`
-- 対個人サービス業(調査9業種)総合:`r colnames(dataSet2)[2]`
-- 物品賃貸業(リース):`r colnames(dataSet1)[4]`	
-- 物品賃貸業(レンタル):`r colnames(dataSet1)[5]`		
-- 情報サービス業:`r colnames(dataSet1)[6]`	
-- 広告業:`r colnames(dataSet1)[7]`	
-- クレジットカード業:`r colnames(dataSet1)[8]`	
-- エンジニアリング業:`r colnames(dataSet1)[9]`	
-- インターネット附随サービス業:`r colnames(dataSet1)[10]`	
-- 機械設計業:`r colnames(dataSet1)[11]`	
-- 自動車賃貸業:`r colnames(dataSet1)[12]`	
-- 環境計量証明業:`r colnames(dataSet1)[13]` 
-- 趣味・娯楽関連(調査5業種):`r colnames(dataSet2)[3]`
-- ゴルフ場:`r colnames(dataSet2)[4]`	
-- ゴルフ練習場:`r colnames(dataSet2)[5]`	
-- ボウリング場:`r colnames(dataSet2)[6]`	
-- 遊園地・テーマパーク:`r colnames(dataSet2)[7]`	
-- パチンコホール:`r colnames(dataSet2)[8]`		
-- 教養・生活関連(調査4業種):`r colnames(dataSet2)[9]`
-- 葬儀業:`r colnames(dataSet2)[10]`	
-- 外国語会話教室:`r colnames(dataSet2)[11]`	
-- フィットネスクラブ:`r colnames(dataSet2)[12]`	
-- 学習塾:`r colnames(dataSet2)[13]`
-
 ```{r warning=F,error=F,message=F,echo=F}
-
-
+colnames(dataSet1) <- 
+  gsub('^(\\s)*','',colnames(dataSet1))
+colnames(dataSet2) <- 
+  gsub('^(\\s)*','',colnames(dataSet2))
+iii <-2;    colnames(dataSet1)[iii] <- paste0('特定サービス産業動態統計調査(調査19業種)総合','\n',colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('対事業所サービス業(調査10業種)総合','\n',          colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('物品賃貸業(リース)','\n',                          colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('物品賃貸業(レンタル)','\n',                        colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('情報サービス業','\n',                              colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('広告業','\n',                                      colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('クレジットカード業','\n',                          colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('エンジニアリング業','\n',                          colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('インターネット附随サービス業','\n',                colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('機械設計業','\n',                                  colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('自動車賃貸業','\n',                                colnames(dataSet1)[iii])
+iii <-iii+1;colnames(dataSet1)[iii] <- paste0('環境計量証明業','\n',                              colnames(dataSet1)[iii])
+iii <-2;    colnames(dataSet2)[iii] <- paste0('対個人サービス業(調査9業種)総合','\n',             colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('趣味・娯楽関連(調査5業種)','\n',                   colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ゴルフ場','\n',                                    colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ゴルフ練習場','\n',                                colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ボウリング場','\n',                                colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('遊園地・テーマパーク','\n',                        colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('パチンコホール','\n',                              colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('教養・生活関連(調査4業種)','\n',                   colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('葬儀業','\n',                                      colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('外国語会話教室','\n',                              colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('フィットネスクラブ','\n',                          colnames(dataSet2)[iii])
+iii <-iii+1;colnames(dataSet2)[iii] <- paste0('学習塾','\n',                                      colnames(dataSet2)[iii])
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -169,16 +176,18 @@ fun_dataTable <-
   }
 ```
 
-***
-
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = dataSet1,title = keyword201)
+tmp <- dataSet1
+colnames(tmp)[-1] <- sapply(colnames(tmp)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
+fun_dataTable(obj = tmp,title = keyword201)
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = dataSet2,title = keyword202)
+tmp <- dataSet2
+colnames(tmp)[-1] <- sapply(colnames(tmp)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
+fun_dataTable(obj = tmp,title = keyword202)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -280,16 +289,35 @@ fun_plotTimeSeries <-
 }
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=7,fig.width=10}
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6,fig.width=10}
 for(ccc in 2:(ncol(mergeData)-1)){
   cat('<hr>')
-  cat('<h4>',colnames(mergeData)[ccc],'</h4>')
+  cat('<h4>',gsub('\n','<br>',colnames(mergeData)[ccc]),'</h4>')
   fun_plotTimeSeries(obj = mergeData,y01 = ccc)
 }
 ```
 
-***
+```{r warning=F,error=F,message=F,echo=F}
+library(RCurl);library(knitr)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
 
+***
+#### 前月差(ポイント)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6,fig.width=10}
+colnames(mergeData)[-1] <- sapply(colnames(mergeData)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
+tmp <- data.frame(tail(mergeData[,1],-1),diff(as.matrix(mergeData[,-1])),check.names = F,stringsAsFactors = F)
+knitr::kable(fun_transposeDataFrame(obj = tmp, tailN = 6, dateFormat = '%Y-%m'),row.names = F)
+```
+
+***
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
