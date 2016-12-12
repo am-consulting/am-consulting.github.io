@@ -70,7 +70,7 @@ username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 yy <- 16
-mm <- formatC(9, width=2, flag="0")
+mm <- formatC(10, width=2, flag="0")
 fileName <- paste0(yy,mm,'chouki-2.xls')
 baseURL <- 'http://www.esri.cao.go.jp/jp/stat/juchu/'
 fileURL <- paste0(baseURL,fileName)
