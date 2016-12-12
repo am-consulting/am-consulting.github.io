@@ -91,8 +91,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
-fun_plot_dygraph(obj = dataSet[,-2], n0 = n1, dygraphTitle = '日本の国内企業物価指数', legendWidth = 300)
-fun_dygraph_shade(n = n1)
+fun_generateKnit(objDF = dataSet[,-2],plotNum = n1,colors = c('blue','red','darkorange'))
 ```
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
 
