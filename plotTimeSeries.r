@@ -27,8 +27,8 @@ fun_plotTimeSeries <-
     }
     par(mar = c(3,5,4,5),
         family = 'Meiryo')
-    plot(x = obj[,objX],
-         y = obj[,objYL],
+    plot(x = obj[,1],
+         y = obj[,2],
          type = typeL,
          col = lineColor[1],
          xlab = '',
@@ -42,9 +42,9 @@ fun_plotTimeSeries <-
          cex.lab = 1,
          cex.main = 1,
          lwd = lwdL)
-    lo <- loess(formula = obj[,objYL] ~ as.numeric(obj[,objX]),
+    lo <- loess(formula = obj[,2] ~ as.numeric(obj[,1]),
                 degree = 2)
-    lines(x = obj[,objX],
+    lines(x = obj[,1],
           y = predict(lo),
           col = lineColor[1],
           lwd = 1,
@@ -55,15 +55,15 @@ fun_plotTimeSeries <-
                        equilogs = T)
     if(chartType != 0){ # 2系列の場合
       if(chartType == 1){
-        lines(x = obj[,objX],
-              y = obj[,objYR],
+        lines(x = obj[,1],
+              y = obj[,3],
               col = lineColor[2],
               lwd = 1,
               type = typeR)
       }else{
         par(new=T)
-        plot(x = obj[, objX],
-             y = obj[, objYR],
+        plot(x = obj[, 1],
+             y = obj[, 3],
              type = typeR,
              col = lineColor[2],
              xlab = '',
@@ -81,14 +81,14 @@ fun_plotTimeSeries <-
         axis(side = 4,
              cex.axis = 1,
              cex.lab = 1)
-        mtext(text = colnames(obj)[objYR],
+        mtext(text = colnames(obj)[3],
               side = 4,
               line = 3.2,
               cex = 1)
       }
-      lo <- loess(formula = obj[, objYR] ~ as.numeric(obj[,objX]),
+      lo <- loess(formula = obj[,3] ~ as.numeric(obj[,1]),
                   degree = 2)
-      lines(x = obj[,objX],
+      lines(x = obj[,1],
             y = predict(lo),
             col = lineColor[2],
             lwd = 1,
@@ -97,17 +97,17 @@ fun_plotTimeSeries <-
         x = 'topleft',
         col = lineColor,
         lty = 1,
-        legend = colnames(obj)[c(objYL,objYR)],
+        legend = colnames(obj)[c(2,3)],
         cex = 1,
         bty = 'n',
         lwd = 2)
     }
     axis.Date(side = 1,
-              at = obj[,objX],
+              at = obj[,1],
               format = dateFormat,
               padj = 1,
               cex.axis = 1.0)
-    mtext(text = colnames(obj)[objYL],
+    mtext(text = colnames(obj)[2],
           side = 2,
           line = 3.2,
           cex = 1)
