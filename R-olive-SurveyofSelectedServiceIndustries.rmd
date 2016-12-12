@@ -141,7 +141,10 @@ cat(paste('特  記      : ', notes0,'\n'))
 - フィットネスクラブ:`r colnames(dataSet2)[12]`	
 - 学習塾:`r colnames(dataSet2)[13]`
 
+```{r warning=F,error=F,message=F,echo=F}
 
+
+```
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_dataTable <- 
