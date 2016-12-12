@@ -20,8 +20,10 @@ fun_plotTimeSeries <-
                       obj[,objYR])
       minValue <- min(obj[,objYL],
                       obj[,objYR])
+      obj <- na.omit(obj[,c(objX,objYL,objYR)])
     }else{ # 1系列のみの場合
       mainTitle <- colnames(obj)[objYL]
+      obj <- na.omit(obj[,c(objX,objYL)])
     }
     par(mar = c(3,5,4,5),
         family = 'Meiryo')
