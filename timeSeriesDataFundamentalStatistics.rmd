@@ -123,10 +123,11 @@ knitr::kable(statisticsTableDiff)
 RatioPositive <- round(nrow(dataSet01Positive)/nrow(dataSetDiff)*100)
 RatioNegative <- round(nrow(dataSet01Negative)/nrow(dataSetDiff)*100)
 statisticsTableDiffRatio <- 
-  data.frame(rbind(NumberPositive=nrow(dataSet01Positive),
+  data.frame(rbind(NumberPositive = nrow(dataSet01Positive),
                    RatioPositive,
-                   NumberNegative=nrow(dataSet01Negative),
-                   RatioNegative),check.names = F,stringsAsFactors = F)
+                   NumberNegative = nrow(dataSet01Negative),
+                   RatioNegative,
+                   Total = nrow(dataSetDiff)),check.names = F,stringsAsFactors = F)
 colnames(statisticsTableDiffRatio)[1] <- paste0(colnames(dataSet)[objCCC],appendTitle,':',dataRangeDiff)
 knitr::kable(statisticsTableDiffRatio)
 # 差分データの正負構成比(%)
@@ -199,7 +200,7 @@ for(iii in 1:length(seqList)){
   statSequencePositive[iii,1] <- seqList[iii]
   statSequencePositive[iii,2] <- nrow(subset(dataSetDiff0Positive,dataSetDiff0Positive[,3]==seqList[iii]))
 }
-colnames(statSequencePositive) <- c(paste0('x Straight Positive ',dateUnit),'N')
+colnames(statSequencePositive) <- c(paste0('x Straight Positive ',dateUnit,'s'),'N')
 statSequencePositive$Ratio <- round(statSequencePositive[,2]/sum(statSequencePositive[,2])*100,1)
 colnames(statSequencePositive)[3] <- paste0(colnames(dataSet)[objCCC],appendTitle,':',colnames(statSequencePositive)[3],':',dataRangeDiff)
 knitr::kable(statSequencePositive)
@@ -216,7 +217,7 @@ for(iii in 1:length(seqList)){
   statSequenceNegative[iii,1] <- seqList[iii]
   statSequenceNegative[iii,2] <- nrow(subset(dataSetDiff0Negative,dataSetDiff0Negative[,3]==seqList[iii]))
 }
-colnames(statSequenceNegative) <- c(paste0('x Straight Negative ',dateUnit),'N')
+colnames(statSequenceNegative) <- c(paste0('x Straight Negative ',dateUnit,'s'),'N')
 statSequenceNegative$Ratio <- round(statSequenceNegative[,2]/sum(statSequenceNegative[,2])*100,1)
 colnames(statSequenceNegative)[3] <- paste0(colnames(dataSet)[objCCC],appendTitle,':',colnames(statSequenceNegative)[3],':',dataRangeDiff)
 knitr::kable(statSequenceNegative)
