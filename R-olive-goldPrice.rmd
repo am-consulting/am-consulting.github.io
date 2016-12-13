@@ -96,9 +96,38 @@ options(scipen = 999)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_plotTimeSeries(obj = goldPriceData,objX = 1,objYL = 2,objYR = 4,lwdL = 1,lwdR = 1,dataTitle = paste0(dataTitle,'\n',title))
+fun_plotTimeSeries(obj = goldPriceData,objX = 1,objYL = 2,objYR = 4,
+                   lwdL = 1,lwdR = 1,dataTitle = paste0(dataTitle,'\n',title))
 ```
 
+- World Gold Council http://www.gold.org/
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+ccc <- 2
+fun_timeSeriesDataFundamentalStatistics(obj = goldPriceData,objCCC = ccc)
+knitr::kable(tail(timeSeriesdata[,c(1,ccc)]),row.names = F)
+cat('\n\n<hr>')
+knitr::kable(tail(timeSeriesdataDiff[,c(1,ccc)]),row.names = F)
+cat('\n\n<hr>')
+knitr::kable(resultADF,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(resultADFdiff,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(statisticsTable,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(statisticsTableDiff,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(statisticsTableDiffMaxMin,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(statisticsTableDiffRatio,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(statSequencePositive,row.names = T)
+cat('\n\n<hr>')
+knitr::kable(statSequenceNegative,row.names = T)
+cat('\n\n<hr>')
+```
+
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
