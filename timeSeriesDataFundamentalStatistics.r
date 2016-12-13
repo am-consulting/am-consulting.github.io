@@ -22,6 +22,13 @@ fun_timeSeriesDataFundamentalStatistics <-
       paste0(colnames(dataSet0)[objCCC],':n=',nrow(dataSet0),':',
              paste0(format(range(dataSet0[,1]),dateFormat),collapse = '~'))
 
+    dataSet1 <- data.frame(Date = tail(dataSet[,1], -(lagN * diffN)),
+                           diff(as.matrix(dataSet[,-1]),lag = lagN,differences = diffN),
+                           check.names = F,stringsAsFactors = F)
+    colnames(dataSet1)[objCCC] <-
+      paste0(colnames(dataSet1)[objCCC],':n=',nrow(dataSet1),':',
+             paste0(format(range(dataSet1[,1]),dateFormat),collapse = '~'))
+
     # unit root test
     resultADF <- adf.test(dataSet0[,objCCC])
     resultADF <- rbind(cbind(resultADF$statistic),
@@ -154,6 +161,7 @@ fun_timeSeriesDataFundamentalStatistics <-
     dateFormat <<- dateFormat
     dateUnit <<- dateUnit
     timeSeriesdata <<- dataSet0
+    timeSeriesdataDiff <<- dataSet1
     statisticsTable <<- statisticsTable
     statisticsTableDiff <<- statisticsTableDiff
     statisticsTableDiffRatio <<- statisticsTableDiffRatio
