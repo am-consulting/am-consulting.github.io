@@ -27,7 +27,7 @@ fun_timeSeriesDataFundamentalStatistics <-
                            diff(as.matrix(dataSet[,-1]),lag = lagN,differences = diffN),
                            check.names = F,stringsAsFactors = F)
     colnames(dataSet1)[objCCC] <-
-      paste0(colnames(dataSet1)[objCCC],':n=',nrow(dataSet1),':',
+      paste0(colnames(dataSet)[objCCC],':n=',nrow(dataSet1),':lag=',lagN,':diff=',diffN,':',
              paste0(format(range(dataSet1[,1]),dateFormat),collapse = '~'))
 
     # unit root test
@@ -38,7 +38,8 @@ fun_timeSeriesDataFundamentalStatistics <-
                        cbind(resultADF$p.value),
                        cbind(resultADF$method),
                        cbind(paste0(format(range(dataSet0[,1]),dateFormat), collapse = '~')))
-    row.names(resultADF)[3:5] <- c('Alternative','p.value','Method','Period')
+    row.names(resultADF)[3:6] <- c('Alternative','p.value','Method','Period')
+    colnames(resultADF)[1] <- 'Result'
 
     resultADFdiff <- adf.test(diff(dataSet0[,objCCC], lag = lagN, differences = diffN))
     resultADFdiff <- rbind(cbind(resultADFdiff$statistic),
@@ -46,8 +47,10 @@ fun_timeSeriesDataFundamentalStatistics <-
                        cbind(resultADFdiff$alternative),
                        cbind(resultADFdiff$p.value),
                        cbind(resultADFdiff$method),
-                       cbind(paste0(format(range(tail(dataSet0[,1], -(lagN * diffN))),dateFormat), collapse = '~')))
-    row.names(resultADFdiff)[3:5] <- c('Alternative','p.value','Method')
+                       cbind(paste0(format(range(tail(dataSet0[,1], -(lagN * diffN))),dateFormat), collapse = '~')),
+                       cbind(paste0('lag:',lagN,',diff:',diffN)))
+    row.names(resultADFdiff)[3:7] <- c('Alternative','p.value','Method','Period','Lag')
+    colnames(resultADFdiff)[1] <- 'Result'
     # unit root test
 
     # 原データ 基本統計量 Part
