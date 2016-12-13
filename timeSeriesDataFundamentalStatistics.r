@@ -1,7 +1,7 @@
-library(quantmod);library(tseries);library(lubridate)
-tmp <- getSymbols('USD/JPY', src = "oanda", auto.assign = F, from = Sys.Date()-365*5, to = Sys.Date())
-buf0 <- tmp
-dataSet <- data.frame(Date = as.Date(index(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names = NULL)
+# library(quantmod);library(tseries);library(lubridate)
+# tmp <- getSymbols('USD/JPY', src = "oanda", auto.assign = F, from = Sys.Date()-365*5, to = Sys.Date())
+# buf0 <- tmp
+# dataSet <- data.frame(Date = as.Date(index(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names = NULL)
 
 fun_timeSeriesDataFundamentalStatistics <-
   function(obj = dataSet, objCCC = 2, lagN = 1, diffN = 1){
