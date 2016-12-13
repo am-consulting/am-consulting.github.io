@@ -180,7 +180,7 @@ fun_centralLimitTheorem(dist = 'pois')
 ```
 
 ***
-### ワイブル分布分布:`r shape <- 3;scale <- 3;paste0('shape=',shape,'scale=',scale)`
+### ワイブル分布:`r shape <- 3;scale <- 3;paste0('shape=',shape,'scale=',scale)`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_centralLimitTheorem(dist = 'weibull')
