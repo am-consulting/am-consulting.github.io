@@ -69,6 +69,13 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/timeSeriesDataFundamentalStatistics.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
