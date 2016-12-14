@@ -5,14 +5,14 @@ Title,Period,URL
 直近のGDPNow,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html
 日米国債金利差,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html
 ゴールド価格,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GoldPrice.html
-対外及び対内証券売買契約等の状況,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html
+対外及び対内証券売買契約等の状況:日本,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html
 北米ロータリー・リグカウント 石油とガス,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html
 IMM･CFTC投機筋ポジション,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html
 日本銀行営業毎旬報告,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html
 日本銀行が保有する国債の銘柄別残高,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-JGBheldByBOJ.html
 U.S. Weekly Leading Index(weekly),Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-USWeeklyLeadingIndex.html
-外国為替平衡操作の実施状況(月次ベース),Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html
-株式関連月次統計情報:市場別時価総額、株式平均利回り、PER･PBRおよび日経平均株価,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html
+外国為替平衡操作の実施状況(月次ベース):日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html
+株式関連月次統計情報:市場別時価総額、株式平均利回り、PER･PBRおよび日経平均株価:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html
 日本と米国のマネタリーベース,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-monetaryBase.html
 基調的なインフレ率を捕捉するための指標:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-measuresOfUnderlyingInflation.html
 消費動向調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-consumerConfidenceSurvey.html
@@ -21,7 +21,7 @@ U.S. Weekly Leading Index(weekly),Weekly,http://knowledgevault.saecanet.com/char
 外貨準備高:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalReservesOfJapan.html
 景気動向指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessConditions.html
 国際収支:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-InternationalBalanceofPayments.html
-企業倒産件数(データ出所：株式会社東京商工リサーチ),Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-bankruptcyData.html
+企業倒産件数(データ出所：株式会社東京商工リサーチ):日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-bankruptcyData.html
 景気ウォッチャー調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EconomyWatchersSurvey.html
 米国財務省証券10年もの利回り、ドル円為替レート、米国失業率、米国失業保険申請件数4週間移動平均,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-POTUS.html
 IMF Primary Commodity Prices,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IMFPrimaryCommodityPrices.html
@@ -50,8 +50,9 @@ IMF Primary Commodity Prices,Monthly,http://knowledgevault.saecanet.com/charts/a
 GDPギャップ(内閣府版):日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPGapInJapan.html
 景気動向指数:個別系列の数値:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessConditionsIndividualIndicator.html
 貸出・預金動向 速報:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-PrincipalFiguresOfFinancialInstitutionsInJapan.html
-機械受注額:機種別機械受注額,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MachineryOrders.html
+機械受注額:機種別機械受注額:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MachineryOrders.html
 主要国粗鋼生産,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CrudeSteelProductionOfMainCountries.html
+製造工業生産能力・稼働率指数 季節調整済指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MonthlyProductiveCapacityAndOperatingRatio.html
 国内総生産:日本,Quarterly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html
 法人企業統計:日本,Quarterly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html
 法人企業景気予測調査 - 景況判断、売上高判断、経常利益判断他,Quarterly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-R-olive-BusinessOutlookSurvey
