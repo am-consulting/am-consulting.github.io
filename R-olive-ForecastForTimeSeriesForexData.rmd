@@ -5,7 +5,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 15
+    fig_height: 10
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -136,17 +136,22 @@ options(scipen = 999)
 for(iii in 1:cnt){
   tsData <- fredData[[iii]]
   tsData <- na.omit(tsData)
-  par(mfrow = c(1,1))
+  cat(paste0('<h2>',colnames(tsData)[2],'</h2>'))
+  par(mfrow = c(2,1))
   fun_plotTimeSeries(obj = tsData,chartType = 0,dateFormat = dateFormat,mar = c(4,5,4,2))
-  fun_timeSeriesForecast(obj = tsData[,2], surrogatePlot = T, nnetarP = 12)
+  fun_timeSeriesForecast(obj = tsData[,2], surrogatePlot = T, 
+                         nnetarP = 12, surrogateK = 1, surrogateSignificance = 0.05)
   # surrogate
+  cat(paste0('<h5><I>K=',1,', significance=',0.05,'</I></h5>'))
   surrogateMin <- min(result_surrogateTest$surrogates.statistics)
   surrogateMax <- max(result_surrogateTest$surrogates.statistics)
   if(surrogateMin <= result_surrogateTest$data.statistic & result_surrogateTest$data.statistic <= surrogateMax) { 
-    result <- 'Null Hypothesis: Data comes from a linear stochastic process\nAccept Null hypothesis'
+    result <- 'Null Hypothesis: Data comes from a linear stochastic process<br>Accept Null hypothesis'
     } else {
-      result <- 'Null Hypothesis: Data comes from a linear stochastic process\nReject Null hypothesis:Original data\'s stat is significant smaller than surrogates\' stats'
-      }
+      result <- 'Null Hypothesis: Data comes from a linear stochastic process<br>Reject Null hypothesis'
+    }
+  cat(paste0('<h5>',result,'</h5>'))
+  cat('<hr>')
   # surrogate
   confidenceInterval <- c(60,95)
   h <- 12
@@ -161,6 +166,7 @@ for(iii in 1:cnt){
   axis(1, at = seq(xlim[1],xlim[2]), 
        labels = format(seq(as.Date(tail(tsData[,1],1)), by = "month", length.out = 13)[-1],dateFormat), las = 1)
   panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  cat('<hr>')
   # nnetar
   # arima
   par(mfrow = c(2,1),family = 'Meiryo',mar = c(4,4,2,2))
@@ -173,6 +179,7 @@ for(iii in 1:cnt){
   axis(1, at = seq(xlim[1],xlim[2]), 
        labels = format(seq(as.Date(tail(tsData[,1],1)), by = "month", length.out = 13)[-1],dateFormat), las=1)
   panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  cat('<hr>')
   # arima
   # arfima
   par(mfrow = c(2,1),family = 'Meiryo',mar = c(4,4,2,2))
@@ -189,8 +196,6 @@ for(iii in 1:cnt){
   cat('<hr>')
 }
 ```
-
-***
 
 <script>MakeNegative();</script>
 <script>
