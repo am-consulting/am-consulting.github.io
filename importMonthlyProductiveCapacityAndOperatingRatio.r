@@ -23,3 +23,5 @@ colnames(buf2)[1] <- 'Date'
 buf3 <- as.data.frame(buf2,stringsAsFactors = F)
 buf3[,-1] <- apply(buf3[,-1],2,function(x)as.numeric(x))
 MonthlyProductiveCapacityAndOperatingRatio <- buf3
+MonthlyProductiveCapacityAndOperatingRatio[,1] <- as.Date(MonthlyProductiveCapacityAndOperatingRatio[,1])
+class(MonthlyProductiveCapacityAndOperatingRatio[,1])
