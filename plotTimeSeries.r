@@ -10,7 +10,8 @@ fun_plotTimeSeries <-
            lineColor = c('blue', 'lightcoral', 'black'),
            lwdL = 1,
            lwdR = 2,
-           dataTitle = '') {
+           dataTitle = '',
+           mar = c(3,5,4,5)) {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
@@ -26,7 +27,7 @@ fun_plotTimeSeries <-
       mainTitle <- colnames(obj)[objYL]
       obj <- na.omit(obj[,c(objX,objYL)])
     }
-    par(mar = c(3,5,4,5),
+    par(mar = mar,
         family = 'Meiryo')
     plot(x = obj[,1],
          y = obj[,2],
