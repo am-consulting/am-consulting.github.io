@@ -134,27 +134,58 @@ options(scipen = 999)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 for(iii in 1:cnt){
-  par(mfrow = c(3,2))
   tsData <- fredData[[iii]]
   tsData <- na.omit(tsData)
-  fun_plotTimeSeries(obj = tsData,chartType = 0,dateFormat = dateFormat)
+  par(mfrow = c(1,1))
+  fun_plotTimeSeries(obj = tsData,chartType = 0,dateFormat = dateFormat,mar = c(4,5,4,2))
   fun_timeSeriesForecast(obj = tsData[,2], surrogatePlot = T, nnetarP = 12)
   # surrogate
   surrogateMin <- min(result_surrogateTest$surrogates.statistics)
   surrogateMax <- max(result_surrogateTest$surrogates.statistics)
-  if(surrogateMin <= result_surrogateTest$data.statistic & result_surrogateTest$data.statistic <= surrogateMax)
-    {
+  if(surrogateMin <= result_surrogateTest$data.statistic & result_surrogateTest$data.statistic <= surrogateMax) { 
     result <- 'Null Hypothesis: Data comes from a linear stochastic process\nAccept Null hypothesis'
-    }
-  else
-    {
-    result <- 'Null Hypothesis: Data comes from a linear stochastic process\nReject Null hypothesis:Original data\'s stat is significant smaller than surrogates\' stats'
-    }
+    } else {
+      result <- 'Null Hypothesis: Data comes from a linear stochastic process\nReject Null hypothesis:Original data\'s stat is significant smaller than surrogates\' stats'
+      }
   # surrogate
-  confidenceInterval<-c(60,95)
-  plot(forecast(result_nnetar, h=12))
-  plot(forecast(result_arima, h=12,level=confidenceInterval))
-  plot(forecast(result_arfima,level=confidenceInterval,h=12))
+  confidenceInterval <- c(60,95)
+  h <- 12
+  # nnetar
+  par(mfrow = c(2,1),family = 'Meiryo',mar = c(4,4,2,2))
+  forecastResult <- forecast(result_nnetar, h=h)
+  plot(forecastResult)
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  ylim <- c(min(forecastResult$mean),max(forecastResult$mean))
+  xlim <- c(length(forecastResult$x) + 1,length(forecastResult$x) + h)
+  plot(forecastResult,xlim=xlim,ylim=ylim,xaxt='n')
+  axis(1, at = seq(xlim[1],xlim[2]), 
+       labels = format(seq(as.Date(tail(tsData[,1],1)), by = "month", length.out = 13)[-1],dateFormat), las = 1)
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  # nnetar
+  # arima
+  par(mfrow = c(2,1),family = 'Meiryo',mar = c(4,4,2,2))
+  forecastResult <- forecast(result_arima, h=h, level=confidenceInterval)
+  plot(forecastResult)
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  ylim <- c(min(forecastResult$lower),max(forecastResult$upper))
+  xlim <- c(length(forecastResult$x) + 1,length(forecastResult$x) + h)
+  plot(forecastResult,xlim=xlim,ylim=ylim,xaxt='n')
+  axis(1, at = seq(xlim[1],xlim[2]), 
+       labels = format(seq(as.Date(tail(tsData[,1],1)), by = "month", length.out = 13)[-1],dateFormat), las=1)
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  # arima
+  # arfima
+  par(mfrow = c(2,1),family = 'Meiryo',mar = c(4,4,2,2))
+  forecastResult <- forecast(result_arfima,level=confidenceInterval,h=12)
+  plot(forecastResult)
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  ylim <- c(min(forecastResult$lower),max(forecastResult$upper))
+  xlim <- c(length(forecastResult$x) + 1,length(forecastResult$x) + h)
+  plot(forecastResult,xlim=xlim,ylim=ylim,xaxt='n')
+  axis(1, at = seq(xlim[1],xlim[2]), 
+       labels = format(seq(as.Date(tail(tsData[,1],1)), by = "month", length.out = 13)[-1],dateFormat), las=1)
+  panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+  # arfima
   cat('<hr>')
 }
 ```
