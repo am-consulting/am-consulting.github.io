@@ -4,15 +4,15 @@ username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 fileName <- 'GDPNowcastDataReleaseDates.xlsx'
-if(!file.exists(paste0(pathOutput, fileName))) {
+# if(!file.exists(paste0(pathOutput, fileName))) {
   download.file(paste0('https://www.frbatlanta.org/-/media/documents/cqer/researchcq/gdpnow/',fileName), fileName, mode = "wb")
-}
+# }
 buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = T)
 buf0$Date <- gsub('[^0-9]*?00:00:00','',buf0$Date)
 buf0$`Time*` <- gsub('1899-12-31[^0-9]*?','',buf0$`Time*`)
 buf <- buf0[,1:3]
 colnames(buf) <- gsub('\\*','',colnames(buf))
-colnames(buf)[1] <- paste0(colnames(buf)[1],'. Caution:Checked By AMCC At ',Sys.time(),'(JST)')
+buf <- rbind(c(paste0('Source xlsx file was checked by AMCC at ',Sys.time(),'(JST)'),'',''),buf)
 fileName <-'defaultPath.csv'
 pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
 setwd(pathToFile)
