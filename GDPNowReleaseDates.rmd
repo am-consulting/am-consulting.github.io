@@ -19,5 +19,5 @@ setwd(pathToFile)
 buf000 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
 pathOutput <- paste0("C:/Users/", username, buf000[2,1],'csv/')
 setwd(pathOutput)
-write.csv(x = buf, file = "GDPNowReleaseDates.csv", quote = T, row.names = F, append = F, fileEncoding = 'utf8')
+write.csv(x = buf[,c(1,2)], file = "GDPNowReleaseDates.csv", quote = T, row.names = F, append = F, fileEncoding = 'utf8')
 ```
