@@ -18,6 +18,12 @@ fun_timeSeriesForecast <-
         FUN = timeAsymmetry,
         do.plot = surrogatePlot
         )
+    if(surrogatePlot == T){
+      panel.first = grid(nx = NULL,
+                         ny = NULL,
+                         lty = 2,
+                         equilogs = T)
+      }
     result_nnetar <<-
       nnetar(
         y = obj,
