@@ -6,7 +6,6 @@ library(nonlinearTseries);library(forecast)
 fun_timeSeriesForecast <-
   function(obj = dataSet,
            surrogateSignificance = 0.05, surrogateK = 1, surrogateOnesided = F, surrogatePlot = F,
-           nnetarP = 12, nnetarSize = 5,
            arimaIC = 'aic',
            arfimaEstim = 'mle'){
     result_surrogateTest <<-
