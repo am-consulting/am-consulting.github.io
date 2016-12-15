@@ -25,11 +25,7 @@ fun_timeSeriesForecast <-
       }
     result_nnetar <<-
       nnetar(
-        y = obj,
-        p,
-        P,
-        size,
-        repeats
+        y = obj
         )
     result_arima <<-
       auto.arima(
