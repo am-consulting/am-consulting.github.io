@@ -2,13 +2,16 @@
 # tmp <- getSymbols('USD/JPY', src = "oanda", auto.assign = F, from = Sys.Date()-365*5, to = Sys.Date())
 # buf0 <- tmp
 # dataSet <- data.frame(Date = as.Date(index(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names = NULL)
-library(nonlinearTseries);library(forecast)
+library(nonlinearTseries);library(forecast);library(tseries)
 fun_timeSeriesForecast <-
   function(obj = dataSet,
            surrogateSignificance = 0.05, surrogateK = 1, surrogateOnesided = F, surrogatePlot = F,
-           nnetar_p = 12, nnetar_size = 5,
            arimaIC = 'aic',
            arfimaEstim = 'mle'){
+    result_adfTest <<-
+      adf.test(
+        x = obj
+        )
     result_surrogateTest <<-
       surrogateTest(
         time.series = obj,
