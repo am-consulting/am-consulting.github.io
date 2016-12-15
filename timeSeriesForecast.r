@@ -6,6 +6,7 @@ library(nonlinearTseries);library(forecast)
 fun_timeSeriesForecast <-
   function(obj = dataSet,
            surrogateSignificance = 0.05, surrogateK = 1, surrogateOnesided = F, surrogatePlot = F,
+           nnetar_p = 12, nnetar_size = 5,
            arimaIC = 'aic',
            arfimaEstim = 'mle'){
     result_surrogateTest <<-
@@ -25,7 +26,9 @@ fun_timeSeriesForecast <-
       }
     result_nnetar <<-
       nnetar(
-        y = obj
+        y = obj,
+        p = nnetar_p,
+        size = nnetar_size
         )
     result_arima <<-
       auto.arima(
