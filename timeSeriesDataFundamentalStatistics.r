@@ -68,13 +68,13 @@ fun_timeSeriesDataFundamentalStatistics <-
         paste0('Latest(',latestDate,':', latestValue,') to Summary(%)'),
         paste0('Latest(',latestDate,':', latestValue,') to Summary(Diff)'))
     colnames(statisticsTable)[1] <-
-      paste0(colnames(statisticsTable)[1],':',paste0(format(range(dataSet[,1]),dateFormat),collapse = '~'))
+      paste0(colnames(statisticsTable)[1],'<br>',paste0(format(range(dataSet[,1]),dateFormat),collapse = '~'))
     # 原データ 基本統計量 Part
 
     # 差分データ 基本統計量 Part
     dataSetDiff <- data.frame(tail(dataSet[,1],-(lagN * diffN)),diff(dataSet[,objCCC],lag = lagN,differences = diffN))
     dataRangeDiff <- paste0(as.character(range(dataSetDiff[,1])),collapse = '~')
-    appendTitle <- paste0(':lag=',lagN,',diff=',diffN)
+    appendTitle <- paste0('<br>lag=',lagN,',diff=',diffN)
     colnames(dataSetDiff) <- c('Date',paste0(colnames(dataSet)[objCCC],appendTitle))
     dataSet01Positive  <-subset(dataSetDiff,0 <= dataSetDiff[,2])
     dataSet01Negative <-subset(dataSetDiff,0 >  dataSetDiff[,2])
