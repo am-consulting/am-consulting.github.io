@@ -18,6 +18,10 @@ fun_timeSeriesForecast <-
         plot = T,
         main = acfMainTitle
         )
+    panel.first = grid(nx = NULL,
+                       ny = NULL,
+                       lty = 2,
+                       equilogs = T)
     result_adfTest <<-
       adf.test(
         x = obj
