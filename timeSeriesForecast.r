@@ -22,6 +22,12 @@ fun_timeSeriesForecast <-
                        ny = NULL,
                        lty = 2,
                        equilogs = T)
+    result_spectrum <<-
+      spectrum(obj, method = "ar")
+    panel.first = grid(nx = NULL,
+                       ny = NULL,
+                       lty = 2,
+                       equilogs = T)
     result_adfTest <<-
       adf.test(
         x = obj
