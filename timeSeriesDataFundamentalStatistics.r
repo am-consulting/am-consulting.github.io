@@ -20,14 +20,14 @@ fun_timeSeriesDataFundamentalStatistics <-
     # 日付フォーマット確認 Part
 
     colnames(dataSet0)[objCCC] <-
-      paste0(colnames(dataSet0)[objCCC],'\\<br\\>n=',nrow(dataSet0),':',
+      paste0(colnames(dataSet0)[objCCC],'<br>n=',nrow(dataSet0),':',
              paste0(format(range(dataSet0[,1]),dateFormat),collapse = '~'))
 
     dataSet1 <- data.frame(Date = tail(dataSet[,1], -(lagN * diffN)),
                            diff(as.matrix(dataSet[,-1]),lag = lagN,differences = diffN),
                            check.names = F,stringsAsFactors = F)
     colnames(dataSet1)[objCCC] <-
-      paste0(colnames(dataSet)[objCCC],'\\<br\\>n=',nrow(dataSet1),':lag=',lagN,':diff=',diffN,':',
+      paste0(colnames(dataSet)[objCCC],'<br>n=',nrow(dataSet1),':lag=',lagN,':diff=',diffN,':',
              paste0(format(range(dataSet1[,1]),dateFormat),collapse = '~'))
 
     # unit root test
