@@ -65,8 +65,8 @@ fun_timeSeriesDataFundamentalStatistics <-
         latestValue-summaryTable))
     colnames(statisticsTable) <-
       c(colnames(dataSet)[objCCC],
-        paste0('Latest(',latestDate,':', latestValue,') to Summary(%)'),
-        paste0('Latest(',latestDate,':', latestValue,') to Summary(Diff)'))
+        paste0('Latest(',latestDate,':', latestValue,')<br>to Summary(%)'),
+        paste0('Latest(',latestDate,':', latestValue,')<br>to Summary(Diff)'))
     colnames(statisticsTable)[1] <-
       paste0(colnames(statisticsTable)[1],'<br>',paste0(format(range(dataSet[,1]),dateFormat),collapse = '~'))
     # 原データ 基本統計量 Part
