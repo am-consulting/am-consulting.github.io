@@ -1,19 +1,19 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ForecastForTimeSeriesForexData.html')) })
-title : "Forecast For Time Series Forex Data"
+title : "Forecast For Time Series Forex Data By Statistical Methods"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 10
-    fig_width: 10
+    fig_height: 8
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
 <style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
+.main-container {max-width : 900px; margin-left : auto; margin-right : auto;}
 table{white-space : nowrap;}
 td.negative {color : red;}
 </style>
@@ -83,7 +83,7 @@ options(scipen=100)
 
 ```{r warning=F,error=F,message=F,echo=F}
 library(quantmod)
-fredData <- list()
+fredData <- note <- list()
 cnt <- 0
 timseSeriesData <- 
   c(
@@ -111,13 +111,14 @@ for (iii in seq(1, length(timseSeriesData), by = 3)) {
   fredData[[cnt]] <- tmp
   tail(fredData[[cnt]])
   if(iii == 1){allData <- tmp}else{allData <- merge(allData, tmp, by='Date', all=T)}
+  note[[cnt]] <- timseSeriesData[iii + 2]
 }
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y-%m'
 dataTitle <-
-  paste0('Forecast for JPY,EURO,POUND and ZAR',
+  paste0('Forecast for JPY,EUR,GBP and ZAR : Monthly',
          ' - ',format(as.Date(tail(allData[,1],1)), dateFormat))
 dataSource <- 'Federal Reserve Bank of St. Louis'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
@@ -126,33 +127,38 @@ Author <- "アセット･マネジメント･コンサルティング株式会
 cat(paste("Title       : ", dataTitle, "\n"))
 cat(paste("Data Source : ", dataSource, "\n"))
 cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-- <h3>Financial transactions based on the data of this page are prohibited.</h3>
-- <h3>本ページを根拠にした金融取引を禁止します。</h3>
+#### Caution
+- Financial transactions and future forecasts based on the data of this page are absolutely prohibited.
+- 本ページのデータを根拠にした金融取引、将来予測は絶対禁止とします。
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-for(iii in 1:cnt){
+for(iii in 1:length(fredData)){
   tsData <- fredData[[iii]]
   tsData <- na.omit(tsData)
   tsData <- tail(tsData,12*10)
   cat(paste0('<h2>',colnames(tsData)[2],'</h2>'))
-  cat(paste0('<h3>',paste0(format(range(tsData[,1]),dateFormat), collapse = ' ~ '),'</h3>'))
+  cat(paste0('<h4>Period:',paste0(format(range(tsData[,1]),dateFormat), collapse = ' ~ '),'</h4>'))
+  cat(paste0('<h5><I>"',note[[iii]],'"(Source:FRED)</I></h5>'))
+  fun_timeSeriesDataFundamentalStatistics(tsData)
   par(mfrow = c(2,1))
   fun_plotTimeSeries(obj = tsData,chartType = 0,dateFormat = dateFormat,mar = c(4,5,4,2))
   surrogateK <- 1; surrogateSignificance <- 0.05
   fun_timeSeriesForecast(obj = tsData[,2],
-                         surrogatePlot = T, surrogateK = surrogateK, surrogateSignificance = surrogateSignificance
+                         surrogatePlot = T, surrogateK = surrogateK, surrogateSignificance = surrogateSignificance,
+                         acfLag = 12*3, acfMainTitle = 'Auto Correlation'
                          )
   # adf
   cat('\n\n')
-  print(knitr::kable(cbind(result_adfTest)))
+  result_adfTest0 <- cbind(result_adfTest)
+  colnames(result_adfTest0)[1] <- 'Unit Root Test'
+  result_adfTest0[6] <- colnames(tsData)[2]
+  print(knitr::kable(result_adfTest0))
   cat('\n\n<hr>')
   # adf
   # surrogate
@@ -202,6 +208,24 @@ for(iii in 1:cnt){
   cat(paste0('<h5><I>C.I(%) = ',paste0(confidenceInterval,collapse = ','),'</I></h5>'))
   cat('<hr>')
   # arfima
+  # statistics table
+  print(knitr::kable(statisticsTable,row.names = T))
+  cat('\n\n<hr>')
+  print(knitr::kable(statisticsTableDiff,row.names = T))
+  cat('\n\n<hr>')
+  print(knitr::kable(statisticsTableDiffMaxMin,row.names = F))
+  cat('\n\n<hr>')
+  print(knitr::kable(statisticsTableDiffRatio,row.names = T))
+  cat('\n\n<hr>')
+  print(knitr::kable(statSequencePositive,row.names = F))
+  cat('\n\n<hr>')
+  print(knitr::kable(statSequenceNegative,row.names = F))
+  cat('\n\n<hr>')
+  print(knitr::kable(tail(timeSeriesdata),row.names = F,escape = F))
+  cat('\n\n<hr>')
+  print(knitr::kable(tail(timeSeriesdataDiff),row.names = F,escape = F))
+  cat('\n\n<hr>')
+  # statistics table
 }
 ```
 
