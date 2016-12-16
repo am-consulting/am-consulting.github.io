@@ -101,6 +101,7 @@ fun_timeSeriesDataFundamentalStatistics <-
                  check.names = F,stringsAsFactors = F)
     colnames(statisticsTableDiffMaxMin)[2] <-
       paste0(colnames(statisticsTableDiffMaxMin)[2],':Max&Min',':',dataRangeDiff)
+    statisticsTableDiffMaxMin[,1] <- format(statisticsTableDiffMaxMin[,1],dateFormat)
     # 差分データの最大値、最小値
 
     # Step1:正負の識別
