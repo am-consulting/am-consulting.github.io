@@ -57,7 +57,6 @@ fun_timeSeriesDataFundamentalStatistics <-
     summaryTable <- cbind(summary(dataSet[,objCCC]))
     latestValue <- tail(dataSet[,objCCC],1)
     latestDate <- format(tail(dataSet[,1],1),dateFormat)
-    dataRange <- paste0(as.character(range(dataSet[,1])),collapse = '~')
     statisticsTable <-
       data.frame(cbind(
         summaryTable,
@@ -73,7 +72,7 @@ fun_timeSeriesDataFundamentalStatistics <-
 
     # 差分データ 基本統計量 Part
     dataSetDiff <- data.frame(tail(dataSet[,1],-(lagN * diffN)),diff(dataSet[,objCCC],lag = lagN,differences = diffN))
-    dataRangeDiff <- paste0(as.character(range(dataSetDiff[,1])),collapse = '~')
+    dataRangeDiff <- paste0(as.character(format(range(dataSetDiff[,1]),dateFormat)),collapse = '~')
     appendTitle <- paste0('<br>lag=',lagN,',diff=',diffN)
     colnames(dataSetDiff) <- c('Date',paste0(colnames(dataSet)[objCCC],appendTitle))
     dataSet01Positive  <-subset(dataSetDiff,0 <= dataSetDiff[,2])
@@ -164,8 +163,12 @@ fun_timeSeriesDataFundamentalStatistics <-
     # global data
     dateFormat <<- dateFormat
     dateUnit <<- dateUnit
-    timeSeriesdata <<- dataSet0
+    timeSeriesdata <- dataSet0
+    timeSeriesdata[,1] <- format(timeSeriesdata[,1],dateFormat)
+    timeSeriesdata <<- timeSeriesdata
     timeSeriesdataDiff <<- dataSet1
+    timeSeriesdataDiff[,1] <- format(timeSeriesdataDiff[,1],dateFormat)
+    timeSeriesdataDiff <<- timeSeriesdataDiff
     statisticsTable <<- statisticsTable
     statisticsTableDiff <<- statisticsTableDiff
     statisticsTableDiffRatio <<- statisticsTableDiffRatio
