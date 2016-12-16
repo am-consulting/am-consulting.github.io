@@ -53,23 +53,25 @@ No.,Title
 52,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MachineryOrders.html" target="_blank">機械受注額:機種別機械受注額:日本</a>
 53,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CrudeSteelProductionOfMainCountries.html" target="_blank">主要国粗鋼生産</a>
 54,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MonthlyProductiveCapacityAndOperatingRatio.html" target="_blank">製造工業生産能力・稼働率指数 季節調整済指数:日本</a>
-55,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html" target="_blank">国内総生産:日本</a>
-56,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html" target="_blank">法人企業統計:日本</a>
-57,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-R-olive-BusinessOutlookSurvey" target="_blank">法人企業景気予測調査 - 景況判断、売上高判断、経常利益判断他</a>
-58,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NICHIGINTANKAN.html" target="_blank">日銀短観</a>
-59,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html" target="_blank">国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税:日本</a>
-60,<a href="http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html" target="_blank">世界経済の見通し(2016年10月版) 2017年から2021年の予測</a>
-61,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-politicalFunding.html" target="_blank">政治資金情報(データ出所:ラポール・ジャパン)</a>
-62,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-2016NationalPopularVoteTracker.html" target="_blank">2016年アメリカ大統領選挙一般投票の結果と各州の寄与度</a>
-63,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html" target="_blank">尖閣諸島接近状況統計分析</a>
-64,<a href="http://olive.saecanet.com/p/blog-page_26.html" target="_blank">公共建築工事･土木工事共通費計算</a>
-65,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-20161026223533.html" target="_blank">元素の一覧表-原子番号、元素記号、元素名、周期、族、原子量、状態</a>
-66,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-TSUNAMI.html" target="_blank">発生津波ヒストリカルデータ</a>
-67,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-socialIndicatorsByPrefecture.html" target="_blank">社会生活統計指標-都道府県の指標-2016-基礎データ</a>
-68,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EnvironmentalRadioactivityLevel.html" target="_blank">放射線モニタリング情報 - 全国及び福島県の空間線量測定結果</a>
-69,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CrossCorrelationBetweenTwoRandomWalkTimeSeries.html" target="_blank">2つのランダムウォーク時系列データの間の相互相関係数</a>
-70,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CentralLimitTheorem.html" target="_blank">中心極限定理のシミュレーション</a>
-71,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-sampleSize.html" target="_blank">信頼水準、許容誤差および標本サイズ</a>
-72,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-returnPeriod.html" target="_blank">リスク分析のための遭遇確率-再現期間(年)に基づく遭遇確率表</a>
-73,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CIATheWorldFactBook-Top10WithinEachField.html" target="_blank">『ザ･ワールド･ファクトブック』(CIA)に基づく国力比較表(Top10)</a>
-74,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CIATheWorldFactBook-Correlation.html" target="_blank">『ザ･ワールド･ファクトブック』(CIA)に基づく各フィールド毎のスピアマン順位相関係数</a>
+55,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ForecastForTimeSeriesForexData.html" target="_blank">Forecast For Time Series Forex Data By Statistical Methods</a>
+56,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPofJapan.html" target="_blank">国内総生産:日本</a>
+57,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html" target="_blank">法人企業統計:日本</a>
+58,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-R-olive-BusinessOutlookSurvey" target="_blank">法人企業景気予測調査 - 景況判断、売上高判断、経常利益判断他</a>
+59,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NICHIGINTANKAN.html" target="_blank">日銀短観</a>
+60,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-nationalTaxes.html" target="_blank">国税の時系列推移 - 申告所得税、消費税、法人税、源泉所得税:日本</a>
+61,<a href="http://olive.saecanet.com/2016/10/201610-20172021-world-economic-outlook.html" target="_blank">世界経済の見通し(2016年10月版) 2017年から2021年の予測</a>
+62,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-politicalFunding.html" target="_blank">政治資金情報(データ出所:ラポール・ジャパン)</a>
+63,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-2016NationalPopularVoteTracker.html" target="_blank">2016年アメリカ大統領選挙一般投票の結果と各州の寄与度</a>
+64,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html" target="_blank">尖閣諸島接近状況統計分析</a>
+65,<a href="http://olive.saecanet.com/p/blog-page_26.html" target="_blank">公共建築工事･土木工事共通費計算</a>
+66,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-20161026223533.html" target="_blank">元素の一覧表-原子番号、元素記号、元素名、周期、族、原子量、状態</a>
+67,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-TSUNAMI.html" target="_blank">発生津波ヒストリカルデータ</a>
+68,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-socialIndicatorsByPrefecture.html" target="_blank">社会生活統計指標-都道府県の指標-2016-基礎データ</a>
+69,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EnvironmentalRadioactivityLevel.html" target="_blank">放射線モニタリング情報 - 全国及び福島県の空間線量測定結果</a>
+70,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CrossCorrelationBetweenTwoRandomWalkTimeSeries.html" target="_blank">2つのランダムウォーク時系列データの間の相互相関係数</a>
+71,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CentralLimitTheorem.html" target="_blank">中心極限定理のシミュレーション</a>
+72,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-sampleSize.html" target="_blank">信頼水準、許容誤差および標本サイズ</a>
+73,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-returnPeriod.html" target="_blank">リスク分析のための遭遇確率-再現期間(年)に基づく遭遇確率表</a>
+74,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CIATheWorldFactBook-Top10WithinEachField.html" target="_blank">『ザ･ワールド･ファクトブック』(CIA)に基づく国力比較表(Top10)</a>
+75,<a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CIATheWorldFactBook-Correlation.html" target="_blank">『ザ･ワールド･ファクトブック』(CIA)に基づく各フィールド毎のスピアマン順位相関係数</a>
+76,<a href="http://olive.saecanet.com/p/gdpnow.html" target="_blank">GDPNow リリース日時</a>
