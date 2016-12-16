@@ -7,7 +7,17 @@ fun_timeSeriesForecast <-
   function(obj = dataSet,
            surrogateSignificance = 0.05, surrogateK = 1, surrogateOnesided = F, surrogatePlot = F,
            arimaIC = 'aic',
-           arfimaEstim = 'mle'){
+           arfimaEstim = 'mle',
+           acfLag = 12, acfType = 'correlation', acfMainTitle = ''){
+    result_acfTest <<-
+      acf(
+        x = obj,
+        lag.max = acfLag,
+        type = acfType,
+        drop.lag.0 = F,
+        plot = T,
+        main = acfMainTitle
+        )
     result_adfTest <<-
       adf.test(
         x = obj
