@@ -3,6 +3,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 title : 'Cabinet Approval Rating'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
@@ -117,7 +118,6 @@ BXchartTitle<-'歴代内閣毎の内閣支持率(%)'
 cat(paste("Title       : ",dataTitle,dataTitle0,"\n"))
 cat(paste("Data Source : ",dataSource,"\n"))
 cat(paste("Author      : ",Author,"\n"))
-cat(paste("作成日      : ",Sys.time(),"\n"))
 cat(paste("特  記      : ",notes,"\n"))
 cat(paste("特  記      : ",notes0,"\n"))
 options(scipen = 999)
@@ -137,11 +137,13 @@ for(iii in 1:length(cabinet)){
   cabinetDT[iii,3] <- head(buf[,2],1)
   cabinetDT[iii,4] <- tail(buf[,2],1)
   cabinetDT[iii,5] <- tail(buf[,2],1)-head(buf[,2],1)
+  cabinetDT[iii,6] <- tail(head(buf[,2],-1),1)
 }
-colnames(cabinetDT) <- c('内閣','政権期間(または現職)','初回(%)','最後(%)','最後 － 初回')
+colnames(cabinetDT) <- c('内閣','政権期間(または現職)','初回(%)','最終(%)','最終 - 初回','最終の1回前(%)')
 knitr::kable(cabinetDT)
 ```
 
+- 橋本内閣の政権期間は1996年01月11日~1998年07月30日(第1次および第2次)。
 <hr>
 
 ```{r,warning=F,error=F,message=F,echo=F}
