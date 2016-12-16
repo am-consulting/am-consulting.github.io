@@ -25,11 +25,17 @@ dyMultiColumn <- function(dygraph) {
 }
 
 fun_dygraph <-
-  function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', plotNum = 1, barPlot0 = 0, colors = colors){
+  function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', plotNum = 1, barPlot0 = 0, colors = colors, group = group){
   xtsData <- xts(obj[,-1], order.by=obj[,1])
   colnames(xtsData) <- colnames(obj)[-1]
-  dygraphPlot <-
-    dygraph(xtsData, main = mainTitle, group = 'amcc') %>%
+  if(gruop == 1){
+    dygraphPlot <-
+      dygraph(xtsData, main = mainTitle, group = 'amcc')
+  }else{
+    dygraphPlot <-
+      dygraph(xtsData, main = mainTitle)
+  }
+  dygraphPlot <- dygraphPlot %>%
     dyLegend(width = legendWidth, show = "follow") %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection) %>%
@@ -268,9 +274,9 @@ buf1 <-paste(out, collapse = ' %>% ')
 assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 }
 
-fun_plot_dygraph <- function(obj = tmp, plotNum = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0, colors = colors){
+fun_plot_dygraph <- function(obj = tmp, plotNum = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0, colors = colors, group = group){
   buf <- na.omit(obj)
-  fun_dygraph(obj = buf, mainTitle = dygraphTitle, plotNum = plotNum, legendWidth = legendWidth, barPlot0 = barPlot, colors = colors)
+  fun_dygraph(obj = buf, mainTitle = dygraphTitle, plotNum = plotNum, legendWidth = legendWidth, barPlot0 = barPlot, colors = colors, group = group)
   fun_consumptionTax(obj = buf)
   fun_primeMinisterOfJapan(obj = buf)
   fun_boj(obj = buf)
@@ -296,9 +302,9 @@ fun_dygraph_shade <- function(plotNum = 1){
 
 fun_generateKnit <-
   function(objDF = dataSet, plotNum = 1, barPlot = 0, dygraphTitle = '',
-           legendWidth = 300, colors = RColorBrewer::brewer.pal(3, "Set2")){
+           legendWidth = 300, colors = RColorBrewer::brewer.pal(3, "Set2"), group = 1){
   fun_plot_dygraph(obj = objDF, plotNum = plotNum,
                    dygraphTitle = dygraphTitle,
-                   legendWidth = legendWidth, barPlot = barPlot, colors = colors)
+                   legendWidth = legendWidth, barPlot = barPlot, colors = colors, group = group)
   fun_dygraph_shade(plotNum = plotNum)
 }
