@@ -28,7 +28,7 @@ fun_dygraph <-
   function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', plotNum = 1, barPlot0 = 0, colors = colors, group = group){
   xtsData <- xts(obj[,-1], order.by=obj[,1])
   colnames(xtsData) <- colnames(obj)[-1]
-  if(gruop == 1){
+  if(group == 1){
     dygraphPlot <-
       dygraph(xtsData, main = mainTitle, group = 'amcc')
   }else{
