@@ -11,7 +11,6 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>
-body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
 .main-container {
 	max-width: 1300px;
 	margin-left: auto;
