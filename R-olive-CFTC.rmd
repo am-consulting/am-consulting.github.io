@@ -216,7 +216,7 @@ for (iii in 1:length(cftcOBJ)) {
   colnames(dataSet)[2] <-
     paste0(colnames(dataSet)[2], '_CFTC positions')
   funPlotTimeSeries()
-  cat('<hr>')
+  if(iii!=length(cftcOBJ)){cat('<hr>')}
 }
 ```
 
@@ -228,7 +228,7 @@ for (iii in 1:length(dataset)) {
   cat('\n\n')
 }
 ```
-<hr>
+
 ```{r warning=F, error=F, message=F, echo=F}
 funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', append = '') {
   DT::datatable(
@@ -245,6 +245,8 @@ funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 
 }
 ```
 
+## Latest `r tailN <- 15;tailN` Weeks Time Series Table
+
 ```{r,warning=F,error=F,message=F,echo=F,include=F}
 out = NULL
 for (iii in 1:length(dataset)) {
@@ -254,9 +256,9 @@ for (iii in 1:length(dataset)) {
       "cat(paste0('<h2>',dataset[[",
       iii,
       "]][1,5],'</h2>'))\n\n",
-      "funDataTable(obj = dataset[[",
+      "funDataTable(obj = tail(dataset[[",
       iii,
-      "]][,1:4], append = dataset[[",
+      "]],",tailN,")[,1:4], append = dataset[[",
       iii,
       "]][1,6])\n\ncat('<hr>')\n\n```"
     )
