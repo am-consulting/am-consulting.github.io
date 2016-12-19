@@ -4,6 +4,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 
 title : 'Trade Statistics of Japan:Preliminary Report'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
@@ -38,12 +39,13 @@ options(width = 1000)
 # devtools::install_github("hrbrmstr/xmlview")
 library(xml2)
 library(xmlview)
-library(XML) 
+library(XML)
+library(knitr)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2016
-targetMonth <- 10
+targetMonth <- 11
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -59,7 +61,6 @@ Author <- 'アセット･マネジメント･コンサルティング株式会
 cat(paste('Title       : ',dataTitle,'\n'))
 cat(paste('Data Source : ',dataSource,'\n'))
 cat(paste('Author      : ',Author,'\n'))
-cat(paste('作成日      : ',Sys.time(),'\n'))
 cat(paste('特  記      : ',notes,'\n'))
 cat(paste('特  記      : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont('Meiryo'))
@@ -79,6 +80,66 @@ cat('<h5>総額(原値,兆円)</h5>\n')
 knitr::kable(table01)
 ```
 
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+byGoods <- list()
+byGoodsTitle <- vector()
+cnt <- 0
+for(ggg in 4:21){
+  cnt <- cnt + 1
+  tmp0 <- buf0[ggg]
+  itemN <- length(tmp0$shuyochiikikunihin)
+  byGoodsTitle <- c(byGoodsTitle,tmp0$shuyochiikikunihin$title)
+  tmpDF <- data.frame()
+  for(rrr in 3:(itemN-2)){
+    tmp <- tmp0$shuyochiikikunihin[rrr]
+    tmpDF[rrr - 2,1] <- rrr - 2
+    buf <- tmp$shuyochiikikunihininfo$shuyoshohin
+    if(!is.null(buf)){tmpDF[rrr - 2,2] <- buf}else{tmpDF[rrr - 2,2] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$tani
+    if(!is.null(buf)){tmpDF[rrr - 2,3] <- buf}else{tmpDF[rrr - 2,3] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$suryo
+    if(!is.null(buf)){tmpDF[rrr - 2,4] <- buf}else{tmpDF[rrr - 2,4] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$suryonobiritsu
+    if(!is.null(buf)){tmpDF[rrr - 2,5] <- buf}else{tmpDF[rrr - 2,5] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$kagaku
+    if(!is.null(buf)){tmpDF[rrr - 2,6] <- buf}else{tmpDF[rrr - 2,6] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$koseihi
+    if(!is.null(buf)){tmpDF[rrr - 2,7] <- buf}else{tmpDF[rrr - 2,7] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$kagakunobiritsu
+    if(!is.null(buf)){tmpDF[rrr - 2,8] <- buf}else{tmpDF[rrr - 2,8] <- NA}
+    buf <- tmp$shuyochiikikunihininfo$zogenkiyodo
+    if(!is.null(buf)){tmpDF[rrr - 2,9] <- buf}else{tmpDF[rrr - 2,9] <- NA}
+  }
+  tmpDF[,-c(1,2,3)] <- sapply(tmpDF[,-c(1,2,3)],function(x) as.numeric(gsub(',','',x)))
+  tmpDF[,6] <- sapply(tmpDF[,6],function(x) x*10^-2)
+  colnames(tmpDF) <- 
+    c('ID', '品名',	'単位',	'数量',	'伸率(%)',	'価額(億円)',	'構成比(%)',	'伸率(%)',	'増減寄与度(%)')
+  print(head(tmpDF));print(tail(tmpDF))
+  byGoods[[cnt]] <- tmpDF
+}
+```
+<hr>
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+funDataTable <- 
+  function(obj, orderColumn = 0, orderDirection = 'asc', caption = '', dataTitle = '') {
+  cat(paste('<h5>', dataTitle, '</h5>'))  
+  DT::datatable(
+    obj,
+    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
+    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
+      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
+      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
+      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
+      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
+    rownames = F, class = 'display compact', escape = F, filter = 'top', 
+    caption = caption
+    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;',
+    #                                   'Table ', 
+    #                                   htmltools::em(caption))
+  )  
+  }
+```
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 table02 <- data.frame()
 regionN <- length(buf0$chiikikunisogaku)
@@ -91,51 +152,33 @@ for(rrr in 2:(regionN-2)){
 }
 table02[,-c(1,2)] <- sapply(table02[,-c(1,2)],function(x) as.numeric(gsub(',','',x)))
 table02[,c(3,5,7)] <- sapply(table02[,c(3,5,7)],function(x) x*10^-2)
-colnames(table02) <-c('ID', '地域･国', '輸出価額(億円)', '伸率', '輸入価額(億円)', '伸率', '差引価額(億円)', '伸率')
-```
-<hr>
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-funDataTable <- function(obj, ind = '', orderC = 0, orderD = 'asc', width0 = '10%') {
-DT::datatable(
-  obj,
-  options = list(
-    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
-    scrollX = F, lengthMenu = list(c(20,-1, 1), c(20, 'All', 1)), orderClasses = T,
-    order = list(list(orderC, orderD)),
-    columnDefs = list(list(width = width0, targets = 0)),
-    search = list(regex = T, caseInsensitive = T)
-  ),
-  rownames = F,   class = 'display compact', filter = 'bottom',
-  caption = ind
-)
-}
-
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', dataTitle = '', ind = '') {
-  cat(paste('<h5>', ind, '</h5>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
+colnames(table02) <-
+  c('ID', '地域･国', '輸出価額(億円)', '伸率(%)', '輸入価額(億円)', '伸率(%)', '差引価額(億円)', '伸率(%)')
 cat('<h5>地域(国)別輸出入</h5>\n')
-funDataTable(obj = table02)  
-```
-
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-xml_view(xml2::read_xml(targetURL))
+funDataTable(obj = table02) 
 ```
 
 ***
+
+```{r warning=F,error=F,message=F,echo=F,include=F}
+out = NULL
+for (iii in 1:length(byGoods)) {
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis', echo=F}\n\n",
+      "cat(paste0('<h5>', byGoodsTitle[",iii,"],'</h5>'))\n\n",
+      "funDataTable(obj = byGoods[[",iii,"]],)\n\n",
+      "cat('<hr>')\n\n```"
+    )
+  out = c(out, knit_expanded)
+}
+```
+
+`r paste(knit(text = out), collapse = '\n')`
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+# xml_view(xml2::read_xml(targetURL))
+```
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
