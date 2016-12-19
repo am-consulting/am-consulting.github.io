@@ -302,7 +302,7 @@ fun_dygraph_shade <- function(plotNum = 1){
 
 fun_generateKnit <-
   function(objDF = dataSet, plotNum = 1, barPlot = 0, dygraphTitle = '',
-           legendWidth = 300, colors = RColorBrewer::brewer.pal(ncol(dataSet)-1, "Set2"), group = 1){
+           legendWidth = 300, colors = RColorBrewer::brewer.pal(ncol(objDF)-1, "Set2"), group = 1){
   fun_plot_dygraph(obj = objDF, plotNum = plotNum,
                    dygraphTitle = dygraphTitle,
                    legendWidth = legendWidth, barPlot = barPlot, colors = colors, group = group)
