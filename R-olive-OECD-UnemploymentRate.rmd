@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-OECD-CompositeLeadingIndicators.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-OECD-UnemploymentRate.html')) })
 
-title : 'OECD:Composite Leading Indicators'
+title : 'OECD:Unemployment Rate:Quarterly Data'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -89,44 +89,32 @@ options(scipen=100)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-mm <- 10
-sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOTR_GYSA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=2016-",mm)
-fun_OECDStatisticData(sdmxURL = sdmxURL)
+q <- 4
+sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/STLABOUR/AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+EU28+G-7+OECD.LRUN25TT.STSA.Q/all?startTime=1953-Q1&endTime=2016-Q",q)
+fun_OECDStatisticData(sdmxURL = sdmxURL, period = 4)
 oecd01 <- allOECDData
 oecd01[,-1] <- apply(oecd01[,-1],2,function(x)round(x,1))
-sdmxTitle01 <- '12-month rate of change of the trend restored CLI'
-
-sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOAA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=2016-",mm)
-fun_OECDStatisticData(sdmxURL = sdmxURL)
-oecd02 <- allOECDData
-oecd02[,-1] <- apply(oecd02[,-1],2,function(x)round(x,1))
-sdmxTitle02 <- 'Amplitude adjusted'
+sdmxTitle01 <- 'Aged 25-54,All persons'
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dateFormat <- '%Y-%m'
-dataTitle <- paste0('OECD 景気先行指数 - ', format(tail(allOECDData[,1],1),dateFormat))
+dataTitle <- paste0('OECD 失業率 - ' , format(tail(allOECDData[,1],1) , dateFormat))
 dataSource <- 'Organisation for Economic Co-operation and Development：経済協力開発機構'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-windowsFonts(Meiryo=windowsFont('Meiryo'))
+Author <- 'アセット･マネジメント･コンサルティング会社 http://am-consulting.co.jp'
+cat(paste('Title       : ' , dataTitle ,  '\n'))
+cat(paste('Data Source : ' , dataSource , '\n'))
+cat(paste('Author      : ' , Author , '\n'))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 tsData <-
-  tail(na.omit(oecd01[,grep('date|jpn|chn|usa', colnames(oecd01), ignore.case = T)]),12*10)
-fun_dygraph(obj = tsData, colors = c('blue','red','green'),
+  tail(na.omit(oecd01[ , grep('date|jpn|usa|fra' , colnames(oecd01) , ignore.case = T)]) ,12 * 10)
+fun_dygraph(obj = tsData, colors = c('blue','red','green','orange'),
             mainTitle = paste0(sdmxTitle01,' - ', 
                                paste0(format(range(tsData[,1]), dateFormat), collapse = '~')),
             plotNum = 1, legendWidth = '300', barPlot0 = 0, group = 0)
-tsData <-
-  tail(na.omit(oecd02[,grep('date|jpn|chn|usa', colnames(oecd02), ignore.case = T)]),12*10)
-fun_dygraph(obj = tsData, colors = c('blue','red','green'),
-            mainTitle = paste0(sdmxTitle02,' - ', 
-                               paste0(format(range(tsData[,1]), dateFormat), collapse = '~')),
-            plotNum = 2, legendWidth = '300', barPlot0 = 0, group = 0)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
@@ -134,21 +122,9 @@ dygraphPlot1
 ```
 
 ***
-
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-dygraphPlot2
-```
-
-***
 #### `r sdmxTitle01` 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 knitr::kable(fun_transposeDataFrame(obj = oecd01,dateFormat = dateFormat,colName = 'Country/Region'),row.names = F)
-```
-
-***
-#### `r sdmxTitle02` 
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = oecd02,dateFormat = dateFormat,colName = 'Country/Region'),row.names = F)
 ```
 
 ***
