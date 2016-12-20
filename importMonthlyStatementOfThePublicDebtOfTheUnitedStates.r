@@ -1,5 +1,5 @@
-fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999){
-  library(XLConnect);library(lubridate);library(excel.link);library(gdata)
+fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999, readxls = 'xlconnect'){
+  library(XLConnect);library(lubridate);library(gdata)
   username <- Sys.info()['user']
   pathOutput <- paste0("C:/Users/", username, "/Desktop/MSPD/")
   setwd(pathOutput)
@@ -19,11 +19,14 @@ fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999){
                         fileName, mode = "wb")
         }
       }
-      # buf0 <-
-      #   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
-      # 計算式のセルはNAとなる.
-      buf0 <-
-        read.xls(paste0(pathOutput, fileName), sheet = 1, header = F)
+      if(readxls == 'xlconnect'){
+        buf0 <-
+          readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+        # 計算式のセルはNAとなる.
+      }else{
+        buf0 <-
+          read.xls(paste0(pathOutput, fileName), sheet = 1, header = F)
+      }
       buf0[sapply(buf0,function(x){regexpr('\\w',x,ignore.case = T)}) == -1] <- NA
       buf1 <- buf0[,apply(buf0,2,function(x){sum(is.na(x))}) != nrow(buf0)]
       buf2 <- buf1[apply(buf1,1,function(x){sum(is.na(x))}) != ncol(buf1),]
