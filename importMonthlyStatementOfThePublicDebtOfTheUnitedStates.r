@@ -1,5 +1,5 @@
-fun_MSPD <- function(startYear = 2013, breakYear =2016, breakMonth = 9999){
-  library(XLConnect);library(Nippon);library(lubridate);library(excel.link)
+fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999){
+  library(XLConnect);library(lubridate);library(excel.link);library(gdata)
   username <- Sys.info()['user']
   pathOutput <- paste0("C:/Users/", username, "/Desktop/MSPD/")
   setwd(pathOutput)
@@ -8,19 +8,27 @@ fun_MSPD <- function(startYear = 2013, breakYear =2016, breakMonth = 9999){
   for(yyyy in startYear:breakYear){
     for(mm in 1:12){
       if(yyyy == breakYear & mm == breakMonth){break}
-      dataDate <- paste0(yyyy,'-',mm,'-1')
+      dataDate <- as.Date(paste0(yyyy,'-',formatC(mm,width = 2,flag = '0'),'-01'))
       fileName <- paste0('opdm',formatC(mm,width = 2,flag = '0'),yyyy,'.xls')
       if(!file.exists(paste0(pathOutput, fileName))) {
-        download.file(paste0('https://www.treasurydirect.gov/govt/reports/pd/mspd/',yyyy,'/',fileName),
-                      fileName, mode = "wb")
+        if(dataDate < as.Date('2007-04-01')){
+          download.file(paste0('ftp://ftp.publicdebt.treas.gov/opd/',fileName),
+                        fileName, mode = "wb")
+        }else{
+          download.file(paste0('https://www.treasurydirect.gov/govt/reports/pd/mspd/',yyyy,'/',fileName),
+                        fileName, mode = "wb")
+        }
       }
+      # buf0 <-
+      #   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+      # 計算式のセルはNAとなる.
       buf0 <-
-        readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
-      buf0[sapply(buf0,function(x)regexpr('\\w',x)) == -1] <- NA
+        read.xls(paste0(pathOutput, fileName), sheet = 1, header = F)
+      buf0[sapply(buf0,function(x){regexpr('\\w',x,ignore.case = T)}) == -1] <- NA
       buf1 <- buf0[,apply(buf0,2,function(x){sum(is.na(x))}) != nrow(buf0)]
       buf2 <- buf1[apply(buf1,1,function(x){sum(is.na(x))}) != ncol(buf1),]
       cnt <- cnt + 1
-      MSPD[cnt,1] <- dataDate
+      MSPD[cnt,1] <- as.character(dataDate)
       MSPD[cnt,2] <-
         as.numeric(gsub(',','',buf2[grep('Total Public Debt Outstanding',buf2[,1],ignore.case = T),ncol(buf2)]))
       gc();gc()
