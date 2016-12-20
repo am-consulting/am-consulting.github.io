@@ -27,7 +27,7 @@ fun_MSPD <- function(startYear = 2013, breakYear =2016, breakMonth = 9999){
     }
   }
   MSPD[,1] <- as.Date(MSPD[,1])
-  colnames(MSPD) <- c('Date','Total Public Debt Outstanding(Millions of dollars)')
+  colnames(MSPD) <- c('Date','Total Public Debt Outstanding')
   assign('MSPD',MSPD,envir = .GlobalEnv)
-  assign('tableTitle', 'MONTHLY STATEMENT OF THE PUBLIC DEBT OF THE UNITED STATES', envir = .GlobalEnv)
+  assign('tableTitle', 'MONTHLY STATEMENT OF THE PUBLIC DEBT OF THE UNITED STATES(Millions of dollars)', envir = .GlobalEnv)
 }
