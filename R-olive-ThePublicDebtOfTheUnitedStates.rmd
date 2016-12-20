@@ -97,7 +97,8 @@ dateFormat <- '%Y-%m'
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_MSPD(startYear = 2005, breakYear = 2016, breakMonth = 12)
+fun_MSPD(startYear = 2014, breakYear = 2016, breakMonth = 12)
+# 2009-01は計算式
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -115,22 +116,62 @@ cat(paste('特  記      : ', notes, '\n'))
 cat(paste('特  記      : ', notes0, '\n'))
 ```
 
-#### Time Series
+### Time Series
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 tmpDF <- MSPD
 tmpDF[,-1] <- tmpDF[,-1] * 10^-6 
 fun_dygraph(obj = tmpDF,colors = 'blue',plotNum = 1,group = 0,legendWidth = 300,
             mainTitle = 'THE PUBLIC DEBT OF THE UNITED STATES(Trillion $) / 米国の公的債務(兆ドル)')
-dygraphPlot1
+dygraphPlot1 %>% dyBarChart()
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+tmpDF[,1] <- format(tmpDF[,1],dateFormat)
+knitr::kable(tmpDF,row.names = F)
+```
+
+- Unit:Trillion $
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-mergeData <- merge(MSPD, allData[,grep('date|grand|japan|china',colnames(allData),ignore.case = T)],by='Date')
-mergeData$`U.S. citizens and American entities` <-
-  round((mergeData[,2]-mergeData[,5])/mergeData[,2]*100,1)
+mergeData <-
+  merge(MSPD, allData[,grep('date|grand|japan|china',colnames(allData),ignore.case = T)],by='Date')
+ccc1 <- ncol(mergeData) + 1
+ccc2 <- 2
+ccc3 <- 5
+mergeData[,ccc1] <- mergeData[,ccc2] - mergeData[,ccc3]
+colnames(mergeData)[ccc1] <- 'U.S. citizens and American entities'
+mergeData[,-1] <- mergeData[,-1] * 10^-6
+```
+
+### Composition
+- `r paste0(colnames(mergeData)[ccc1],':',colnames(mergeData)[ccc2],' minus ',colnames(mergeData)[ccc3])`
+- Grand Total: Grand Total of Major Foreign Holders of U.S. Treasury Securities
+
+#### Trillion $
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(fun_transposeDataFrame(obj = mergeData,dateFormat = dateFormat,tailN = 9),
+             row.names = F)
+```
+
+***
+#### Percent
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+mergeDataRatio <- mergeData
+mergeDataRatio[,-1] <- round(mergeDataRatio[,-1]/mergeDataRatio[,ccc2]*100,1)
+knitr::kable(fun_transposeDataFrame(obj = mergeDataRatio,dateFormat = dateFormat,tailN = 9),
+             row.names = F)
+```
+
+#### Time Series Chart for Composition Ratio of U.S. citizens and American entities
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dygraph(obj = mergeDataRatio[,c(1,ccc1)],legendWidth = 300,plotNum = 2,colors = 'blue',group = 0)
+dygraphPlot2 %>% dyBarChart()
 ```
 
 ***
