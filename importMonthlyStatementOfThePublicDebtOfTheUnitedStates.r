@@ -23,6 +23,7 @@ fun_MSPD <- function(startYear = 2013, breakYear =2016, breakMonth = 9999){
       MSPD[cnt,1] <- dataDate
       MSPD[cnt,2] <-
         as.numeric(gsub(',','',buf2[grep('Total Public Debt Outstanding',buf2[,1],ignore.case = T),ncol(buf2)]))
+      gc();gc()
     }
   }
   MSPD[,1] <- as.Date(MSPD[,1])
