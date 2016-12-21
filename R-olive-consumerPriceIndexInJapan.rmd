@@ -56,7 +56,8 @@ script <-
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
-consumerpriceindex <- origData0
+# consumerpriceindex <- origData0
+consumerpriceindex <- consumerPriceIndexofJapan
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
