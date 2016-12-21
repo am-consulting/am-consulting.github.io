@@ -14,7 +14,7 @@ for(fff in 1:length(csvFile)){
   if(length(grep('\\s',buf[,1]))!=0){
     buf[,1] <- as.Date(unlist(lapply(buf[,1],function(x) substring(x,1, as.numeric(gregexpr('\\s',x)) - 1))))
   }else{
-    buf[,1] <- paste0(buf[,1],'-1-1')
+    buf[,1] <- paste0(buf[,1],'-01-01')
   }
   colnames(buf)[1] <- 'Date'
   assign(paste0(csvFile[fff],'_data'), buf, envir = .GlobalEnv)
