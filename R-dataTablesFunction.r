@@ -8,7 +8,9 @@ fun_dataTable <-
            dateFormat = '%Y-%m',
            menuLength = 10) {
     cat(paste0('<h5>', title, '</h5>'))
-    obj[, 1] <- format(obj[, 1], dateFormat)
+    if(dateFormat!=0){
+      obj[, 1] <- format(obj[, 1], dateFormat)
+    }
     DT::datatable(
       obj,
       extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
