@@ -25,3 +25,5 @@ buf3[,-1] <- apply(buf3[,-1],2,function(x)as.numeric(x))
 MonthlyProductiveCapacityAndOperatingRatio <- buf3
 MonthlyProductiveCapacityAndOperatingRatio[,1] <- as.Date(MonthlyProductiveCapacityAndOperatingRatio[,1])
 class(MonthlyProductiveCapacityAndOperatingRatio[,1])
+colnames(MonthlyProductiveCapacityAndOperatingRatio)[-1] <-
+  paste0(colnames(MonthlyProductiveCapacityAndOperatingRatio),':製造工業生産能力･稼働率指数･SA')
