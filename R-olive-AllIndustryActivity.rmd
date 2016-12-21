@@ -1,0 +1,146 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-IAA.html')) })
+
+title : "Indices of All Industry Activity in Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>
+.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
+table{white-space : nowrap;}
+td.negative {color : red;}
+</style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(RCurl);library(knitr)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importAllIndustryActivity.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/timeSeriesForecast.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/plotTimeSeries.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/timeSeriesDataFundamentalStatistics.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen=100)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y-%m'
+dataTitle <- paste0('全産業活動指数(季節調整値):',
+                    paste0(format(range(allIndustryActivity[,1]),dateFormat),collapse = '~'))
+dataSource <- '経済産業省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- "表中、-9999はNAを意味します"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+cat(paste("Title       : ", dataTitle, "\n"))
+cat(paste("Data Source : ", dataSource, "\n"))
+cat(paste("Author      : ", Author, "\n"))
+cat(paste("特  記      : ", notes, "\n"))
+cat(paste("特  記      : ", notes0, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+n1 <- 1
+fun_generateKnit(objDF = allIndustryActivity[,c(1,2)], plotNum = n1, 
+                 colors = 'blue', dygraphTitle = colnames(allIndustryActivity)[2])
+```
+
+`r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
+
+#### 季節調整値:直近`r tailN <- 9;tailN`ヶ月
+
+```{r warning=F, error=F, message=F, echo=F}
+knitr::kable(fun_transposeDataFrame(obj = allIndustryActivity,dateFormat = dateFormat,
+                                    tailN = tailN),row.names = F)
+```
+
+***
+#### 前月比(%):直近`r tailN;`ヶ月
+
+```{r warning=F, error=F, message=F, echo=F}
+AIAMoM <- 
+  data.frame(Date = tail(allIndustryActivity[,1],-1),
+             round(diff(as.matrix(allIndustryActivity[,-1]))/head(allIndustryActivity[,-1],-1)*100,1),
+             check.names = F,stringsAsFactors = F)
+knitr::kable(fun_transposeDataFrame(obj = AIAMoM,dateFormat = dateFormat,
+                                    tailN = tailN),row.names = F)
+```
+
+***
+<script>MakeNegative()</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
