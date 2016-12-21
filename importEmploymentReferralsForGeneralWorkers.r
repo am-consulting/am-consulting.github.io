@@ -25,9 +25,10 @@ buf <- buf0
 dataType <- ""
 for(ccc in 1:ncol(buf)){
   if(!is.na(buf[3,ccc])){dataType<-buf[3,ccc]}
-  buf[4,ccc]<- paste0(buf[4,ccc],'-',dataType)
+  if(is.na(buf[5,ccc])){unitName <- '(-)'}else{unitName <- paste0('(',gsub('\\s','',buf[5,ccc]),')')}
+  buf[4,ccc]<- paste0(buf[4,ccc],unitName,'-',dataType)
 }
-colnames(buf) <- buf[4,]
+colnames(buf) <- gsub('\n','',buf[4,])
 rowS <- grep('14年1月', buf[,1])[1]-0
 rowE <- grep('昭和39',  buf[,1])[1]-2
 Date <- seq(from = as.Date('2002-1-1'), by = 'month', length.out = rowE-rowS+1)
