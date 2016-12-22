@@ -32,3 +32,6 @@ for(yyyy in 2003:2016){
   }
 }
 numberOfForeignVisitorsToJapan[,1] <- as.Date(numberOfForeignVisitorsToJapan[,1])
+numberOfForeignVisitorsToJapan[,-1] <- apply(numberOfForeignVisitorsToJapan[,-1],2,as.numeric)
+class(numberOfForeignVisitorsToJapan[,1])
+class(numberOfForeignVisitorsToJapan[,ncol(numberOfForeignVisitorsToJapan)])
