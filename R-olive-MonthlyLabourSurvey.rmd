@@ -68,15 +68,17 @@ notes <- '複数のワードで検索する際は半角スペースで区切っ�
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0 
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特  記      : ',notes,'\n'))
-cat(paste('特  記      : ',notes0,'\n'))
 tmp <- tmp0
 colnames(tmp)[1] <- 'ID'
 tmp[,-c(1:9)] <- apply(tmp[,-c(1:9)],2,as.numeric)
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
+- `r paste0("特記 : ", notes0)`
 
 ***
 
