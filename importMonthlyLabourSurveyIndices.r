@@ -36,5 +36,5 @@ fun_MonthlyLabourSurveyIndices <- function(fileID = 'http://www.e-stat.go.jp/SG1
   buf4 <- na.omit(data.frame(Date, Value, stringsAsFactors = F))
   colnames(buf4)[2] <-
     paste0(sapply(gsub('\\([a-zA-Z].*?\\)', '', conditionTable[, 2]), zen2han), collapse = ':')
-  assign(paste0('RealWageIndices-', fileNumber), buf4, envir = .GlobalEnv)
+  assign(paste0('RealWageIndices_', fileNumber), buf4, envir = .GlobalEnv)
 }
