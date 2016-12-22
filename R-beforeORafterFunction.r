@@ -15,10 +15,11 @@ fun_beforeORafter <-
         ssl.verifypeer = F
       )
     eval(parse(text = script))
-    obj <-
-      obj[which(apply(obj[, -1, drop = F], 1, function(x) sum(is.na(x))) == 0), ]
+    obj <- obj[!is.na(obj[, grep('労働力人口', colnames(obj))[1]]), ]
     obj <-
       subset(obj, as.Date(paste0(targetYear, '-', month(tail(obj[, 1], 1)), '-1')) <= obj[, 1])
+    obj <- obj[, !is.na(obj[1, ])]
+    obj <- obj[, !is.na(obj[nrow(obj), ])]
     obj <- obj[c(1, nrow(obj)), ]
     obj0 <-
       fun_transposeDataFrame(
