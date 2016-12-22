@@ -56,6 +56,7 @@ options(scipen = 999)
 - `r paste0("データ出所 : ", dataSource)`
 - `r paste0("特記 : ", notes)`
 - 特記 : 倍率、率(%)は2012年12月との差(ポイント)、その他は変化率(%)
+- 直近の月と2012年の同月との比較
 
 ***
 
@@ -162,6 +163,24 @@ script <-
 eval(parse(text = script))
 colnames(numberOfForeignVisitorsToJapan)[-1] <-
   paste0('訪日外客数(万人):',colnames(numberOfForeignVisitorsToJapan)[-1])
+
+realWageIndexNSA <-
+  read.csv(
+    file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/realWageIndexNSA.csv',
+    fileEncoding = 'utf-8',
+    header = T,
+    stringsAsFactors = F,
+    check.names = F)
+realWageIndexNSA[,1] <- as.Date(realWageIndexNSA[,1])
+
+realWageIndexSA <-
+  read.csv(
+    file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/realWageIndexSA.csv',
+    fileEncoding = 'utf-8',
+    header = T,
+    stringsAsFactors = F,
+    check.names = F)
+realWageIndexSA[,1] <- as.Date(realWageIndexSA[,1])
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -175,6 +194,13 @@ eval(parse(text = script))
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dataTablesFunction.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-beforeORafterFunction.r",
     ssl.verifypeer = F
   )
 eval(parse(text = script))
@@ -195,6 +221,8 @@ monthlyData <- merge(monthlyData, nikkeiMonthly, by = 'Date', all = T)
 monthlyData <- merge(monthlyData, laborSupplyAndDemand, by = 'Date', all = T)
 monthlyData <- merge(monthlyData, monetaryBase_Japan, by = 'Date', all = T)
 monthlyData <- merge(monthlyData, numberOfForeignVisitorsToJapan, by = 'Date', all = T)
+monthlyData <- merge(monthlyData, realWageIndexNSA, by = 'Date', all = T)
+monthlyData <- merge(monthlyData, realWageIndexSA, by = 'Date', all = T)
 colnames(monthlyData) <- gsub('\n|\\([a-d]\\)','',sapply(colnames(monthlyData),zen2han))
 monthlyData <- monthlyData[,-grep('元号',colnames(monthlyData))]
 unique(day(monthlyData[,1]))
@@ -222,22 +250,11 @@ yearlyData <- fy.csv_data
 #### 月次経済･金融時系列データ
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-options(scipen = 999)
 monthlyData0 <- monthlyData
 monthlyData0 <- monthlyData0[,-grep('更新停止|元号|写真感光材料',colnames(monthlyData0))]
-monthlyData0 <- subset(monthlyData0, as.Date('2012-12-1') <= monthlyData0[,1])
-monthlyData0 <- monthlyData0[,!is.na(monthlyData0[1,])]
-monthlyData0 <- monthlyData0[which(apply(monthlyData0,1,function(x)sum(is.na(x)))==0),]
-monthlyData0 <- fun_transposeDataFrame(monthlyData0[c(1,nrow(monthlyData0)),],tailN = 2,dateFormat = '%Y年%m月')
-rateR <- grep('%|倍率|\\(倍\\)|消費者態度指数|消費者意識指標|不足率',monthlyData0[,1])
-monthlyData0[rateR, 4] <- monthlyData0[rateR,3]-monthlyData0[rateR,2]
-monthlyData0[-rateR, 4] <- round((monthlyData0[-rateR,3]-monthlyData0[-rateR,2])/monthlyData0[-rateR,2]*100,1)
-colnames(monthlyData0)[4] <- '2012年12月との比較(%、ポイント)'
-monthlyData0 <- data.frame(ID=seq(1,nrow(monthlyData0)),monthlyData0,check.names = F,stringsAsFactors = F)
-fun_dataTable(obj = monthlyData0,dateFormat = 0,orderDirection = 'asc',leftcolumns = 2,menuLength = 15)
+fun_beforeORafter(obj = monthlyData0)
+fun_dataTable(obj = beforeORafter, dateFormat = 0, orderDirection = 'asc', leftcolumns = 2, menuLength = 15)
 ```
-
-- 直近との比較が2012年の12月(クリスマス、年末等)であることに留意。
 
 ***
 <script>MakeNegative()</script>
