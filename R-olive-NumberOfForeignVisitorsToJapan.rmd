@@ -48,6 +48,7 @@ notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
+library(knitr)
 ```
 
 ***
@@ -91,17 +92,88 @@ script <-
 eval(parse(text = script))
 ```
 
+#### 総数(万人)
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 n1 <- 1
-bufC <- grep('総数',colnames(numberOfForeignVisitorsToJapan))
-fun_generateKnit(objDF = na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)]),plotNum = n1,colors = 'blue' )
-# eval(parse(text = paste0('dygraphPlot1 %>% ', ConsumptionTax)))
-# eval(parse(text = paste0('dygraphPlot1 %>% ', primeMinisterOfJapan_dygraph)))
-# eval(parse(text = paste0('dygraphPlot1 %>% ', boj_dygraph)))
-# eval(parse(text = paste0('dygraphPlot1 %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
+objItem <- '総数'
+bufC <- grep(objItem,colnames(numberOfForeignVisitorsToJapan))
+bufDF <- na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
+fun_generateKnit(objDF = bufDF,plotNum = n1,colors = 'blue',group = 0)
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
-`r paste(knitr::knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
+<!--
+r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')
+r paste(knit(text = c(get(paste0('knit_expanded',n2)))), collapse = '\n')
+上記のように分割するとchunkが重なるためエラーとなる。
+ parse_block(g[-1], g[1], params.src) でエラー: 
+  duplicate label 'unnamed-chunk-1'
+-->
+
+##### 前年同月比(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+bufYoY <- 
+  data.frame(Date=tail(bufDF[,1],-12),
+             round(diff(as.matrix(bufDF[,-1,drop=F]),lag = 12)/head(bufDF[,-1,drop=F],-12)*100,1),
+             check.names = F,stringsAsFactors = F)
+knitr::kable(fun_transposeDataFrame(bufYoY,tailN = 6,dateFormat = '%Y年%m月', colName = '国/地域'),
+             row.names = F)
+```
+
+***
+#### 中国、韓国および台湾(万人)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n2 <- 2
+objItem <- c('中国','韓国','台湾')
+bufC <- grep(paste0(objItem,collapse = '|'),colnames(numberOfForeignVisitorsToJapan))
+bufDF <- na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
+fun_generateKnit(objDF = bufDF,plotNum = n2,
+                 colors = c('blue','red','green' ),group = 0)
+eval(parse(text = paste0('dygraphPlot',n2,' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n2,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n2,' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n2,' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
+```
+
+##### 前年同月比(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+bufYoY <- 
+  data.frame(Date=tail(bufDF[,1],-12),
+             round(diff(as.matrix(bufDF[,-1,drop=F]),lag = 12)/head(bufDF[,-1,drop=F],-12)*100,1),
+             check.names = F,stringsAsFactors = F)
+knitr::kable(fun_transposeDataFrame(bufYoY,tailN = 6,dateFormat = '%Y年%m月', colName = '国/地域'),
+             row.names = F)
+```
+
+***
+#### 特に韓国と中国について第二次安倍政権発足前と直近における訪日外客数(万人)の変化
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+objItem <- c('中国','韓国')
+bufC <- grep(paste0(objItem,collapse = '|'),colnames(numberOfForeignVisitorsToJapan))
+bufDF <- na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
+bufDF <- subset(bufDF, as.Date('2012-12-1')<= bufDF[,1])
+bufDF <- bufDF[c(1,nrow(bufDF)),]
+bufDF <- fun_transposeDataFrame(obj = bufDF,tailN = 2,dateFormat = '%Y年%m月', colName = '国/地域')
+bufDF[,ncol(bufDF)+1] <- round((bufDF[,3]/bufDF[,2]-1)*100,1)
+colnames(bufDF)[ncol(bufDF)] <- '変化率(%)'
+knitr::kable(bufDF, row.names = F)
+```
+
+***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = numberOfForeignVisitorsToJapan,title = dataTitle)
