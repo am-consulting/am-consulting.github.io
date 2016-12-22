@@ -100,10 +100,31 @@ eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <- Sys.info()['user']
+fileName <-'defaultPath.csv'
+pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf000 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+pathOutput <- paste0("C:/Users/", username, buf000[2,1],'csv/')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# 非季節調整値
 url01 <- 'http://www.e-stat.go.jp/SG1/estat/Xlsdl.do?sinfid=000027582953'
 fun_MonthlyLabourSurveyIndices(fileID = url01)
+fileNumber <- regmatches(url01, gregexpr('[0-9]{12}', url01, fixed = F))
+fileName <- paste0('RealWageIndices_',fileNumber)
+setwd(pathOutput)
+write.csv(x = get(fileName), file = "realWageIndexNSA.csv", 
+          quote = T, row.names = F, append = F, fileEncoding = 'utf8')
+# 季節調整値
 url02 <- 'http://www.e-stat.go.jp/SG1/estat/Xlsdl.do?sinfid=000026271631'
 fun_MonthlyLabourSurveyIndices(fileID = url02)
+fileNumber <- regmatches(url02, gregexpr('[0-9]{12}', url02, fixed = F))
+fileName <- paste0('RealWageIndices_',fileNumber)
+setwd(pathOutput)
+write.csv(x = get(fileName), file = "realWageIndexSA.csv", 
+          quote = T, row.names = F, append = F, fileEncoding = 'utf8')
 ```
 
 #### 原数値
