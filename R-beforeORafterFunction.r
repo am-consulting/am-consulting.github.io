@@ -1,8 +1,4 @@
-# script <-
-#   getURL(
-#     "https://raw.githubusercontent.com/am-consulting/Rscript/master/consumerPriceIndexofJapan.r",
-#     ssl.verifypeer = F
-#   )
+# script <- getURL("https://raw.githubusercontent.com/am-consulting/Rscript/master/consumerPriceIndexofJapan.r", ssl.verifypeer = F)
 # eval(parse(text = script))
 
 fun_beforeORafter <-
@@ -33,9 +29,12 @@ fun_beforeORafter <-
       )
     rateR <-
       grep(paste0(grepWord, collapse = '|'), obj0[, 1], ignore.case = T)
-    obj0[rateR, 4] <- obj0[rateR, 3] - obj0[rateR, 2]
-    obj0[-rateR, 4] <-
-      round((obj0[-rateR, 3] - obj0[-rateR, 2]) / obj0[-rateR, 2] * 100, 1)
+    if(length(rateR) != 0){
+      obj0[rateR, 4] <- obj0[rateR, 3] - obj0[rateR, 2]
+      obj0[-rateR, 4] <- round((obj0[-rateR, 3] - obj0[-rateR, 2]) / obj0[-rateR, 2] * 100, 1)
+    }else{
+      obj0[, 4] <- round((obj0[, 3] - obj0[, 2]) / obj0[, 2] * 100, 1)
+    }
     colnames(obj0)[4] <- '変化(%またはポイント)'
     obj0 <-
       data.frame(
