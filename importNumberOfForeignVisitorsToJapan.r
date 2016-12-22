@@ -25,6 +25,7 @@ for(yyyy in 2003:2016){
   row.names(buf2) <- NULL
   buf2[,-1] <- apply(buf2[,-1],2,function(x)as.numeric(gsub(',','',x)))
   buf3 <- as.data.frame(buf2)
+  buf3 <- buf3[which(apply(buf3,1,function(x)sum(is.na(x)))!=(ncol(buf3)-1)),]
   if(cnt == 1){
     numberOfForeignVisitorsToJapan <- buf3
   }else{
