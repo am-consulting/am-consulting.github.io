@@ -41,7 +41,7 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-dataTitle <- '家計の金融行動に関する世論調査'
+dataTitle <- '家計の金融行動に関する世論調査:二人以上世帯'
 dataSource <- '金融広報中央委員会'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
