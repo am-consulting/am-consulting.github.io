@@ -38,13 +38,22 @@ dataSource <- 'Federal Reserve Bank of Atlanta , Federal Reserve Bank of St.Loui
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
+# cat(paste("Title       : ", dataTitle, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
+# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
+- `r paste0("特記 : ", notes0)`
+
+***
 
 ```{r warning=F,error=F,message=F,echo=F}
 dataImportedTime <- paste0(Sys.time(),' ',Sys.timezone(location = F))
