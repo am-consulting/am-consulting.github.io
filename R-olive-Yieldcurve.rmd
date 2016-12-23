@@ -52,12 +52,21 @@ notes<-'複数のワードで検索する際は半角スペースで区切って
 notes0<-'表中、-9999はNAを意味します'
 dataTail<-0 
 Author<-'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特記        : ',notes,'\n'))
-cat(paste('特記        : ',notes0,'\n'))
+# cat(paste('Title       : ',dataTitle,'\n'))
+# cat(paste('Data Source : ',dataSource,'\n'))
+# cat(paste('Author      : ',Author,'\n'))
+# cat(paste('特記        : ',notes,'\n'))
+# cat(paste('特記        : ',notes0,'\n'))
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
+- `r paste0("特記 : ", notes0)`
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 script <-
