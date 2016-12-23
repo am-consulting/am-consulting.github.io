@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ConstructionStatistics.html')) })
 
-title : '建築着工統計調査 / Construction Statistics'
+title : 'Housing Starts:New Constrution Starts of Dwellings'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -57,15 +57,22 @@ dataTitle0 <- paste0(format(range(NSAData[,1]),'%Y年%m月'),collapse='~')
 dataSource <- "国土交通省"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste0("Title       : ", dataTitle, dataTitle0, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
+# cat(paste0("Title       : ", dataTitle, dataTitle0, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+***
+
+- `r paste0("タイトル : ", dataTitle, dataTitle0)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
 - Source : http://www.mlit.go.jp/sogoseisaku/jouhouka/sosei_jouhouka_tk4_000002.html
+
+***
 
 ```{r warning=F,error=F,message=F,echo=F}
 mergeData <- merge(NSAData,SAData,by='Date')
@@ -73,7 +80,7 @@ mergeData <- merge(NSAData,SAData,by='Date')
 
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
-fun_generateKnit(objDF = mergeData[,c(1,2,4)], plotNum = n1)
+fun_generateKnit(objDF = mergeData[,c(1,2,4)], plotNum = n1, colors = c('blue','red'))
 ```
 
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
