@@ -37,8 +37,6 @@ function MakeNegative() {
 
 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
-
-
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
@@ -74,13 +72,23 @@ dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. 
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
 Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ",dataTitle,"\n"))
-cat(paste("Data Source : ",dataSource,"\n"))
-cat(paste("Author      : ",Author,"\n"))
-cat(paste("特記        : ",notes,"\n"))
-cat(paste("特記        : ",notes0,"\n"))
+# cat(paste("Title       : ",dataTitle,"\n"))
+# cat(paste("Data Source : ",dataSource,"\n"))
+# cat(paste("Author      : ",Author,"\n"))
+# cat(paste("特記        : ",notes,"\n"))
+# cat(paste("特記        : ",notes0,"\n"))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
+- `r paste0("特記 : ", notes0)`
+- Source http://www.cftc.gov/index.htm
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(quantmod)
@@ -279,7 +287,7 @@ knitr::kable(WoWDF, row.names = F)
 ```
 
 ***
-## Last Each Two Positive & Negative Positions
+## Last Each Two Positive & Negative Net Positions
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 for(iii in 1:length(dataset)){
@@ -290,6 +298,21 @@ for(iii in 1:length(dataset)){
   cat('\n')
   print(knitr::kable(rbind(bufP,bufN),row.names = F))
   cat('\n<hr>')
+}
+```
+
+## Date When The Excess Of Net Positions changed
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+for(iii in 1:length(dataset)){
+  buf0 <- na.omit(dataset[[iii]][,c(1,4)])
+  buf1 <- buf0[which(head(buf0[,2],-1) * tail(buf0[,2],-1) < 0) + 1,]
+  if(nrow(buf1) != 0){
+    cat(paste0(range(buf0[,1]), collapse = ' ~ '))
+    cat('\n')
+    print(knitr::kable(tail(buf1,4),row.names = F))
+    cat('\n<hr>')
+  }
 }
 ```
 
