@@ -99,16 +99,24 @@ dataSource <- 'Baker Hughes'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
+# cat(paste("Title       : ", dataTitle, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
+# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
+- `r paste0("特記 : ", notes0)`
 - Source https://www.bakerhughes.com/
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries <- 
@@ -237,21 +245,21 @@ knitr::kable(fun_transposeDataFrame(obj = dataSet0,tailN = 5),row.names = F)
 ```
 
 ***
-#### Date when the positive and negative of week over week difference changed(Each last date)
+#### Date when the positive and negative of week over week difference changed
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 4
 dataSet2 <- dataSet0[-1,c(1,ccc)]
-dataSet2 <- dataSet2[which(head(na.omit(dataSet0[,ccc]),-1) * tail(na.omit(dataSet0[,ccc]),-1) < 0) + 1,]
-knitr::kable(tail(dataSet2,2),row.names = F)
+dataSet3 <- dataSet2[which(head(dataSet2[,2],-1) * tail(dataSet2[,2],-1) < 0) + 1,]
+knitr::kable(tail(dataSet3,4),row.names = F)
 ```
 
 ***
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 5
 dataSet2 <- dataSet0[-1,c(1,ccc)]
-dataSet2 <- dataSet2[which(head(na.omit(dataSet0[,ccc]),-1) * tail(na.omit(dataSet0[,ccc]),-1) < 0) + 1,]
-knitr::kable(tail(dataSet2,2),row.names = F)
+dataSet3 <- dataSet2[which(head(dataSet2[,2],-1) * tail(dataSet2[,2],-1) < 0) + 1,]
+knitr::kable(tail(dataSet3,4),row.names = F)
 ```
 
 ***
