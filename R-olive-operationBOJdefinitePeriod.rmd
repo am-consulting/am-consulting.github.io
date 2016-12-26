@@ -1,0 +1,110 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-operationBOJdefinitePeriod.html')) })
+title : "Operation of Bank of Japan:Definite Period"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>
+.main-container {
+	max-width: 1000px;
+	margin-left: auto;
+	margin-right: auto;
+}
+</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+```{r set-options, echo=F, cache=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(RCurl)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importBojOperationHistory.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dataTablesFunction.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+fun_bojOperationHistory(stopMonth = 11)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- paste0('日本銀行年間オペレーション - 2016年')
+dataSource <- '日本銀行'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+# cat(paste('Title       : ',dataTitle,'\n'))
+# cat(paste('Data Source : ',dataSource,'\n'))
+# cat(paste('Author      : ',Author,'\n'))
+# cat(paste('特    記    : ',notes,'\n'))
+# cat(paste('特    記    : ',notes0,'\n'))
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
+<style>
+table { width:100%}
+</style>
+
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+totalOpeTable <- data.frame(ID = seq(1,nrow(totalOpeTable)), totalOpeTable, check.names = F, stringsAsFactors = F)
+fun_dataTable(obj = totalOpeTable, dateFormat = 0, orderDirection = 'asc', leftcolumns = 2)
+cat('\n<hr>\n')
+knitr::kable(sumTotalOpeTable, row.names = F,
+             align = c('r','r'), format = 'markdown', 
+             format.args = list(big.mark = ',', drop0trailing = T))
+cat('\n<hr>\n')
+knitr::kable(sumTotalJGB, row.names = F, 
+             align = c('r','r'), format = 'markdown', 
+             format.args = list(big.mark = ',', drop0trailing = T))
+cat('\n<hr>\n')
+knitr::kable(sumTotalETF, row.names = F, 
+             align = c('r','r'), format = 'markdown', 
+             format.args = list(big.mark = ',', drop0trailing = T))
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
