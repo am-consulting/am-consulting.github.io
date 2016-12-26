@@ -11,6 +11,10 @@ font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
 	margin-right: auto;
 }
 
+table {
+	white-space: nowrap;
+}
+
 tt, code, pre {
    font-family: 'MS Gothic', 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
