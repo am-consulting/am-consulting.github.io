@@ -36,16 +36,18 @@ fun_bojOperationHistory <- function(startYear = 2016, stopYear = 2016, stopMonth
         data.frame(row.names(opeTable), opeTable, check.names = F, stringsAsFactors = F, row.names = NULL)
       opeTable[,1] <- sapply(opeTable[,1],zen2han)
       colnames(opeTable) <-
-        c('種類', paste0('落札額(億円):', yyyybuf, '年', mmbuf, '月'))
+        c('種類/落札額(億円)', paste0(yyyybuf, '年', mmbuf, '月'))
       if(cnt == 1){
         totalOpeTable <- opeTable
       }else{
-        totalOpeTable <- merge(totalOpeTable, opeTable, by = '種類', all = T)
+        totalOpeTable <- merge(totalOpeTable, opeTable, by = '種類/落札額(億円)', all = T)
       }
       # 整形パート
     }
   }
-  assign('totalOpeTable', totalOpeTable, envir = .GlobalEnv)
+  assign('totalOpeTable',
+         rbind(totalOpeTable,
+               c('合計', apply(totalOpeTable[,-1], 2, function(x)sum(x,na.rm = T)))), envir = .GlobalEnv)
   startDate <-
     substring(colnames(totalOpeTable)[2], regexpr(pattern = ':', colnames(totalOpeTable)[2]) + 1)
   lastDate <-
@@ -55,5 +57,12 @@ fun_bojOperationHistory <- function(startYear = 2016, stopYear = 2016, stopMonth
     data.frame(totalOpeTable[,1],
                     apply(totalOpeTable[,-1], 1, function(x) sum(x, na.rm = T)), check.names = F, stringsAsFactors = F)
   colnames(sumTotalOpeTable) <- c('種類', paste0('落札額合計(億円):',startDate,'~',lastDate))
-  assign('sumTotalOpeTable', sumTotalOpeTable, envir = .GlobalEnv)
+  assign('sumTotalOpeTable',
+         rbind(sumTotalOpeTable,c('合計',sum(sumTotalOpeTable[,2]))), envir = .GlobalEnv)
+  bufDF <- sumTotalOpeTable[grep('国債買入',sumTotalOpeTable[,1]),]
+  assign('sumTotalJGB',
+         rbind(bufDF,c('合計',sum(bufDF[,2]))), envir = .GlobalEnv)
+  bufDF <- sumTotalOpeTable[grep('指数連動型',sumTotalOpeTable[,1]),]
+  assign('sumTotalETF',
+         rbind(bufDF,c('合計',sum(bufDF[,2]))), envir = .GlobalEnv)
 }
