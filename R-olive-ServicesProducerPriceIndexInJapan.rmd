@@ -60,6 +60,13 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-turningPoint.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
 mergeData <- 
   Reduce(function(x, y) merge(x, y, by='Date', all=T), list(d.csv_data,w1.csv_data,m.csv_data,q.csv_data,fy.csv_data))
 colnames(mergeData)
@@ -145,6 +152,18 @@ text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 dfData <- dataSet
 fun_dataTable(obj = tail(dfData,36), title = dataTitle,dateFormat = dateFormat)
+```
+
+***
+#### 前年比の正負が変化した時点:前年比0(%)は正(プラス)とする。
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_turningPoint(obj = dataSet[,c(1,4)])
+knitr::kable(objPNinclude0,row.names = F)
+cat(paste0('<h4>', tail(objPNinclude0[,1],1),'から',
+           format(tail(dataSet[,1],1), '%Y-%m'),'まで',
+           durationInclude0,'ヶ月連続で',
+           ifelse(tail(objPNinclude0[,2],1) < 0,'マイナス値','プラス値'),'</h4>'))
 ```
 
 ***
