@@ -11,5 +11,5 @@ published : true
 
 	
 ## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html" width="100%" height="800px"></iframe>
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ServicesProducerPriceIndexInJapan.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ServicesProducerPriceIndexInJapan.html" width="100%" height="800px"></iframe>
