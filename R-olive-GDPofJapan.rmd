@@ -54,16 +54,40 @@ dataSource <- "内閣府"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
 dataTail <- 0
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
+# cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+***
+
+- `r paste0("タイトル : ", dataTitle, dataTitle0)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
 - 2016年12月8日以降、2009年に国連で合意された国際基準である「2008SNA」に基づいて推計が行われています。
 - Source : http://www.esri.cao.go.jp/jp/sna/data/data_list/kakuhou/files/h27/sankou/pdf/tyui27.pdf
+- 実質季節調整系列(年率)
+$$年率表示の成長率= \left (\left (\frac{当期の実質季節調整値実数}{前期の実質季節調整値実数}  \right ) ^{4}-1 \right )\times 100$$
+
+- 名目原系列(寄与度)
+$$寄与度＝\frac{\left(当期の実数-前年同期の実数\right)}{前年同期の国内総生産\left(支出側\right)\left(または国民総所得\right)}\times100$$
+
+- 名目季節調整系列(寄与度)
+$$寄与度＝\frac{\left(当期の実数-前期の実数\right)}{前期の国内総生産\left(支出側\right)\left(または国民総所得\right)}\times100$$
+
+- 名目季節調整系列(年率)
+$$年率表示の成長率= \left (\left (\frac{当期の名目季節調整値実数}{前期の名目季節調整値実数}  \right ) ^{4}-1 \right )\times 100$$
+
+- 四半期デフレーター原系列
+$$四半期デフレーター原系列=\left(\frac{名目原系列}{実質原系列}\right)\times100$$
+
+- 四半期デフレーター季節調整系列
+$$四半期デフレーター季節調整系列=\left(\frac{名目季節調整系列}{実質季節調整系列}\right)\times100$$
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F}
 # colnames(gdp1)[-1] <- colnames(gdp2)[-1] <- colnames(gdp3)[-1] <- colnames(gdp4)[-1] <- colnames(gdp5)[-1] <- colnameDataJ
