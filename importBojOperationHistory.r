@@ -45,9 +45,14 @@ fun_bojOperationHistory <- function(startYear = 2016, stopYear = 2016, stopMonth
       # 整形パート
     }
   }
+  # 対象期間小計
+  tmpDF <-
+    rbind(totalOpeTable,
+        c('合計', apply(totalOpeTable[,-1], 2, function(x)sum(x,na.rm = T))))
+  tmpDF[,-1] <- apply(tmpDF[,-1],2,as.numeric)
   assign('totalOpeTable',
-         rbind(totalOpeTable,
-               c('合計', apply(totalOpeTable[,-1], 2, function(x)sum(x,na.rm = T)))), envir = .GlobalEnv)
+         tmpDF, envir = .GlobalEnv)
+  # 対象期間合計
   startDate <-
     substring(colnames(totalOpeTable)[2], regexpr(pattern = ':', colnames(totalOpeTable)[2]) + 1)
   lastDate <-
@@ -57,12 +62,21 @@ fun_bojOperationHistory <- function(startYear = 2016, stopYear = 2016, stopMonth
     data.frame(totalOpeTable[,1],
                     apply(totalOpeTable[,-1], 1, function(x) sum(x, na.rm = T)), check.names = F, stringsAsFactors = F)
   colnames(sumTotalOpeTable) <- c('種類', paste0('落札額合計(億円):',startDate,'~',lastDate))
+  tmpDF <-
+    rbind(sumTotalOpeTable,c('合計',sum(sumTotalOpeTable[,2])))
+  tmpDF[,-1] <- apply(tmpDF[,-1,drop = F],2,as.numeric)
   assign('sumTotalOpeTable',
-         rbind(sumTotalOpeTable,c('合計',sum(sumTotalOpeTable[,2]))), envir = .GlobalEnv)
+         tmpDF, envir = .GlobalEnv)
+  # JGB
   bufDF <- sumTotalOpeTable[grep('国債買入',sumTotalOpeTable[,1]),]
+  tmpDF <- rbind(bufDF,c('合計',sum(bufDF[,2])))
+  tmpDF[,-1] <- apply(tmpDF[,-1,drop = F],2,as.numeric)
   assign('sumTotalJGB',
-         rbind(bufDF,c('合計',sum(bufDF[,2]))), envir = .GlobalEnv)
+         tmpDF, envir = .GlobalEnv)
+  # ETF
   bufDF <- sumTotalOpeTable[grep('指数連動型',sumTotalOpeTable[,1]),]
+  tmpDF <- rbind(bufDF,c('合計',sum(bufDF[,2])))
+  tmpDF[,-1] <- apply(tmpDF[,-1,drop = F],2,as.numeric)
   assign('sumTotalETF',
-         rbind(bufDF,c('合計',sum(bufDF[,2]))), envir = .GlobalEnv)
+         tmpDF, envir = .GlobalEnv)
 }
