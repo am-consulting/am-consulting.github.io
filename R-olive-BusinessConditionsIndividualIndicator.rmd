@@ -94,38 +94,75 @@ dataSource <- '内閣府'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- '表中、-9999はNAを意味します'
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
+# cat(paste('Title       : ',dataTitle,'\n'))
+# cat(paste('Data Source : ',dataSource,'\n'))
+# cat(paste('Author      : ',Author,'\n'))
+# cat(paste('特    記    : ',notes,'\n'))
+# cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- `r paste0("特記 : ", notes)`
+- `r paste0("特記 : ", notes0)`
+
+***
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-tDF <- fun_transposeDataFrame(obj = allCI,dateFormat = '%Y-%m')
+tDF <- fun_transposeDataFrame(obj = allCI,dateFormat = '%Y-%m',tailN = 7)
 knitr::kable(tDF, row.names = F)
 ```
 
 ***
 #### 前月差
+- 逆サイクル指数に要注意
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 allCIDiff <- data.frame(tail(allCI[,1],-1), 
                         diff(as.matrix(allCI[,-1]),differences = 1,lag = 1),check.names = F,stringsAsFactors = F)
-tDF <- fun_transposeDataFrame(obj = allCIDiff,dateFormat = '%Y-%m')
-knitr::kable(tDF, row.names = F)
+tDF <- fun_transposeDataFrame(obj = allCIDiff,dateFormat = '%Y-%m',tailN = 7)
+```
+
+##### 直近前月差プラス
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(tDF[tDF[,ncol(tDF)] >= 0 | is.na(tDF[,ncol(tDF)]) ,], row.names = F)
+```
+
+***
+
+##### 直近前月差マイナス
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(tDF[tDF[,ncol(tDF)] < 0 | is.na(tDF[,ncol(tDF)]) ,], row.names = F)
 ```
 
 ***
 #### 前年同月差
+- 逆サイクル指数に要注意
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 allCIDiff <- data.frame(tail(allCI[,1],-12), 
                         diff(as.matrix(allCI[,-1]),differences = 1,lag = 12),check.names = F,stringsAsFactors = F)
-tDF <- fun_transposeDataFrame(obj = allCIDiff,dateFormat = '%Y-%m')
-knitr::kable(tDF, row.names = F)
+tDF <- fun_transposeDataFrame(obj = allCIDiff,dateFormat = '%Y-%m',tailN = 7)
+```
+
+##### 直近前年同差プラス
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(tDF[tDF[,ncol(tDF)] >= 0 | is.na(tDF[,ncol(tDF)]) ,], row.names = F)
+```
+
+***
+
+##### 直近前年同月差マイナス
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(tDF[tDF[,ncol(tDF)] < 0 | is.na(tDF[,ncol(tDF)]) ,], row.names = F)
 ```
 
 ***
