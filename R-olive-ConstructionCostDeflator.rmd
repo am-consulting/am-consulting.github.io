@@ -1,27 +1,18 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ConstructionCostDeflator.html')) })
 
-title : '建設工事費デフレーター / Construction Cost Deflator'
+title : 'Construction Cost Deflator In Japan'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-table{
- white-space: nowrap;
-}
-</style>
+<style>.main-container {max-width: 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -34,18 +25,23 @@ table{
 options(width = 1000)
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
 ```{r warning=F,error=F,message=F,echo=F}
 library(RCurl);library(knitr)
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importConstructionCostDeflator.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
     ssl.verifypeer = F
   )
 eval(parse(text = script))
@@ -57,54 +53,34 @@ dataTitle0 <- paste0(format(range(ConstructionCostDeflator[,1]),'%Y年%m月'),co
 dataSource <- "国土交通省"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
+# cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_generateKnit <- function(objDF = dataSet, n1 = 1){
-  fun_plot_dygraph(obj = objDF, n0 = n1, 
-                   dygraphTitle = 
-                     paste0(gsub('建設工事費デフレーター\\(2005年度基準\\)-', '', 
-                                 colnames(objDF)[-1]),collapse = ' × '), legendWidth = 300)
-  fun_dygraph_shade(n = n1)
-}  
-```
+***
+
+- `r paste0("タイトル : ", dataTitle, dataTitle0)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
-fun_generateKnit(objDF = ConstructionCostDeflator[,c(1,2,10,11)], n1 = n1)
+bufDF <- ConstructionCostDeflator[,c(1,2,10,11)]
+fun_generateKnit(objDF = bufDF, 
+                 plotNum = n1, group = 0, colors = c('blue','red','green'),
+                 dygraphTitle = paste0(gsub('建設工事費デフレーター\\(2005年度基準\\)-', '', colnames(bufDF)[-1]), 
+                                       collapse = ' × '))
 ```
 
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
 
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- 
-  function(obj,orderColumn = 0,orderDirection = 'desc',width00 = '5%',caption = '',title = '',append = '') {
-  cat(paste('<h4>', title, append, '</h4>'))  
-  obj[,1] <- format(obj[,1],'%Y-%m')  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-```
-
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-funDataTable(obj = ConstructionCostDeflator, title = dataTitle, append = dataTitle0)
+fun_dataTable(obj = ConstructionCostDeflator, title = paste0(dataTitle,dataTitle0))
 ```
 
 ***
