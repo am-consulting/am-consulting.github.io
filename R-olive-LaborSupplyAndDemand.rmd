@@ -12,16 +12,17 @@ output:
 ---
 
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
+<style>.main-container {max-width: 1000px;}</style>
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
 }
-table{
- white-space: nowrap;
-}
-</style>
+</script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -35,21 +36,18 @@ options(width = 1000)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-# ― ソ Ы 噂 浬 欺 圭 構 蚕 十 申 曾 箪 貼 能 表 暴 予 禄
-# 兔 喀 媾 彌 拿 杤 歃 濬 畚 秉 綵 臀 藹 觸 軆 鐔 饅 鷭		
 library(RCurl)
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
-    ssl.verifypeer = FALSE
+importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
+    ssl.verifypeer = F
   )
-eval(parse(text = script))
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-# targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Csvdl.do?sinfid=000031431706' # 中分類指数 前年同月比（1971年1月～最新月）
-# データ取得コード中のURLを2015年基準に変更
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importLaborSupplyAndDemand.r",
@@ -65,89 +63,62 @@ dataSource <- '国土交通省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
+# cat(paste("Title       : ", dataTitle, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
+# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', tableTitle = '', append = '') {
-  cat(paste('<h4>', tableTitle, append, '</h4>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-buf0 <- t(tail(laborSupplyAndDemand,3))
-buf0 <- data.frame(row.names(buf0),buf0,row.names = NULL,stringsAsFactors = F,check.names = F)
-colnames(buf0) <- buf0[1,] 
-buf0 <- buf0[-1,]
-buf0 <- data.frame(ID = seq(1,nrow(buf0)),buf0,check.names = F,stringsAsFactors = F,row.names=NULL)
-colnames(buf0)[-c(1,2)] <- format(as.Date(colnames(buf0)[-c(1,2)]),'%Y年%m月')
-colnames(buf0)[2] <- '項目'
-buf0[,-c(1,2)] <- apply(buf0[,-c(1,2)],2,as.numeric)
+***
 
-funDataTable(obj = buf0,tableTitle = dataTitle)
-```
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
 
 ***
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_plot_dygraph <- function(obj = tmp){
-  buf <- na.omit(obj)  
-  fun_dygraph(obj = buf, mainTitle = paste0(colnames(buf)[2]))
-  fun_consumptionTax(obj = buf)
-  fun_primeMinisterOfJapan(obj = buf)
-  fun_boj(obj = buf)
-  fun_event(obj = buf)
-}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(fun_transposeDataFrame(obj = laborSupplyAndDemand,dateFormat = dateFormat,tailN = 6), row.names = F, 
+             align = 'r', format = 'markdown', 
+             format.args = list(big.mark = ',', drop0trailing = F))
 ```
 
+***
+#### `r  cc <- 2;colnames(laborSupplyAndDemand)[cc]`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n1 <- 1
+fun_generateKnit(objDF = laborSupplyAndDemand[,c(1,cc)], plotNum = n1, 
+                 colors = 'blue', barPlot = 1, group = 0)
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
+```
+
+***
 #### `r  cc <- 3;colnames(laborSupplyAndDemand)[cc]`
 
-```{r warning=F, error=F, message=F, echo=F}
-tmp <- laborSupplyAndDemand[,c(1,cc)]
-fun_plot_dygraph(obj = tmp)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',ConsumptionTax)))
-```
-
-***
-
-```{r warning=F, error=F, message=F, echo=F}
-eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',primeMinisterOfJapan_dygraph)))
-```
-
-***
-
-```{r warning=F, error=F, message=F, echo=F}
-eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',boj_dygraph)))
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n1 <- 2
+fun_generateKnit(objDF = laborSupplyAndDemand[,c(1,cc)], plotNum = n1, 
+                 colors = 'red', barPlot = 1, group = 0)
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot',n1,' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
 ***
-
-```{r warning=F, error=F, message=F, echo=F}
-eval(parse(text = paste0('dygraphPlot %>% dyBarChart() %>%  ',event_dygraph_point,' %>%  ',event_dygraph_range)))
-```
-
-***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
