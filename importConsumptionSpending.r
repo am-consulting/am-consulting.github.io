@@ -6,7 +6,7 @@ library(XLConnect);library(Nippon);library(lubridate)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileName <- 'zenh-n.xls'
+fileName <- 'zenh-n.xls' # 原数値(非季節調整値)
 download.file(paste0('http://www.stat.go.jp/data/kakei/longtime/zuhyou/', fileName),
               fileName, mode = 'wb')
 fun_extract <-
@@ -38,9 +38,12 @@ fun_extract <-
 }
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = '支出金額（月）', check.names = F, header = F)
-assign('expenditure', fun_extract(buf0 = buf0), envir = .GlobalEnv)
+buf0 <- fun_extract(buf0 = buf0)
+colnames(buf0)[2] <- gsub('円','円,実質,原数値',colnames(buf0)[2])
+assign('expenditure', buf0, envir = .GlobalEnv)
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = '実質増減率（月）', check.names = F, header = F)
-assign('realIncreaseDecreaseRate', fun_extract(buf0 = buf0), envir = .GlobalEnv)
+buf0 <- fun_extract(buf0 = buf0)
+colnames(buf0)[2] <- gsub('円','前年同月比,%,実質,原数値',colnames(buf0)[2])
+assign('realIncreaseDecreaseRate', buf0, envir = .GlobalEnv)
 sheetTitle <<- '家計調査(家計収支編):1世帯当たり1か月間の支出:2人以上の世帯'
-dfTitle <- c('支出金額(月)','実質増減率(月)')
