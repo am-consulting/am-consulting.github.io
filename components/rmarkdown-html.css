@@ -13,6 +13,7 @@ font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
 
 table {
 	white-space: nowrap;
+	width: 100%;
 }
 
 tt, code, pre {
