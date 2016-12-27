@@ -12,16 +12,7 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-table{
- white-space: nowrap;
-}
-</style>
+<style>.main-container {max-width: 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -53,6 +44,18 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 100)
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- paste0('財務省貿易統計 - ', format(tail(origData1[, 1], 1), '%Y年%m月'))
 dataSource <- '財務省'
@@ -60,12 +63,19 @@ notes <- '複数のワードで検索する際は半角スペースで区切っ�
 notes0 <- '表中、-9999はNAを意味します'
 dataTail <- 0
 Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ', dataTitle, '\n'))
-cat(paste('Data Source : ', dataSource, '\n'))
-cat(paste('Author      : ', Author, '\n'))
-cat(paste('特  記      : ', notes, '\n'))
-cat(paste('特  記      : ', notes0, '\n'))
+# cat(paste('Title       : ', dataTitle, '\n'))
+# cat(paste('Data Source : ', dataSource, '\n'))
+# cat(paste('Author      : ', Author, '\n'))
+# cat(paste('特  記      : ', notes, '\n'))
+# cat(paste('特  記      : ', notes0, '\n'))
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F} 
 funSeasonal <- function() {
@@ -184,7 +194,7 @@ dataSet <- tail(dataSet, dataTail)
 funSeasonal()
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
 mainTitle <- paste(colnames(dataSet)[obj01], ' × ', colnames(dataSet)[obj02])
 maxValue <- max(dataSet[, obj01], dataSet[, obj02])
 minValue <- min(dataSet[, obj01], dataSet[, obj02])
@@ -222,7 +232,7 @@ funSeasonal()
 
 ***
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
 dataSet$col <- ifelse(dataSet[, 2] < 0, 'red', 'blue')
 dataSetSA$col <- ifelse(dataSetSA[, 2] < 0, 'red', 'blue')
 mainTitle <- '貿易収支(単位:兆円)'
@@ -241,65 +251,20 @@ mtext('財務省貿易統計. 左:原数値、右:季節調整. 単位:兆円', 
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj,append='') {
-  DT::datatable(
-    obj,
-    options = list(
-      search.regex = F,
-      paging = T,
-      autoWidth = F,
-      info = T,
-      lengthChange = T,
-      ordering = T,
-      searching = T,
-      scrollX = F,
-      lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
-      orderClasses = T,
-      order = list(list(0, 'desc')),
-      columnDefs = list(
-        list(width = '10%', targets = 0)
-        )
-      ),
-    rownames = F,
-    caption = paste(dataTitle, append),
-    class = 'display compact'
-  )
-}
-  
 fungvisTable <- function(obj) {
   PopTable <- gvisTable(      obj, 
     options = list(width = 2000, height = 'automatic',  page = 'enable' ,  pageSize=10)
   )
   plot(PopTable,tag='chart')
 }
-
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle = '', append ='') {
-  cat(paste0('<h5>',dataTitle,append,'<h5>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
 ```
 
 ***
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-appendTitle<-'(原数値、単位:兆円)'
 dataSet<-merge(origData1,origData4)
-dataSet[,1]<-format(dataSet[,1],dateFormat)
 dataSet[,-1]<-round(dataSet[,-1],4)
-funDataTable(obj = dataSet, dataTitle = dataTitle, append = appendTitle)
+fun_dataTable(obj = dataSet, title = paste0(dataTitle,'(原数値、単位:兆円)'))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F} 
@@ -342,13 +307,11 @@ funPlotBoxplotAmcharts(obj = compareData0,
                        ))
 ```
 
-***
-
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 summary(compareData0)
 ```
 
-***
+#### 輸出
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf <- tail(na.omit(origData2), 3)
@@ -363,6 +326,7 @@ fungvisTable(expItem)
 ```
 
 ***
+#### 輸入
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf <- tail(na.omit(origData3), 3)
