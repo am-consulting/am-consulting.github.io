@@ -19,13 +19,9 @@ buf0 <- readWorksheetFromFile(paste0(pathOutput, xlsFile), sheet = 7, check.name
 colnames(buf0) <- unlist(lapply(paste0(buf0[1,1],'-',buf0[2,]),zen2han))
 buf0[,-1] <- apply(buf0[,-1],2,as.numeric)
 buf0 <- buf0[-c(1:(which(!is.na(buf0[,2]))[1]-1)),]
-rrr <- tail(grep('年',buf0[,1]),1)
-yyyy <- as.numeric(substring(buf0[rrr,1],1,as.numeric(gregexpr('年',buf0[rrr,1]))-1)) + 1988
-if(rrr!=nrow(buf0)){
-  mm <- as.numeric(tail(buf0[,1],1))
-}else{
-  mm <- as.numeric(substring(buf0[rrr,1],as.numeric(gregexpr('年',buf0[rrr,1]))+1))
-}
-buf0[,1] <- rev(seq(as.Date(paste0(yyyy,'-',mm,'-1')),by="-1 month",length.out=nrow(buf0)))
+rrr <- head(grep('年', buf0[,1]), 1)
+yyyy <- as.numeric(substring(buf0[rrr,1], 1, as.numeric(gregexpr('年', buf0[rrr,1])) - 1)) + 1988
+mm <- as.numeric(substring(buf0[rrr,1], as.numeric(gregexpr('年', buf0[rrr,1])) + 1))
+buf0[,1] <- seq(as.Date(paste0(yyyy,'-',mm,'-1')), by = "1 month", length.out = nrow(buf0))
 colnames(buf0)[1] <- 'Date'
 assign('laborSupplyAndDemand', buf0, envir = .GlobalEnv)
