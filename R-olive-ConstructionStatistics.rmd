@@ -6,22 +6,13 @@ author: 'アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-table{
- white-space: nowrap;
-}
-</style>
+<style>.main-container {max-width: 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -42,17 +33,22 @@ script <-
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
+```
 
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
     ssl.verifypeer = F
   )
-eval(parse(text = script))
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- "建築着工統計調査 - 新設住宅着工戸数とその前年比 - "
+dataTitle <- "建築着工統計調査:新設住宅着工戸数 - "
 dataTitle0 <- paste0(format(range(NSAData[,1]),'%Y年%m月'),collapse='~')
 dataSource <- "国土交通省"
 notes <- "複数のワードで検索する際は半角スペースで区切ってください"
@@ -185,29 +181,8 @@ fun_plotTimeSeries <-
 # fun_plotTimeSeries(obj = mergeData,tailN = 12*10,needRect = 1)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- 
-  function(obj,orderColumn = 0,orderDirection = 'desc',width00 = '5%',caption = '',title = '',append = '') {
-  cat(paste('<h4>', title, append, '</h4>'))  
-  obj[,1] <- format(obj[,1],'%Y-%m')  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-```
-
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-funDataTable(obj =mergeData, title = dataTitle, append = dataTitle0)
+fun_dataTable(obj = mergeData, title = '新設住宅着工戸数')
 ```
 
 ***
