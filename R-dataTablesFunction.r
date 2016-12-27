@@ -6,10 +6,14 @@ fun_dataTable <-
            title = '',
            leftcolumns = 1,
            dateFormat = '%Y-%m',
-           menuLength = 10) {
+           menuLength = 10,
+           needID = 0) {
     cat(paste0('<h5>', title, '</h5>'))
-    if(dateFormat!=0){
+    if(dateFormat != 0){
       obj[, 1] <- format(obj[, 1], dateFormat)
+    }
+    if(needID == 1){
+      obj <- data.frame(ID = seq(1,nrow(obj)), obj, check.names = F, stringsAsFactors = F)
     }
     DT::datatable(
       obj,
