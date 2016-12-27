@@ -11,16 +11,17 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
+<style>.main-container {max-width: 1000px;} td.negative {color: red;}</style>
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
 }
-table{
- white-space: nowrap;
-}
-</style>
+</script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -45,13 +46,18 @@ script <-
   )
 eval(parse(text = script))
 laborforcesurvey <- origData
+```
 
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
     ssl.verifypeer = F
   )
-eval(parse(text = script))
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
@@ -71,71 +77,45 @@ if(length(unique(month(dataSet0[,1])))==1){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- paste0('日本の労働力調査:季節調整値 - ', format(tail(dataSet0[,1],1), '%Y年%m月'))
+dataTitle <- paste0('日本の労働力調査:労働力人口、就業者、雇用者、完全失業者、完全失業率:季節調整値 - ', format(tail(dataSet0[,1],1), '%Y年%m月'))
 dataSource <- '総務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
+# cat(paste("Title       : ", dataTitle, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
+# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-##### 単位
-- 労働力人口、就業者、雇用者、完全失業者、非労働力人口:万人
-- 完全失業率:%
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_generateKnit <- function(n1 = 1){
-  objColumn <- c(1,grep(paste0('\\b', objTitle), colnames(dataSet0), ignore.case = T))
-  dataSet <- na.omit(dataSet0[,objColumn])
-  colnames(dataSet)
-  fun_plot_dygraph(obj = dataSet, n0 = n1, dygraphTitle = paste0(objTitle,'(季節調整値)'), legendWidth = 300)
-  fun_dygraph_shade(n = n1)
-}  
+texDygraph <- vector()
+objTitle <- c('労働力人口','就業者','雇用者','完全失業者','完全失業率')
+for(iii in 1:length(objTitle)){
+  objColumn <- 
+    c(1, grep(paste0('\\b', objTitle[iii]), colnames(dataSet0), ignore.case = T))
+  bufDF <- na.omit(dataSet0[,objColumn])
+  fun_generateKnit(objDF = bufDF, 
+                   plotNum = iii, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = objTitle[iii])
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', iii))
+}
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-objTitle <- '労働力人口'
-n1 <- 1
-fun_generateKnit(n1 = n1)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-objTitle <- '就業者'
-n2 <- 2
-fun_generateKnit(n1 = n2)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-objTitle <- '雇用者'
-n3 <- 3
-fun_generateKnit(n1 = n3)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-objTitle <- '完全失業者'
-n4 <- 4
-fun_generateKnit(n1 = n4)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-objTitle <- '非労働力人口'
-n5 <- 5
-fun_generateKnit(n1 = n5)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-objTitle <- '完全失業率'
-n6 <- 6
-fun_generateKnit(n1 = n6)
-```
-
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)),get(paste0('knit_expanded',n3)),get(paste0('knit_expanded',n4)),get(paste0('knit_expanded',n5)),get(paste0('knit_expanded',n6)))), collapse = '\n')`
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
 ```{r warning=F, error=F, message=F, echo=F}
 # eval(parse(text = paste0('dygraphPlot1 %>% ', ConsumptionTax)))
@@ -164,26 +144,8 @@ fun_generateKnit(n1 = n6)
 # eval(parse(text = paste0('dygraphPlot6 %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'asc', width00 = '5%', caption = '', dataTitle = '') {
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-dataSet <- dataSet0
-dataSet[,1] <- format(dataSet[,1], dateFormat) 
-funDataTable(obj = dataSet, orderDirection = 'desc')
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_dataTable(obj = dataSet0, dateFormat = dateFormat)
 ```
 
 ***
@@ -191,19 +153,15 @@ funDataTable(obj = dataSet, orderDirection = 'desc')
 
 ```{r warning=F, error=F, message=F, echo=F}
 diffDataset <- 
-  data.frame(tail(dataSet[,1],-1),diff(as.matrix(dataSet[,-1])),check.names = F,stringsAsFactors = F)
-diffDataset <- t(tail(diffDataset,6))
-diffDataset <- 
-  data.frame(row.names(diffDataset),diffDataset,check.names = F,stringsAsFactors = F,row.names = NULL)
-colnames(diffDataset) <- diffDataset[1,]
-diffDataset <- diffDataset[-1,]
-diffDataset[,-1] <- apply(diffDataset[,-1],2,as.numeric)
-colnames(diffDataset)[1] <- '項目'
-knitr::kable(diffDataset,row.names = F)
+  data.frame(tail(dataSet0[,1],-1),diff(as.matrix(dataSet0[,-1])),check.names = F,stringsAsFactors = F)
+knitr::kable(fun_transposeDataFrame(obj = diffDataset,dateFormat = dateFormat,tailN = 7), 
+             row.names = F, 
+             align = rep('r',8), format = 'markdown', 
+             format.args = list(big.mark = ',', drop0trailing = T))
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
