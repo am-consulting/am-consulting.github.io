@@ -34,8 +34,9 @@ blockquote {
   position: relative;
 	  
   /*Font*/
-  font-family: Georgia, serif;
-  font-size: 16px;
+  font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
+  font-style: italic;
+  font-size: 14px;
   line-height: 1.2;
   color: #666;
   text-align: justify;
@@ -54,7 +55,8 @@ blockquote::before {
   content: "\201C"; /*Unicode for Left Double Quote*/
   
   /*Font*/
-  font-family: Georgia, serif;
+  font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
+  font-style: italic;
   font-size: 60px;
   font-weight: bold;
   color: #999;
