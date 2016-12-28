@@ -1,0 +1,129 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-LOBOCI.html')) })
+
+title : 'THE QUICK SURVEY SYSTEM OF LOCAL BUSINESS OUTLOOK.Source:The Japan Chamber of Commerce and Industry'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<style>.main-container {max-width: 1000px;}</style>
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r','R-fit.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(knitr)
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importLOBO.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- "商工会議所LOBO調査(早期景気観測)"
+dataTitle0 <- format(tail(LOBOCI[,1],1),'%Y年%m月')
+dataSource <- "日本商工会議所"
+notes <- "複数のワードで検索する際は半角スペースで区切ってください"
+Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+# cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
+# cat(paste("Data Source : ", dataSource, "\n"))
+# cat(paste("Author      : ", Author, "\n"))
+# cat(paste("特  記      : ", notes, "\n"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle, ':', dataTitle0)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.jcci.or.jp/
+- 以下は日本商工会議所Webサイトより引用
+
+
+<blockquote>
+
+※DI値について<br>
+ DI値は、売上･採算･業況などの各項目についての、判断の状況を表す。<br><br>
+ ゼロを基準として、プラスの値で景気の上向き傾向を表す回答の割合が多いことを示し、マイナスの値で景気の下向き傾向を表す回答の割合が多いことを示す。<br><br>
+ したがって、売上高などの実数値の上昇率を示すものではなく、強気･弱気などの景気感の相対的な広がりを意味する。<br><br>
+
+ DI = (増加･好転などの回答割合) - (減少･悪化などの回答割合)<br>
+ 業 況･採算 : (好転) - (悪化)<br>
+ 売 上 : (増加) - (減少)
+
+</blockquote>
+
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+allLOBO <- LOBOCI[,c(1,grep('全産業',colnames(LOBOCI)))]
+texDygraph <- vector()
+for(iii in 2:ncol(allLOBO)){
+  fun_generateKnit(objDF = allLOBO[,c(1,iii)], plotNum = iii, group = 0, barPlot = 1,
+                   colors = RColorBrewer::brewer.pal(ncol(allLOBO)-1, "Accent")[iii-1],
+                   dygraphTitle = colnames(allLOBO)[iii])
+  texDygraph <- c(texDygraph, paste0('knit_expanded', iii))
+}
+```
+
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(fun_transposeDataFrame(obj = LOBOCI, tailN = 8, dateFormat = '%Y年%m月'),
+             row.names = F,
+             align = 'r', format = 'markdown',
+             format.args = list(big.mark = ',', drop0trailing = T))
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
