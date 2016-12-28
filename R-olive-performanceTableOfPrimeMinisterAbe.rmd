@@ -12,11 +12,7 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width : 1300px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
+<style>.main-container {max-width : 1300px;}</style>
 
 <script>
 <!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
@@ -181,6 +177,13 @@ realWageIndexSA <-
     stringsAsFactors = F,
     check.names = F)
 realWageIndexSA[,1] <- as.Date(realWageIndexSA[,1])
+
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importConsumptionSpending.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -225,6 +228,9 @@ monthlyData <- merge(monthlyData, realWageIndexNSA, by = 'Date', all = T)
 monthlyData <- merge(monthlyData, realWageIndexSA, by = 'Date', all = T)
 colnames(monthlyData) <- gsub('\n|\\([a-d]\\)','',sapply(colnames(monthlyData),zen2han))
 monthlyData <- monthlyData[,-grep('元号',colnames(monthlyData))]
+monthlyData <- merge(monthlyData, expenditure, by = 'Date', all = T)
+monthlyData <- merge(monthlyData, realIncreaseDecreaseRate[,c(1,2)], by = 'Date', all = T)
+monthlyData <- merge(monthlyData, nominalIncreaseDecreaseRate[,c(1,2)], by = 'Date', all = T)
 unique(day(monthlyData[,1]))
 unique(month(monthlyData[,1]))
 ```
