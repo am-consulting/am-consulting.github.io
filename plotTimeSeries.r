@@ -12,7 +12,8 @@ fun_plotTimeSeries <-
            lwdR = 2,
            dataTitle = '',
            mar = c(3,5,4,5),
-           dataSource = '') {
+           dataSource = '',
+           cex.axis = 1.2, cex.lab = 1.2, cex.main = 1.2, cex.sub = 1.2) {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
