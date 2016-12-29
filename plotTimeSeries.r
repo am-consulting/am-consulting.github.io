@@ -13,7 +13,7 @@ fun_plotTimeSeries <-
            dataTitle = '',
            mar = c(3,5,4,5),
            dataSource = '',
-           cex.axis = 1.2, cex.lab = 1.2, cex.main = 1.2, cex.sub = 1.2) {
+           cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1, cex.legend = 1) {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
@@ -42,9 +42,9 @@ fun_plotTimeSeries <-
          main = paste(mainTitle,
                       '\nSource:',
                       dataSource),
-         cex.axis = 1,
-         cex.lab = 1,
-         cex.main = 1,
+         cex.axis = cex.axis,
+         cex.lab = cex.lab,
+         cex.main = cex.main,
          lwd = lwdL)
     lo <- loess(formula = obj[,2] ~ as.numeric(obj[,1]),
                 degree = 2)
@@ -62,7 +62,7 @@ fun_plotTimeSeries <-
         lines(x = obj[,1],
               y = obj[,3],
               col = lineColor[2],
-              lwd = 1,
+              lwd = lwdR,
               type = typeR)
       }else{
         par(new=T)
@@ -74,21 +74,21 @@ fun_plotTimeSeries <-
              ylab = '',
              xaxt = 'n',
              yaxt = 'n',
-             cex.axis = 1,
-             cex.lab = 1,
-             cex.main = 1,
+             cex.axis = cex.axis,
+             cex.lab = cex.lab,
+             cex.main = cex.main,
              lwd = lwdR)
         panel.first = grid(nx = NULL,
                            ny = NULL,
                            lty = 2,
                            equilogs = T)
         axis(side = 4,
-             cex.axis = 1,
-             cex.lab = 1)
+             cex.axis = cex.axis,
+             cex.lab = cex.lab)
         mtext(text = colnames(obj)[3],
               side = 4,
               line = 3.2,
-              cex = 1)
+              cex = cex.lab)
       }
       lo <- loess(formula = obj[,3] ~ as.numeric(obj[,1]),
                   degree = 2)
@@ -102,7 +102,7 @@ fun_plotTimeSeries <-
         col = lineColor,
         lty = 1,
         legend = colnames(obj)[c(2,3)],
-        cex = 1,
+        cex = cex.legend,
         bty = 'n',
         lwd = 2)
     }
@@ -110,9 +110,9 @@ fun_plotTimeSeries <-
               at = obj[,1],
               format = dateFormat,
               padj = 1,
-              cex.axis = 1.0)
+              cex.axis = cex.axis)
     mtext(text = colnames(obj)[2],
           side = 2,
           line = 3.2,
-          cex = 1)
+          cex = cex.lab)
   }
