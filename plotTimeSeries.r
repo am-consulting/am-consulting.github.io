@@ -13,7 +13,8 @@ fun_plotTimeSeries <-
            dataTitle = '',
            mar = c(3,5,4,5),
            dataSource = '',
-           cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1, cex.legend = 1) {
+           cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1, cex.legend = 1,
+           needLefLab = 1) {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
@@ -111,8 +112,10 @@ fun_plotTimeSeries <-
               format = dateFormat,
               padj = 1,
               cex.axis = cex.axis)
+    if(needLefLab == 1){
     mtext(text = colnames(obj)[2],
           side = 2,
           line = 3.2,
           cex = cex.lab)
+    }
   }
