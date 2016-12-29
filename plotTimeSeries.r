@@ -14,7 +14,9 @@ fun_plotTimeSeries <-
            mar = c(3,5,4,5),
            dataSource = '',
            cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1, cex.legend = 1,
-           needLefLab = 1) {
+           needLefLab = 1,
+           fitLcolor = 1,
+           fitRcolor = 2) {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
@@ -51,7 +53,7 @@ fun_plotTimeSeries <-
                 degree = 2)
     lines(x = obj[,1],
           y = predict(lo),
-          col = lineColor[1],
+          col = lineColor[fitLcolor],
           lwd = 1,
           lty = 2)
     panel.first = grid(nx = NULL,
@@ -95,7 +97,7 @@ fun_plotTimeSeries <-
                   degree = 2)
       lines(x = obj[,1],
             y = predict(lo),
-            col = lineColor[2],
+            col = lineColor[fitRcolor],
             lwd = 1,
             lty = 2)
       graphics::legend(
