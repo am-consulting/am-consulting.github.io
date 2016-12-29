@@ -26,7 +26,7 @@ fun_plotTimeSeries <-
                       obj[,objYR])
       obj <- na.omit(obj[,c(objX,objYL,objYR)])
     }else{ # 1系列のみの場合
-      mainTitle <- colnames(obj)[objYL]
+      mainTitle <- dataTitle
       obj <- na.omit(obj[,c(objX,objYL)])
     }
     par(mar = mar,
