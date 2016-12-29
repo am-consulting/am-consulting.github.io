@@ -7,7 +7,7 @@ fun_plotTimeSeries <-
            typeR = 'l',
            dateFormat = '%Y-%m-%d',
            chartType = 2,
-           lineColor = c('blue', 'lightcoral', 'black'),
+           lineColor = c('blue', 'red', 'lightcoral', 'black'),
            lwdL = 1,
            lwdR = 2,
            dataTitle = '',
@@ -54,7 +54,7 @@ fun_plotTimeSeries <-
     lines(x = obj[,1],
           y = predict(lo),
           col = lineColor[fitLcolor],
-          lwd = 1,
+          lwd = lwdL,
           lty = 2)
     panel.first = grid(nx = NULL,
                        ny = NULL,
@@ -98,7 +98,7 @@ fun_plotTimeSeries <-
       lines(x = obj[,1],
             y = predict(lo),
             col = lineColor[fitRcolor],
-            lwd = 1,
+            lwd = lwdR,
             lty = 2)
       graphics::legend(
         x = 'topleft',
