@@ -1,0 +1,108 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-CarBorneMonitoring.html')) })
+
+title : "Car-borne monitoring In Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 6
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+
+<script>
+<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
+function MakeNegative() {
+  TDs = document.getElementsByTagName('td');
+  for (var i=0; i<TDs.length; i++) {
+    var temp = TDs[i];
+    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+  }
+}
+</script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+dataTitle <- '『放射性物質の分布状況等調査による走行サーベイ(KURAMA)結果』の基本統計量分析'
+dataSource <- 'Japan Atomic Entergy Agency'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://emdb.jaea.go.jp/emdb/portals/b131/
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(XLConnect);library(Nippon);library(lubridate)
+username <- Sys.info()['user']
+pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fukushimaData <-
+  c(
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/1_carsurvey/1_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/102002_2_carsurvey_KURAMA1/102002_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/102003_2_carsurvey_KURAMA2/102003_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/102005_4_carsurvey_KURAMA2/102005_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/102006_5_carsurvey_KURAMA2/102006_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/10299900000/10299900000_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/10299900001/10299900001_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/10010209008/10010209008_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/10010209009/10010209009_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/10010209010/10010209010_07.csv.zip',
+    'http://emdb.jaea.go.jp/emdb/assets/site_data/ja/csv_utf8/10010209011/10010209011_07.csv.zip')
+for(uuu in 1:length(fukushimaData)){
+  download.file(fukushimaData[uuu], 
+                paste0('fukushima', formatC(uuu,width = 2,flag = 0), '.zip'), 
+                mode = 'wb')
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+setwd(pathOutput)
+carMonitoring <- list()
+fileList <- dir(pathOutput,'fukushima[0-9]{2}.zip')
+for(iii in 1:length(fileList)){
+  unzip(fileList[iii])
+}
+fileList <- dir(pathOutput,'.csv')
+maxDose <- -10^10
+maxDistance <- -10^10
+for(iii in 1:length(fileList)){
+  carMonitoring[[iii]] <-
+    read.csv(file = fileList[iii], header = T, check.names = F,
+             stringsAsFactors = F, fileEncoding = 'UTF-8-BOM', skip = 0)
+  maxDose <- max(max(carMonitoring[[iii]][,10]), maxDose)
+  maxDistance <- max(max(carMonitoring[[iii]][,8]), maxDistance)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide', fig.show='animate', interval=0.5, aniopts="controls",fig.height=5,fig.width=9}
+for(iii in 1:length(fileList)){
+  tmpDF <- carMonitoring[[iii]][,c(2,8,10)]
+  par(mar = c(5, 3, 3, 2), family = 'Meiryo')
+  plot(tmpDF[,2], tmpDF[,3], xlab = colnames(tmpDF)[2], ylab = colnames(tmpDF)[3],
+       main = paste0('第',iii,'次走行サーベイによる空間線量率の測定結果:', unique(tmpDF[,1]), 
+                     '. n = ', length(tmpDF[,3])),
+       xlim = c(0,maxDistance), ylim = c(0,maxDose))
+  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+}
+```
