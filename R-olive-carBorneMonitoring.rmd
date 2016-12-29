@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 6
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -41,6 +41,7 @@ dataTitle <- '『放射性物質の分布状況等調査による走行サーベ
 dataSource <- 'Japan Atomic Entergy Agency'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
+library(maptools); library(ggplot2)
 ```
 
 ***
@@ -95,14 +96,63 @@ for(iii in 1:length(fileList)){
 }
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hide', fig.show='animate', interval=0.5, aniopts="controls", fig.height=5, fig.width=9}
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 for(iii in 1:length(fileList)){
   tmpDF <- carMonitoring[[iii]][,c(2,8,10)]
   par(mar = c(5, 5, 3, 2), family = 'Meiryo')
   plot(tmpDF[,2], tmpDF[,3], xlab = colnames(tmpDF)[2], ylab = colnames(tmpDF)[3],
        main = paste0('第',iii,'次走行サーベイによる空間線量率の測定結果:', unique(tmpDF[,1]), 
                      '. n = ', length(tmpDF[,3])),
-       xlim = c(0,maxDistance), ylim = c(0,maxDose))
+       xlim = c(0,maxDistance), ylim = c(0,maxDose), cex = 0.7, pch = 20, col = 'blue')
   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  cat('<hr>')
 }
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+gpclibPermit()
+regionName <- "iso_a3"
+shapeFolder <- "ne_50m_admin_0_countries" # ne_50m_admin_0_countries shapeFile ne_50m_urban_areas
+pathShapeFile <- paste("C:/Users/", username, "/Desktop/", shapeFolder, "/", sep = "")
+setwd(pathShapeFile)
+file.name <- dir(pathShapeFile, pattern = ".shp")
+map.obj <- readShapeSpatial(file.name)
+print(names(map.obj)); print(ncol(map.obj)); print(class(map.obj))
+plot(map.obj)
+map.df <- fortify(map.obj, region = regionName)
+print(head(map.df)); print(tail(map.df)); print(unique(map.df[,ncol(map.df)]))
+mapData <- map.df[order(map.df$order),]
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+iii <-1
+tmpDF <- carMonitoring[[iii]][,c(7,6,10)]
+plot(subset(map.obj, map.obj@data$iso_a3 == "JPN"), axes = T, asp = 1,
+     panel.first = grid(NULL, NULL, lty = 2, col = "#E9DECA"), xlim = c(138, 144), ylim = c(34, 40))
+tmpDF$color <- apply(tmpDF[,3,drop = F],1,function(x) ifelse(x < 0.1, 'red', ifelse(x < 0.2, 'blue', 'green')))
+lines(tmpDF[,1], tmpDF[,2], cex = 0.1, xlim = c(138, 144), ylim = c(34, 40), type = 'p', col = tmpDF$color)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+library(akima)
+library(rgl)
+library(lattice)
+plot3d(tmpDF[,1],tmpDF[,2],tmpDF[,3])
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+x <- tmpDF[,1]
+y <- tmpDF[,2]
+z <- tmpDF[,3]
+matrixDose <- interp(x, y, z,
+                     xo = seq(min(x), max(x), length = 100),
+                     yo = seq(min(y), max(y), length = 100))
+filled.contour(matrixDose, nlevels = 20, color = function(x){rev(heat.colors(x, alpha=1))})
+image(matrixDose$x, matrixDose$y, matrixDose$z, col = terrain.colors(100), axes = F)
+contour(matrixDose$x, matrixDose$y, matrixDose$z, levels = seq(0, 100, by = 0.1), add = T, col = "blue")
+axis(1, at = seq(138, 144, by = 1))
+axis(2, at = seq(34, 40, by = 1))
+box()
+title(main = dataTitle, font.main = 1)
+contourplot(z ~ x * y, labels = T, region = T)
 ```
