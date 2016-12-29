@@ -11,7 +11,9 @@ fun_plotTimeSeries <-
            lwdL = 1,
            lwdR = 2,
            dataTitle = '',
-           mar = c(3,5,4,5)) {
+           mar = c(3,5,4,5),
+           dataSource = '',
+           dataTitle = '') {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
