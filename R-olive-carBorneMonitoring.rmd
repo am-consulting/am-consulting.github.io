@@ -95,10 +95,10 @@ for(iii in 1:length(fileList)){
 }
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide', fig.show='animate', interval=0.5, aniopts="controls",fig.height=5,fig.width=9}
+```{r warning=F, error=F, message=F, echo=F, results='hide', fig.show='animate', interval=0.5, aniopts="controls", fig.height=5, fig.width=9}
 for(iii in 1:length(fileList)){
   tmpDF <- carMonitoring[[iii]][,c(2,8,10)]
-  par(mar = c(5, 3, 3, 2), family = 'Meiryo')
+  par(mar = c(5, 5, 3, 2), family = 'Meiryo')
   plot(tmpDF[,2], tmpDF[,3], xlab = colnames(tmpDF)[2], ylab = colnames(tmpDF)[3],
        main = paste0('第',iii,'次走行サーベイによる空間線量率の測定結果:', unique(tmpDF[,1]), 
                      '. n = ', length(tmpDF[,3])),
