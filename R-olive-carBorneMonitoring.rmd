@@ -36,6 +36,19 @@ function MakeNegative() {
 options(width = 1000)
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- 
+  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r','R-fit.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
 ```{r warning=F,error=F,message=F,echo=F}
 dataTitle <- '『放射性物質の分布状況等調査による走行サーベイ(KURAMA)結果』の基本統計量分析'
 dataSource <- 'Japan Atomic Entergy Agency'
@@ -81,9 +94,7 @@ for(uuu in 1:length(fukushimaData)){
 setwd(pathOutput)
 carMonitoring <- list()
 fileList <- dir(pathOutput,'fukushima[0-9]{2}.zip')
-for(iii in 1:length(fileList)){
-  unzip(fileList[iii])
-}
+sapply(fileList, unzip)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -142,6 +153,34 @@ for(iii in 1:length(fileList)){
 colnames(boxplotData) <- paste0('第',c(1:length(fileList)),'次走行サーベイ')
 rAmCharts::amBoxplot(boxplotData, horiz = T, ylab = colnames(carMonitoring[[iii]][doseColumn])) %>% 
   rAmCharts::amOptions(main = dataTitle)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(iii in 1:length(fileList)){  
+#for(iii in 1:1){
+  tmpDF0 <- carMonitoring[[iii]][,c(2,3,6,7,8,9,10)]
+  buf <- 
+    sapply(unique(tmpDF0[,2]),
+           function(x){
+             buf <- filter(tmpDF0, x == tmpDF0[,2])
+             meanDose <- 
+               round(sum(buf[,grep('サンプル数', colnames(buf))] * 
+                     buf[,grep('平均空間線量率', colnames(buf))]) / 
+               sum(buf[,grep('サンプル数', colnames(buf))]), 3)
+             }
+           )
+  if(iii == 1){
+    meanDose <- cbind(buf)
+  }else{
+    meanDose <- qpcR:::cbind.na(meanDose, cbind(buf))
+  }
+}
+colnames(meanDose) <- paste0('第', c(1:length(fileList)), '次走行サーベイ')
+meanDose <- 
+  data.frame(`No.` = seq(1,nrow(meanDose)), row.names(meanDose), 
+             meanDose, check.names = F, stringsAsFactors = F, row.names = NULL)
+colnames(meanDose)[2] <- '市町村'
+fun_dataTable(meanDose, dateFormat = 0, orderDirection = 'asc', leftcolumns = 2, title = dataTitle)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
