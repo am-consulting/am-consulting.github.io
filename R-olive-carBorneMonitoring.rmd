@@ -53,7 +53,7 @@ library(maptools); library(ggplot2)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(XLConnect);library(Nippon);library(lubridate)
+library(XLConnect);library(Nippon);library(lubridate);library(dplyr)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
@@ -84,6 +84,10 @@ fileList <- dir(pathOutput,'fukushima[0-9]{2}.zip')
 for(iii in 1:length(fileList)){
   unzip(fileList[iii])
 }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+setwd(pathOutput)
 fileList <- dir(pathOutput,'.csv')
 maxDose <- -10^10
 maxDistance <- -10^10
@@ -91,8 +95,10 @@ for(iii in 1:length(fileList)){
   carMonitoring[[iii]] <-
     read.csv(file = fileList[iii], header = T, check.names = F,
              stringsAsFactors = F, fileEncoding = 'UTF-8-BOM', skip = 0)
-  maxDose <- max(max(carMonitoring[[iii]][,10]), maxDose)
-  maxDistance <- max(max(carMonitoring[[iii]][,8]), maxDistance)
+  doseColumn <- grep('平均空間線量率',colnames(carMonitoring[[iii]]), ignore.case = T)
+  distanceColumn <- grep('福島第一原発からの距離',colnames(carMonitoring[[iii]]), ignore.case = T)
+  maxDose <- max(max(carMonitoring[[iii]][,doseColumn]), maxDose)
+  maxDistance <- max(max(carMonitoring[[iii]][,distanceColumn]), maxDistance)
 }
 ```
 
@@ -122,6 +128,20 @@ plot(map.obj)
 map.df <- fortify(map.obj, region = regionName)
 print(head(map.df)); print(tail(map.df)); print(unique(map.df[,ncol(map.df)]))
 mapData <- map.df[order(map.df$order),]
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(iii in 1:length(fileList)){  
+  doseColumn <- grep('平均空間線量率',colnames(carMonitoring[[iii]]), ignore.case = T)
+  if (iii == 1) {
+    boxplotData <- carMonitoring[[iii]][,doseColumn]
+  } else{
+    boxplotData <- qpcR:::cbind.na(boxplotData, carMonitoring[[iii]][,doseColumn])
+  }
+}
+colnames(boxplotData) <- paste0('第',c(1:length(fileList)),'次走行サーベイ')
+rAmCharts::amBoxplot(boxplotData, horiz = T, ylab = colnames(carMonitoring[[iii]][doseColumn])) %>% 
+  rAmCharts::amOptions(main = dataTitle)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
