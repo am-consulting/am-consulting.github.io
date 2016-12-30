@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -119,7 +119,7 @@ for(iii in 1:length(fileList)){
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 for(iii in 1:length(fileList)){
   tmpDF <- carMonitoring[[iii]][,c(2,8,10)]
-  par(mar = c(5, 5, 3, 2), family = 'Meiryo')
+  par(mar = c(4, 5, 2, 2), family = 'Meiryo')
   plot(tmpDF[,2], tmpDF[,3], xlab = colnames(tmpDF)[2], ylab = colnames(tmpDF)[3],
        main = paste0('第',iii,'次走行サーベイによる空間線量率の測定結果:', unique(tmpDF[,1]), 
                      '. n = ', length(tmpDF[,3])),
@@ -138,7 +138,7 @@ setwd(pathShapeFile)
 file.name <- dir(pathShapeFile, pattern = ".shp")
 map.obj <- readShapeSpatial(file.name)
 print(names(map.obj)); print(ncol(map.obj)); print(class(map.obj))
-plot(map.obj)
+# plot(map.obj)
 map.df <- fortify(map.obj, region = regionName)
 print(head(map.df)); print(tail(map.df)); print(unique(map.df[,ncol(map.df)]))
 mapData <- map.df[order(map.df$order),]
@@ -158,9 +158,10 @@ rAmCharts::amBoxplot(boxplotData, horiz = T, ylab = colnames(carMonitoring[[iii]
   rAmCharts::amOptions(main = dataTitle)
 ```
 
+***
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 for(iii in 1:length(fileList)){  
-#for(iii in 1:1){
   tmpDF0 <- carMonitoring[[iii]][,c(2,3,6,7,8,9,10)]
   buf <- 
     sapply(unique(tmpDF0[,2]),
@@ -183,48 +184,56 @@ meanDose <-
   data.frame(`No.` = seq(1,nrow(meanDose)), row.names(meanDose), 
              meanDose, check.names = F, stringsAsFactors = F, row.names = NULL)
 colnames(meanDose)[2] <- '市町村'
-fun_dataTable(meanDose, dateFormat = 0, orderDirection = 'asc', leftcolumns = 2, title = dataTitle)
+fun_dataTable(meanDose, dateFormat = 0, orderDirection = 'asc', leftcolumns = 2, 
+              title = paste0(dataTitle, ':市町村毎の平均値'))
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
+$$\textrm{市町村毎の平均値} = \frac{ \sum \left( \textrm{サンプル数}\times \textrm{平均空間線量率} \right)}{ \sum \textrm{サンプル数}}$$
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=10}
 # 計画的避難区域や居住制限区域への指定の目安:3.8μSv/h(年間20mSv)
 # 除染等業務ガイドライン等:2.5μSv/h(年間5mSv)
 # 除染等業務ガイドライン等:0.23μSv/h(年間追加被ばく線量1mSv)
 library(fields);library(plotrix)
-iii <- 1
+for(iii in 1:length(fileList)){ 
+for(objDose in 1:4){
 tmpDF0 <- carMonitoring[[iii]][,c(7,6,10)]
-uLimit <- 2.5 # max(tmpDF0[,3])
-lLimit <- 0.23
-tmpDF <- tmpDF0 %>% dplyr::filter(lLimit < tmpDF0[,3] & tmpDF0[,3] <= uLimit)
+uLimit <- c(0.23, 2.5, 3.8, max(tmpDF0[,3])) # maxが3.8より小さい都道府県は注意
+lLimit <- c(0, 0.23, 2.5, 3.8) 
+tmpDF <- tmpDF0 %>% dplyr::filter(lLimit[objDose] < tmpDF0[,3] & tmpDF0[,3] <= uLimit[objDose])
 levelN <- 50
 par(mar = c(7,4,4,4), family = 'Meiryo')
 plot(subset(map.obj, map.obj@data$iso_a3 == "JPN"), axes = T, asp = 1,
      panel.first = grid(NULL, NULL, lty = 2, col = "#E9DECA"), 
-     xlim = c(138, 144), ylim = c(34, 40), tck = -0.01, main = colnames(tmpDF)[3])
-color <- rev(heat.colors(max(tmpDF[,3])))
+     xlim = c(138, 144), ylim = c(34, 40), tck = -0.01, 
+     main = paste0('第', iii, '次走行サーベイ\n',
+                   colnames(tmpDF)[3],':',lLimit[objDose],'超~',uLimit[objDose],'以下\n対象:福島県'))
+# color <- rev(heat.colors(levelN))
 colorList <- colorRampPalette(c("yellow", "orange", "peru", "red"))
 color <- colorList(levelN)
 tmpDF$color <- 
-  apply(tmpDF[,3,drop = F], 1, function(x) color[ceiling((x - lLimit)/((uLimit - lLimit)/levelN))]) 
+  apply(tmpDF[,3,drop = F], 1, 
+        function(x) color[ceiling((x - lLimit[objDose])/((uLimit[objDose] - lLimit[objDose])/levelN))]) 
 lines(tmpDF[,1], tmpDF[,2], cex = 0.5, 
       xlim = c(138, 144), ylim = c(34, 40), type = 'p', 
       col = tmpDF$color, xaxt = 'n', yaxt = 'n')
-image.plot(legend.only = T, zlim = range(lLimit, uLimit), 
-           col = color, add = T, horizontal = T, legend.line= -2)
+image.plot(legend.only = T, zlim = range(lLimit[objDose], uLimit[objDose]), 
+           col = color, add = T, horizontal = T, legend.line= -1)
 location <- c(
   141.033611, 37.421389, "福島第一原子力発電所",
   139.744901, 35.676777, "国会議事堂",
   140.467521, 37.750498, "福島県庁",
-  140.123340, 35.605298, "千葉県庁", 
+  # 140.123340, 35.605298, "千葉県庁", 
   140.446750, 36.342059, "茨城県庁", 
   139.883597, 36.565971, "栃木県庁",
   139.060464, 36.390900, "群馬県庁",
-  139.648922, 35.857693, "埼玉県庁", 
+  # 139.648922, 35.857693, "埼玉県庁", 
   140.872146, 38.269113, "宮城県庁", 
   141.152624, 39.703774, "岩手県庁",
   139.773220, 37.200398, "南会津町役場"
-#  140.562941, 37.819185, "伊達市役所"
-  
+  # 140.562941, 37.819185, "伊達市役所"
   )
 for(sss in 0:(length(location)/3-1)){
   text(as.numeric(location[sss*3+1]),
@@ -236,14 +245,17 @@ for(sss in 0:(length(location)/3-1)){
               0.03,
               col = rgb(0, 255, 255, 80, maxColorValue = 255),
               border = rgb(0, 255, 255, maxColorValue = 255))
-  } 
+}
+cat('<hr>')
+}
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 library(akima)
 library(rgl)
 library(lattice)
-plot3d(tmpDF[,1],tmpDF[,2],tmpDF[,3])
+# plot3d(tmpDF[,1],tmpDF[,2],tmpDF[,3])
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
@@ -253,12 +265,24 @@ z <- tmpDF[,3]
 matrixDose <- interp(x, y, z,
                      xo = seq(min(x), max(x), length = 100),
                      yo = seq(min(y), max(y), length = 100))
-filled.contour(matrixDose, nlevels = 20, color = function(x){rev(heat.colors(x, alpha=1))})
-image(matrixDose$x, matrixDose$y, matrixDose$z, col = terrain.colors(100), axes = F)
-contour(matrixDose$x, matrixDose$y, matrixDose$z, levels = seq(0, 100, by = 0.1), add = T, col = "blue")
-axis(1, at = seq(138, 144, by = 1))
-axis(2, at = seq(34, 40, by = 1))
-box()
-title(main = dataTitle, font.main = 1)
-contourplot(z ~ x * y, labels = T, region = T)
+# filled.contour(matrixDose, nlevels = 20, color = function(x){rev(heat.colors(x, alpha=1))})
+# image(matrixDose$x, matrixDose$y, matrixDose$z, col = terrain.colors(100), axes = F)
+# contour(matrixDose$x, matrixDose$y, matrixDose$z, levels = seq(0, 100, by = 0.1), add = T, col = "blue")
+# axis(1, at = seq(138, 144, by = 1))
+# axis(2, at = seq(34, 40, by = 1))
+# box()
+# title(main = dataTitle, font.main = 1)
+# contourplot(z ~ x * y, labels = T, region = T)
 ```
+
+<script>MakeNegative()</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
