@@ -43,12 +43,15 @@ fun_plotTimeSeries <-
          xaxt = 'n',
          ylim = if(chartType == 1){c(minValue, maxValue)},
          main = paste(mainTitle,
+                      '\n',
+                      paste0(format(range(obj[,objX]), dateFormat), '~'),
                       '\nSource:',
                       dataSource),
          cex.axis = cex.axis,
          cex.lab = cex.lab,
          cex.main = cex.main,
          lwd = lwdL)
+    if(fitLcolor != 0){
     lo <- loess(formula = obj[,2] ~ as.numeric(obj[,1]),
                 degree = 2)
     lines(x = obj[,1],
@@ -56,6 +59,7 @@ fun_plotTimeSeries <-
           col = lineColor[fitLcolor],
           lwd = lwdL,
           lty = 2)
+    }
     panel.first = grid(nx = NULL,
                        ny = NULL,
                        lty = 2,
@@ -93,6 +97,7 @@ fun_plotTimeSeries <-
               line = 3.2,
               cex = cex.lab)
       }
+      if(fitRcolor != 0){
       lo <- loess(formula = obj[,3] ~ as.numeric(obj[,1]),
                   degree = 2)
       lines(x = obj[,1],
@@ -100,6 +105,7 @@ fun_plotTimeSeries <-
             col = lineColor[fitRcolor],
             lwd = lwdR,
             lty = 2)
+      }
       graphics::legend(
         x = 'topleft',
         col = lineColor,
