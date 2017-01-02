@@ -41,16 +41,24 @@ function MakeNegative() {
 options(width = 1000)
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- 
+  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r',
+    'transposeDataFrame.r','R-fit.r','plotTimeSeries.r','R-turningPoint.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=9999)
-library(RCurl);library(beepr)
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = FALSE
-  )
-eval(parse(text = script))
+lastYear <- 2016
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/Rscript/master/importCFTC.r",
@@ -65,9 +73,21 @@ for(iii in 1:length(dataset)){
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+lastNetPositions <-
+  paste0('Net',
+         ' 日本円:',tail(dataset[[grep('japanese', currency, ignore.case = T)]],1)[,4],',',
+         ' ユーロ:',tail(dataset[[grep('euro', currency, ignore.case = T)]],1)[,4],',',
+         ' 英ポンド:',tail(dataset[[grep('british', currency, ignore.case = T)]],1)[,4],',',
+         ' 豪ドル:',tail(dataset[[grep('australian', currency, ignore.case = T)]],1)[,4],',',
+         ' スイスフラン:',tail(dataset[[grep('swiss', currency, ignore.case = T)]],1)[,4],',',
+         ' Gold:',tail(dataset[[grep('gold', currency, ignore.case = T)]],1)[,4]
+       )
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <-
-  paste0('CFTC Speculative Positions / IMM･CFTC投機筋ポジション-',
-         format(tail(dataset[[1]][, 1], 1), '%Y年%m月%d日分'))
+  paste0('CFTC投機筋ポジション-',
+         format(tail(dataset[[1]][, 1], 1), '%Y年%m月%d日分.'),lastNetPositions)
 dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. Louis'
 notes<-'複数のワードで検索する際は半角スペースで区切ってください'
 notes0<-"表中、-9999はNAを意味します"
@@ -84,8 +104,6 @@ windowsFonts(Meiryo=windowsFont("Meiryo"))
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- `r paste0("特記 : ", notes)`
-- `r paste0("特記 : ", notes0)`
 - Source http://www.cftc.gov/index.htm
 
 ***
@@ -123,91 +141,6 @@ for (lll in seq(1, length(currencyFRED), by = 2)) {
 }
 ```
 
-```{r,warning=F,error=F,message=F,echo=F} 
-funPlotTimeSeries <- function() {
-  mainTitle <- paste(colnames(dataSet)[2], '×', colnames(dataSet)[3])
-  par(mar = c(3, 5, 4, 5), family = 'Meiryo')
-  plot(
-    dataSet[, 1],
-    dataSet[, 2],
-    type = 'h',
-    col = 'blue',
-    xlab = '' ,
-    ylab = '' ,
-    panel.first = grid(
-      nx = NULL,
-      ny = NULL,
-      lty = 2,
-      equilogs = T,
-      lwd = 2
-    ) ,
-    xaxt = 'n',
-    main = paste(
-      mainTitle,
-      '\n',
-      format(first(dataSet[, 1]), '%Y-%m-%d'),
-      '~',
-      format(last(dataSet[, 1]), '%Y-%m-%d'),
-      '\nSource:',
-      dataSource
-    ),
-    cex.axis = 1,
-    cex.lab = 1,
-    cex.main = 1,
-    lwd = '1',
-    yaxs = "r"
-    )
-  par(new = T)
-  plot(
-    dataSet[, 1],
-    dataSet[, 3],
-    col = 'red',
-    type = 'l',
-    xlab = '' ,
-    ylab = '' ,
-    panel.first = grid(
-      nx = NULL,
-      ny = NULL,
-      lty = 3,
-      equilogs = T,
-      lwd = 2
-    ) ,
-    xaxt = 'n',
-    yaxt = 'n',
-    cex.axis = 1,
-    cex.lab = 1,
-    cex.main = 1,
-    lwd = 2,
-    ylim = yaxisReverse,
-    yaxs = "r"
-  )
-  axis(4, cex.axis = 1, cex.lab = 1)
-  mtext(colnames(dataSet)[2],
-        side = 2,
-        line = 3.2,
-        cex = 1)
-  mtext(colnames(dataSet)[3],
-        side = 4,
-        line = 3.2,
-        cex = 1)
-  legend(
-    'topleft',
-    col = c('blue', 'red'),
-    lty = 1,
-    legend = c(colnames(dataSet)[2], colnames(dataSet)[3]),
-    cex = 1,
-    bty = 'n'
-  )
-  axis.Date(
-    side = 1,
-    at = dataSet[, 1],
-    format = '%Y-%m-%d',
-    padj = 1,
-    cex.axis = 1.0
-  )
-}
-```
-
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=6,fig.width=10}
 cftcOBJ <- c(1, 2, 3, 4, 5, 6, 7, 11)
 for (iii in 1:length(cftcOBJ)) {
@@ -223,37 +156,26 @@ for (iii in 1:length(cftcOBJ)) {
   }
   colnames(dataSet)[2] <-
     paste0(colnames(dataSet)[2], '_CFTC positions')
-  funPlotTimeSeries()
+  if (substr(colnames(dataSet)[3], 1, 3) == 'USD') {
+    fun_plotTimeSeries(obj = dataSet, typeL = 'h', dataSource = dataSource, fitLcolor = 0, fitRcolor = 0,
+                       yaxisReverseL = F, yaxisReverseR = T, chartType = 2, lwdR = 1)
+  }else{
+    fun_plotTimeSeries(obj = dataSet, typeL = 'h', dataSource = dataSource, fitLcolor = 0, fitRcolor = 0,
+                       yaxisReverseL = F, yaxisReverseR = F, chartType = 2, lwdR = 1)
+  }
   if(iii!=length(cftcOBJ)){cat('<hr>')}
 }
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 for (iii in 1:length(dataset)) {
-  # print(summary(dataset[[iii]][, c( 1, 2, 3, 4)]))
   cat(paste(range(dataset[[iii]][,1]),collapse = ' ~ '),'\n')
   print(apply(dataset[[iii]][, c( 2, 3, 4), drop=F], 2, summary))
   cat('\n\n')
 }
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', append = '') {
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width01, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
-    rownames = F, caption = paste0(dataTitle, '. ', append), class = 'display compact', escape = F, filter = 'top'
-  )  
-}
-```
-
-## Latest `r tailN <- 15;tailN` Weeks Time Series Table
+## 直近 `r tailN <- 15;tailN` 週の時系列推移
 
 ```{r,warning=F,error=F,message=F,echo=F,include=F}
 out = NULL
@@ -264,18 +186,17 @@ for (iii in 1:length(dataset)) {
       "cat(paste0('<h2>',dataset[[",
       iii,
       "]][1,5],'</h2>'))\n\n",
-      "funDataTable(obj = tail(dataset[[",
+      "fun_dataTable(obj = tail(dataset[[",
       iii,
-      "]],",tailN,")[,1:4], append = dataset[[",
-      iii,
-      "]][1,6])\n\ncat('<hr>')\n\n```"
+      "]],",tailN,")[,c(1:4,6)], dateFormat = '%Y-%m-%d')\n\n
+      cat('<hr>')\n\n```"
     )
   out = c(out, knit_expanded)
 }
 ```
 `r paste(knit(text = out), collapse = '\n')`
 
-## Latest `r tailN <- 5;tailN` Weeks Net Positions
+## 直近 `r tailN <- 5;tailN` 週のネットポジション
 
 ```{r,warning=F,error=F,message=F,echo=F}
 WoWDF <- data.frame()
@@ -287,31 +208,22 @@ knitr::kable(WoWDF, row.names = F)
 ```
 
 ***
-## Last Each Two Positive & Negative Net Positions
 
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+## ネットポジションがロングからショート又はその逆へと変化した週:±0コントラクトはネットロングとする。
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 for(iii in 1:length(dataset)){
-  buf0 <- na.omit(dataset[[iii]][,c(1,4)])
-  bufP <- tail(subset(buf0,0 <= buf0[,2]), 2)
-  bufN <- tail(subset(buf0,0 > buf0[,2]), 2)
-  cat(paste0(range(buf0[,1]), collapse = ' ~ '))
-  cat('\n')
-  print(knitr::kable(rbind(bufP,bufN),row.names = F))
-  cat('\n<hr>')
-}
-```
-
-## Date When The Excess Of Net Positions changed
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-for(iii in 1:length(dataset)){
-  buf0 <- na.omit(dataset[[iii]][,c(1,4)])
-  buf1 <- buf0[which(head(buf0[,2],-1) * tail(buf0[,2],-1) < 0) + 1,]
-  if(nrow(buf1) != 0){
-    cat(paste0(range(buf0[,1]), collapse = ' ~ '))
-    cat('\n')
-    print(knitr::kable(tail(buf1,4),row.names = F))
-    cat('\n<hr>')
+  fun_turningPoint(obj = dataset[[iii]][,c(1,4)], dateFormat = '%Y-%m-%d')
+  if(durationInclude0 != 0){
+    cat(paste0('<h4>',colnames(dataset[[iii]])[4],'</h4>'))
+    cat('\n\n')
+    print(knitr::kable(objPNinclude0, row.names = F))
+    cat('\n\n')
+    cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
+               format(tail(dataset[[iii]][,1],1), '%Y-%m-%d'), 'まで',
+               durationInclude0, '週連続で',
+               ifelse(tail(objPNinclude0[,2],1) < 0, 'ネットショート','ネットロング'), '</h4>'))
+    cat('\n\n<hr>')
   }
 }
 ```
