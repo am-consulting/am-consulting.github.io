@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-NorthAmericaRigCount.html')) })
-title : "North America Rig Count"
+title : "North America Rig Count(Source:Baker Hughes)"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -11,24 +11,8 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
-
-
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -36,8 +20,6 @@ function MakeNegative() {
 - twitter https://twitter.com/AMC2_Japan
 
 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
-
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -62,27 +44,18 @@ script <-
 eval(parse(text = script))
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- 
+  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r',
+    'transposeDataFrame.r','R-fit.r','plotTimeSeries.r','R-turningPoint.r','timeSeriesDataFundamentalStatistics.r')
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", importAMCC[iii]),
     ssl.verifypeer = F
   )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/timeSeriesDataFundamentalStatistics.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
+  eval(parse(text = script))
+}
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -91,10 +64,14 @@ dataSet <- na.omit(tmp)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dateFormat <- '%Y年%m月%d日'
+appendText <- 
+  paste0('. Week over Week - ',
+         colnames(dataSet)[2], ':', tail(diff(as.matrix(dataSet[,-1])),1)[1], ',',
+         colnames(dataSet)[3], ':', tail(diff(as.matrix(dataSet[,-1])),1)[2])
+dateFormat <- '%Y-%m-%d'
 dataTitle <-
-  paste0('Baker Hughes:North America Rig Count Oil ans Gas / 北米リグカウント 石油とガス',' - ',
-         format(last(dataSet[, 1]), dateFormat))
+  paste0('Baker Hughes:North America Rig Count',' - ',
+         format(last(dataSet[, 1]), dateFormat),appendText)
 dataSource <- 'Baker Hughes'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
@@ -112,71 +89,11 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- `r paste0("特記 : ", notes)`
-- `r paste0("特記 : ", notes0)`
 - Source https://www.bakerhughes.com/
 
 ***
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries <- 
-  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'l', type02 = 'l', dateFormat = '%Y-%m-%d', chartType = 2, period = '') {
-if(chartType!=0){
-mainTitle <- paste0(colnames(obj)[objY01],' × ',colnames(obj)[objY02])
-maxValue <- max(obj[,objY01],obj[,objY02])
-minValue <- min(obj[,objY01],obj[,objY02])
-}else{ # 1系列のみの場合
-mainTitle <- colnames(obj)[objY01]
-}
-par(mar=c(3,5,4,5),family = 'Meiryo')
-plot(
-  obj[, objX]  , obj[, objY01], type = type01, col = lineColor[1], xlab = '', ylab = '', xaxt = 'n', 
-  ylim = if(chartType == 1){c(minValue, maxValue)},
-  main = paste(mainTitle,'\n', period, '\nSource:',dataSource),
-  cex.axis = 1 , cex.lab = 1,   cex.main = 1, lwd = 1
-  )
-lo <- loess(obj[, objY01] ~ as.numeric(obj[,objX]), degree = 2)
-lines(obj[,objX] , predict(lo) , col = lineColor[1], lwd = 1, lty = 2)
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-if(chartType!=0){ # 2系列の場合
-  if(chartType == 1){
-  lines(obj[,objX], obj[,objY02], col = lineColor[2], lwd = 1, type = type02)
-  }else{  
-  par(new=T)
-  plot(
-    obj[, objX]  , obj[, objY02], type = type02, col = lineColor[2], xlab = '', ylab = '', xaxt = 'n', yaxt = 'n', 
-    cex.axis = 1 , cex.lab = 1, cex.main = 1, lwd = 1
-    )
-  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-  axis(4, cex.axis = 1, cex.lab = 1)
-  mtext(colnames(obj)[objY02], side=4, line=3.2, cex=1)
-  }
-  lo <- loess(obj[, objY02] ~ as.numeric(obj[,objX]), degree = 2)
-  lines(obj[,objX] , predict(lo) , col = lineColor[2], lwd = 1, lty = 2)
-  graphics::legend('topleft',col=lineColor,lty=1,legend=colnames(obj)[c(objY01,objY02)],cex=1,bty='n',lwd = 2)
-}
-axis.Date(side=1, at=obj[,objX],format=dateFormat,padj=1,cex.axis=1.0) 
-mtext(colnames(obj)[objY01], side=2, line=3.2, cex=1)
-  }
-```
-
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj, orderColumn = 0, orderDirection = 'desc', width01 = '10%', caption = '') {
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width01, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
-    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
-  )  
-}
-```
-
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=10}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
 lineColor <- c('blue', 'red', 'black')
 dataTail <- 12 * 20000
 dataSet <- tail(dataSet, dataTail)
@@ -184,10 +101,12 @@ objX <- 1
 objY01 <- 2
 objY02 <- 3
 datePeriod <- paste0(format(range(dataSet[,objX]), dateFormat),collapse = '~')
-fun_plotTimeSeries(obj = dataSet, objX = objX, objY01 = objY01, objY02 = objY02, period = datePeriod)
+fun_plotTimeSeries(obj = dataSet, objX = objX, objYL = objY01, objYR = objY02, dataSource = dataSource)
 ```
-<hr>
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=10}
+
+***
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
 par(mfrow = c(1, 2), mar = c(3, 3, 3, 3), family = 'Meiryo', oma = c(0, 0, 3, 0))
 for (ddd in 1:2) {
   bufN <- get(paste0('objY0', ddd))
@@ -219,8 +138,6 @@ pastecs::stat.desc(dataSet[,-1])
 apply(dataSet[,-1],2,adf.test)
 ```
 
-
-
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet0 <- dataSet
 dataSet0 <- data.frame(dataSet0[-1,1,drop=F],round(diff(as.matrix(dataSet0[,-1,drop=F])),10),check.names = F)
@@ -245,25 +162,41 @@ knitr::kable(fun_transposeDataFrame(obj = dataSet0,tailN = 5),row.names = F)
 ```
 
 ***
-#### Date when the positive and negative of week over week difference changed
+#### 前週差がプラスからマイナス又はその逆へと変化した週:前週差±0は前週差プラスとする。
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 4
-dataSet2 <- dataSet0[-1,c(1,ccc)]
-dataSet3 <- dataSet2[which(head(dataSet2[,2],-1) * tail(dataSet2[,2],-1) < 0) + 1,]
-knitr::kable(tail(dataSet3,4),row.names = F)
+fun_turningPoint(obj = dataSet0[,c(1,ccc)], dateFormat = '%Y-%m-%d')
+if(durationInclude0 != 0){
+  cat(paste0('<h4>',colnames(dataSet0)[ccc],'</h4>'))
+  cat('\n\n')
+  print(knitr::kable(tail(objPNinclude0,5), row.names = F))
+  cat('\n\n')
+  cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
+             format(tail(dataSet0[,1],1), '%Y-%m-%d'), 'まで',
+             durationInclude0, '週連続で',
+             ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '</h4>'))
+  cat('\n\n<hr>')
+}
 ```
 
-***
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 5
-dataSet2 <- dataSet0[-1,c(1,ccc)]
-dataSet3 <- dataSet2[which(head(dataSet2[,2],-1) * tail(dataSet2[,2],-1) < 0) + 1,]
-knitr::kable(tail(dataSet3,4),row.names = F)
+fun_turningPoint(obj = dataSet0[,c(1,ccc)], dateFormat = '%Y-%m-%d')
+if(durationInclude0 != 0){
+  cat(paste0('<h4>',colnames(dataSet0)[ccc],'</h4>'))
+  cat('\n\n')
+  print(knitr::kable(tail(objPNinclude0,5), row.names = F))
+  cat('\n\n')
+  cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
+             format(tail(dataSet0[,1],1), '%Y-%m-%d'), 'まで',
+             durationInclude0, '週連続で',
+             ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '</h4>'))
+  cat('\n\n<hr>')
+}
 ```
 
-***
-#### Each Max
+#### 各系列の最大値
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
@@ -296,7 +229,7 @@ knitr::kable(
 ```
 
 ***
-#### Each Min
+#### 各系列の最小値
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
