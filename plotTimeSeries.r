@@ -16,7 +16,9 @@ fun_plotTimeSeries <-
            cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1, cex.legend = 1,
            needLefLab = 1,
            fitLcolor = 1,
-           fitRcolor = 2) {
+           fitRcolor = 2,
+           yaxisReverseL = FALSE,
+           yaxisReverseR = FALSE) {
     if(chartType != 0){
       mainTitle <- paste0(dataTitle,
                           '\n',
@@ -32,6 +34,10 @@ fun_plotTimeSeries <-
       mainTitle <- dataTitle
       obj <- na.omit(obj[,c(objX,objYL)])
     }
+
+
+
+
     par(mar = mar,
         family = 'Meiryo')
     plot(x = obj[,1],
@@ -41,7 +47,14 @@ fun_plotTimeSeries <-
          xlab = '',
          ylab = '',
          xaxt = 'n',
-         ylim = if(chartType == 1){c(minValue, maxValue)},
+         ylim =
+           if(chartType == 1){
+             if(yaxisReverseL == F){
+               c(minValue, maxValue)
+             }else{
+               rev(c(minValue, maxValue))
+             }
+           },
          main = paste(mainTitle,
                       '\n',
                       paste0(format(range(obj[,objX]), dateFormat), '~'),
@@ -84,7 +97,8 @@ fun_plotTimeSeries <-
              cex.axis = cex.axis,
              cex.lab = cex.lab,
              cex.main = cex.main,
-             lwd = lwdR)
+             lwd = lwdR,
+             ylim = if(yaxisReverseR == T){rev(range(na.omit(obj[, 3])))})
         panel.first = grid(nx = NULL,
                            ny = NULL,
                            lty = 2,
