@@ -20,24 +20,24 @@ fun_plotTimeSeries <-
            yaxisReverseL = FALSE,
            yaxisReverseR = FALSE) {
     if(chartType != 0){
+      obj <- obj[,c(objX,objYL,objYR)]
       mainTitle <- paste0(dataTitle,
                           '\n',
-                          colnames(obj)[objYL],
+                          colnames(obj)[2],
                           ' × ',
-                          colnames(obj)[objYR])
-      maxValue <- max(obj[,objYL],
-                      obj[,objYR])
-      minValue <- min(obj[,objYL],
-                      obj[,objYR])
-      obj <- na.omit(obj[,c(objX,objYL,objYR)])
+                          colnames(obj)[3])
     }else{ # 1系列のみの場合
-      mainTitle <- dataTitle
       obj <- na.omit(obj[,c(objX,objYL)])
+      mainTitle <- paste0(dataTitle,
+                          '\n',
+                          colnames(obj)[2])
     }
-
-
-
-
+    if(chartType == 1){
+      maxValue <- max(na.omit(obj[,2]),
+                      na.omit(obj[,3]))
+      minValue <- min(na.omit(obj[,2]),
+                      na.omit(obj[,3]))
+    }
     par(mar = mar,
         family = 'Meiryo')
     plot(x = obj[,1],
@@ -54,10 +54,14 @@ fun_plotTimeSeries <-
              }else{
                rev(c(minValue, maxValue))
              }
+           }else{
+             if(yaxisReverseL == T){
+               rev(range(na.omit(obj[,2])))
+             }
            },
          main = paste(mainTitle,
                       '\n',
-                      paste0(format(range(obj[,objX]), dateFormat), '~'),
+                      paste0(format(range(obj[,1]), dateFormat), collapse = '~'),
                       '\nSource:',
                       dataSource),
          cex.axis = cex.axis,
