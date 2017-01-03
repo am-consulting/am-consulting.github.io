@@ -29,6 +29,7 @@ options(width = 1000)
 dataTitle <- '人口動態統計によるがん死亡データ'
 dataSource <- '国立がん研究センターがん情報サービス「がん登録・統計」'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 9999)
 ```
 
 ***
@@ -128,6 +129,27 @@ for(iii in 1:length(mortalityRate)){
                      dataSource = dataSource)
   cat('<hr>')
 }
+```
+
+```{r warning = F, error = F, message = F, echo = F, results = 'asis'}
+tailN <- 3
+for(iii in 1:length(mortalityRate)){
+  if(iii == 1){
+    latestData <- tail(mortalityRate[[iii]], tailN)
+  }else{
+    latestData <- merge(latestData, tail(mortalityRate[[iii]], tailN), by = '死亡年', all = T)
+  }
+}
+bufDF <- na.omit(fun_transposeDataFrame(latestData,dateFormat = '%Y年'))
+bufDF <- data.frame(`No.` = seq(1,nrow(bufDF)), bufDF, check.names = F, stringsAsFactors = F)
+fun_dataTable(obj = bufDF,orderDirection = 'asc',dateFormat = 0,leftcolumns = 2,menuLength = 15)
+knitr::kable(bufDF,
+             row.names = F,
+             align = 'r', format = 'markdown',
+             format.args = list(big.mark = ',', drop0trailing = T))
+```
+
+```{r warning = F, error = F, message = F, echo = F, results = 'asis'}
 ```
 
 ***
