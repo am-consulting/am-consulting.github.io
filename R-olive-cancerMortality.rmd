@@ -143,13 +143,51 @@ for(iii in 1:length(mortalityRate)){
 bufDF <- na.omit(fun_transposeDataFrame(latestData,dateFormat = '%Y年'))
 bufDF <- data.frame(`No.` = seq(1,nrow(bufDF)), bufDF, check.names = F, stringsAsFactors = F)
 fun_dataTable(obj = bufDF,orderDirection = 'asc',dateFormat = 0,leftcolumns = 2,menuLength = 15)
-knitr::kable(bufDF,
-             row.names = F,
-             align = 'r', format = 'markdown',
-             format.args = list(big.mark = ',', drop0trailing = T))
+# knitr::kable(bufDF,
+#              row.names = F,
+#              align = 'r', format = 'markdown',
+#              format.args = list(big.mark = ',', drop0trailing = T))
 ```
 
 ```{r warning = F, error = F, message = F, echo = F, results = 'asis'}
+iii<-26
+for(iii in 1:length(mortalityRate)){
+  bufDF <- 
+    mortalityRate[[iii]][,c(1,grep('粗率',colnames(mortalityRate[[iii]])))]
+  bufDF <- bufDF[,apply(bufDF,2,function(x){sum(is.na(x))}) != nrow(bufDF)]
+  if(ncol(bufDF) == 3){
+    minValue <- min(bufDF[,2:3])
+    maxValue <- max(bufDF[,2:3])
+    par(mar = c(5,5,3,2), family = 'Meiryo')
+    plot(bufDF[,2],
+         bufDF[,3],
+         asp = 1,
+         col = 'blue',
+         cex = 1.0,
+         pch = 20,
+         type = 'o',
+         main = paste0(paste0(colnames(bufDF)[-1],collapse = ' × '), '\nSource:', dataSource),
+         cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1, cex.legend = 1,
+         xlab = colnames(bufDF)[2],
+         ylab = colnames(bufDF)[3],
+         xlim = c(minValue, maxValue),
+         ylim = c(minValue, maxValue))
+    panel.first = grid(nx = NULL,
+                       ny = NULL,
+                       lty = 2,
+                       equilogs = T)
+    graphics::text(bufDF[,2],
+                   bufDF[,3],
+                   labels = format(bufDF[,1],'%Y'),
+                   pos = 1,
+                   srt = 90,
+                   cex = 0.8,
+                   offset = 1)
+    lines(par()$usr[1:2],
+          par()$usr[1:2],
+          col = 'red')
+  }
+}
 ```
 
 ***
