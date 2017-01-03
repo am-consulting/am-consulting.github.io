@@ -33,11 +33,12 @@ library(DT)
 
 ```{r warning=F, error=F, message=F, echo=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-rFile <- c(
-'importMeasuresOfUnderlyingInflation.r')
+rFile <- 
+  c('importMeasuresOfUnderlyingInflation.r','importMonetarybaseOfJapan-2017.r')
 for(iii in 1:length(rFile)){
 script <- 
- getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',rFile[iii]),ssl.verifypeer = F)
+ getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',rFile[iii]),
+        ssl.verifypeer = F)
 eval(parse(text = script))
 }
 ```
@@ -45,7 +46,7 @@ eval(parse(text = script))
 ```{r,warning=F,error=F,message=F,echo=F}
 library(RCurl)
 importAMCC <- 
-  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r',
+  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','R-scatterPlot.r',
     'transposeDataFrame.r','R-fit.r','plotTimeSeries.r','R-turningPoint.r','timeSeriesDataFundamentalStatistics.r')
 for(iii in 1:length(importAMCC)){
   script <- getURL(
@@ -134,6 +135,17 @@ knitr::kable(na.omit(fun_transposeDataFrame(obj = measuresOfUnderlyingInflation,
              row.names = F,
              align = 'r', format = 'markdown',
              format.args = list(big.mark = ',', drop0trailing = T))
+```
+<hr>
+
+#### マネタリーベースとの比較
+
+```{r warning=F, error=F, message=F, echo=F, fig.height=7, results='hide'}
+allData <- 
+  merge(measuresOfUnderlyingInflation,monetaryBase_Japan,by='Date')
+colnames(allData)
+scatterData <- na.omit(allData[,c(1,23,2)])
+fun_scatterPlot(obj = scatterData, cexText = 1, srtText = 0, posText = 4, offsetText = -1)
 ```
 
 <hr>
