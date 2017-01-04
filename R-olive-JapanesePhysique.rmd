@@ -56,6 +56,7 @@ options(scipen = 999)
 - `r paste0("データ出所 : ", dataSource)`
 - "標本にバイアスは無い"と想定しています。
 - "標本のバイアス有無"は確認していません。
+- Source http://www.e-stat.go.jp/SG1/estat/List.do?bid=000001077238&cycode=0
 
 ***
 
