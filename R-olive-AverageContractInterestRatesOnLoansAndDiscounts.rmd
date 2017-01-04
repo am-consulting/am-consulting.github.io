@@ -91,8 +91,10 @@ cat('\n<hr>\n')
 eval(parse(text = paste0('dygraphPlot1 %>% ', boj_dygraph)))
 cat('\n<hr>\n')
 eval(parse(text = paste0('dygraphPlot1 %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
-cat('\n<hr>\n')
+cat('\n\n')
 ```
+
+#### 基本統計量
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 cat(paste0(format(range(AverageContractInterestRatesOnLoansAndDiscounts[,1]), '%Y年%m月'),
