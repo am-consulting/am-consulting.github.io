@@ -1,0 +1,97 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-calculationPoweredByDataCamp.html')) })
+
+title : 'Calculations Powered By DataCamp'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+    self_contained: false
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+ - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+ - SaECaNet http://saecanet.com/
+ - Olive http://olive.saecanet.com/
+ - twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r, include=FALSE}
+tutorial::go_interactive(greedy = T, height = 450)
+```
+
+***
+
+- `r "タイトル : Calculations Powered By DataCamp"`
+- Powered By DataCamp https://www.datacamp.com/
+
+***
+
+### 基本統計量 / Fundamental statistics
+
+```{r}
+x <- 
+  c(3, 28, 23, 27, 54, 84, 85, 63, 80, 43)
+# You can use it by changing the numerical value.
+##########################
+length(x)
+
+sum(x)
+
+summary(x)
+
+round(x/sum(x)*100, 1)
+
+# Weighted average
+weighted.mean(x)
+
+# Unbiased variance
+var(x)
+
+# Unbiased standard deviation
+sd(x)
+
+# Sample variance
+var(x)*(length(x)-1)/length(x)
+
+# Sample standard deviation
+sqrt(var(x)*(length(x)-1)/length(x))
+
+# Square sum
+sum((x-mean(x))^2)
+
+# Skewness
+mean((x-mean(x))^3)/(sd(x)^3)
+
+# Kurtosis
+mean((x-mean(x))^4)/(sd(x)^4)
+
+# Plot
+plot(x, type = 'o', pch = 20, cex = 2)
+
+stripchart(x, pch = 20, cex = 2, method = 'jitter')
+
+pie(round(x/sum(x)*100, 1), labels = x)
+
+boxplot(x, horizontal = T, col = 'gray')
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
