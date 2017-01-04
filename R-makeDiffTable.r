@@ -6,4 +6,5 @@ fun_makeDiffTable <-
                  check.names = F,
                  stringsAsFactors = F)
     colnames(diffDF) <- colnames(obj)
+    assign('diffDF', diffDF, envir = .GlobalEnv)
   }
