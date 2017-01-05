@@ -34,9 +34,15 @@ for(iii in 1:length(pageList)){
     sapply(buf[,2],function(x)as.numeric(gsub(',','',x))*10^-9)
   colnames(buf) <-
     c(paste0('資産:',tableTitle),'金額(兆円)')
-  buf <-
-    data.frame(buf, `構成比(%)` = round(buf[,2]/buf[nrow(buf),2]*100,2),
-               check.names = F, stringsAsFactors = F)
+  if(length(grep('合計',buf[,1])) != 0){
+    buf <-
+      data.frame(buf, `構成比(%)` = round(buf[,2]/buf[nrow(buf),2]*100,2),
+                 check.names = F, stringsAsFactors = F)
+  }else{
+    buf <-
+      data.frame(buf, `構成比(%)` = round(buf[,2]/sum(buf[,2])*100,2),
+                 check.names = F, stringsAsFactors = F)
+  }
   Assets[[iii]] <- buf
   # 負債パート
   buf <-
@@ -47,9 +53,15 @@ for(iii in 1:length(pageList)){
     sapply(buf[,2],function(x)as.numeric(gsub(',','',x))*10^-9)
   colnames(buf) <-
     c(paste0('負債及び純資産:',tableTitle),'金額(兆円)')
-  buf <-
-    data.frame(buf, `構成比(%)` = round(buf[,2]/buf[nrow(buf),2]*100,2),
-               check.names = F, stringsAsFactors = F)
+  if(length(grep('合計',buf[,1])) != 0){
+    buf <-
+      data.frame(buf, `構成比(%)` = round(buf[,2]/buf[nrow(buf),2]*100,2),
+                 check.names = F, stringsAsFactors = F)
+  }else{
+    buf <-
+      data.frame(buf, `構成比(%)` = round(buf[,2]/sum(buf[,2])*100,2),
+                 check.names = F, stringsAsFactors = F)
+  }
   LiabilitiesAndNetWorth[[iii]] <- buf
   # 国債内訳パート
   buf <-
