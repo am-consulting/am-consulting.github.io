@@ -113,7 +113,7 @@ fun_latestResult(obj = monetaryBase_Japan,objColumn = c(2,6))
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- 
-  paste0('日本と米国のマネタリーベース:',
+  paste0('日本のマネタリーベース:',
          format(tail(monetaryBase_Japan[,1],1),'%Y年%m月分'),
          ':', latestResult)
 dataSource <- 
