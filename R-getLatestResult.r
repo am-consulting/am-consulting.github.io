@@ -1,5 +1,5 @@
-fun_latestResult <- function(obj){
+fun_latestResult <- function(obj, objColumn = -1){
   assign('latestResult',
-         paste0(paste0(colnames(obj)[-1], ':', tail(obj[,-1],1)), collapse = ','),
+         paste0(paste0(colnames(obj)[objColumn], ':', tail(obj[,objColumn],1)), collapse = ','),
          envir = .GlobalEnv)
 }
