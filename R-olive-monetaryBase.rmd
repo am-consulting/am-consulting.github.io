@@ -12,22 +12,8 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width: 1000px;	margin-left: auto; margin-right: auto;}
-table { white-space: nowrap; }
-td.negative { color : red; }
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
  - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
  - SaECaNet http://saecanet.com/
@@ -41,31 +27,63 @@ options(width = 1000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-library(RCurl)
 library(quantmod)
 library(DT)
 library(knitr)
+windowsFonts(Meiryo=windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- 
+  c(
+    'R-beforeORafterFunction.r',
+    'R-dataTablesFunction.r',
+    'R-dygraphsFunction.r',
+    'R-fit.r',
+    'R-getLatestResult.r',
+    'R-makeDiffTable.r',
+    'R-markdownTable.r',
+    'R-scatterPlot.r',
+    'R-turningPoint.r',
+    'plotTimeSeries.r',
+    'timeSeriesDataFundamentalStatistics.r',
+    'timeSeriesForecast.r',
+    'transposeDataFrame.r'
+    )
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+           importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-rFile <- c(
-'importMonetarybaseOfJapan.r')
+rFile <- 
+  c('importMonetarybaseOfJapan-2017.r')
 for(iii in 1:length(rFile)){
-script <- 
- getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',rFile[iii]),ssl.verifypeer = F)
-eval(parse(text = script))
+  script <- 
+   getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/', 
+                 rFile[iii]),
+          ssl.verifypeer = F)
+  eval(parse(text = script))
 }
-monetaryBase_Japan[,-1] <- apply(monetaryBase_Japan[,-1],2,function(x) x*10^-4)
-colnames(monetaryBase_Japan)[-1] <- paste0(colnames(monetaryBase_Japan)[-1],'(兆円)')
-monetaryBase_Japan <- tail(monetaryBase_Japan,12*20)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-YoYJapan <- 
-  round(diff(as.matrix(monetaryBase_Japan[,-1]),lag = 12,differences = 1)/head(as.matrix(monetaryBase_Japan[,-1]),-12)*100,1)
-YoYJapan <- data.frame(tail(monetaryBase_Japan[,1],-12),YoYJapan,check.names = F,stringsAsFactors = F)
-colnames(YoYJapan)[1] <- 'Date'
+objColumn <- 
+  grep('\\(億円\\)', colnames(monetaryBase_Japan))
+monetaryBase_Japan[,objColumn] <- 
+  apply(monetaryBase_Japan[,objColumn], 2, function(x) x*10^-4)
+colnames(monetaryBase_Japan)[objColumn] <- 
+  gsub('\\(億円\\)', '\\(兆円\\)', colnames(monetaryBase_Japan)[objColumn])
+monetaryBase_Japan <- 
+  tail(monetaryBase_Japan, 12*2000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -86,136 +104,140 @@ for (lll in seq(1, length(importData), by = 2)) {
   if(lll == 1){mbUSA <- tmp}else{mbUSA <- merge(mbUSA,tmp,by='Date')}
 }
 mbUSA <- mbUSA[,c(1,2,4)]
-mbUSA <- tail(mbUSA,12*20)
+mbUSA <- tail(mbUSA,12*2000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- paste0('日本と米国のマネタリーベース - ',format(tail(monetaryBase_Japan[,1],1),'%Y年%m月分'))
-dataSource <- '日本銀行,Federal Reserve Bank of St. Louis'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-dataTail <- 0 
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
-windowsFonts(Meiryo=windowsFont("Meiryo"))
-options(scipen = 999)
-lineColor <- c('blue','red')
+fun_latestResult(obj = monetaryBase_Japan,objColumn = c(2,6))
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries <- 
-  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'o', type02 = 'o', needylim = 2, dateFormat = '%Y-%m', chartType = 2) {
-if(chartType!=0){
-mainTitle <- paste0(colnames(obj)[objY01],'\n×\n',colnames(obj)[objY02])
-maxValue <- max(obj[,objY01],obj[,objY02])
-minValue <- min(obj[,objY01],obj[,objY02])
-}else{
-mainTitle <- colnames(obj)[objY01]
-}
-par(mar=c(3,6,6,5),family = 'Meiryo')
-plot(
-  obj[, objX]  , obj[, objY01], type = type01, col = lineColor[1], xlab = '', ylab = '', xaxt = 'n', 
-  ylim = if(needylim == 1){c(minValue, maxValue)},
-  main = paste(mainTitle,'\n', paste0(format(range(obj[,objX]), dateFormat),collapse = '~'),'\nSource:',dataSource),
-  cex.axis = 1 , cex.lab = 1,   cex.main = 1, lwd = 1
-  )
-lo <- loess(obj[, objY01] ~ as.numeric(obj[,objX]), degree = 2)
-lines(obj[,objX] , predict(lo) , col = lineColor[1], lwd = 1, lty = 2)
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-if(chartType!=0){
-  if(chartType == 1){
-  lines(obj[,objX], obj[,objY02], col = lineColor[2], lwd = 1, type = type02)
-  }else{  
-  par(new=T)
-  plot(
-    obj[, objX]  , obj[, objY02], type = type02, col = lineColor[2], xlab = '', ylab = '', xaxt = 'n', yaxt = 'n', 
-    cex.axis = 1 , cex.lab = 1, cex.main = 1, lwd = 1
-    )
-  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-  axis(4, cex.axis = 1, cex.lab = 1)
-  mtext(gsub('\\(B','\n\\(B',colnames(obj)[objY02]), side=4, line=3.2, cex=1)
-  }
-  lo <- loess(obj[, objY02] ~ as.numeric(obj[,objX]), degree = 2)
-  lines(obj[,objX] , predict(lo) , col = lineColor[2], lwd = 1, lty = 2)
-  graphics::legend('topleft',col=lineColor,lty=1,legend=c(colnames(obj)[objY01],colnames(obj)[objY02]),cex=1,bty='n',lwd = 2)
-}
-axis.Date(side=1, at=obj[,objX],format=dateFormat,padj=1,cex.axis=1.0) 
-mtext(gsub('\\(B','\n\\(B',colnames(obj)[objY01]), side=2, line=3.2, cex=1)
-# rect part
-rectDateL <- as.numeric(as.Date('2009-09-16'))
-rectDateR <- as.numeric(as.Date('2012-12-26'))
-if(as.numeric(obj[1,objX]) < rectDateR){
-rectText <- '民主党(日本)政権'
-rect(xleft = rectDateL, ybottom = par('usr')[3], 
-     xright = rectDateR, ytop = par('usr')[4], col = 'dimgray', density = 10, angle = 45)
-text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
-# rect part
-}
-  }
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-fun_transport <- function(obj){
-  obj[,1] <- format(obj[,1],'%Y-%m')
-  buf <- t(tail(obj,3))
-  buf <- data.frame(row.names(buf), buf, check.names = F, stringsAsFactors = F, row.names = NULL)
-  colnames(buf) <- buf[1,]
-  buf <- buf[-1,]
-  colnames(buf)[1] <- '項目'
-  buf[,-1] <- apply(buf[,-1,drop=F], 2, as.numeric)
-  tDF <- buf
-  return(tDF)
-}
-```
-
-### 日本のマネタリーベース
-
-```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries(obj = monetaryBase_Japan, chartType = 0, type01 = 'l')
-knitr::kable(fun_transport(obj = monetaryBase_Japan), row.names = F)
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- 
+  paste0('日本と米国のマネタリーベース:',
+         format(tail(monetaryBase_Japan[,1],1),'%Y年%m月分'),
+         ':', latestResult)
+dataSource <- 
+  '日本銀行,Federal Reserve Bank of St. Louis'
 ```
 
 ***
 
-### 日本のマネタリーベース:前年同月比(%)
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
+#### 日本のマネタリーベース:平均残高(兆円)と前年比(%)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=4}
+n <- 1
+fun_generateKnit(objDF = monetaryBase_Japan[,c(1,6,9)], 
+                 plotNum = n,
+                 dygraphTitle = colnames(monetaryBase_Japan)[6],
+                 group = 0,
+                 color = c('blue','red'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
+cat('\n\n<hr>\n\n')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n\n<hr>\n\n')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('\n\n<hr>\n\n')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=4}
+n <- 2
+fun_generateKnit(objDF = monetaryBase_Japan[,c(1,2)], 
+                 plotNum = n,
+                 dygraphTitle = colnames(monetaryBase_Japan)[2],
+                 group = 0,
+                 color = c('blue','red'),
+                 barPlot = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
+cat('\n\n<hr>\n\n')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n\n<hr>\n\n')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('\n\n<hr>\n\n')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
+cat('\n\n<hr>\n\n')
+```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries(obj = YoYJapan, chartType = 0, type01 = 'h')
-knitr::kable(fun_transport(obj = YoYJapan), row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = monetaryBase_Japan,
+                                               dateFormat = '%Y年%m月',tailN = 4)
+                  )
 ```
 
 ***
 
-### 米国のマネタリーベース
+#### 米国のマネタリーベース
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries(obj = mbUSA, objY02 = 2, chartType = 0, type01 = 'l')
-knitr::kable(fun_transport(obj = mbUSA), row.names = F)
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=4}
+n <- 3
+fun_generateKnit(objDF = mbUSA[,c(1,2)], 
+                 plotNum = n,
+                 dygraphTitle = colnames(mbUSA)[2])
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
 ```
 
 ***
 
-### 日本と米国の比較
-
 ```{r warning=F, error=F, message=F, echo=F}
-mergeData <- base::merge(monetaryBase_Japan, mbUSA, by='Date')[,c(1,2,8)]
-fun_plotTimeSeries(obj = mergeData, chartType = 2, type01 = 'l', type02 = 'l')
-knitr::kable(fun_transport(obj =mergeData),row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mbUSA,
+                                               dateFormat = '%Y年%m月',tailN = 4)
+                  )
 ```
 
 ***
 
-### 日本と米国の比較:比率
+#### 日本と米国のマネタリーベース比較
+
+```{r warning=F, error=F, message=F, echo=F, fig.height=6}
+mergeData <- 
+  base::merge(monetaryBase_Japan, mbUSA, by = 'Date')[,c(1,6,10)]
+colnames(mergeData)[3] <- 
+  gsub('Base\\(','Base\n\\(',colnames(mergeData)[3])
+fun_plotTimeSeries(obj = mergeData,
+                   dateFormat = '%Y年%m月',
+                   fitLcolor = 0,
+                   fitRcolor = 0,
+                   lwdL = 1,
+                   lwdR = 1,
+                   dataSource = dataSource,
+                   mar = c(3,5,5,5))
+```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F}
-mbRatio <- data.frame(mergeData[,1], mergeData[,3]/mergeData[,2], check.names = F)
-colnames(mbRatio)[2] <- 'The Ratio of USA to JAPAN(Billion dollar/Trillion JPY)'
-fun_plotTimeSeries(obj = mbRatio, chartType = 0, type01 = 'l')
-knitr::kable(fun_transport(obj =mbRatio),row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData,
+                                               dateFormat = '%Y年%m月',tailN = 4))
+```
+
+***
+
+#### 日本と米国のマネタリーベース比較:比率
+
+```{r warning=F, error=F, message=F, echo=F, fig.height=5}
+mbRatio <- 
+  data.frame(mergeData[,1], mergeData[,3]/mergeData[,2], check.names = F, stringsAsFactors = F)
+colnames(mbRatio)[2] <- 
+  'The Ratio of USA to JAPAN(Billion dollar/Trillion JPY)'
+fun_plotTimeSeries(obj = mbRatio,
+                   dateFormat = '%Y年%m月',
+                   chartType = 0,
+                   dataSource = dataSource,
+                   fitLcolor = 0)
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mbRatio,
+                                               dateFormat = '%Y年%m月',
+                                               tailN = 4))
 ```
 
 ***
