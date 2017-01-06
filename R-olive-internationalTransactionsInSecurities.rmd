@@ -10,26 +10,9 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
-.main-container {max-width: 1000px; margin-left: auto; margin-right: auto; }
-table{white-space: nowrap;}
-td.negative {color : red;}
-td.AMCCTDstyle01 {text-align : right;font-style: italic;}
-td.AMCCTDstyle02 {color : blue;text-align : right;font-style: italic;font-weight: bold;}
-</style>
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -37,6 +20,34 @@ function MakeNegative() {
 - twitter https://twitter.com/AMC2_Japan
 
 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- 
+  c(
+    'R-beforeORafterFunction.r',
+    'R-dataTablesFunction.r',
+    'R-dygraphsFunction.r',
+    'R-fit.r',
+    'R-getLatestResult.r',
+    'R-makeDiffTable.r',
+    'R-markdownTable.r',
+    'R-scatterPlot.r',
+    'R-turningPoint.r',
+    'plotTimeSeries.r',
+    'timeSeriesDataFundamentalStatistics.r',
+    'timeSeriesForecast.r',
+    'transposeDataFrame.r'
+    )
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+           importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -67,11 +78,6 @@ dataSource <- '財務省'
 notes <- '複数のワードで検索する際は半角スペースで区切ってください'
 notes0 <- "表中、-9999はNAを意味します"
 Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-# cat(paste("Title       : ", dataTitle, "\n"))
-# cat(paste("Data Source : ", dataSource, "\n"))
-# cat(paste("Author      : ", Author, "\n"))
-# cat(paste("特  記      : ", notes, "\n"))
-# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -80,8 +86,6 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- `r paste0("特記 : ", notes)`
-- `r paste0("特記 : ", notes0)`
 - Source : http://www.mof.go.jp/international_policy/reference/itn_transactions_in_securities/
 
 ***
@@ -98,23 +102,9 @@ options(scipen = 999)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_datatabls <- 
-  function(obj, orderColumn = 0, orderDirection = 'desc', caption = ''){
-DT::datatable(
-  obj,
-  extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-  options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-    searching = T, scrollX = T, lengthMenu = list(c(10, -1, 1), c(10, 'All', 1)),
-    orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-    search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-    dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 2), fixedHeader = T,
-    columnDefs = list(list(className = "AMCCTDstyle01", targets = 0),
-                      list(className = "AMCCTDstyle02", targets = (grep('ネット',colnames(obj))-1)))),
-  rownames = F, caption = caption, class = 'display compact', escape = F
-)  
-}
-# fun_datatabls(obj = origData[,c(1,2,5,8,13,16,19,24)])
-fun_datatabls(obj = origData[,-grep('year|month|h|q',colnames(origData),ignore.case = T)])
+fun_dataTable(obj = tail(origData[,-grep('year|month|h|q',colnames(origData),ignore.case = T)],50),
+              leftcolumns = 2,
+              dateFormat = 0)
 ```
 
 ***
@@ -157,17 +147,12 @@ for(iii in objY){
 tableStat <- data.frame(seq(1,nrow(tableStat)), tableStat, check.names = F, stringsAsFactors = F)
 # tableStat[,3:4] <- format(tableStat[,3:4], big.mark=",", scientific=F)
 colnames(tableStat) <- c('ID','年･半期･四半期','対内-株式･投資ファンド持分-ネット','対内-中長期債-ネット')
-DT::datatable(
-  tableStat,
-  options = list(
-    paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T, searching = T,
-    scrollX = F, lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)), orderClasses = T,
-    order = list(list(0, 'desc')),
-    search = list(regex = T, caseInsensitive = T)
-  ),
-  rownames = F,   class = 'display compact',
-  caption = paste0('対内証券投資(単位:億円) - ', head(origData[,2],1), ' ~ ', tail(origData[,2],1))
-)
+
+fun_dataTable(obj = tableStat,
+              leftcolumns = 2,
+              dateFormat = 0,
+              title = paste0('対内証券投資(単位:億円) - ', 
+                             head(origData[,2],1), ' ~ ', tail(origData[,2],1)))
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=12}
@@ -207,7 +192,6 @@ DT::datatable(
 # }
 ```
 
-***
 #### 株式･投資ファンド持分及び合計の基本統計量
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -229,9 +213,7 @@ colnames(buf) <- unlist(buf[2, ])
 buf <- buf[-(1:2), ]
 colnames(buf)[1] <- '対象'
 buf[,-1] <- apply(buf[,-1],2,as.numeric)
-knitr::kable(buf,row.names = F)
-# buf <- data.frame(ID=seq(1,nrow(buf)),buf,check.names = F,stringsAsFactors = F)
-# fun_datatabls(obj = buf,orderDirection = 'asc')
+fun_markdownTable(obj = buf)
 ```
 
 ***
@@ -244,9 +226,9 @@ tDF <- t(tail(WoW[,1:23],tailN))
 tDF <- data.frame(row.names(tDF),tDF,check.names = F,stringsAsFactors = F,row.names = NULL)
 colnames(tDF) <- tDF[1,]
 tDF <- tDF[-1,]
-colnames(tDF)[1] <- 'Item'
+colnames(tDF)[1] <- '対象'
 tDF[,-1] <- apply(tDF[,-1],2,as.numeric)
-knitr::kable(tDF,row.names = F)
+fun_markdownTable(tDF)
 ```
 
 ***
