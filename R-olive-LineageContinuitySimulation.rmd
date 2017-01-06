@@ -13,26 +13,22 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+<style>.main-container {max-width : 900px;}</style>
 
-```{r,warning=F,error=F,message=F,results='hold'}
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
 library(DT)
 library(lubridate)
 dataTitle <- 
-  '一組の夫婦が授かる子供の人数と男子または女子が誕生する確率に基づく系統連続性シミュレーション'
-childrenNumber <- 
-  c(1, 2, 3, 4)
-probability_Boy <- 
-  c(0.45, 0.5, 0.55)
+  '一組の夫婦が授かる子供の人数と男子が誕生する確率に基づく系統連続性シミュレーション'
 ```
 
 ***
 
-- `r paste0("タイトル : ", dataTitle, latestResult)`
+- `r paste0("タイトル : ", dataTitle)`
 
 ***
 
-```{r warning=F,error=F,message=F,results='hide'}
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
 fun_simulation <-
   function(probability_Boy = 0.5, # 男子が誕生する確率
            childrenNumber = 2, # 授かる子供の人数
@@ -76,16 +72,25 @@ fun_simulation <-
       }
       colnames(buf) <- 
         c('第X世代', '男の人数', '女の人数', '男女合計人数')
-      print(buf)
+      # print(buf)
+      if(nrow(buf) <= ceiling(lastGeneration/2)){
+        assign('failExample', buf, envir = .GlobalEnv) 
+        assign('failTest', test, envir = .GlobalEnv)
+      }
+      if(nrow(buf) == (lastGeneration + 1)){
+        assign('successExample', buf, envir = .GlobalEnv) 
+        assign('successTest', test, envir = .GlobalEnv)
+      }
       assign(paste0('generationTable',test), buf, envir = .GlobalEnv)
     }
     assign('simulationResult',
-           paste0(cnt, ' / ', test, ' = ', round(cnt / test * 100, 2), '%'),
+           paste0(cnt, ' / ', test, ' = ', round(cnt / simN * 100, 2), '%'),
            envir = .GlobalEnv)
+    assign('countResult', cnt, envir = .GlobalEnv)
   }
 ```
 
-```{r warning=F,error=F,message=F,results='hide'}
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
 funDataTable <- 
   function(obj,
            captionText = '',
@@ -110,39 +115,13 @@ funDataTable <-
   }
 resultOutput01 <- 
   function(){
-    cat(
-    '1組の夫婦が生涯で授かる子供の人数を',
-    childrenNumber,
-    '人、\n男子が誕生する確率を',
-    probability_Boy * 100,
-    '%とし、\n以降同一条件のもとその後',
-    lastGeneration,
-    '世代連続で少なくとも1人は第1世代に連なる男子の系統の男子が存在している確率は\n',
-    simN,
-    '回のシミュレーションの結果、',
-    simulationResult,
-    '\n(a/b=Z%.aは',
-    lastGeneration,
-    '世代連続で少なくとも1人は第1世代に連なる男子の系統の男子が存在した回数、bはシミュレーション総回数).'
-  )
-}
-resultOutput02 <- 
-  function(){
-  chkResult <- get(paste0('generationTable0', simuN))
-  generationResult <- nrow(chkResult)
-  if (chkResult[nrow(chkResult), 2] == 0) {
-    generationResult <- generationResult - 1
+    cat(paste0(
+    '1組の夫婦が生涯で授かる子供の人数を', childrenNumber, '人、<br>',
+    '男子が誕生する確率を', probability_Boy * 100, '%とし、<br>',
+    '同一条件のもと', simN, '回のシミュレーションの結果、<br>',
+    lastGeneration, '世代連続で少なくとも1人は第1世代に連なる男子の系統の男子が存在したのは', countResult, '回、<br>','
+    比率は', simulationResult, '。'))
   }
-  buf_captionText <<- paste(
-    '男子誕生確率(%):',
-    buf_probBoy * 100,
-    '、夫婦が授かる子どもの人数:',
-    buf_childrenN,
-    '、',
-    generationResult,
-    '世代目まで連続して少なくとも1人は第0世代に連なる男子の系統の男子が存在.'
-  )
-}
 ```
 
 #### シミュレーション前提
@@ -151,25 +130,127 @@ resultOutput02 <-
 1. 最初の一組の夫婦を第1世代と名付ける。
 1. 第1世代に連なる男子の系統の男子がある世代まで継続するか否かをシミュレーション。
 
-#### 表の見方
-1. 例えば授かる子供の人数が4人の場合、第1世代の合計人数は第0世代が授かった子供の人数=4人となる。
-1. 次に男子を授かる確率に基づき男女の人数をシミュレーション。例えば男子の人数=2人、女子の人数=2人。
-1. 第2世代の合計人数は第1世代の"男子の人数"に、授かる子供の人数を乗じた人数となる。第1世代の男子の人数が2人の場合、合計人数は2×4=8人。
-1. 再び男子を授かる確率に基づき男女の人数をシミュレーション。例えば男子の人数=3人、女子の人数=5人。
-1. 以降の世代も同様とし、表中最下行の世代の男子の人数が0でない場合、設定した世代まで第0世代に連なる男子の系統の男子が継続したと判定。
-
 ***
-#### シミュレーション例
+<div align="center"><h3><b>シミュレーション結果</b></h3></div>
+<h4><Font color="blue"><b>Pattern Blue</b></font></h4>
 
-```{r warning=F,error=F,message=F,results='hold'}
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+lastGeneration <- 10
+simN <- 50
 probability_Boy <- 0.5
 childrenNumber <- 4
-lastGeneration <- 10
-simN <- 100
 fun_simulation(probability_Boy = probability_Boy,
                childrenNumber = childrenNumber,
                lastGeneration = lastGeneration,
                simN = simN)
+resultOutput01()
+if(countResult < simN){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されなかったケース。 シミュレーション',failTest,'回目</b>'))
+  funDataTable(failExample)
+}
+if(countResult != 0){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されたケース。 シミュレーション',successTest,'回目</b>'))
+  funDataTable(successExample)
+}
+```
+
+***
+<h4><Font color="#622d18"><b>Pattern Sepia</b></font></h4>
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+probability_Boy <- 0.5
+childrenNumber <- 3
+fun_simulation(probability_Boy = probability_Boy,
+               childrenNumber = childrenNumber,
+               lastGeneration = lastGeneration,
+               simN = simN)
+resultOutput01()
+if(countResult < simN){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されなかったケース。 シミュレーション',failTest,'回目</b>'))
+  funDataTable(failExample)
+}
+if(countResult != 0){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されたケース。 シミュレーション',successTest,'回目</b>'))
+  funDataTable(successExample)
+}
+```
+
+***
+<h4><Font color="orange"><b>Pattern Orange</b></font></h4>
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+probability_Boy <- 0.5
+childrenNumber <- 2
+fun_simulation(probability_Boy = probability_Boy,
+               childrenNumber = childrenNumber,
+               lastGeneration = lastGeneration,
+               simN = simN)
+resultOutput01()
+if(countResult < simN){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されなかったケース。 シミュレーション',failTest,'回目</b>'))
+  funDataTable(failExample)
+}
+if(countResult != 0){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されたケース。 シミュレーション',successTest,'回目</b>'))
+  funDataTable(successExample)
+}
+```
+
+***
+<h4><Font color="red"><b>Pattern Red</b></font></h4>
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+probability_Boy <- 0.5
+childrenNumber <- 1
+fun_simulation(probability_Boy = probability_Boy,
+               childrenNumber = childrenNumber,
+               lastGeneration = lastGeneration,
+               simN = simN)
+resultOutput01()
+if(countResult < simN){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されなかったケース。 シミュレーション',failTest,'回目</b>'))
+  funDataTable(failExample)
+}
+if(countResult != 0){
+  cat('<br><br>')
+  cat(paste0('<b>',lastGeneration+1, '世代迄継続されたケース。 シミュレーション',successTest,'回目</b>'))
+  funDataTable(successExample)
+}
+```
+
+***
+### 「男子誕生確率」×「授かる子供の人数」のシミュレーション
+#### `r paste0('シミュレーション回数は', simN, '回。', lastGeneration + 1,'世代迄継続した割合')`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+resultTable <- data.frame()
+childrenNumber <- 
+  c(1, 2, 3, 4)
+probability_Boy <- 
+  c(0.45, 0.5, 0.55)
+for(ccc in 1:length(childrenNumber)){
+  for(ppp in 1:length(probability_Boy)){
+    gc();gc()
+    fun_simulation(probability_Boy = probability_Boy[ppp],
+                   childrenNumber = childrenNumber[ccc],
+                   lastGeneration = lastGeneration,
+                   simN = simN)
+    resultTable[ppp, ccc] <- simulationResult
+  }
+}
+colnames(resultTable) <- 
+  paste0('授かる子供の数=', childrenNumber)
+rownames(resultTable) <- 
+  paste0('男子が生まれる確率=', probability_Boy)
+funDataTable(obj = resultTable,
+             rowName = T)
 ```
 
 ***
