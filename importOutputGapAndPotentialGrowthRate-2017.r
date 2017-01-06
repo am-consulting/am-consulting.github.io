@@ -30,8 +30,12 @@ tmp0 <-
 tmp1 <-
   length(tmp0)
 if(tmp1 != 0){
+  bufColnames <-
+    colnames(buf0)[-tmp0]
   buf0 <-
     buf0[,-tmp0]
+  colnames(buf0) <-
+    bufColnames
 }
 colnames(buf0)[1] <-
   'Date'
