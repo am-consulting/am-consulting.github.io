@@ -1,8 +1,9 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-foreignExchangeIntervention.html')) })
 
-title : '外国為替平衡操作'
+title : 'Foreign Exchange Intervention Operations'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 10
@@ -11,17 +12,43 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {
-	max-width: 1200px;
-	margin-left: auto;
-	margin-right: auto;
-}
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
-table{
- white-space: nowrap;
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+importAMCC <- 
+  c(
+    'R-beforeORafterFunction.r',
+    'R-dataTablesFunction.r',
+    'R-dygraphsFunction.r',
+    'R-fit.r',
+    'R-getLatestResult.r',
+    'R-makeDiffTable.r',
+    'R-markdownTable.r',
+    'R-scatterPlot.r',
+    'R-turningPoint.r',
+    'plotTimeSeries.r',
+    'timeSeriesDataFundamentalStatistics.r',
+    'timeSeriesForecast.r',
+    'transposeDataFrame.r'
+    )
+for(iii in 1:length(importAMCC)){
+  script <- getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+           importAMCC[iii]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
 }
-</style>
+```
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -34,25 +61,26 @@ library(lubridate)
 library(pipeR)
 ```
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '外国為替平衡操作の実施状況(月次ベース)'
-dataSource <- '財務省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-dataTail <- 0 
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('作 成 日    : ',Sys.time(),'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
-```
-
 ```{r,warning=F,error=F,message=F,echo=F}
+library(excel.link)
+fileName <-
+  'defaultPath.csv'
+username <- 
+  Sys.info()['user']
+pathToFile <- 
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf000 <- 
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+pathOutput <- 
+  paste0("C:/Users/", username, buf000[3,1])
+setwd(pathOutput)
+fileName <- 
+  dir(pathOutput)[grep('外国為替平衡操作',dir(pathOutput))]
+tmp0 <- 
+  xl.read.file(fileName, header = T, top.left.cell = "A1", xl.sheet = 1, excel.visible = F)
 tmp0 <-
-  read.table('clipboard', header = T, sep = '\t', stringsAsFactor = F,
-  na.strings = c('na', '', '-', ' ---- ', '   -- ','NA'), check.names = F)
+  tmp0[,-grep('NA',colnames(tmp0))]
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -64,51 +92,68 @@ dataSet$`期間(西暦)` <- format(as.Date(paste0(yyyy,'-',mm,'-1')) %m+% months
 dataSetDT <- dataSet
 dataSetNA <- subset(dataSet, dataSet[,3]==-9999)
 dataSetIV <- subset(dataSet, dataSet[,3]!=-9999 & dataSet[,3]!=0)
+commonCaption <- 
+  paste0(tail(dataSetDT[,2],1),' - ',head(dataSetDT[,2],1))
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj, orderColumn = 0, orderDirection = 'asc', width01 = '3%', width02 = '10%', caption = '') {
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = F, lengthMenu = list(c(15, -1, 1), c(15, 'All', 1)),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width01, targets = 0), list(width = width02, targets = 1)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
-    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
-  )  
-}
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+fun_latestResult(obj = dataSetDT,
+                 objColumn = 3,
+                 orderDirection = 1,
+                 orderColumn = 1,
+                 dateColumn = 2,
+                 dateFormat = 0)
 ```
 
-<hr>
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- '外国為替平衡操作の実施状況(月次ベース):'
+dataSource <- '財務省'
+notes <- '複数のワードで検索する際は半角スペースで区切ってください'
+notes0 <- '表中、-9999はNAを意味します'
+dataTail <- 0 
+Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle, latestResult)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source : http://www.mof.go.jp/international_policy/reference/feio/monthly/index.htm
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-caption <- paste0(tail(dataSetDT[,2],1),' - ',head(dataSetDT[,2],1))
-funDataTable(obj = dataSetDT)
+fun_dataTable(obj = dataSetDT,
+              dateFormat = 0,
+              title = commonCaption,
+              orderDirection = 'asc',
+              leftcolumns = 2)
 ```
 
-<hr>
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-cat(paste0('<b>',caption,'(うち平衡操作実施月)','</b>\n'))
-funDataTable(obj = dataSetIV)
-cat(paste0('合計(兆円) : ',sum(dataSetIV[,3])/10^4))
+fun_dataTable(obj = dataSetIV,
+              dateFormat = 0,
+              orderDirection = 'asc',
+              title = paste0(commonCaption, '(うち平衡操作実施月)'))
+cat(paste0('<h4><b>合計(兆円) : ',sum(dataSetIV[,3])/10^4,'</b></h4>'))
 ```
 
-<hr>
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-cat(paste0('<b>',caption,'(うち404 Not Found)','</b>\n'))
-funDataTable(obj = dataSetNA)
+fun_dataTable(obj = dataSetNA,
+              dateFormat = 0,
+              orderDirection = 'asc',
+              title = paste0(commonCaption, '(うち404 Not Found)'))
 ```
 
-#### 上表は http://www.mof.go.jp/international_policy/reference/feio/monthly/index.htm からのリンク先が'404 Not Found'となるデータ。
+###### 上表は http://www.mof.go.jp/international_policy/reference/feio/monthly/index.htm からのリンク先が'404 Not Found'となるデータ。
 
-<hr>
+***
 
-
+<script>MakeNegative()</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
