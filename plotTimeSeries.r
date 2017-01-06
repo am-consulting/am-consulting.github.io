@@ -43,7 +43,12 @@ fun_plotTimeSeries <-
                       na.omit(obj[,3]))
     }
     par(mar = mar,
-        family = 'Meiryo')
+        family = 'Meiryo',
+        font.axis = font.axis,
+        font.main = font.main,
+        font.lab = font.lab,
+        font.sub = font.sub
+        )
     plot(x = obj[,1],
          y = obj[,2],
          type = typeL,
