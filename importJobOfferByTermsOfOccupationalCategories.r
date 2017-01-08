@@ -39,5 +39,9 @@ fun_jobOffer <- function(dataID = '000031515544', sheetNo = 1){
   colnames(buf4)[1] <- 'Date'
   buf4[,-1] <-
     apply(buf4[,-1],2,function(x)as.numeric(gsub(',','',x)))
-  assign('jobOffer', buf4, envir = .GlobalEnv)
+  tmp <-
+    as.Date(buf4[,1])
+  buf5 <-
+    data.frame(Date = tmp, buf4[,-1], check.names = F, stringsAsFactors = F)
+  assign('jobOffer', buf5, envir = .GlobalEnv)
 }
