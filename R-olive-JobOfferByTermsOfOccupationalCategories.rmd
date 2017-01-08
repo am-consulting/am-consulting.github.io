@@ -1,0 +1,116 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-JobOfferByTermsOfOccupationalCategories.html')) })
+
+title : 'Job Offer By Terms Of Occupational Categories'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importJobOfferByTermsOfOccupationalCategories.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+fun_jobOffer(sheetNo = 7)
+jobOffer[,1] <- as.Date(jobOffer[,1])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y-%m'
+fun_latestResult(obj = jobOffer, dateFormat = dateFormat, objColumn = -1)
+dataTitle <- 
+  paste0('職業別労働市場関係指標(実数,平成23年改定):', 
+         sheetTitle,':',
+         format(tail(jobOffer[,1],1),dateFormat))
+dataSource <- '厚生労働省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.e-stat.go.jp/SG1/estat/NewList.do?tid=000001020327
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+buf <-
+  fun_transposeDataFrame(obj = jobOffer,dateFormat = dateFormat,colName = '職業')
+under1 <-
+  subset(buf, buf[,ncol(buf)] < 1)
+over1 <-
+  subset(buf, buf[,ncol(buf)] >= 1)
+```
+
+#### 直近の有効求人倍率が1.0以上の職業
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = over1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
+```
+
+#### 直近の有効求人倍率が1.0未満の職業
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = under1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
+```
+
+#### 直近の有効求人倍率Top5
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+```
+
+***
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
