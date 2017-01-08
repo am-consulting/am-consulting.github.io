@@ -45,13 +45,13 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-library(RCurl)
-importAMCC <- 
-  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r',
-    'transposeDataFrame.r','R-fit.r','plotTimeSeries.r','R-turningPoint.r','timeSeriesDataFundamentalStatistics.r')
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", importAMCC[iii]),
+functionList <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+           header = F,
+           as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
     ssl.verifypeer = F
   )
   eval(parse(text = script))
@@ -64,23 +64,15 @@ dataSet <- na.omit(tmp)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-appendText <- 
-  paste0('. Week over Week - ',
-         colnames(dataSet)[2], ':', tail(diff(as.matrix(dataSet[,-1])),1)[1], ',',
-         colnames(dataSet)[3], ':', tail(diff(as.matrix(dataSet[,-1])),1)[2])
 dateFormat <- '%Y-%m-%d'
+
+
+
+fun_latestResult(obj = fun_makeDiffTable(obj = dataSet), objColumn = -1, dateFormat = dateFormat)
 dataTitle <-
-  paste0('Baker Hughes:North America Rig Count',' - ',
-         format(last(dataSet[, 1]), dateFormat),appendText)
+  paste0('Baker Hughes:North America Rig Count','-',
+         'Week over Week:', latestResult)
 dataSource <- 'Baker Hughes'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-# cat(paste("Title       : ", dataTitle, "\n"))
-# cat(paste("Data Source : ", dataSource, "\n"))
-# cat(paste("Author      : ", Author, "\n"))
-# cat(paste("特  記      : ", notes, "\n"))
-# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -101,7 +93,7 @@ objX <- 1
 objY01 <- 2
 objY02 <- 3
 datePeriod <- paste0(format(range(dataSet[,objX]), dateFormat),collapse = '~')
-fun_plotTimeSeries(obj = dataSet, objX = objX, objYL = objY01, objYR = objY02, dataSource = dataSource)
+fun_plotTimeSeries(obj = dataSet, objX = objX, objYL = objY01, objYR = objY02, dataSource = dataSource,lwdR = 1)
 ```
 
 ***
@@ -114,10 +106,11 @@ for (ddd in 1:2) {
     dataSet[, bufN],
     col = '#ADD8E6',
     main = colnames(dataSet)[bufN],
-    cex.main = 1.0
+    cex.main = 1.0,
+    font.main = 1
   )
 }
-mtext(datePeriod, side = 3,outer = T,cex = 1.2)
+mtext(datePeriod, side = 3,outer = T,cex = 1.2,font = 1)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -162,7 +155,7 @@ knitr::kable(fun_transposeDataFrame(obj = dataSet0,tailN = 5),row.names = F)
 ```
 
 ***
-#### 前週差がプラスからマイナス又はその逆へと変化した週:前週差±0は前週差プラスとする。
+#### 前週差がプラスからマイナス又はその逆へと変化した週:前週差±0は前週差プラスとする。 / Each Turning Point
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 4
@@ -196,7 +189,7 @@ if(durationInclude0 != 0){
 }
 ```
 
-#### 各系列の最大値
+#### 各系列の最大値 / Each Max
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
@@ -229,7 +222,7 @@ knitr::kable(
 ```
 
 ***
-#### 各系列の最小値
+#### 各系列の最小値 / Each Min
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
