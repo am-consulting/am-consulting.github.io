@@ -5,10 +5,12 @@ fun_latestResult <-
       obj[order(obj[,orderColumn], decreasing = T),]
     }
     assign('latestResult',
-           paste0(ifelse(dateFormat == 0, tail(obj[,dateColumn],1), format(tail(obj[,dateColumn],1),dateFormat)),
+           paste0(ifelse(dateFormat == 0,
+                         tail(obj[,dateColumn],1),
+                         format(tail(obj[,dateColumn],1),dateFormat)),
                   ':',
-                  colnames(obj)[objColumn],
+                  paste0(paste0(colnames(obj)[objColumn],
                   ':',
-                  tail(obj[,objColumn],1)),
+                  tail(obj[,objColumn],1)),collapse = ' , ' )),
            envir = .GlobalEnv)
 }
