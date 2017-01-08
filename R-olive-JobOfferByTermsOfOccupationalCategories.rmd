@@ -52,7 +52,6 @@ script <-
   )
 eval(parse(text = script))
 fun_jobOffer(sheetNo = 7)
-jobOffer[,1] <- as.Date(jobOffer[,1])
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -72,6 +71,7 @@ options(scipen = 999)
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
 - Source http://www.e-stat.go.jp/SG1/estat/NewList.do?tid=000001020327
+- 職業の大分類と中分類が混在しています。
 
 ***
 
@@ -84,19 +84,74 @@ over1 <-
   subset(buf, buf[,ncol(buf)] >= 1)
 ```
 
+***
 #### 直近の有効求人倍率が1.0以上の職業
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = over1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
 ```
 
+***
 #### 直近の有効求人倍率が1.0未満の職業
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = under1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
 ```
 
-#### 直近の有効求人倍率Top5
+***
+#### 直近の有効求人倍率上位10
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+head(buf[order(buf[,ncol(buf)],decreasing = T),],10)
+```
+
+***
+#### 直近の有効求人倍率下位10
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+head(buf[order(buf[,ncol(buf)],decreasing = F),],10)
+```
+
+***
+#### 職業別有効求人倍率:最高倍率の推移("分類不能の職業"除く)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+obj <-
+  jobOffer[,-grep('分類不', colnames(jobOffer))]
+topJob <-
+  apply(obj,1,function(x)paste0(colnames(obj)[which(max(x)==x)],collapse = ' , '))
+topJobRate <- 
+  as.numeric(apply(obj,1,function(x)max(x)))
+topJobDF <- 
+  data.frame(obj[,1],topJob,topJobRate)
+colnames(topJobDF) <- 
+  c('Date','最高有効求人倍率の職業','有効求人倍率')
+fun_dataTable(obj = topJobDF,
+              title = paste0(format(range(topJobDF[,1]),dateFormat),collapse = '~'),
+              leftcolumns = 2)
+```
+
+***
+#### 職業別有効求人倍率:最低倍率の推移("分類不能の職業"除く)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+obj <-
+  jobOffer[,-grep('分類不', colnames(jobOffer))]
+topJob <-
+  apply(obj,1,function(x)paste0(colnames(obj)[which(min(x)==x)],collapse = ' , '))
+topJobRate <- 
+  as.numeric(apply(obj,1,function(x)min(x)))
+topJobDF <- 
+  data.frame(obj[,1],topJob,topJobRate)
+colnames(topJobDF) <- 
+  c('Date','最低有効求人倍率の職業','有効求人倍率')
+fun_dataTable(obj = topJobDF,
+              title = paste0(format(range(topJobDF[,1]),dateFormat),collapse = '~'),
+              leftcolumns = 2)
+```
+
+***
+#### 
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ```
