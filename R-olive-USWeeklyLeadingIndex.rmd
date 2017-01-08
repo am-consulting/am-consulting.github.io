@@ -22,21 +22,20 @@ output:
 
 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
-
 ```{r,warning=F,error=F,message=F,echo=F}
 library(RCurl)
-importAMCC <- 
-  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r',
-    'transposeDataFrame.r','R-fit.r','plotTimeSeries.r','R-turningPoint.r','timeSeriesDataFundamentalStatistics.r')
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", importAMCC[iii]),
+functionList <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+           header = F,
+           as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
     ssl.verifypeer = F
   )
   eval(parse(text = script))
 }
 ```
-
 
 ```{r warning=F,error=F,message=F,echo=F}
 library(XLConnect);library(excel.link);library(knitr)
@@ -62,22 +61,15 @@ dataSet <- buf
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dateFormat <- '%Y年%m月%d日分'
-appendText <- 
-  paste0('. 前週差 - ', paste0(paste0(colnames(dataSet)[-1],
-                                   ':', tail(round(diff(as.matrix(dataSet[,-1])),1),1)),collapse = ' , '))
+dateFormat <- '%Y-%m-%d'
+fun_makeDiffTable(obj = dataSet)
+diffDF[,-1] <- 
+  apply(diffDF[,-1], 2, function(x)round(x,1))
+fun_latestResult(obj = diffDF, dateFormat = dateFormat, objColumn = -1)
 dataTitle <- 
-  paste0('U.S. Weekly Leading Index(weekly) - ', 
-         format(tail(dataSet[, 1], 1), dateFormat), appendText)
+  paste0('U.S. Weekly Leading Index(weekly)-Week over Week:', 
+         latestResult)
 dataSource <- 'Economic Cycle Research Institute'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-# cat(paste("Title       : ", dataTitle, "\n"))
-# cat(paste("Data Source : ", dataSource, "\n"))
-# cat(paste("Author      : ", Author, "\n"))
-# cat(paste("特  記      : ", notes, "\n"))
-# cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
@@ -93,7 +85,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 fun_plotTimeSeries(obj = tail(na.omit(dataSet),4*12*5),objX = 1,objYL = 3,objYR = 2,
                    typeL = 'h',typeR = 'l',mar = c(4,5,4,5),dataSource = dataSource,
-                   lwdL = 1,lwdR = 1)
+                   lwdL = 1,lwdR = 1,dataTitle = 'U.S. Weekly Leading Index(weekly)')
 ```
 
 ***
