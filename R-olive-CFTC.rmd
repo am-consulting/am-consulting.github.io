@@ -12,19 +12,9 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -39,12 +29,13 @@ options(width = 1000)
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(RCurl)
-importAMCC <- 
-  c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r',
-    'transposeDataFrame.r','R-fit.r','plotTimeSeries.r','R-turningPoint.r')
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", importAMCC[iii]),
+functionList <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+           header = F,
+           as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
     ssl.verifypeer = F
   )
   eval(parse(text = script))
@@ -54,7 +45,7 @@ for(iii in 1:length(importAMCC)){
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=9999)
-lastYear <- 2016
+lastYear <- 2017
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/Rscript/master/importCFTC.r",
