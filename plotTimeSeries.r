@@ -76,7 +76,12 @@ fun_plotTimeSeries <-
          cex.axis = cex.axis,
          cex.lab = cex.lab,
          cex.main = cex.main,
-         lwd = lwdL)
+         lwd = lwdL,
+         panel.first = grid(nx = NULL,
+                            ny = NULL,
+                            lty = 2,
+                            equilogs = T)
+         )
     if(fitLcolor != 0){
     lo <- loess(formula = obj[,2] ~ as.numeric(obj[,1]),
                 degree = 2)
@@ -86,10 +91,7 @@ fun_plotTimeSeries <-
           lwd = lwdL,
           lty = 2)
     }
-    panel.first = grid(nx = NULL,
-                       ny = NULL,
-                       lty = 2,
-                       equilogs = T)
+
     if(chartType != 0){ # 2系列の場合
       if(chartType == 1){
         lines(x = obj[,1],
@@ -111,11 +113,11 @@ fun_plotTimeSeries <-
              cex.lab = cex.lab,
              cex.main = cex.main,
              lwd = lwdR,
-             ylim = if(yaxisReverseR == T){rev(range(na.omit(obj[, 3])))})
-        panel.first = grid(nx = NULL,
-                           ny = NULL,
-                           lty = 2,
-                           equilogs = T)
+             ylim = if(yaxisReverseR == T){rev(range(na.omit(obj[, 3])))},
+             panel.first = grid(nx = NULL,
+                                ny = NULL,
+                                lty = 2,
+                                equilogs = T))
         axis(side = 4,
              cex.axis = cex.axis,
              cex.lab = cex.lab)
