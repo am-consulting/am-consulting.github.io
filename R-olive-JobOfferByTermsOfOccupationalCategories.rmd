@@ -51,11 +51,11 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
-fun_jobOffer(sheetNo = 7)
+fun_jobOffer(sheetNo = 14)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dateFormat <- '%Y-%m'
+dateFormat <- '%Y年%m月'
 fun_latestResult(obj = jobOffer, dateFormat = dateFormat, objColumn = -1)
 dataTitle <- 
   paste0('職業別労働市場関係指標(実数,平成23年改定):', 
@@ -84,36 +84,35 @@ over1 <-
   subset(buf, buf[,ncol(buf)] >= 1)
 ```
 
-***
-#### 直近の有効求人倍率が1.0以上の職業
+#### 直近の有効求人倍率が1.0以上の職業:直近5ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = over1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
-#### 直近の有効求人倍率が1.0未満の職業
+#### 直近の有効求人倍率が1.0未満の職業:直近5ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = under1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
-#### 直近の有効求人倍率上位10
+#### 直近の有効求人倍率上位10:直近5ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-head(buf[order(buf[,ncol(buf)],decreasing = T),],10)
+fun_markdownTable(obj = head(buf[order(buf[,ncol(buf)],decreasing = T),],10))
 ```
 
 ***
-#### 直近の有効求人倍率下位10
+#### 直近の有効求人倍率下位10:直近5ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-head(buf[order(buf[,ncol(buf)],decreasing = F),],10)
+fun_markdownTable(obj = head(buf[order(buf[,ncol(buf)],decreasing = F),],10))
 ```
 
 ***
-#### 職業別有効求人倍率:最高倍率の推移("分類不能の職業"除く)
+#### 職業別有効求人倍率:最高倍率職業の推移("分類不能の職業"除く)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 obj <-
@@ -132,7 +131,7 @@ fun_dataTable(obj = topJobDF,
 ```
 
 ***
-#### 職業別有効求人倍率:最低倍率の推移("分類不能の職業"除く)
+#### 職業別有効求人倍率:最低倍率職業の推移("分類不能の職業"除く)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 obj <-
@@ -148,12 +147,6 @@ colnames(topJobDF) <-
 fun_dataTable(obj = topJobDF,
               title = paste0(format(range(topJobDF[,1]),dateFormat),collapse = '~'),
               leftcolumns = 2)
-```
-
-***
-#### 
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ```
 
 ***
