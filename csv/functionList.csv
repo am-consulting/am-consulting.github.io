@@ -1,0 +1,13 @@
+R-beforeORafterFunction.r
+R-dataTablesFunction.r
+R-dygraphsFunction.r
+R-fit.r
+R-getLatestResult.r
+R-makeDiffTable.r
+R-markdownTable.r
+R-scatterPlot.r
+R-turningPoint.r
+plotTimeSeries.r
+timeSeriesDataFundamentalStatistics.r
+timeSeriesForecast.r
+transposeDataFrame.r
