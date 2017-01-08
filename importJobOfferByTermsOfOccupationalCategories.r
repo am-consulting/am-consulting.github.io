@@ -42,6 +42,6 @@ fun_jobOffer <- function(dataID = '000031515544', sheetNo = 1){
   tmp <-
     as.Date(buf4[,1])
   buf5 <-
-    data.frame(Date = tmp, buf4[,-1], check.names = F, stringsAsFactors = F)
+    data.frame(Date = tmp, buf4[,-1], check.names = F, stringsAsFactors = F, row.names = NULL)
   assign('jobOffer', buf5, envir = .GlobalEnv)
 }
