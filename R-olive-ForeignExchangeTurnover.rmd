@@ -62,7 +62,7 @@ fun_ForeignExchangeTurnover()
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- 
-  paste0('店頭デリバティブ外国為替取引高:2016年9月公表版')
+  paste0('店頭デリバティブ外国為替取引高(Billion $/日、4月の平均):2016年9月公表版')
 dataSource <- 
   'Bank for International Settlements'
 ```
@@ -75,7 +75,7 @@ dataSource <-
 
 ***
 
-#### 店頭デリバティブ外国為替取引高:通貨ペア別
+#### 店頭デリバティブ外国為替取引高(Billion $/日、4月の平均):通貨ペア別
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10}
 fun_dataTable(obj = OTC_ForeignExchangeTurnoverByCurrencyPair,
@@ -83,12 +83,14 @@ fun_dataTable(obj = OTC_ForeignExchangeTurnoverByCurrencyPair,
               needID = 1,
               orderDirection = 'asc',
               leftcolumns = 2,
-              title = paste0(sheetTitle01,':',sheetTitle02))
+              title = paste0(sheetTitle01,':',sheetTitle02),menuLength = 20)
 ```
 
-#### 店頭デリバティブ外国為替取引高:全通貨ペア合計の時系列推移
+***
+#### 店頭デリバティブ外国為替取引高(Billion $/日、4月の平均):全通貨ペア合計、USD / EUR、USD / JPY、USD / GBPの時系列推移
+##### `r paste0(sheetTitle01,':',sheetTitle02)`
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
 dataSet <-
   OTC_ForeignExchangeTurnoverByCurrencyPair[,
                                             c(1,
@@ -97,6 +99,19 @@ dataSet <-
                                                    ignore.case = T))]
 colnames(dataSet) <-
   gsub('\\(\\w*?\\)','',colnames(dataSet))
+dataSet <-
+  dataSet[grep('all|USD / EUR|USD / JPY|USD / GBP', dataSet[,1], ignore.case = T),]
+dataSet <-
+  fun_transposeDataFrame(dataSet,dateFormat = 0)
+dataSet[,1] <-
+  as.Date(paste0(dataSet[,1],'-1-1'))
+n <- 1
+fun_generateKnit(objDF = dataSet[,c(1,5,2,3,4)],
+                 barPlot = 1,
+                 plotNum = n,
+                 dygraphTitle = 'Time Series Data for All curency,USD / EUR, USD / JPY and USD / GBP',
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot',n)))
 ```
 
 ***
