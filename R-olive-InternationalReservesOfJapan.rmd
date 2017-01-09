@@ -7,24 +7,13 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 5
-    fig_width: 11
+    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {
-	max-width: 1100px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-table{
- white-space: nowrap;
-}
-</style>
-
-
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -53,6 +42,24 @@ options(scipen=100)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/Rscript/master/importInternationalReserves.r",
@@ -62,17 +69,21 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('日本の外貨準備等状況 - ', format(origData1[nrow(origData1),1],'%Y年%m月'))
-dataSource <- '財務省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ', dataTitle, '\n'))
-cat(paste('Data Source : ', dataSource, '\n'))
-cat(paste('Author      : ', Author, '\n'))
-cat(paste('特  記      : ', notes, '\n'))
-cat(paste('特  記      : ', notes0, '\n'))
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = origData1,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('日本の外貨準備等状況:', latestResult, '(単位:百万ドル)')
+dataSource <- 
+  '財務省'
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.mof.go.jp/international_policy/reference/official_reserve_assets/
+
+***
 
 ```{r,warning=F,error=F,message=F,echo=F}
 funamBarplot <- function(obj, mainTitle = '') {
@@ -92,170 +103,37 @@ funamBarplot <- function(obj, mainTitle = '') {
 }  
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
-funDataTable <- function(obj,dataTitle='',append='') {
-  DT::datatable(
-    obj,
-    options = list(
-      search.regex = F,
-      paging = T,
-      autoWidth = F,
-      info = T,
-      lengthChange = T,
-      ordering = T,
-      searching = T,
-      scrollX = F,
-      lengthMenu = list(c(10,-1, 1), c(10, 'All', 1)),
-      orderClasses = T,
-      order = list(list(0, 'desc')),
-      search = list(regex = T, caseInsensitive = T),
-      columnDefs = list(
-        list(width = '10%' , targets = 0)
-        )
-      ),
-    rownames = F,
-    caption = paste(dataTitle, append),
-    class = 'display compact',
-    filter = 'bottom'
-  )
-}
-
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='', append='') {
-  cat(paste('<h4>', dataTitle, append, '</h4>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 1), fixedHeader = T),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-```
-
-```{r,warning=F,error=F,message=F,echo=F}
-funPlotTimeSeries <- function(dataSet,append='') {
-  plot(
-    dataSet[, 1],
-    dataSet[, obj01],
-    type = seriesType01,
-    col = lineColor[1],
-    xlab = '' ,
-    ylab = '' ,
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-    xaxt = 'n',
-    main = append,
-    cex.axis = 1,
-    cex.lab = 1,
-    cex.main = 1,
-    lwd = obj01lwd
-  )
-  lo <- loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
-  lines(dataSet[, 1] ,
-        predict(lo) ,
-        col = lineColor[1],
-        lwd = 2,
-        lty = 2)
-  if (chartTtpe == 1) {
-    lines(dataSet[, 1],
-          dataSet[, obj02],
-          col = lineColor[2],
-          lwd = obj02lwd)
-  } else{
-    par(new = T)
-    plot(
-      dataSet[, 1],
-      dataSet[, obj02],
-      col = lineColor[2],
-      type = seriesType02,
-      xlab = '' ,
-      ylab = '' ,
-      panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-      xaxt = 'n',
-      yaxt = 'n',
-      cex.axis = 1,
-      cex.lab = 1,
-      cex.main = 1,
-      lwd = obj02lwd
-    )
-    axis(4, cex.axis = 1, cex.lab = 1)
-    mtext(
-      colnames(dataSet)[obj01],
-      side = 2,
-      line = 3.2,
-      cex = 1
-    )
-    mtext(
-      colnames(dataSet)[obj02],
-      side = 4,
-      line = 3.2,
-      cex = 1
-    )
-  }
-  lo <- loess(dataSet[, obj02] ~ as.numeric(dataSet[, 1]), degree = 2)
-  lines(dataSet[, 1] ,
-        predict(lo) ,
-        col = lineColor[2],
-        lwd = 2,
-        lty = 2)
-  graphics::legend(
-    'topleft',
-    col = lineColor[-3],
-    lty = 1,
-    legend = c(colnames(dataSet)[obj01], colnames(dataSet)[obj02]),
-    cex = 1,
-    bty = 'n'
-  )
-  axis.Date(
-    side = 1,
-    at = dataSet[, 1],
-    format = dateFormat,
-    padj = 1,
-    cex.axis = 1.0
-  )
-}
-```
-
 ####日本の外貨準備高
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-dateFormat <- '%Y-%m'
-obj01 <- 2
-obj02 <- 3
-seriesType01 <- 'l'
-seriesType02 <- 'l'
-obj01lwd <- 1
-obj02lwd <- 1
-lineColor <- c('blue', 'red')
-chartTtpe <- 1
-mainTitle <- paste(colnames(origData1)[obj01], ' × ', colnames(origData1)[obj02])
-par(mfrow = c(1, 2), mar = c(3, 4, 3, 1), family = 'Meiryo', oma = c(0, 0, 3, 0))
-funPlotTimeSeries(dataSet = origData1, append = 'ドル建て(百万ドル)')
-funPlotTimeSeries(dataSet = origData3, append = '円建て(兆円)')
-mtext(paste(mainTitle, '\n', format(first(origData1[, 1]), dateFormat), '~', format(last(origData1[, 1]), dateFormat),
-    ' , Source:', dataSource), side = 3, outer = T)
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10}
+par(mfrow = c(2, 1), mar = c(5, 4, 5, 2), family = 'Meiryo', oma = c(0, 0, 0, 0))
+fun_plotTimeSeries(obj = origData1,
+                   chartType = 1,
+                   lwdR = 1,
+                   dateFormat = dateFormat,
+                   dataTitle = 'ドル建て(百万ドル)',
+                   dataSource = dataSource)
+fun_plotTimeSeries(obj = origData3,
+                   chartType = 1,
+                   lwdR = 1,
+                   dateFormat = dateFormat,
+                   dataTitle = '円建て(兆円)',
+                   dataSource = dataSource)
 ```
 <hr>
 ####外貨準備高の構成(ドル建て.百万ドル)
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData1[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
 buf <- tail(buf0, 12)
-buf[, 1] <- as.character(format(buf[, 1], '%Y-%m'))
+buf[, 1] <- as.character(format(buf[, 1], dateFormat))
 funamBarplot(obj = buf, mainTitle = '外貨準備高')
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-titleDT<-'日本の外貨準備高'
-appendTitle<-'単位：百万ドル'
 buf0 <- origData1[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
 buf0 <- merge(buf0, origData5)
-buf0[, 1] <- as.character(format(buf0[, 1], '%Y-%m'))
-funDataTable(obj = buf0, append = paste0(titleDT,'-',appendTitle))
+fun_dataTable(obj = tail(buf0,5*12),
+              title = '日本の外貨準備高(単位:百万ドル)',
+              dateFormat = dateFormat)
 ```
 <hr>
 ####外貨準備高の構成(円建て.兆円)
@@ -263,62 +141,37 @@ funDataTable(obj = buf0, append = paste0(titleDT,'-',appendTitle))
 buf0 <- origData3[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
 buf0[,-1] <- round(buf0[,-1],4)
 buf <- tail(buf0, 12)
-buf[, 1] <- as.character(format(buf[, 1], '%Y-%m'))
+buf[, 1] <- as.character(format(buf[, 1], dateFormat))
 funamBarplot(obj = buf, mainTitle = '外貨準備高')
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-titleDT<-'日本の外貨準備高'
-appendTitle<-'単位：兆円'
 buf0 <- origData3[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
 buf0[,-1] <- round(buf0[,-1],4)
 buf0 <- merge(buf0, origData5)
-buf0[, 1] <- as.character(format(buf0[, 1], '%Y-%m'))
-funDataTable(obj = buf0, append = paste0(titleDT,'-',appendTitle))
+fun_dataTable(obj = tail(buf0,5*12),
+              title = '日本の外貨準備高(単位:兆円)',
+              dateFormat = dateFormat)
 ```
 <hr>
 ####日本の金(ゴールド)保有量(百万トロイオンス)
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
+par(mar = c(3, 4, 3, 2), family = 'Meiryo')
 dataSet <- origData4
-obj01 <- 2
-seriesType01 <- 'o'
-obj01lwd <- 1
-lineColor <- c('blue', 'red')
-par(mar = c(3, 4, 3, 3), family = 'Meiryo')
-plot(
-  dataSet[, 1],
-  dataSet[, obj01],
-  type = seriesType01,
-  col = lineColor[1],
-  xlab = '' ,
-  ylab = '' ,
-  panel.first = grid(
-    nx = NULL,
-    ny = NULL,
-    lty = 2,
-    equilogs = T
-  ) ,
-  xaxt = 'n',
-  main = colnames(dataSet)[obj01],
-  cex.axis = 1,
-  cex.lab = 1,
-  cex.main = 1,
-  lwd = obj01lwd
-)
-axis.Date(
-  side = 1,
-  at = dataSet[, 1],
-  format = dateFormat,
-  padj = 1,
-  cex.axis = 1.0
-)
-dataSet[, 1] <- format(dataSet[, 1], '%Y-%m')
-grid.table(tail(dataSet, 5), rows = NULL)
+fun_plotTimeSeries(obj = dataSet,
+                   chartType = 0,
+                   needLefLab = 0,
+                   dataSource = dataSource,
+                   typeL = 'o',
+                   fitLcolor = 0)
+dataSet[, 1] <- format(dataSet[, 1], dateFormat)
+grid.table(tail(dataSet, 5), 
+           rows = NULL)
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 cat(paste0('直近(',tail(dataSet[,1],1),')のゴールド保有量 : '))
-cat(paste0(tail(dataSet[,obj01],1),'百万トロイオンス = ',tail(dataSet[,obj01],1)*(10^6)*31.1034768*(1e-6),'トン'))
+cat(paste0(tail(dataSet[,2],1),'百万トロイオンス = ',tail(dataSet[,2],1)*(10^6)*31.1034768*(1e-6),'トン'))
 ```
 
 ***
