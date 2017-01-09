@@ -1,0 +1,138 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-QuantitativeAnalysisForBitcoin.html')) })
+
+title : 'Quantitative Analysis For Bitcoin'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo = F, cache = F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+fileName <-
+  'defaultPath.csv'
+username <- 
+  Sys.info()['user']
+pathToFile <- 
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf000 <- 
+  read.csv(fileName, header = F, skip = 0, stringsAsFactor = F, check.names = F, fileEncoding = 'utf-8')
+pathOutput <- 
+  paste0("C:/Users/", username, buf000[2,1],'csv/')
+setwd(pathOutput)
+bitCoinCSV <- 'bitCoin.csv'
+bitCoinOld <- 
+  read.csv(file = bitCoinCSV, header = T, as.is = T)
+bitCoinOld[,1] <-
+  as.Date(bitCoinOld[,1])
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(quantmod)
+tmp <- getSymbols('BTC/USD', 
+                  src = "oanda", 
+                  auto.assign = F, 
+                  from = Sys.Date() - 365 * 10, to = Sys.Date())
+bitCoinNew <- 
+  data.frame(Date = as.Date(index(tmp)),
+             tmp,
+             check.names = F,
+             stringsAsFactors = F,
+             row.names = NULL)
+bitCoinNew <- 
+  subset(bitCoinNew, tail(bitCoinOld[,1],1) < bitCoinNew[,1])
+if(nrow(bitCoinNew) != 0){
+  bitCoin <- 
+    rbind(bitCoinOld,bitCoinNew)
+  write.csv(x = bitCoin, file = bitCoinCSV, quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+}else{
+  bitCoin <- bitCoinOld
+}
+```
+
+```{r warning = F, error = F, message = F, results = 'hide', echo = F}
+fun_latestResult(obj = bitCoin,dateFormat = '%Y-%m-%d')
+dataTitle <- 
+  paste0('ビットコインの計量分析:',latestResult)
+dataSource <- 
+  'OANDA Corporation'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source https://www.oanda.com/
+
+***
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+n <- 1
+fun_generateKnit(objDF = bitCoin, plotNum = n, group = 0,dygraphTitle = '')
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+fun_makeDiffTable(obj = bitCoin)
+n <- 2
+fun_generateKnit(objDF = diffDF, plotNum = n, barPlot = 1, group = 0, dygraphTitle = '前日差')
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+```
+
+***
+
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
