@@ -102,7 +102,16 @@ colnames(dataSet) <-
 dataSet <-
   dataSet[grep('all|USD / EUR|USD / JPY|USD / GBP', dataSet[,1], ignore.case = T),]
 dataSet <-
-  fun_transposeDataFrame(dataSet,dateFormat = 0)
+  t(dataSet)
+dataSet <-
+  data.frame(row.names(dataSet), dataSet, 
+             check.names = F, 
+             stringsAsFactors = F, row.names = NULL)
+colnames(dataSet) <- 
+  dataSet[1,]
+dataSet <- dataSet[-1,]
+dataSet[,-1] <-
+  apply(dataSet[,-1], 2, as.numeric)
 dataSet[,1] <-
   as.Date(paste0(dataSet[,1],'-1-1'))
 n <- 1
@@ -110,7 +119,8 @@ fun_generateKnit(objDF = dataSet[,c(1,5,2,3,4)],
                  barPlot = 1,
                  plotNum = n,
                  dygraphTitle = 'Time Series Data for All curency,USD / EUR, USD / JPY and USD / GBP',
-                 group = 0)
+                 group = 0,
+                 colors = RColorBrewer::brewer.pal(4, "Set2"))
 eval(parse(text = paste0('dygraphPlot',n)))
 ```
 
