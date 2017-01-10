@@ -1,4 +1,9 @@
 
+
+
+
+- https://en.wikipedia.org/wiki/Okun%27s_law
+
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
@@ -37,29 +42,38 @@ for(iii in 1:length(importAMCC)){
 }
 ```
 
-```{r warning = F, error = F, message = F, echo = F}
+```{r warning = F, error = F, message = F, echo = F, results='hide'}
 # 四半期平均完全失業率一次差分パート
 library(lubridate)
+colnames(laborforcesurvey)
 objColumn <-
-  c(1,17)
+  c(1,2,11,17)
 obj0 <-
   laborforcesurvey[,objColumn]
-obj0$Q <-
-  apply(obj0[,1,drop=F], 1, function(x)paste0(year(x),'-',ceiling(month(x)/3)*3,'-1'))
+colnames(obj0)
 obj1 <- 
-  aggregate(x = obj0[,2], by = list(obj0$Q) , FUN = mean)
-obj1[,1] <- 
-  as.Date(obj1[,1])
-obj1[,2] <- 
-  round(obj1[,2],1)
-obj2 <-
-  obj1[order(obj1[,1]),]
-colnames(obj2) <- 
-  colnames(laborforcesurvey)[objColumn]
+  data.frame(obj0[,1,drop=F], obj0[,3]/obj0[,2]*100, stringsAsFactors = F)
+colnames(obj1)[2] <- 
+  colnames(obj0)[4]
+colnames(obj1)
+bufColname <- 
+  colnames(obj1)
+obj1$Q <-
+  apply(obj1[,1,drop=F], 1, function(x)paste0(year(x),'-',ceiling(month(x)/3)*3,'-1'))
+obj2 <- 
+  aggregate(x = obj1[,2], by = list(obj1$Q) , FUN = mean)
+obj2[,1] <- 
+  as.Date(obj2[,1])
 obj3 <-
-  data.frame(Date = tail(obj2[,1],-1),diff(obj2[,2]),check.names = F,stringsAsFactors = F)
+  obj2[order(obj2[,1]),]
+obj4 <-
+  data.frame(tail(obj3[,1],-1), diff(obj3[,2]), check.names = F, stringsAsFactors = F)
+colnames(obj4) <- 
+  bufColname
+colnames(obj4)[2] <-
+  paste0(colnames(obj4)[2],':前期比')
 assign('unemploymentRateQoQ', 
-       obj3, 
+       obj4, 
        envir = .GlobalEnv)
 ```
 
@@ -67,16 +81,88 @@ assign('unemploymentRateQoQ',
 # 実質GDP前期比パート
 obj0 <-
   gdp2[,c(1,2)]
-assign('RealGDPQoQ',
-       data.frame(Date = tail(obj0[,1],-1), 
-                  round(diff(obj0[,2])/head(gdp2[,2],-1)*100,1),
-                  check.names = F,
-                  stringsAsFactors = F),
+obj1 <-
+  data.frame(Date = tail(obj0[,1],-1), 
+             diff(obj0[,2])/head(obj0[,2],-1)*100,
+             check.names = F,
+             stringsAsFactors = F)
+colnames(obj1)[2] <-
+  paste0(colnames(obj0)[2],':前期比')
+assign('realGDPQoQ',
+       obj1,
        envir = .GlobalEnv)
 ```
 
+
+- 注意:完全失業率(%)-男女計:季節調整値:前期比については有意水準5%で非定常を棄却できないことに注意して下さい。
+
 ```{r warning = F, error = F, message = F, echo = F}
 mergeData <-
-  merge(unemploymentRateQoQ,RealGDPQoQ,by='Date')
-plot(mergeData[,2],mergeData[,3],xlab=colnames(mergeData)[2],ylab=colnames(mergeData)[3])
+  merge(unemploymentRateQoQ, realGDPQoQ, by = 'Date')
+mergeData[,-1] <- 
+  apply(mergeData[,-1], 2, function(x)round(x,1000))
 ```
+
+```{r warning = F, error = F, message = F, echo = F}
+par(mar=c(5,5,4,3))
+plot(mergeData[,2],
+     mergeData[,3],
+     xlab = colnames(mergeData)[2],
+     ylab = colnames(mergeData)[3],
+     panel.first = grid(nx = NULL,
+                        ny = NULL,
+                        lty = 2,
+                        equilogs = T),
+     type = 'p',
+     pch = 20,
+     col = 'blue',
+     cex = 1)
+text(mergeData[,2],
+     mergeData[,3],
+     labels = format(mergeData[,1],'%Y-%m'),
+     adj = 0.65)
+abline(h = 0, col = 'red')
+abline(v = 0, col = 'red')
+RealGDPQoverQ <- mergeData[,2]
+UnemploymentRateQoverQ <- mergeData[,3]
+lmResult <-
+  lm(UnemploymentRateQoverQ ~ RealGDPQoverQ)
+abline(lmResult,
+       col = 'blue',
+       lwd = 2)
+summary(lmResult)
+confint(lmResult, 'RealGDPQoverQ', level=0.95)
+adf.test(UnemploymentRateQoverQ)
+adf.test(RealGDPQoverQ)
+# fun_generateKnit(objDF = mergeData)
+# eval(parse(text = paste0('dygraphPlot1 %>% ', ConsumptionTax)))
+0.3441^0.5
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+# 暦年パート
+# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/gdemenuja.html
+# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/__icsFiles/afieldfile/2016/12/07/ritu-jcy1632.csv
+# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/__icsFiles/afieldfile/2016/12/07/gaku-jcy1632.csv
+# http://www.stat.go.jp/data/roudou/longtime/03roudou.htm#hyo_1
+# http://www.stat.go.jp/data/roudou/longtime/zuhyou/lt02.xls
+tmp <-
+  read.table(
+  "clipboard",
+  header = T,
+  sep = "\t",
+  stringsAsFactor = F,
+  na.strings = c(""),
+  check.names = F)
+mergeData <- 
+  na.omit(tmp[,c(1,3,5)])
+mergeData[,1] <-
+  as.Date(mergeData[,1])
+
+```
+
+
+
+
+
+
