@@ -210,11 +210,19 @@ fun_hist <-
     }
   }
 dataSet <- bitCoin
-fun_hist(obj = dataSet, histWidth = 50.0)
+n <- 1
+fun_hist(obj = dataSet, histWidth = 100.0, main =  paste0(colnames(dataSet)[2],'(Unit:$)'))
 dataSet <- diffDF
-fun_hist(obj = dataSet, histWidth = 10.0)
+n <- 2
+fun_hist(obj = dataSet, histWidth = 10.0, main =  paste0(colnames(dataSet)[2],':Day over Day(Unit:$)'))
 dataSet <- diffRatioDF
-fun_hist(obj = dataSet, histWidth = 2.0)
+n <- 3
+fun_hist(obj = dataSet, histWidth = 1.0, main =  paste0(colnames(dataSet)[2],':Day over Day(Unit:%)'))
+```
+
+```{r warning = F, error = F, message = F, echo = F, fig.height=15}
+cbind(summary(diffRatioDF[,2]))
+fun_timeSeriesDataFundamentalStatistics(obj = bitCoin)
 ```
 
 ***
