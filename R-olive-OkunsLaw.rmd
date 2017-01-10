@@ -1,0 +1,82 @@
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/gdemenuja.html
+library(RCurl)
+importAMCC <- 
+  c('laborForceSurveyofJapan.r',
+    'importGDPofJapan.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(
+      paste0("https://raw.githubusercontent.com/am-consulting/Rscript/master/",
+             importAMCC[iii]),
+      ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+# 四半期平均完全失業率一次差分パート
+library(lubridate)
+objColumn <-
+  c(1,17)
+obj0 <-
+  laborforcesurvey[,objColumn]
+obj0$Q <-
+  apply(obj0[,1,drop=F], 1, function(x)paste0(year(x),'-',ceiling(month(x)/3)*3,'-1'))
+obj1 <- 
+  aggregate(x = obj0[,2], by = list(obj0$Q) , FUN = mean)
+obj1[,1] <- 
+  as.Date(obj1[,1])
+obj1[,2] <- 
+  round(obj1[,2],1)
+obj2 <-
+  obj1[order(obj1[,1]),]
+colnames(obj2) <- 
+  colnames(laborforcesurvey)[objColumn]
+obj3 <-
+  data.frame(Date = tail(obj2[,1],-1),diff(obj2[,2]),check.names = F,stringsAsFactors = F)
+assign('unemploymentRateQoQ', 
+       obj3, 
+       envir = .GlobalEnv)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+# 実質GDP前期比パート
+obj0 <-
+  gdp2[,c(1,2)]
+assign('RealGDPQoQ',
+       data.frame(Date = tail(obj0[,1],-1), 
+                  round(diff(obj0[,2])/head(gdp2[,2],-1)*100,1),
+                  check.names = F,
+                  stringsAsFactors = F),
+       envir = .GlobalEnv)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+mergeData <-
+  merge(unemploymentRateQoQ,RealGDPQoQ,by='Date')
+plot(mergeData[,2],mergeData[,3],xlab=colnames(mergeData)[2],ylab=colnames(mergeData)[3])
+```
