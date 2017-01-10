@@ -36,8 +36,11 @@ buf3 <-
   t(buf2)
 colnames(buf3) <- (buf3[1,])
 buf3 <- buf3[-1,]
-buf3[,-1] <-
-  apply(buf3[,-1],2,function(x)as.numeric(gsub(',','',x)))
+buf3 <-
+  data.frame(buf3[,1],
+             apply(buf3[,-1],2,function(x)as.numeric(gsub(',','',x))),
+             check.names = F,
+             stringsAsFactors = F)
 buf4 <-
   data.frame(Date = as.Date(buf3[,1]),buf3[,-1],row.names = NULL ,check.names = F,stringsAsFactors = F)
 objColumn <- c(1:7,52:ncol(buf4))
