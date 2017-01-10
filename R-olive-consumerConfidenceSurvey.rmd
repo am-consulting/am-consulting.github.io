@@ -6,28 +6,14 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 6
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
  - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
  - SaECaNet http://saecanet.com/
@@ -40,121 +26,101 @@ function MakeNegative() {
 options(width = 1000)
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning = F, error = F, message = F, echo = F}
 library(RCurl)
-library(Nippon)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-rFile <- c(
-'importConsumerConfidenceSurvey.r')
+rFile <- 
+  c('importConsumerConfidenceSurvey.r',
+    'importMonetarybaseOfJapan-2017.r')
 for(iii in 1:length(rFile)){
-script <- 
- getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',rFile[iii]),ssl.verifypeer = F)
-eval(parse(text = script))
+  script <- 
+    getURL(paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',
+                  rFile[iii]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
 }
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('消費動向調査 - 消費者態度指数と消費者意識指標(暮らし向き、収入の増え方、雇用環境、耐久消費財の買い時判断、資産価値) - ',
-                    format(tail(consumerConfidenceIndex[,1],1),'%Y年%m月分'))
-dataSource <- '内閣府'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-dataTail <- 0 
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
+dateFormat <- 
+  '%Y年%m月'
+fun_makeDiffTable(obj = consumerConfidenceIndex)
+fun_latestResult(obj = diffDF, objColumn = -1, dateFormat = dateFormat)
+dataTitle <- 
+  paste0('消費動向調査:前月差:',latestResult)
+dataSource <- 
+  '内閣府 , 日本銀行'
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
-lineColor <- c('blue','red')
 ```
 
-##### (注記)
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.esri.cao.go.jp/jp/stat/shouhi/shouhi.html#jikeiretsu
 - 本ページ中の前月差はソースデータからの引用とせず季節調整系列(ソースデータ)の一次差分としています。
 - 以下の注記は長期時系列表(出所:内閣府)より引用
 - 『平成25年4月調査より調査方法等を変更したため、それ以前の数値と不連続が生じている。(平成25年度以降は郵送調査、平成24年度までは訪問留置調査。)』
 - 『平成16年5月から19年2月までの6、9、12、3月以外の月は調査方法が異なる(電話調査)ため、前月差については注意が必要。』	
 
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 cat(zen2han(paste0('<h4>',datatitle,'</h4>')))
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries <- 
-  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'o', type02 = 'h', dateFormat = '%Y-%m') {
-par(mar=c(3,5,4,5),family = 'Meiryo')
-plot(
-  obj[, objX], obj[, objY01], type = type01, col = lineColor[1], xlab = '', ylab = '', xaxt = 'n', 
-  main = paste(colnames(obj)[objY01],'\n', 
-               paste0(format(range(obj[,objX]), dateFormat),collapse = '~'),'\nSource:',dataSource),
-  cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = 1
-  )
-lo <- loess(obj[, objY01] ~ as.numeric(obj[,objX]), degree = 2)
-lines(obj[,objX] , predict(lo) , col = lineColor[1], lwd = 1, lty = 2)
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-par(new=T)
-plot(
-  obj[, objX], obj[, objY02], type = type02, col = lineColor[2], xlab = '', ylab = '', xaxt = 'n', yaxt = 'n', 
-  cex.axis = 1, cex.lab = 1, cex.main = 1, lwd = 1
-  )
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-axis(4, cex.axis = 1, cex.lab = 1)
-mtext(colnames(obj)[objY01], side=2, line=3.2, cex=1)
-mtext(colnames(obj)[objY02], side=4, line=3.2, cex=1)
-lo <- loess(obj[, objY02] ~ as.numeric(obj[,objX]), degree = 2)
-lines(obj[,objX] , predict(lo) , col = lineColor[2], lwd = 1, lty = 2)
-graphics::legend('bottomleft',col=lineColor,lty=1,legend=colnames(obj)[objY01:objY02],cex=1,bty='n',lwd = 2)
-axis.Date(side=1, at=obj[,objX],format=dateFormat,padj=1,cex.axis=1.0) 
-# rect part
-rectDateL <- as.numeric(as.Date('2009-09-16'))
-rectDateR <- as.numeric(as.Date('2012-12-26'))
-if(as.numeric(obj[1,objX]) < rectDateR){
-rectText <- '民主党政権'
-rect(xleft = rectDateL, ybottom = par('usr')[3], 
-     xright = rectDateR, ytop = par('usr')[4], col = 'dimgray', density = 10, angle = 45)
-text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
-# rect part
-}
-  }
+library(knitr)
+n <- 1
+fun_generateKnit(objDF = consumerConfidenceIndex,group = 0,plotNum = n)
 ```
+
+`r paste(knit(text = c(get(paste0('knit_expanded',n)))), collapse = '\n')`
+
+#### 指数値:季節調整値
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_transport <- function(obj){
-  obj[,1] <- format(obj[,1],'%Y年%m月')
-  buf0 <- tail(obj,4)
-  buf1 <- t(buf0[,!is.na(buf0[1,])])
-  buf2 <- data.frame(row.names(buf1), buf1, check.names = F, stringsAsFactors = F, row.names = NULL)
-  colnames(buf2) <- buf2[1,]
-  buf3 <- buf2[-1,]
-  colnames(buf3)[1] <- '項目'
-  buf3[,-1] <- apply(buf3[,-1,drop=F], 2, as.numeric)
-  tDF <- buf3
-  return(tDF)
-}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = consumerConfidenceIndex,dateFormat = dateFormat))
 ```
-<hr>
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-for(ccc in 2:ncol(consumerConfidenceIndex)){
-buf <- data.frame(tail(consumerConfidenceIndex[,c(1,ccc)],-1), 
-           `前月差`=diff(consumerConfidenceIndex[,ccc]),check.names = F,stringsAsFactors = F)
-fun_plotTimeSeries(obj = buf)
-cat('\n\n')
-print(knitr::kable(fun_transport(obj = buf),row.names = F))
-cat('\n<hr>\n')
-}
-```
+
+***
+#### 前月差
 
 ```{r warning=F, error=F, message=F, echo=F}
-knitr::kable(fun_transport(obj = consumerConfidenceIndex),row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat))
 ```
 
-<hr>
+***
+#### 消費者態度指数とマネタリーベース
+##### 注意:消費者態度指数は季節調整値、マネタリーベースは原数値
+
+```{r warning=F, error=F, message=F, echo=F, fig.height=8}
+mergeData <-
+  merge(consumerConfidenceIndex,monetaryBase_Japan,by='Date')
+mergeData <-
+  mergeData[,c(1,2,12)]
+fun_plotTimeSeries(obj = mergeData,chartType = 2,lwdR = 1,dateFormat = dateFormat,dataSource = dataSource)
+```
+
+***
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
