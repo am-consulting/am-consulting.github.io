@@ -66,13 +66,15 @@ for(iii in 1:length(importAMCC)){
 ```
 
 ```{r warning = F, error = F, message = F, echo = F, results='hide'}
-# 四半期平均完全失業率一次差分パート
-library(lubridate)
+# 四半期平均完全失業率前年比(パーセントポイント)パート
+library(lubridate);library(Nippon)
 colnames(laborforcesurvey)
 objColumn <-
   c(1,2,11,17)
 obj0 <-
   laborforcesurvey[,objColumn]
+colnames(obj0) <-
+  sapply(colnames(obj0),zen2han)
 colnames(obj0)
 obj1 <- 
   data.frame(obj0[,1,drop=F], obj0[,3]/obj0[,2]*100, check.names = F, stringsAsFactors = F)
@@ -86,21 +88,15 @@ obj2[,1] <-
 obj3 <- 
   obj2[order(obj2[,1]),]
 colnames(obj3) <-
-  c('Date', paste0(colnames(laborforcesurvey)[17],':四半期平均'))
+  c('Date', paste0(colnames(obj0)[4],':四半期平均'))
 tail(obj3)
 assign('unemploymentRateQuarterlyAverage', obj3, envir = .GlobalEnv)
-obj4 <-
-  data.frame(tail(unemploymentRateQuarterlyAverage[,1],-1), 
-             diff(unemploymentRateQuarterlyAverage[,2]), 
-             check.names = F, 
-             stringsAsFactors = F)
-colnames(obj4) <- 
-  colnames(unemploymentRateQuarterlyAverage)
-colnames(obj4)[2] <-
-  paste0(colnames(obj4)[2],':前期比(PP)')
-tail(obj4)
+fun_makeDiffTable(obj = unemploymentRateQuarterlyAverage, lag = 12)
+colnames(diffDF)[2] <-
+  paste0(colnames(diffDF)[2],':前年比(PP)')
+tail(diffDF)
 assign('unemploymentRateQuarterlyAverageQoverQ', 
-       obj4, 
+       diffDF, 
        envir = .GlobalEnv)
 ```
 
@@ -125,7 +121,7 @@ assign('realGDPSAQoverQ',
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
 dataTitle <- 
-  paste0('日本の外貨準備等状況:')
+  paste0('国内総生産と失業率:オークンの法則')
 dataSource <- 
   '財務省'
 ```
@@ -148,7 +144,27 @@ dataSource <-
 
 ***
 
+$$ 
+\begin{align}
+\frac{\Delta Y}{Y} & = k-c \times \Delta u \\  \\
+Y &  \textrm{ is actual output.} \\
+c &  \textrm{ is the factor relating changes in unemployment to changes in output.}\\
+\Delta Y & \textrm{ is the change in actual output from one year to the next.}\\
+\Delta u & \textrm{ is the change in actual unemployment from one year to the next.}\\
+k & \textrm{ is the average annual growth rate of full-employment output.}
+\end{align}
+$$ 
+ - Source https://en.wikipedia.org/wiki/Okun%27s_law
+
+***
+
 ```{r warning = F, error = F, message = F, echo = F, results='hide'}
+
+
+laborforcesurvey
+
+
+
 mergeData <-
   merge(unemploymentRateQuarterlyAverageQoverQ, realGDPSAQoverQ, by = 'Date')
 mergeData[,-1] <- 
