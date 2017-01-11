@@ -1,11 +1,34 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-okunsLaw.html')) })
 
+title : 'Real,Seasonally Adjusted GDP(Expenditure Approach) × Unemployment Rate'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
 
-
-- https://en.wikipedia.org/wiki/Okun%27s_law
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen=100)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -52,63 +75,105 @@ obj0 <-
   laborforcesurvey[,objColumn]
 colnames(obj0)
 obj1 <- 
-  data.frame(obj0[,1,drop=F], obj0[,3]/obj0[,2]*100, stringsAsFactors = F)
-colnames(obj1)[2] <- 
-  colnames(obj0)[4]
-colnames(obj1)
-bufColname <- 
-  colnames(obj1)
+  data.frame(obj0[,1,drop=F], obj0[,3]/obj0[,2]*100, check.names = F, stringsAsFactors = F)
 obj1$Q <-
   apply(obj1[,1,drop=F], 1, function(x)paste0(year(x),'-',ceiling(month(x)/3)*3,'-1'))
+tail(obj1)
 obj2 <- 
   aggregate(x = obj1[,2], by = list(obj1$Q) , FUN = mean)
 obj2[,1] <- 
   as.Date(obj2[,1])
-obj3 <-
+obj3 <- 
   obj2[order(obj2[,1]),]
+colnames(obj3) <-
+  c('Date', paste0(colnames(laborforcesurvey)[17],':四半期平均'))
+tail(obj3)
+assign('unemploymentRateQuarterlyAverage', obj3, envir = .GlobalEnv)
 obj4 <-
-  data.frame(tail(obj3[,1],-1), diff(obj3[,2]), check.names = F, stringsAsFactors = F)
+  data.frame(tail(unemploymentRateQuarterlyAverage[,1],-1), 
+             diff(unemploymentRateQuarterlyAverage[,2]), 
+             check.names = F, 
+             stringsAsFactors = F)
 colnames(obj4) <- 
-  bufColname
+  colnames(unemploymentRateQuarterlyAverage)
 colnames(obj4)[2] <-
-  paste0(colnames(obj4)[2],':前期比')
-assign('unemploymentRateQoQ', 
+  paste0(colnames(obj4)[2],':前期比(PP)')
+tail(obj4)
+assign('unemploymentRateQuarterlyAverageQoverQ', 
        obj4, 
        envir = .GlobalEnv)
 ```
 
-```{r warning = F, error = F, message = F, echo = F}
+```{r warning = F, error = F, message = F, echo = F, results='hide'}
 # 実質GDP前期比パート
 obj0 <-
   gdp2[,c(1,2)]
+tail(obj0)
 obj1 <-
   data.frame(Date = tail(obj0[,1],-1), 
              diff(obj0[,2])/head(obj0[,2],-1)*100,
              check.names = F,
              stringsAsFactors = F)
 colnames(obj1)[2] <-
-  paste0(colnames(obj0)[2],':前期比')
-assign('realGDPQoQ',
+  paste0(colnames(obj0)[2],':前期比(%)')
+tail(obj1)
+assign('realGDPSAQoverQ',
        obj1,
        envir = .GlobalEnv)
 ```
 
-
-- 注意:完全失業率(%)-男女計:季節調整値:前期比については有意水準5%で非定常を棄却できないことに注意して下さい。
-
-```{r warning = F, error = F, message = F, echo = F}
-mergeData <-
-  merge(unemploymentRateQoQ, realGDPQoQ, by = 'Date')
-mergeData[,-1] <- 
-  apply(mergeData[,-1], 2, function(x)round(x,1000))
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dateFormat <- '%Y年%m月'
+dataTitle <- 
+  paste0('日本の外貨準備等状況:')
+dataSource <- 
+  '財務省'
 ```
 
-```{r warning = F, error = F, message = F, echo = F}
-par(mar=c(5,5,4,3))
-plot(mergeData[,2],
-     mergeData[,3],
-     xlab = colnames(mergeData)[2],
-     ylab = colnames(mergeData)[3],
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- https://en.wikipedia.org/wiki/Okun%27s_law
+- http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/gdemenuja.html
+- http://www.stat.go.jp/data/roudou/longtime/03roudou.htm#hyo_1
+- 注意:完全失業率(%)-男女計:季節調整値:前期比については有意水準5%で非定常を棄却できないことに注意して下さい。
+- 以下は総務省Webサイトからの引用(失業率について)
+
+<blockquote>
+
+2011年3月から8月までの期間は東日本大震災の影響により全国集計結果が存在しないため補完推計値(新基準)を用いた。<br><br>【参考】http://www.stat.go.jp/data/roudou/120424/index.htm
+
+</blockquote>
+
+***
+
+```{r warning = F, error = F, message = F, echo = F, results='hide'}
+mergeData <-
+  merge(unemploymentRateQuarterlyAverageQoverQ, realGDPSAQoverQ, by = 'Date')
+mergeData[,-1] <- 
+  apply(mergeData[,-1], 2, function(x)round(x,1000))
+tail(mergeData)
+```
+
+#### 四半期データ
+##### 散布図 & 線形回帰直線
+
+```{r warning = F, error = F, message = F, echo = F, fig.height=8}
+objX <- 
+  grep('国内総生産',colnames(mergeData))
+RealGDPQoverQ <- 
+  mergeData[,objX]
+objY <- 
+  grep('失業率',colnames(mergeData))
+UnemploymentRateQoverQ <- 
+  mergeData[,objY]
+par(mar=c(5,5,4,3), family = 'Meiryo', 
+    cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, font.main = 1, font.lab = 1, font.axis =1)
+plot(mergeData[,objX],
+     mergeData[,objY],
+     xlab = colnames(mergeData)[objX],
+     ylab = colnames(mergeData)[objY],
      panel.first = grid(nx = NULL,
                         ny = NULL,
                         lty = 2,
@@ -116,53 +181,72 @@ plot(mergeData[,2],
      type = 'p',
      pch = 20,
      col = 'blue',
+     # asp = 1,
      cex = 1)
-text(mergeData[,2],
-     mergeData[,3],
+text(mergeData[,objX],
+     mergeData[,objY],
      labels = format(mergeData[,1],'%Y-%m'),
-     adj = 0.65)
+     adj = 0.65,
+     cex = 0.7,
+     font = 1)
 abline(h = 0, col = 'red')
 abline(v = 0, col = 'red')
-RealGDPQoverQ <- mergeData[,2]
-UnemploymentRateQoverQ <- mergeData[,3]
 lmResult <-
   lm(UnemploymentRateQoverQ ~ RealGDPQoverQ)
 abline(lmResult,
        col = 'blue',
        lwd = 2)
+```
+
+##### 線形回帰
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+cat('線形回帰の結果\n\n')
 summary(lmResult)
+cat('\n\n')
+cat('Slopeの95%信頼区間\n\n')
 confint(lmResult, 'RealGDPQoverQ', level=0.95)
+```
+
+##### 単位根検定
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
 adf.test(UnemploymentRateQoverQ)
+cat('\n\n')
 adf.test(RealGDPQoverQ)
-# fun_generateKnit(objDF = mergeData)
-# eval(parse(text = paste0('dygraphPlot1 %>% ', ConsumptionTax)))
-0.3441^0.5
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
 # 暦年パート
-# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/gdemenuja.html
+# 
 # http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/__icsFiles/afieldfile/2016/12/07/ritu-jcy1632.csv
 # http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/__icsFiles/afieldfile/2016/12/07/gaku-jcy1632.csv
-# http://www.stat.go.jp/data/roudou/longtime/03roudou.htm#hyo_1
+# 
 # http://www.stat.go.jp/data/roudou/longtime/zuhyou/lt02.xls
-tmp <-
-  read.table(
-  "clipboard",
-  header = T,
-  sep = "\t",
-  stringsAsFactor = F,
-  na.strings = c(""),
-  check.names = F)
-mergeData <- 
-  na.omit(tmp[,c(1,3,5)])
-mergeData[,1] <-
-  as.Date(mergeData[,1])
+# tmp <-
+#   read.table(
+#   "clipboard",
+#   header = T,
+#   sep = "\t",
+#   stringsAsFactor = F,
+#   na.strings = c(""),
+#   check.names = F)
+# mergeData <- 
+#   na.omit(tmp[,c(1,3,5)])
+# mergeData[,1] <-
+#   as.Date(mergeData[,1])
 
 ```
 
+***
 
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
 
-
-
+</script>
