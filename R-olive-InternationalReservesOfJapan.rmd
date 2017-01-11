@@ -70,7 +70,7 @@ eval(parse(text = script))
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = origData1,dateFormat = dateFormat)
+fun_latestResult(obj = origData1,dateFormat = dateFormat,objColumn = c(2,4))
 dataTitle <- 
   paste0('日本の外貨準備等状況:', latestResult, '(単位:百万ドル)')
 dataSource <- 
@@ -163,7 +163,8 @@ fun_plotTimeSeries(obj = dataSet,
                    needLefLab = 0,
                    dataSource = dataSource,
                    typeL = 'o',
-                   fitLcolor = 0)
+                   fitLcolor = 0,
+                   dateFormat = dateFormat)
 dataSet[, 1] <- format(dataSet[, 1], dateFormat)
 grid.table(tail(dataSet, 5), 
            rows = NULL)
