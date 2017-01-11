@@ -1,7 +1,7 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-okunsLaw.html')) })
 
-title : 'Real,Seasonally Adjusted GDP(Expenditure Approach) × Unemployment Rate'
+title : 'GDP(Expenditure Approach) × Unemployment Rate'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -29,6 +29,7 @@ options(width = 1000)
 ```{r,warning=F,error=F,message=F,echo=F}
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen=100)
+library(lubridate)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -51,10 +52,8 @@ for(iii in 1:nrow(functionList)){
 
 ```{r warning = F, error = F, message = F, echo = F}
 # http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/gdemenuja.html
-library(RCurl)
 importAMCC <- 
-  c('laborForceSurveyofJapan.r',
-    'importGDPofJapan.r')
+  c('importGDPofJapan.r')
 for(iii in 1:length(importAMCC)){
   script <-
     getURL(
@@ -66,64 +65,61 @@ for(iii in 1:length(importAMCC)){
 ```
 
 ```{r warning = F, error = F, message = F, echo = F, results='hide'}
-# 四半期平均完全失業率前年比(パーセントポイント)パート
-library(lubridate);library(Nippon)
-colnames(laborforcesurvey)
-objColumn <-
-  c(1,2,11,17)
-obj0 <-
-  laborforcesurvey[,objColumn]
-colnames(obj0) <-
-  sapply(colnames(obj0),zen2han)
-colnames(obj0)
-obj1 <- 
-  data.frame(obj0[,1,drop=F], obj0[,3]/obj0[,2]*100, check.names = F, stringsAsFactors = F)
-obj1$Q <-
-  apply(obj1[,1,drop=F], 1, function(x)paste0(year(x),'-',ceiling(month(x)/3)*3,'-1'))
-tail(obj1)
-obj2 <- 
-  aggregate(x = obj1[,2], by = list(obj1$Q) , FUN = mean)
-obj2[,1] <- 
-  as.Date(obj2[,1])
-obj3 <- 
-  obj2[order(obj2[,1]),]
-colnames(obj3) <-
-  c('Date', paste0(colnames(obj0)[4],':四半期平均'))
-tail(obj3)
-assign('unemploymentRateQuarterlyAverage', obj3, envir = .GlobalEnv)
-fun_makeDiffTable(obj = unemploymentRateQuarterlyAverage, lag = 12)
-colnames(diffDF)[2] <-
-  paste0(colnames(diffDF)[2],':前年比(PP)')
-tail(diffDF)
-assign('unemploymentRateQuarterlyAverageQoverQ', 
-       diffDF, 
-       envir = .GlobalEnv)
+# 完全失業率 年平均結果、全国、前年比パート
+library(XLConnect)
+username <- 
+  Sys.info()['user']
+pathOutput <- 
+  paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- 
+  'lt02.xls'
+dataURL <- 
+  'http://www.stat.go.jp/data/roudou/longtime/zuhyou/'
+download.file(paste0(dataURL,fileName), fileName , mode = 'wb')
+buf0 <-
+  readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+dateColumn <-
+  paste0(as.numeric(gsub('\\(|\\)|\\s|・','',buf0[,2])),'-1-1')
+titleColumn <-
+  grep('完全失業率',buf0[6,])[1]
+sheetTitle <- 
+  gsub('\\s','',zen2han(buf0[6,titleColumn]))
+valueColumn <-
+  gsub('<|>','',buf0[,titleColumn])
+buf1 <-
+  data.frame(dateColumn,valueColumn,stringsAsFactors = F)
+buf1[,2] <- 
+  as.numeric(buf1[,2])
+buf2 <- 
+  na.omit(buf1)
+buf2[,1] <- 
+  as.Date(buf2[,1])
+colnames(buf2) <- 
+  c('Date', sheetTitle)
+unemploymentRateYearly <- buf2
+fun_makeDiffTable(unemploymentRateYearly)
+unemploymentRateYearlyYoY <- diffDF
+colnames(unemploymentRateYearlyYoY)[2] <- 
+  paste0(colnames(unemploymentRateYearlyYoY)[2],':前年比(%ポイント)')
 ```
 
 ```{r warning = F, error = F, message = F, echo = F, results='hide'}
 # 実質GDP前期比パート
-obj0 <-
-  gdp2[,c(1,2)]
+obj0 <- 
+  get(paste0('gdp', grep('実質暦年\\(前年比\\)',sheetTitlesJ)))[,c(1,2)]
 tail(obj0)
-obj1 <-
-  data.frame(Date = tail(obj0[,1],-1), 
-             diff(obj0[,2])/head(obj0[,2],-1)*100,
-             check.names = F,
-             stringsAsFactors = F)
-colnames(obj1)[2] <-
-  paste0(colnames(obj0)[2],':前期比(%)')
-tail(obj1)
-assign('realGDPSAQoverQ',
-       obj1,
+assign('realGDPYearlyYoY',
+       obj0,
        envir = .GlobalEnv)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
 dataTitle <- 
-  paste0('国内総生産と失業率:オークンの法則')
+  paste0('国内総生産の前年比(%)と完全失業率の前年比(パーセントポイント):オークンの法則')
 dataSource <- 
-  '財務省'
+  '総務省、内閣府'
 ```
 
 ***
@@ -133,7 +129,7 @@ dataSource <-
 - https://en.wikipedia.org/wiki/Okun%27s_law
 - http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/gdemenuja.html
 - http://www.stat.go.jp/data/roudou/longtime/03roudou.htm#hyo_1
-- 注意:完全失業率(%)-男女計:季節調整値:前期比については有意水準5%で非定常を棄却できないことに注意して下さい。
+- 注意:各時系列データが非定常を棄却できているか否か、単位根検定欄を確認し留意して下さい。
 - 以下は総務省Webサイトからの引用(失業率について)
 
 <blockquote>
@@ -154,42 +150,36 @@ c &  \textrm{ is the factor relating changes in unemployment to changes in outpu
 k & \textrm{ is the average annual growth rate of full-employment output.}
 \end{align}
 $$ 
- - Source https://en.wikipedia.org/wiki/Okun%27s_law
+
+
+- Source https://en.wikipedia.org/wiki/Okun%27s_law
 
 ***
 
 ```{r warning = F, error = F, message = F, echo = F, results='hide'}
-
-
-laborforcesurvey
-
-
-
 mergeData <-
-  merge(unemploymentRateQuarterlyAverageQoverQ, realGDPSAQoverQ, by = 'Date')
-mergeData[,-1] <- 
-  apply(mergeData[,-1], 2, function(x)round(x,1000))
+  merge(unemploymentRateYearlyYoY, realGDPYearlyYoY, by = 'Date')
+mergeDataExcluding2011 <- 
+  subset(mergeData, year(mergeData[,1])!=2011)
 tail(mergeData)
 ```
 
-#### 四半期データ
-##### 散布図 & 線形回帰直線
-
-```{r warning = F, error = F, message = F, echo = F, fig.height=8}
+```{r warning = F, error = F, message = F, echo = F}
+fun_plotScatter <- function(objDF){
 objX <- 
-  grep('国内総生産',colnames(mergeData))
-RealGDPQoverQ <- 
-  mergeData[,objX]
+  grep('国内総生産',colnames(objDF))
+realGDPYearlyYoY <<- 
+  objDF[,objX]
 objY <- 
-  grep('失業率',colnames(mergeData))
-UnemploymentRateQoverQ <- 
-  mergeData[,objY]
-par(mar=c(5,5,4,3), family = 'Meiryo', 
+  grep('失業率',colnames(objDF))
+unemploymentRateYearlyYoY <<- 
+  objDF[,objY]
+par(mar=c(5,5,2,2), family = 'Meiryo', 
     cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2, font.main = 1, font.lab = 1, font.axis =1)
-plot(mergeData[,objX],
-     mergeData[,objY],
-     xlab = colnames(mergeData)[objX],
-     ylab = colnames(mergeData)[objY],
+plot(objDF[,objX],
+     objDF[,objY],
+     xlab = colnames(objDF)[objX],
+     ylab = colnames(objDF)[objY],
      panel.first = grid(nx = NULL,
                         ny = NULL,
                         lty = 2,
@@ -197,21 +187,64 @@ plot(mergeData[,objX],
      type = 'p',
      pch = 20,
      col = 'blue',
-     # asp = 1,
-     cex = 1)
-text(mergeData[,objX],
-     mergeData[,objY],
-     labels = format(mergeData[,1],'%Y-%m'),
-     adj = 0.65,
-     cex = 0.7,
+     asp = 1,
+     cex = 1.5)
+text(objDF[,objX],
+     objDF[,objY],
+     labels = format(objDF[,1],'%Y年'),
+     adj = 1,
+     cex = 0.8,
      font = 1)
 abline(h = 0, col = 'red')
 abline(v = 0, col = 'red')
-lmResult <-
-  lm(UnemploymentRateQoverQ ~ RealGDPQoverQ)
+lmResult <<-
+  lm(unemploymentRateYearlyYoY ~ realGDPYearlyYoY)
 abline(lmResult,
        col = 'blue',
        lwd = 2)
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F, results='asis'}
+DTtable <- mergeData
+DTtable[,1] <- format(DTtable[,1], '%Y年')
+fun_markdownTable(DTtable)
+```
+
+***
+
+#### <b>2011年を含める場合</b>
+##### 散布図 & 線形回帰直線
+```{r warning = F, error = F, message = F, echo = F, results='asis', fig.height=5 }
+fun_plotScatter(objDF = mergeData)
+```
+
+
+##### 線形回帰
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+cat('線形回帰の結果\n\n')
+summary(lmResult)
+cat('\n\n')
+cat('Slopeの95%信頼区間\n\n')
+confint(lmResult, 'realGDPYearlyYoY', level=0.95)
+cat('\n\n')
+cat('相関係数(r = Multiple R-squared ^ 0.5)\n\n')
+(summary(lmResult)$r.squared)^0.5
+```
+
+##### 単位根検定
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+adf.test(unemploymentRateYearlyYoY)
+cat('\n\n')
+adf.test(realGDPYearlyYoY)
+```
+
+#### <b>2011年を含めない場合</b>
+##### 散布図 & 線形回帰直線
+```{r warning = F, error = F, message = F, echo = F, results='asis', fig.height=5 }
+fun_plotScatter(objDF = mergeDataExcluding2011)
 ```
 
 ##### 線形回帰
@@ -221,41 +254,22 @@ cat('線形回帰の結果\n\n')
 summary(lmResult)
 cat('\n\n')
 cat('Slopeの95%信頼区間\n\n')
-confint(lmResult, 'RealGDPQoverQ', level=0.95)
+confint(lmResult, 'realGDPYearlyYoY', level=0.95)
+cat('\n\n')
+cat('相関係数(r = Multiple R-squared ^ 0.5)\n\n')
+(summary(lmResult)$r.squared)^0.5
 ```
 
 ##### 単位根検定
 
 ```{r warning = F, error = F, message = F, echo = F, results='hold'}
-adf.test(UnemploymentRateQoverQ)
+adf.test(unemploymentRateYearlyYoY)
 cat('\n\n')
-adf.test(RealGDPQoverQ)
-```
-
-```{r warning = F, error = F, message = F, echo = F}
-# 暦年パート
-# 
-# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/__icsFiles/afieldfile/2016/12/07/ritu-jcy1632.csv
-# http://www.esri.cao.go.jp/jp/sna/data/data_list/sokuhou/files/2016/qe163_2/__icsFiles/afieldfile/2016/12/07/gaku-jcy1632.csv
-# 
-# http://www.stat.go.jp/data/roudou/longtime/zuhyou/lt02.xls
-# tmp <-
-#   read.table(
-#   "clipboard",
-#   header = T,
-#   sep = "\t",
-#   stringsAsFactor = F,
-#   na.strings = c(""),
-#   check.names = F)
-# mergeData <- 
-#   na.omit(tmp[,c(1,3,5)])
-# mergeData[,1] <-
-#   as.Date(mergeData[,1])
-
+adf.test(realGDPYearlyYoY)
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
