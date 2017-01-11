@@ -10,20 +10,9 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 900px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-table{
- white-space: nowrap;
-}
-</style>
-
-
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 900px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -31,8 +20,6 @@ table{
 - twitter https://twitter.com/AMC2_Japan
 
 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
-
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
@@ -44,21 +31,58 @@ options(width = 1000)
 # Editor theme:Clouds
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
 ```{r warning=F,error=F,message=F,echo=F}
-library(XML);library(XLConnect);library(lubridate);library(Nippon)
-username <- Sys.info()['user']
-pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+# http://www.boj.or.jp/statistics/boj/fm/ope/m_release/index.htm/
+library(XLConnect);library(lubridate);library(Nippon)
+username <- 
+  Sys.info()['user']
+pathOutput <- 
+  paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-url <- "http://www.boj.or.jp/statistics/boj/fm/ope/ope.htm/"
-htmlMarkup <- htmlParse(url)
-fileName <- 'operationBOJ'
-links <- xpathSApply(htmlMarkup, "//a/@href")
-urlToData <- paste0('http://www.boj.or.jp',links[grep('.zip',links)[1]])
-download.file(urlToData, paste0(fileName, '.zip'), mode = 'wb')
-unzip(paste0(fileName,'.zip'))
-fileName <- dir(pathOutput)[grep('.xls',dir(pathOutput),ignore.case = T)[1]]
+baseURL <- 
+  "http://www.boj.or.jp/statistics/boj/fm/ope/m_release/"
+YearFolder <- 
+  2016
+fileName <- 
+  'ope1612.xlsx'
+download.file(url = paste0(baseURL,YearFolder,'/',fileName), destfile = fileName, mode = 'wb')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 2, check.names = F, header = F)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+# library(XML);library(XLConnect);library(lubridate);library(Nippon)
+# username <- Sys.info()['user']
+# pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+# setwd(pathOutput)
+# url <- "http://www.boj.or.jp/statistics/boj/fm/ope/ope.htm/"
+# htmlMarkup <- htmlParse(url)
+# fileName <- 'operationBOJ'
+# links <- xpathSApply(htmlMarkup, "//a/@href")
+# urlToData <- paste0('http://www.boj.or.jp',links[grep('.zip',links)[1]])
+# download.file(urlToData, paste0(fileName, '.zip'), mode = 'wb')
+# unzip(paste0(fileName,'.zip'))
+# fileName <- dir(pathOutput)[grep('.xls',dir(pathOutput),ignore.case = T)[1]]
+# buf0 <-
+#   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 2, check.names = F, header = F)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -89,39 +113,67 @@ jgb$`構成比(%)` <- round(jgb[,2]/sum(jgb[,2])*100,2)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- paste0('日本銀行オペレーション - ',yy,'年',mm,'月')
+latestResult <-
+  paste0('国債買入(兆円):',
+         sum(jgb[,2])/10^4,
+         ', 指数連動型上場投資信託受益権買入(億円):',
+         sum(opeTable[grep('指数連動型',opeTable[,1]),2]))
+dataTitle <- 
+  paste0('日本銀行オペレーション:',yy,'年',mm,'月:',latestResult)
 dataSource <- '日本銀行'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+objColumn <-
+  which(substring(buf0[,1],1,1)=='・')
+cautionText <- ''
+for(ccc in objColumn[1]:objColumn[length(objColumn)]){
+  tmp <- buf0[ccc,1]
+  if(substring(buf0[ccc,1],1,1)=='・' & ccc != objColumn[1]){
+    cautionText <- paste0(cautionText, '<br><br>', tmp)
+  }else{
+    cautionText <- paste0(cautionText,  tmp)
+  }
+}
+cautionText <- gsub('\n|\\s','',cautionText)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.boj.or.jp/statistics/boj/fm/ope/m_release/index.htm/
+- 以下は日本銀行Webサイトからの引用
+
+<blockquote>
+
+`r cautionText`
+
+</blockquote>
+
+***
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 # 注記パート
-cat('以下の注記はソースからの引用。\n')
-notion <- buf0[grep('注',buf0[,1]),1]
-if(length(notion)!=0){
-  cat(paste0('\n',notion,'\n'))
-}  
-cat('<hr>')
+# cat('以下の注記はソースからの引用。\n')
+# notion <- buf0[grep('注',buf0[,1]),1]
+# if(length(notion)!=0){
+#   cat(paste0('\n',notion,'\n'))
+# }  
+# cat('<hr>')
 # 注記パート
 ```
 
-#### 国債買入、国庫短期証券買入・売却、社債等買入、ＣＰ等買入、指数連動型上場投資信託受益権買入、不動産投資法人投資口買入オペレーション
+#### 国債買入、国庫短期証券買入・売却、社債等買入、CP等買入、指数連動型上場投資信託受益権買入、不動産投資法人投資口買入オペレーション
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(opeTable)
+fun_markdownTable(opeTable)
 cat('<b>落札額合計(億円):</b>',sum(opeTable[,2]))
 cat('<hr>')
 cat('<h4>国債買入のみ</h4>')
-knitr::kable(jgb,row.names = F)
+fun_markdownTable(jgb)
 cat('<b>国債買入合計(億円):</b>',sum(jgb[,2]))
 ```
 
