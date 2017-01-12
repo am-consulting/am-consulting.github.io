@@ -10,7 +10,7 @@ fileURL <-
   'http://www.boj.or.jp/statistics/br/bop_06/dii163q.xlsx'
 fileName <-
   'DirectInvestmentByRegionAndIndustry.xlsx'
-# download.file(fileURL, fileName, mode = 'wb')
+download.file(fileURL, fileName, mode = 'wb')
 sheetTitle <- vector()
 for(sheetNo in 1:4){
   buf0 <-
@@ -18,7 +18,7 @@ for(sheetNo in 1:4){
   buf1 <-
     buf0
   sheetTitle[sheetNo] <-
-    zen2han(buf1[8,3])
+    zen2han(gsub('\\s','',paste0(buf1[8,3],':',buf1[9,16])))
   colnames(buf1) <-
     gsub('\\s|na','',sapply(paste0(buf1[11,],buf1[12,],buf1[13,]),zen2han),ignore.case = T)
   buf1[,1] <-
