@@ -1,7 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-tradeStatistics.html')) })
 
-
 title : 'Trade Statistics of Japan:Preliminary Report'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -12,17 +11,9 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-table{
- white-space: nowrap;
-}
-</style>
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -33,6 +24,24 @@ table{
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
@@ -55,16 +64,16 @@ names(buf0)
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- paste0('財務省貿易統計(速報) - ', targetYear,'年',targetMonth,'月分')
 dataSource <- '財務省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特  記      : ',notes,'\n'))
-cat(paste('特  記      : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont('Meiryo'))
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.customs.go.jp/toukei/latest/index.htm
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 cat(paste0('<h3>',buf0$sogakutsuki$title),'</h3>\n')
@@ -77,7 +86,7 @@ table01[,-3] <- table01[,-3]*10^-6
 colnames(table01) <- c(paste0(targetYear,'年',targetMonth,'月'),paste0(targetYear-1,'年',targetMonth,'月'),'伸率(%)')
 rownames(table01) <- c('輸出','輸入','差引')
 cat('<h5>総額(原値,兆円)</h5>\n')
-knitr::kable(table01)
+fun_markdownTable(table01,rownames = T)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
@@ -118,27 +127,8 @@ for(ggg in 4:21){
   byGoods[[cnt]] <- tmpDF
 }
 ```
-<hr>
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'asc', caption = '', dataTitle = '') {
-  cat(paste('<h5>', dataTitle, '</h5>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 2)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;',
-    #                                   'Table ', 
-    #                                   htmltools::em(caption))
-  )  
-  }
-```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 table02 <- data.frame()
@@ -155,7 +145,7 @@ table02[,c(3,5,7)] <- sapply(table02[,c(3,5,7)],function(x) x*10^-2)
 colnames(table02) <-
   c('ID', '地域･国', '輸出価額(億円)', '伸率(%)', '輸入価額(億円)', '伸率(%)', '差引価額(億円)', '伸率(%)')
 cat('<h5>地域(国)別輸出入</h5>\n')
-funDataTable(obj = table02) 
+fun_dataTable(obj = table02,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
@@ -167,7 +157,7 @@ for (iii in 1:length(byGoods)) {
     paste0(
       "\n```{r results='asis', echo=F}\n\n",
       "cat(paste0('<h5>', byGoodsTitle[",iii,"],'</h5>'))\n\n",
-      "funDataTable(obj = byGoods[[",iii,"]],)\n\n",
+      "fun_dataTable(obj = byGoods[[",iii,"]],dateFormat = 0,orderDirection = 'asc')\n\n",
       "cat('<hr>')\n\n```"
     )
   out = c(out, knit_expanded)
@@ -180,6 +170,7 @@ for (iii in 1:length(byGoods)) {
 # xml_view(xml2::read_xml(targetURL))
 ```
 
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
