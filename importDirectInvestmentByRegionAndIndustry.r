@@ -11,14 +11,16 @@ setwd(pathOutput)
 fileName <-
   'DirectInvestmentByRegionAndIndustry.xlsx'
 download.file(fileURL, fileName, mode = 'wb')
-sheetTitle <- vector()
+sheetTitle <- unitName <- vector()
 for(sheetNo in 1:4){
   buf0 <-
     readWorksheetFromFile(paste0(pathOutput, fileName), sheet = sheetNo, check.names = F, header = F)
   buf1 <-
     buf0
   sheetTitle[sheetNo] <-
-    zen2han(gsub('\\s','',paste0(buf1[8,3],':',buf1[9,16])))
+    zen2han(gsub('\\s','',buf1[8,3]))
+  unitName[sheetNo] <-
+    zen2han(gsub('\\s','',buf1[9,16]))
   colnames(buf1) <-
     gsub('\\s|na','',sapply(paste0(buf1[11,],buf1[12,],buf1[13,]),zen2han),ignore.case = T)
   buf1[,1] <-
@@ -53,4 +55,5 @@ assign('DirectInvestmentIncomeDebit',
        merge(DirectInvestment3,DirectInvestment4, by = c('ID','地域'), all = T),
        envir = .GlobalEnv)
 assign('sheetTitle',sheetTitle,envir = .GlobalEnv)
-}
+assign('unitName',unitName,envir = .GlobalEnv)
+  }
