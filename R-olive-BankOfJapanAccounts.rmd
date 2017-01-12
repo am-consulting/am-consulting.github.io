@@ -25,30 +25,20 @@ output:
 options(width = 1000)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r warning = F, error = F, message = F, echo = F}
 library(RCurl)
-importAMCC <- 
-  c(
-    'R-beforeORafterFunction.r',
-    'R-dataTablesFunction.r',
-    'R-dygraphsFunction.r',
-    'R-fit.r',
-    'R-getLatestResult.r',
-    'R-makeDiffTable.r',
-    'R-markdownTable.r',
-    'R-scatterPlot.r',
-    'R-turningPoint.r',
-    'plotTimeSeries.r',
-    'timeSeriesDataFundamentalStatistics.r',
-    'timeSeriesForecast.r',
-    'transposeDataFrame.r'
-    )
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
-           importAMCC[iii]),
-    ssl.verifypeer = F
-  )
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
   eval(parse(text = script))
 }
 ```
@@ -63,11 +53,8 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- '日本銀行営業毎旬報告'
+dataTitle <- paste0('日本銀行', gsub('資産:','',colnames(Assets[[1]])[1]))
 dataSource <- '日本銀行'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
