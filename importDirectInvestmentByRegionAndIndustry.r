@@ -52,4 +52,5 @@ assign('DirectInvestmentIncomeCredit',
 assign('DirectInvestmentIncomeDebit',
        merge(DirectInvestment3,DirectInvestment4, by = c('ID','地域'), all = T),
        envir = .GlobalEnv)
+assign('sheetTitle',sheetTitle,envir = .GlobalEnv)
 }
