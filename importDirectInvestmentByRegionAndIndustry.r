@@ -1,3 +1,5 @@
+fun_DirectInvestmentByRegionAndIndustry <-
+  function(fileURL = 'http://www.boj.or.jp/statistics/br/bop_06/dii163q.xlsx'){
 library(XLConnect);library(Nippon)
 # http://stackoverflow.com/questions/24534782/how-do-skip-or-f-work-on-regex
 # http://stackoverflow.com/questions/8613237/extract-info-inside-all-parenthesis-in-r
@@ -6,8 +8,6 @@ username <-
 pathOutput <-
   paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileURL <-
-  'http://www.boj.or.jp/statistics/br/bop_06/dii163q.xlsx'
 fileName <-
   'DirectInvestmentByRegionAndIndustry.xlsx'
 download.file(fileURL, fileName, mode = 'wb')
@@ -52,3 +52,4 @@ assign('DirectInvestmentIncomeCredit',
 assign('DirectInvestmentIncomeDebit',
        merge(DirectInvestment3,DirectInvestment4, by = c('ID','地域'), all = T),
        envir = .GlobalEnv)
+}
