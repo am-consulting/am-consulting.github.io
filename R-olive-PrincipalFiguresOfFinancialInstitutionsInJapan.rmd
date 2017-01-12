@@ -6,28 +6,14 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
-.main-container {max-width: 1000px; margin-left: auto; margin-right: auto; }
-table{white-space: nowrap;}
-td.negative {color : red;}
-</style>
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -41,102 +27,132 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(RCurl);library(lubridate);library(Nippon);library(knitr)
+library(lubridate);library(Nippon);library(knitr)
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
-    ssl.verifypeer = FALSE
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importDataFromBOJ.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-mergeData <- 
-  Reduce(function(x, y) merge(x, y, by='Date', all=T), list(d.csv_data,w1.csv_data,m.csv_data,q.csv_data,fy.csv_data))
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-objWord <- '貸出・預金動向|マネタリーベース'
-dataSet0 <- mergeData[, c(1, grep(objWord, colnames(mergeData)))]
-colnames(dataSet0)
-objColumn <- c(1,6,10:19)
-dataSet <- na.omit(dataSet0[,objColumn])
-if(length(unique(month(dataSet[,1])))==1){
-  dateFormat <- '%Y'
-}else if(length(unique(day(dataSet[,1])))==1){
-  dateFormat <- '%Y-%m'
-}else{
-  dateFormat <- '%Y-%m-%d'
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
 }
-colnames(dataSet) <- unlist(lapply(gsub('億円','兆円',colnames(dataSet)),zen2han))
-tmpCCC <- grep('兆円',colnames(dataSet))
-dataSet[,tmpCCC] <- apply(dataSet[,tmpCCC],2,function(x)x*10^-4)
-colnames(dataSet) <- gsub('\\([a-d]\\)','',colnames(dataSet))
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+importAMCC <- 
+  c('importMonetarybaseOfJapan-2017.r',
+    'importPrincipalFiguresOfFinancialInstitutions-2017.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+mergeData <- 
+  merge(PrincipalFiguresOfFinancialInstitutions,monetaryBase_Japan,by='Date',all=T)
+dataSet0 <- 
+  mergeData
+dateFormat <- '%Y-%m'
+# 単位変換パート
+objColumn <-
+  grep('億円',colnames(dataSet0))
+dataSet0[,objColumn] <- 
+  apply(dataSet0[,objColumn],2,function(x)x*10^-4)
+colnames(dataSet0)[objColumn] <-
+  gsub('億円','兆円',colnames(dataSet0)[objColumn])
+# 単位変換パート
+# 不要文字削除パート
+colnames(dataSet0) <-
+  sapply(gsub('\\([a-z]\\)','',colnames(dataSet0)),zen2han)
+# 不要文字削除パート
+colnames(dataSet0)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- paste0('貸出・預金動向 速報 - ',
-         format(tail(dataSet[, 1], 1), dateFormat))
-dataSource <- '日本銀行'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
+fun_latestResult(obj = mergeData,objColumn = c(3,4))
+dataTitle <- 
+  paste0('貸出･預金動向 速報:',latestResult)
+dataSource <- 
+  '日本銀行'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_generateKnit <- function(objDF = dataSet, n1 = 1, barPlot = 0){
-  fun_plot_dygraph(obj = objDF, n0 = n1, 
-                   dygraphTitle = paste0(colnames(objDF)[-1], collapse = ' × '), 
-                   legendWidth = 300, barPlot = barPlot)
-  fun_dygraph_shade(n = n1)
-}  
-```
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.stat-search.boj.or.jp/ssi/mtshtml/md13_m_1.html
+
+***
+`r objX <- 3;objY <- 16`
+#### `r paste0(colnames(dataSet0)[objX],' と ',colnames(dataSet0)[objY])`
 
 ```{r warning=F, error=F, message=F, echo=F}
-n1 <- 1
-fun_generateKnit(objDF = dataSet[,c(1,2,3)], n1 = n1, barPlot = 0)
+n <- 1
+fun_generateKnit(objDF = dataSet0[,c(1,objX,objY)],
+                 plotNum = n,
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', boj_dygraph)))
 ```
+
+***
+
+#### `r paste0(colnames(dataSet0)[objX],' と ',colnames(dataSet0)[objY],'との比')`
 
 ```{r warning=F, error=F, message=F, echo=F}
-buf0 <- data.frame(dataSet[,1], dataSet[,3]/dataSet[,2], check.names = F, stringsAsFactors = F)
-colnames(buf0) <- c('Date','総貸出平均残高(銀行･信金計)/マネタリーベース平均残高')
-n2 <- 2
-fun_generateKnit(objDF = buf0, n1 = n2, barPlot = 0)
+buf0 <- 
+  data.frame(dataSet0[,1], dataSet0[,objX]/dataSet0[,objY], check.names = F, stringsAsFactors = F)
+colnames(buf0) <- 
+  c('Date', paste0(colnames(dataSet0)[objX],' / ',colnames(dataSet0)[objY]))
+n <- 2
+fun_generateKnit(objDF = buf0,
+                 plotNum = n,
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', boj_dygraph)))
 ```
+
+`r objX <- 4;objY <- 12`
+
+#### `r colnames(dataSet0)[objX]`
 
 ```{r warning=F, error=F, message=F, echo=F}
-n3 <- 3
-fun_generateKnit(objDF = dataSet[,c(1,5)], n1 = n3, barPlot = 1)
+n <- 3
+fun_generateKnit(objDF = dataSet0[,c(1,objX)],
+                 plotNum = n,
+                 barPlot = 1,
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', boj_dygraph)))
 ```
 
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)),get(paste0('knit_expanded',n3)))), collapse = '\n')`
+#### `r paste0(colnames(dataSet0)[objX],' と ',colnames(dataSet0)[objY])`
 
+```{r warning=F, error=F, message=F, echo=F}
+n <- 4
+fun_generateKnit(objDF = dataSet0[,c(1,objX,objY)],
+                 plotNum = n,
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', boj_dygraph)))
+```
 
 #### 単位根検定
 ##### 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataSet <- 
+  na.omit(dataSet0[,c(1,3,16)])
 cat('Period:',paste0(format(range(dataSet[,1]),dateFormat),collapse = '~'))
 cat('\n')
 apply(dataSet[,c(2,3)],2, tseries::adf.test)
@@ -145,61 +161,31 @@ apply(dataSet[,c(2,3)],2, tseries::adf.test)
 ##### 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataSet1stDiff <- diff(as.matrix(dataSet[,c(2,3)]),lag = 1, differences = 1)
-cat('Period:',paste0(format(range(tail(dataSet,-1)[,1]),dateFormat),collapse = '~'))
+fun_makeDiffTable(dataSet)
+cat('Period:',paste0(format(range(diffDF[,1]),dateFormat),collapse = '~'))
 cat('\n')
-apply(dataSet1stDiff, 2, tseries::adf.test)
+apply(diffDF[,c(2,3)],2, tseries::adf.test)
 ```
 
 #### 一次差分同士の相互相関係数
 
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-par(family = 'Meiryo', mar = c(5,5,6,4))
-objCCC <- 2
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=6}
+par(family = 'Meiryo', mar = c(4,4,6,3), 
+    cex.main = 1.1, cex.lab = 1.1, cex.axis = 1.1, font.main = 1, font.lab=1,font.axis =1)
 ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
+  ccf(diffDF[,2], diffDF[,3], main = paste0(colnames(diffDF)[-1], collapse = '\n×\n'))
 panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
 text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 ```
 
 ***
-##### 参考 原系列:前年同月比(%)
 
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
-lineColor <- c('blue','red')
-YoY <- 
-  data.frame(Date=tail(dataSet[,1],-12),
-             round(diff(as.matrix(dataSet[,-1]),lag = 12,differences = 1)/head(dataSet[,-1],-12)*100,1),
-             check.names = F,stringsAsFactors = F)
-title <- paste0('Period:',paste0(format(range(YoY[,1]),dateFormat),collapse = '~'))
-par(family='Meiryo')
-plot(YoY[,1],YoY[,2],type='o',xlab='',ylab='前年同月比(%)',col=lineColor[1],xaxt='n',main=c('前年同月比(%)\n',title))
-lines(YoY[,1],YoY[,3],type='o',xlab='',ylab='',col=lineColor[2])
-graphics::legend('topleft', col = lineColor, lty = 1, legend = colnames(YoY)[2:3], cex = 1,  bty = 'n')
-axis.Date(side = 1, at = YoY[,1], format = dateFormat, padj = 1, cex.axis = 1.0)
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-cat(title)
-cat('\n')
-summary(YoY[,2:3])
-cat('\n')
-apply(YoY[,2:3], 2, tseries::adf.test)
-```
-
-#### 原数値
+#### 直近6ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(fun_transposeDataFrame(dataSet,dateFormat = dateFormat), 
-             row.names = F,
-             table.attr = "id='amcc1' width='100%'")
-```
-
-***
-#### 前年同月比(%)
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(fun_transposeDataFrame(YoY,dateFormat = dateFormat), 
-             row.names = F,
-             table.attr = "id='amcc2' width='100%'")
+fun_markdownTable(obj = 
+                    fun_transposeDataFrame(dataSet0[,c(1,grep('貸出',colnames(dataSet0)))],
+                                           dateFormat = dateFormat,tailN = 6))
 ```
 
 ***
