@@ -27,7 +27,7 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(RCurl);library(lubridate);library(Nippon);library(knitr)
+library(knitr)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -84,7 +84,6 @@ dataTitle <-
   paste0('日本のマネーストックと信用乗数:M2、M3、広義流動性:',latestResult)
 dataSource <- '日本銀行'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
-
 ```
 
 ***
@@ -96,29 +95,28 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ***
 
-#### `r objX <- 10;objY <- 22;paste0(colnames(mergeData0)[c(objX,objY)],collapse=' ~ ')`
-
 ```{r warning=F, error=F, message=F, echo=F}
+objX <- 10;objY <- 22
+mergeData <- na.omit(mergeData0[,c(1,objX,objY)])
 n1 <- 1
-fun_generateKnit(objDF = mergeData0[,c(1,objX,objY)], 
+fun_generateKnit(objDF = mergeData, 
                  plotNum = n1, 
                  barPlot = 0, 
-                 dygraphTitle = 'マネーストックとマネタリーベース')
+                 dygraphTitle = paste0(colnames(mergeData)[c(2,3)],collapse=' ~ '))
 ```
-
-#### 信用乗数:`r paste0(colnames(mergeData0)[c(objX,objY)],collapse=' / ')`
 
 ```{r warning=F, error=F, message=F, echo=F}
 n2 <- 2
 creditMultiplier <- 
-  data.frame(mergeData0[,1], 
-             mergeData0[,10]/mergeData0[,22],
+  data.frame(mergeData[,1], 
+             mergeData[,2]/mergeData[,3],
              check.names = F,
              stringsAsFactors = F)
-colnames(creditMultiplier)[2] <- paste0(colnames(mergeData0)[c(objX,objY)],collapse=' / ')
+colnames(creditMultiplier)[2] <- paste0(colnames(mergeData)[c(2,3)],collapse=' / ')
 fun_generateKnit(objDF = creditMultiplier, 
-                 plotNum = n2, barPlot = 0, 
-                 dygraphTitle = '信用乗数')
+                 plotNum = n2, 
+                 barPlot = 0, 
+                 dygraphTitle = paste0('信用乗数:',paste0(colnames(mergeData)[c(2,3)],collapse=' / ')))
 ```
 
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)))), collapse = '\n')`
@@ -127,72 +125,42 @@ fun_generateKnit(objDF = creditMultiplier,
 ##### 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-apply(dataSet[,-1],2, tseries::adf.test)
+cat(paste0(format(range(mergeData[,1]),dateFormat),collapse = '~'))
+cat('\n\n')
+apply(mergeData[,c(2,3),drop=F],2, tseries::adf.test)
 ```
 
 ##### 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataSet1stDiff <- diff(as.matrix(dataSet[,-1]),lag = 1, differences = 1)
-apply(dataSet1stDiff, 2, tseries::adf.test)
+fun_makeDiffTable(obj = mergeData)
+cat(paste0(format(range(diffDF[,1]),dateFormat),collapse = '~'))
+cat('\n\n')
+apply(diffDF[,c(2,3),drop=F],2, tseries::adf.test)
 ```
 
 #### 一次差分同士の相互相関係数
 
-```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=14, fig.width=10}
-par(mfrow = c(3,1), family = 'Meiryo', mar = c(5,5,6,4))
-objCCC <- 2
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+par(mfrow = c(1,1), family = 'Meiryo', mar = c(5,5,6,4), cex.main = 1.1, font.main = 1)
 ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
+  ccf(diffDF[,2], 
+      diffDF[,3], 
+      main = paste0(colnames(diffDF)[c(2,3)], collapse = '\n×\n'))
 panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
-
-objCCC <- 3
-ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
-
-objCCC <- 4
-ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
+text(ccfResult$lag, 
+     ccfResult$acf, 
+     round(ccfResult$acf,2))
 ```
 
 ***
+#### 直近5ヶ月分
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='',title='',append='') {
-  cat(paste('<h4>', dataTitle, '</h4>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-dfData <- dataSet
-dfData[,1] <- format(dfData[,1], dateFormat)
-funDataTable(obj = dfData, dataTitle = dataTitle)
-```
-
-***
-#### 直近3ヶ月分
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-objWord <- 'マネーストック'
-dataSetLatest <- mergeData[, c(1, grep(objWord, colnames(mergeData)))]
-knitr::kable(fun_transposeDataFrame(obj = na.omit(dataSetLatest),dateFormat = dateFormat,tailN = 3),
-             row.names = F)
+objColumn <- 
+  grep('マネーストック',colnames(mergeData0))
+fun_markdownTable(
+  fun_transposeDataFrame(obj = mergeData0[,c(1,objColumn)],dateFormat = dateFormat,tailN = 5))
 ```
 
 ***
