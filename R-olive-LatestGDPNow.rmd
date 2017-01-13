@@ -129,12 +129,17 @@ colnames(GDPNow0) <- GDPNow0[1,]
 GDPNow0 <- GDPNow0[-1,]
 colnames(GDPNow0)[1] <- 'Observation Date'
 GDPNow0[,2] <- as.numeric(GDPNow0[,2])
+colnames(GDPNow0)[2] <- 
+  format(as.Date(colnames(GDPNow0)[2]),'%Y-%m')
 componentGDPNow <- GDPNow0[-grep('contributions to',GDPNow0[,1],ignore.case = T),]
 contributionsGDPNow <- GDPNow0[grep('contributions to',GDPNow0[,1],ignore.case = T),]
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = componentGDPNow,title = paste0('GDPNow. データ取得日時:',dataImportedTime),dateFormat = 0)
+fun_dataTable(obj = componentGDPNow,
+              title = paste0('GDPNow. データ取得日時:',dataImportedTime),
+              dateFormat = 0,
+              orderDirection = 'asc')
 ```
 
 ##### Unit：Percent Change at Annual Rate,Seasonally Adjusted Annual Rate.
@@ -142,7 +147,10 @@ fun_dataTable(obj = componentGDPNow,title = paste0('GDPNow. データ取得日�
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = contributionsGDPNow,title = paste0('GDPNow. データ取得日時:',dataImportedTime),dateFormat = 0)
+fun_dataTable(obj = contributionsGDPNow,
+              title = paste0('GDPNow. データ取得日時:',dataImportedTime),
+              dateFormat = 0,
+              orderDirection = 'asc')
 ```
 
 ##### Unit：Percentage Points,Seasonally Adjusted.
