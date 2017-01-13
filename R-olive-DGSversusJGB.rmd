@@ -10,18 +10,9 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {
-	max-width: 900px;
-	margin-left: auto;
-	margin-right: auto;
-}
-
-table{
- white-space: nowrap;
-}
-</style>
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 900px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -41,17 +32,16 @@ library(knitr)
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- paste0('日米国債金利差')
 dataSource <- '財務省、Federal Reserve Bank of St.Louis'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
 
 ```{r warning=F,error=F,message=F,echo=F}
 eventData<-c(
