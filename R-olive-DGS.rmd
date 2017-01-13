@@ -13,7 +13,7 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 900px;}</style>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -84,7 +84,7 @@ for (lll in seq(1, length(treasuryRate), by = 2)) {
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y-%m-%d'
-fun_latestResult(obj = allData,objColumn = c(7,9),dateFormat = dateFormat)
+fun_latestResult(obj = allData,objColumn = c(7),dateFormat = dateFormat)
 dataTitle <-
   paste0('米国債金利:',latestResult)
 dataSource <- 'Federal Reserve Bank of St. Louis'
