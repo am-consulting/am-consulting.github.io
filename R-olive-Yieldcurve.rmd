@@ -67,7 +67,7 @@ jgbData <- na.omit(jgbData)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y-%m-%d'
-fun_latestResult(obj = jgbData,objColumn = -1,dateFormat = dateFormat)
+fun_latestResult(obj = jgbData,objColumn = c(3,11,16),dateFormat = dateFormat)
 dataTitle <-
   paste0('日本国債のイールドカーブとその時系列推移:直近の日本国債利回り(%):',
          latestResult)
