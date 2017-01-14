@@ -14,7 +14,7 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+<style>.main-container {max-width : 1000px;} </style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -27,17 +27,20 @@ output:
 options(width = 1000)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r warning = F, error = F, message = F, echo = F}
 library(RCurl)
+fileName <- 'functionList.csv'
 functionList <-
-  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
-           header = F,
-           as.is = T)
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
 for(iii in 1:nrow(functionList)){
   script <- 
-    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
-    ssl.verifypeer = F
-  )
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
   eval(parse(text = script))
 }
 ```
@@ -76,14 +79,6 @@ dataTitle <-
   paste0('CFTC投機筋ポジション-',
          format(tail(dataset[[1]][, 1], 1), '%Y年%m月%d日分.'),lastNetPositions)
 dataSource<-'Commodity Futures Trading Commission , Federal Reserve Bank of St. Louis'
-notes<-'複数のワードで検索する際は半角スペースで区切ってください'
-notes0<-"表中、-9999はNAを意味します"
-Author<-"アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-# cat(paste("Title       : ",dataTitle,"\n"))
-# cat(paste("Data Source : ",dataSource,"\n"))
-# cat(paste("Author      : ",Author,"\n"))
-# cat(paste("特記        : ",notes,"\n"))
-# cat(paste("特記        : ",notes0,"\n"))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
@@ -185,13 +180,13 @@ for (iii in 1:length(dataset)) {
 
 ## 直近 `r tailN <- 5;tailN` 週のネットポジション
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 WoWDF <- data.frame()
 for(iii in 1:length(dataset)){
   buf <- na.omit(dataset[[iii]][,c(1,4)])
   WoWDF <- rbind(WoWDF, fun_transposeDataFrame(obj = buf,tailN = tailN))
 }
-knitr::kable(WoWDF, row.names = F)
+fun_markdownTable(obj = WoWDF)
 ```
 
 ***
@@ -204,7 +199,7 @@ for(iii in 1:length(dataset)){
   if(durationInclude0 != 0){
     cat(paste0('<h4>',colnames(dataset[[iii]])[4],'</h4>'))
     cat('\n\n')
-    print(knitr::kable(objPNinclude0, row.names = F))
+    fun_markdownTable(obj = objPNinclude0)
     cat('\n\n')
     cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
                format(tail(dataset[[iii]][,1],1), '%Y-%m-%d'), 'まで',
