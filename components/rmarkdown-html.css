@@ -11,6 +11,10 @@ font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
 	margin-right: auto;
 }
 
+div.amccTableAutoScroll {
+	overflow: auto;
+}
+
 table {
 	white-space: nowrap;
 	width: 100%;
