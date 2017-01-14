@@ -93,7 +93,7 @@ fun_plotTimeSeries(obj = tail(na.omit(dataSet),4*12*5),objX = 1,objYL = 3,objYR 
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 dataSet[,-1] <- round(dataSet[,-1],1)
-knitr::kable(fun_transposeDataFrame(obj = dataSet, tailN = 7), row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet, tailN = 7))
 ```
 
 ***
@@ -104,7 +104,7 @@ dataSet <- buf
 dataSetDiff <- 
   data.frame(tail(dataSet[,1],-1),round(diff(as.matrix(dataSet[,-1])),1),check.names = F,stringsAsFactors = F)
 colnames(dataSetDiff)[1] <- 'Date'
-knitr::kable(fun_transposeDataFrame(obj = dataSetDiff, tailN = 7), row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSetDiff, tailN = 7))
 ```
 
 ***
@@ -116,7 +116,7 @@ fun_turningPoint(obj = dataSetDiff[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
   cat(paste0('<h4>',colnames(dataSetDiff)[ccc],'</h4>'))
   cat('\n\n')
-  print(knitr::kable(tail(objPNinclude0,5), row.names = F))
+  fun_markdownTable(obj = tail(objPNinclude0,5))
   cat('\n\n')
   cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
              format(tail(dataSetDiff[,1],1), '%Y-%m-%d'), 'まで',
@@ -132,7 +132,7 @@ fun_turningPoint(obj = dataSetDiff[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
   cat(paste0('<h4>',colnames(dataSetDiff)[ccc],'</h4>'))
   cat('\n\n')
-  print(knitr::kable(tail(objPNinclude0,5), row.names = F))
+  fun_markdownTable(obj = tail(objPNinclude0,5))
   cat('\n\n')
   cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
              format(tail(dataSetDiff[,1],1), '%Y-%m-%d'), 'まで',
