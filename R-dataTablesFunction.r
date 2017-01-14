@@ -7,7 +7,8 @@ fun_dataTable <-
            leftcolumns = 1,
            dateFormat = '%Y-%m',
            menuLength = 10,
-           needID = 0) {
+           needID = 0,
+           filter = 'none') {
     cat(paste0('<h5>', title, '</h5>'))
     if(dateFormat != 0){
       obj[, 1] <- format(obj[, 1], dateFormat)
@@ -40,7 +41,7 @@ fun_dataTable <-
       rownames = F,
       class = 'display compact',
       escape = F,
-      filter = 'top',
+      filter = filter,
       caption = caption
       # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ',
       #                                   htmltools::em(caption))
