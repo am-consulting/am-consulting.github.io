@@ -65,9 +65,6 @@ dataSet <- na.omit(tmp)
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y-%m-%d'
-
-
-
 fun_latestResult(obj = fun_makeDiffTable(obj = dataSet), objColumn = -1, dateFormat = dateFormat)
 dataTitle <-
   paste0('Baker Hughes:North America Rig Count','-',
@@ -147,11 +144,11 @@ dataSet0 <- merge(dataSet0, dataSet1, by = 'Date',all = T)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
-knitr::kable(tail(dataSet,12),row.names = F)
+fun_markdownTable(obj = tail(dataSet,12))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = dataSet0,tailN = 5),row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet0,tailN = 5))
 ```
 
 ***
@@ -163,7 +160,7 @@ fun_turningPoint(obj = dataSet0[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
   cat(paste0('<h4>',colnames(dataSet0)[ccc],'</h4>'))
   cat('\n\n')
-  print(knitr::kable(tail(objPNinclude0,5), row.names = F))
+  fun_markdownTable(obj = tail(objPNinclude0,5))
   cat('\n\n')
   cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
              format(tail(dataSet0[,1],1), '%Y-%m-%d'), 'まで',
@@ -179,7 +176,7 @@ fun_turningPoint(obj = dataSet0[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
   cat(paste0('<h4>',colnames(dataSet0)[ccc],'</h4>'))
   cat('\n\n')
-  print(knitr::kable(tail(objPNinclude0,5), row.names = F))
+  fun_markdownTable(obj = tail(objPNinclude0,5))
   cat('\n\n')
   cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
              format(tail(dataSet0[,1],1), '%Y-%m-%d'), 'まで',
@@ -193,32 +190,28 @@ if(durationInclude0 != 0){
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 3
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 4
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 5
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], max(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
@@ -226,32 +219,28 @@ knitr::kable(
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 3
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 4
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 5
-knitr::kable(
-  subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]),row.names = F)
+fun_markdownTable(obj = subset(dataSet0[,c(1,ccc)], min(dataSet0[,ccc],na.rm = T)==dataSet0[,ccc]))
 ```
 
 ***
