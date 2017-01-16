@@ -1,0 +1,120 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-OverviewOfTheWorldEconomicOutlookProjections.html')) })
+
+title : 'Overview Of The World Economic Outlook Projections(Source:IMF)'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 'IMF『世界経済の見通しの概要』:2017年1月16日アップデート版'
+dataSource <- 'International Monetary Fund (IMF)'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source https://www.imf.org/external/pubs/ft/weo/2017/update/01/index.htm
+- Please be sure to check notes in above source page.
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(rvest)
+htmlMarkup <-
+  read_html('https://www.imf.org/external/pubs/ft/weo/2017/update/01/index.htm',
+            encoding = "utf-8")
+trList <-
+  htmlMarkup %>% html_nodes(xpath = "//table[@class = 't1']") %>% html_nodes('tr')
+for(iii in grep('World Output',trList)[1]:grep('Japanese Yen',trList)){
+  valueList <-
+    trList[iii] %>% html_nodes('td') %>% html_text()
+  bufDF <- 
+    gsub('\r|\n','',valueList)
+  if(iii == grep('World Output',trList)[1]){
+    valueDF0 <- bufDF
+  }else{
+    valueDF0 <- rbind(valueDF0,bufDF)
+  }
+}
+valueDF0[,-1] <- 
+  apply(valueDF0[,-1],2,as.numeric)
+valueDF0[,1] <-
+  gsub('\\s${1,}','',gsub('<U+00A0>|^\\s{2,}|[0-9]{1,}/','',valueDF0[,1]))
+valueDF0 <-
+  valueDF0[-grep('Memorandum',valueDF0[,1],ignore.case = T),]
+colnames(valueDF0) <-
+  as.numeric(trList[grep('World Output',trList)[1]-1] %>% html_nodes('td') %>% html_text())
+bufColumn <-
+  which(apply(valueDF0,2,function(x)sum(is.na(x))) == nrow(valueDF0))
+valueDF1 <-
+  valueDF0[,-c(bufColumn[1]:bufColumn[2])]
+addColnames <- 
+  c('Country/Region','',':YoY(Estimates)',rep(':YoY(Projections)',2),':Q4oQ4(Estimates)',rep(':Q4oQ4(Projections)',2))
+colnames(valueDF1) <-
+  gsub('na','',paste0(colnames(valueDF1),addColnames),ignore.case = T)
+row.names(valueDF1) <- NULL
+bufColumn <-
+  which(is.na(valueDF1[,2]))
+valueDF1[bufColumn,1] <- paste0('<b>',valueDF1[bufColumn,1],'</b>')
+WorldEconomicOutlookProjections <- 
+  data.frame(valueDF1[,1,drop=F], apply(valueDF1[,-1],2,as.numeric),check.names = F,stringsAsFactors = F)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(RCurl)
+functionList <-
+  read.csv(
+    file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(
+      paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+      ssl.verifypeer = F
+      )
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+fun_dataTable(obj = WorldEconomicOutlookProjections,
+              dateFormat = 0,
+              needID = 1,
+              orderDirection = 'asc',
+              menuLength = 20,
+              leftcolumns = 2)
+```
+
+***
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
