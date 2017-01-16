@@ -35,6 +35,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - `r paste0("データ出所 : ", dataSource)`
 - Source https://www.imf.org/external/pubs/ft/weo/2017/update/01/index.htm
 - Please be sure to check notes in above source page.
+
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -101,7 +102,7 @@ fun_dataTable(obj = WorldEconomicOutlookProjections,
               dateFormat = 0,
               needID = 1,
               orderDirection = 'asc',
-              menuLength = 20,
+              menuLength = 15,
               leftcolumns = 2)
 ```
 
