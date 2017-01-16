@@ -21,8 +21,11 @@ sheetTitle <- vector()
 sheetNo <- 1
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = sheetNo, check.names = F, header = F)
+unitText <- zen2han(buf0[2,10])
 sheetTitle[sheetNo] <-
   zen2han(gsub('\\s','',buf0[1,1]))
+sheetTitle[sheetNo] <-
+  gsub('金額',paste0('金額',unitText),sheetTitle[sheetNo])
 objColumn <-
   c(grep('年',buf0[,2]),grep('～',buf0[,3]))
 buf1 <-
@@ -53,6 +56,8 @@ colnames(buf2)[1] <- 'Date'
 colnames(buf2) <- gsub('::',':',colnames(buf2))
 buf3 <-
   buf2[,apply(buf2,2,function(x)sum(is.na(x))) != nrow(buf2)]
+colnames(buf3)[-1] <-
+  paste0(sheetTitle[sheetNo],':',colnames(buf3)[-1])
 assign('bankruptcyCase',buf3,envir = .GlobalEnv)
 # sheet4
 sheetNo <- 4
@@ -86,6 +91,8 @@ buf3 <-
   buf2[apply(buf2,1,function(x)sum(is.na(x))) != ncol(buf2)-1,]
 buf3[,-1] <-
   apply(buf3[,-1],2,function(x)as.numeric(gsub(',','',x)))
+colnames(buf3)[-1] <-
+  paste0(sheetTitle[sheetNo],':',colnames(buf3)[-1])
 assign('bankruptcyCaseByCategory',buf3,envir = .GlobalEnv)
 # sheet5
 sheetNo <- 5
@@ -116,5 +123,7 @@ colnames(buf2)[1] <-
   'Date'
 buf3 <-
   buf2[,apply(buf2,2,function(x)sum(is.na(x))) != nrow(buf2)]
+colnames(buf3)[-1] <-
+  paste0(sheetTitle[sheetNo],':',colnames(buf3)[-1])
 assign('bankruptcyCaseByReason',buf3,envir = .GlobalEnv)
-assign('sheetTtile',unlist(na.omit(sheetTitle)),envir = .GlobalEnv)
+assign('sheetTtiles',unlist(na.omit(sheetTitle)),envir = .GlobalEnv)
