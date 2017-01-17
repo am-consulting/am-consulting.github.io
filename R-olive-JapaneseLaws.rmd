@@ -1,0 +1,139 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-JapaneseLaws.html')) })
+
+title : "Japanese Laws"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+
+本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<link  href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script>
+$(document).ready(function() {
+  $('table').DataTable( {
+    "order": [[ 0, "asc" ]],
+    "lengthMenu":[[5, -1],[5, "All"]],
+    "searching" :true,
+    "paging"    :true,
+    "ordering"  :true,
+    "info"      :true,
+    "scrollX"   :true
+  } );
+} );
+</script>
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(RCurl);library(knitr)
+functionList <-
+  read.csv(
+    file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(
+      paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+      ssl.verifypeer = F
+      )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# 括弧内の文字列のみ抽出
+# http://stackoverflow.com/questions/24534782/how-do-skip-or-f-work-on-regex
+# http://stackoverflow.com/questions/8613237/extract-info-inside-all-parenthesis-in-r
+url <- 
+  "http://law.e-gov.go.jp/htmldata/S25/S25HO201.html"
+htmlLines <- 
+  readLines(url,skipNul = F,encoding = 'shift_jis')
+lawText <- ''
+for(iii in 1:length(htmlLines)){
+  lawText <- paste0(lawText,htmlLines[iii])
+}
+pattern <- 
+  '<DIV class=".*?">(\\s|\\S)*?</div>'
+items <- 
+  regmatches(lawText, 
+             gregexpr(pattern = pattern,
+                      text = lawText,
+                      ignore.case = T))[[1]]
+lawTable <- 
+  data.frame()
+# for(iii in 1:length(items)){
+for(iii in 1:50){
+  pattern <- 
+    '<div(\\s|\\S)*?>|</div>|<a(\\s)*?name.*?>[\\s]*?</a>'
+  buf0 <- 
+    gsub(pattern,
+         '',
+         items[iii],
+         ignore.case = T)
+  buf1 <-
+    gsub('<b>',
+         '<br><b>',
+         buf0,
+         ignore.case = T)
+  buf2 <-
+    gsub('</b>',
+         '</b><br>',
+         buf1,
+         ignore.case = T)
+  pattern <-
+    '<a(\\s)*?href.*?>'
+  if(length(grep(pattern,buf2,ignore.case = T))!=0){
+    buf2 <-
+      enc2native(gsub('HREF=\"/','HREF=\"http://law.e-gov.go.jp/',buf2))
+  }
+  lawTable[iii,1] <-
+    gsub('^<br>',
+         '',
+         buf2,
+         ignore.case = T)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+lawTable <- 
+  data.frame(seq(nrow(lawTable)),
+             lawTable,
+             stringsAsFactors = F)
+colnames(lawTable) <-
+  c('No.', '条文')
+knitr::kable(lawTable,
+             escape = F)
+```
+
+***
+<script>MakeNegative()</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
