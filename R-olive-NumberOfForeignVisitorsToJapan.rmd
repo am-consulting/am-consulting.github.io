@@ -12,22 +12,8 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -40,57 +26,51 @@ function MakeNegative() {
 options(width = 1000)
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
-dataTitle <- '国籍/月別 訪日外客数(単位:万人)'
-dataSource <- '日本政府観光局(JNTO)'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-windowsFonts(Meiryo = windowsFont("Meiryo"))
-options(scipen = 999)
-library(knitr)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(RCurl);library(knitr)
+functionList <-
+  read.csv(
+    file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(
+      paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+      ssl.verifypeer = F
+      )
+  eval(parse(text = script))
+}
 ```
 
-***
-
-- `r paste0("タイトル : ", dataTitle)`
-- `r paste0("データ出所 : ", dataSource)`
-- `r paste0("特記 : ", notes)`
-
-***
-
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(RCurl)
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importNumberOfForeignVisitorsToJapan.r",
     ssl.verifypeer = F
   )
 eval(parse(text = script))
+numberOfForeignVisitorsToJapan[,-1] <-
+  apply(numberOfForeignVisitorsToJapan[,-1],2,function(x) x * 10^-4)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dataTablesFunction.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = numberOfForeignVisitorsToJapan,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('国籍/月別 訪日外客数(単位:万人):',latestResult)
+dataSource <- 
+  '日本政府観光局(JNTO)'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
 
 #### 総数(万人)
 
@@ -120,12 +100,11 @@ r paste(knit(text = c(get(paste0('knit_expanded',n2)))), collapse = '\n')
 ##### 前年同月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-bufYoY <- 
-  data.frame(Date=tail(bufDF[,1],-12),
-             round(diff(as.matrix(bufDF[,-1,drop=F]),lag = 12)/head(bufDF[,-1,drop=F],-12)*100,1),
-             check.names = F,stringsAsFactors = F)
-knitr::kable(fun_transposeDataFrame(bufYoY,tailN = 6,dateFormat = '%Y年%m月', colName = '国/地域'),
-             row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = bufDF,lag = 12),
+                                               dateFormat = dateFormat,
+                                               tailN = 8,
+                                               colName = '国/地域')
+                  )
 ```
 
 ***
@@ -150,33 +129,50 @@ eval(parse(text = paste0('dygraphPlot',n2,' %>% ', event_dygraph_point,' %>%  ',
 ##### 前年同月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-bufYoY <- 
-  data.frame(Date=tail(bufDF[,1],-12),
-             round(diff(as.matrix(bufDF[,-1,drop=F]),lag = 12)/head(bufDF[,-1,drop=F],-12)*100,1),
-             check.names = F,stringsAsFactors = F)
-knitr::kable(fun_transposeDataFrame(bufYoY,tailN = 6,dateFormat = '%Y年%m月', colName = '国/地域'),
-             row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = bufDF,lag = 12),
+                                               dateFormat = dateFormat,
+                                               tailN = 8,
+                                               colName = '国/地域')
+                  )
 ```
 
 ***
-#### 特に韓国と中国について第二次安倍政権発足前と直近における訪日外客数(万人)の変化
+#### 特に韓国と中国について第二次安倍政権発足前と直近における訪日外客数(万人)の変化率
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 objItem <- c('中国','韓国')
-bufC <- grep(paste0(objItem,collapse = '|'),colnames(numberOfForeignVisitorsToJapan))
-bufDF <- na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
-bufDF <- subset(bufDF, as.Date('2012-12-1')<= bufDF[,1])
-bufDF <- bufDF[c(1,nrow(bufDF)),]
-bufDF <- fun_transposeDataFrame(obj = bufDF,tailN = 2,dateFormat = '%Y年%m月', colName = '国/地域')
-bufDF[,ncol(bufDF)+1] <- round((bufDF[,3]/bufDF[,2]-1)*100,1)
-colnames(bufDF)[ncol(bufDF)] <- '変化率(%)'
-knitr::kable(bufDF, row.names = F)
+bufC <- 
+  grep(paste0(objItem,collapse = '|'),colnames(numberOfForeignVisitorsToJapan))
+bufDF <- 
+  na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
+bufDF <- 
+  subset(bufDF, 
+         as.Date(paste0('2012-',lubridate::month(tail(bufDF[,1],1)),'-1')) <=  bufDF[,1])
+bufDF <- 
+  bufDF[c(1,nrow(bufDF)),]
+bufDF <- 
+  fun_transposeDataFrame(obj = bufDF,
+                         tailN = 2,
+                         dateFormat = dateFormat,
+                         colName = '国/地域')
+bufDF[,ncol(bufDF)+1] <- 
+  round((bufDF[,3] / bufDF[,2] - 1) * 100,1)
+colnames(bufDF)[ncol(bufDF)] <- 
+  '変化率(%)'
+bufDF[,ncol(bufDF)+1] <- 
+  bufDF[,3] - bufDF[,2]
+colnames(bufDF)[ncol(bufDF)] <- 
+  '変化率(万人)'
+fun_markdownTable(obj = bufDF)
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = numberOfForeignVisitorsToJapan,title = dataTitle)
+fun_dataTable(obj = numberOfForeignVisitorsToJapan,
+              dateFormat = dateFormat,
+              title = dataTitle,
+              filter = 'none')
 ```
 
 ***
