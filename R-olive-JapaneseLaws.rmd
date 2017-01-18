@@ -36,8 +36,9 @@ options(width = 1000)
 <script>
 $(document).ready(function() {
   $('table').DataTable( {
+    "dom"            : '<"top"p>rt<"bottom"fli><"clear">',
     "order"          : [[ 0, "asc" ]],
-    "lengthMenu"     : [[5, -1],[5, "All"]],
+    "lengthMenu"     : [[5, 10, -1],[5, 10, "All"]],
     "searching"      : true,
     "paging"         : true,
     "ordering"       : true,
@@ -53,24 +54,6 @@ $(document).ready(function() {
 <!-- <div class="item"></div> -->
 <!-- <div class="number"></div> -->
 <!-- <div class="paraX"></div> -->
-
-```{r warning = F, error = F, message = F, echo = F}
-library(RCurl)
-fileName <- 'functionList.csv'
-functionList <-
-  read.csv(
-    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
-                  fileName),
-    header = F,
-    as.is = T)
-for(iii in 1:nrow(functionList)){
-  script <- 
-    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
-                  functionList[iii,1]),
-           ssl.verifypeer = F)
-  eval(parse(text = script))
-}
-```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 # 括弧内の文字列のみ抽出
@@ -96,8 +79,8 @@ divS <-
                       ignore.case = T))[[1]]
 lawTable <- 
   data.frame()
-for(iii in 1:length(divS)){
-#for(iii in 1:50){
+#for(iii in 1:length(divS)){
+for(iii in 1:50){
   textWithDIVremoved <-
     gsub('<div\\s*?class=".*?">|</div>',
          '',
@@ -132,11 +115,12 @@ for(iii in 1:length(divS)){
     finalText <- 
       textWithDIVandLABELremovedBREAKadded
   }
-  lawTable[iii,1] <-
+  finalText <- 
     gsub('^<br>',
          '',
          finalText,
          ignore.case = T)
+  lawTable[iii,1] <- finalText
 }
 ```
 
