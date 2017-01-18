@@ -14,6 +14,7 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>.main-container {max-width : 1000px;}</style>
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>table { white-space: normal; }</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -48,84 +49,95 @@ $(document).ready(function() {
 } );
 </script>
 
+<!-- <div class="arttitle"></div> -->
+<!-- <div class="item"></div> -->
+<!-- <div class="number"></div> -->
+<!-- <div class="paraX"></div> -->
 
-
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(RCurl);library(knitr)
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
 functionList <-
   read.csv(
-    file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
     header = F,
     as.is = T)
 for(iii in 1:nrow(functionList)){
   script <- 
-    getURL(
-      paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
-      ssl.verifypeer = F
-      )
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
   eval(parse(text = script))
 }
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 # 括弧内の文字列のみ抽出
+# http://stackoverflow.com/questions/33066058/regex-in-r-replace-only-part-of-a-pattern
 # http://stackoverflow.com/questions/24534782/how-do-skip-or-f-work-on-regex
 # http://stackoverflow.com/questions/8613237/extract-info-inside-all-parenthesis-in-r
+# http://stackoverflow.com/questions/28955367/extract-text-in-parentheses-in-r?noredirect=1&lq=1
 # http://stackoverflow.com/questions/36176442/highlight-search-result-in-datatables
 url <- 
   "http://law.e-gov.go.jp/htmldata/S25/S25HO201.html"
 htmlLines <- 
   readLines(url,skipNul = F,encoding = 'shift_jis')
-# lawText <- ''
-# for(iii in 1:length(htmlLines)){
-#   lawText <- paste0(lawText,htmlLines[iii])
-# }
 lawText <- 
   Reduce(function(x, y) paste0(x, y), htmlLines)
+lawTitle <-
+  regmatches(lawText, gregexpr("(?<=title>).*?(?=</title)", lawText, perl=T,ignore.case = T))[[1]]
 pattern <- 
-  '<DIV class=".*?">(\\s|\\S)*?</div>'
-items <- 
+  '<DIV\\s*?class=".*?">(\\s|\\S)*?</div>'
+divS <- 
   regmatches(lawText, 
              gregexpr(pattern = pattern,
                       text = lawText,
                       ignore.case = T))[[1]]
 lawTable <- 
   data.frame()
-# for(iii in 1:length(items)){
-for(iii in 1:50){
-  pattern <- 
-    '<div(\\s|\\S)*?>|</div>|<a(\\s)*?name.*?>[\\s]*?</a>'
-  buf0 <- 
-    gsub(pattern,
+for(iii in 1:length(divS)){
+#for(iii in 1:50){
+  textWithDIVremoved <-
+    gsub('<div\\s*?class=".*?">|</div>',
          '',
-         items[iii],
+         divS[iii],
          ignore.case = T)
-  buf1 <-
+  textWithDIVandLABELremoved <-
+    gsub('<a\\s*?name=\"[^>]*?\">(.*?)</a>',
+         '\\1',
+         textWithDIVremoved,
+         ignore.case = T)
+  textWithDIVandLABELremovedBREAKadded <-
     gsub('<b>',
          '<br><b>',
-         buf0,
+         textWithDIVandLABELremoved,
          ignore.case = T)
-  buf2 <-
+  textWithDIVandLABELremovedBREAKadded <-
     gsub('</b>',
          '</b><br>',
-         buf1,
+         textWithDIVandLABELremovedBREAKadded,
          ignore.case = T)
   pattern <-
-    '<a(\\s)*?href.*?>'
-  if(length(grep(pattern,buf2,ignore.case = T))!=0){
-    buf2 <-
-      enc2native(gsub('HREF=\"/','HREF=\"http://law.e-gov.go.jp/',buf2))
+    '<a\\s*?href=.*?>'
+  if(length(grep(pattern,
+                 textWithDIVandLABELremovedBREAKadded,
+                 ignore.case = T)) != 0){
+    finalText <-
+      enc2native(gsub('HREF=\"/',
+                      'HREF=\"http://law.e-gov.go.jp/',
+                      textWithDIVandLABELremovedBREAKadded,
+                      ignore.case = T))
+  }else{
+    finalText <- 
+      textWithDIVandLABELremovedBREAKadded
   }
   lawTable[iii,1] <-
     gsub('^<br>',
          '',
-         buf2,
+         finalText,
          ignore.case = T)
 }
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
@@ -135,10 +147,13 @@ lawTable <-
              stringsAsFactors = F)
 colnames(lawTable) <-
   c('No.', '条文')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 knitr::kable(lawTable,
              escape = F,
              format = 'html',
-             table.attr = "class = 'display compact' width = '100%'")
+             table.attr = "ID = 'AMCC' class = 'display compact' width = '100%'")
 ```
 
 ***
