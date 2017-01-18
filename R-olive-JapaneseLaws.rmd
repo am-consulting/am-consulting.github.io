@@ -29,19 +29,27 @@ options(width = 1000)
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <link  href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
 <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
+<script src="https://bartaz.github.io/sandbox.js/jquery.highlight.js"></script>
+<script src="https://cdn.datatables.net/plug-ins/1.10.12/features/searchHighlight/dataTables.searchHighlight.min.js"></script>
+<link  href="https://cdn.datatables.net/plug-ins/1.10.12/features/searchHighlight/dataTables.searchHighlight.css" rel="stylesheet">
 <script>
 $(document).ready(function() {
   $('table').DataTable( {
-    "order": [[ 0, "asc" ]],
-    "lengthMenu":[[5, -1],[5, "All"]],
-    "searching" :true,
-    "paging"    :true,
-    "ordering"  :true,
-    "info"      :true,
-    "scrollX"   :true
+    "order"          : [[ 0, "asc" ]],
+    "lengthMenu"     : [[5, -1],[5, "All"]],
+    "searching"      : true,
+    "paging"         : true,
+    "ordering"       : true,
+    "info"           : true,
+    "scrollX"        : true,
+    "retrieve"       : true,
+    "searchHighlight": true
   } );
 } );
 </script>
+
+
+
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 library(RCurl);library(knitr)
@@ -64,14 +72,17 @@ for(iii in 1:nrow(functionList)){
 # 括弧内の文字列のみ抽出
 # http://stackoverflow.com/questions/24534782/how-do-skip-or-f-work-on-regex
 # http://stackoverflow.com/questions/8613237/extract-info-inside-all-parenthesis-in-r
+# http://stackoverflow.com/questions/36176442/highlight-search-result-in-datatables
 url <- 
   "http://law.e-gov.go.jp/htmldata/S25/S25HO201.html"
 htmlLines <- 
   readLines(url,skipNul = F,encoding = 'shift_jis')
-lawText <- ''
-for(iii in 1:length(htmlLines)){
-  lawText <- paste0(lawText,htmlLines[iii])
-}
+# lawText <- ''
+# for(iii in 1:length(htmlLines)){
+#   lawText <- paste0(lawText,htmlLines[iii])
+# }
+lawText <- 
+  Reduce(function(x, y) paste0(x, y), htmlLines)
 pattern <- 
   '<DIV class=".*?">(\\s|\\S)*?</div>'
 items <- 
@@ -115,6 +126,9 @@ for(iii in 1:50){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 lawTable <- 
   data.frame(seq(nrow(lawTable)),
              lawTable,
@@ -122,7 +136,9 @@ lawTable <-
 colnames(lawTable) <-
   c('No.', '条文')
 knitr::kable(lawTable,
-             escape = F)
+             escape = F,
+             format = 'html',
+             table.attr = "class = 'display compact' width = '100%'")
 ```
 
 ***
