@@ -1,7 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-JapaneseLaws.html')) })
-
-title : "Japanese Laws"
+knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- 'ConstructionRelatedLawsInJapan'; rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText,'.html')) })
+title : "`r gsub('(?!^)(?=[[:upper:]])', ' ', titleText, perl=T)`"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -20,12 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
-```{r set-options, echo=F, cache=F}
-options(width = 1000)
-```
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <link  href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
@@ -36,9 +30,9 @@ options(width = 1000)
 <script>
 $(document).ready(function() {
   $('table').DataTable( {
-    "dom"            : '<"top"p>rt<"bottom"fli><"clear">',
+    "dom"            : '<"top"pf>rt<"bottom"il><"clear">',
     "order"          : [[ 0, "asc" ]],
-    "lengthMenu"     : [[5, 10, -1],[5, 10, "All"]],
+    "lengthMenu"     : [[1, 5, 10, -1],[1, 5, 10, "All"]],
     "searching"      : true,
     "paging"         : true,
     "ordering"       : true,
@@ -55,6 +49,32 @@ $(document).ready(function() {
 <!-- <div class="number"></div> -->
 <!-- <div class="paraX"></div> -->
 
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 
+  '建築関連法令'
+dataSource <- 
+  'e-Gov http://www.e-gov.go.jp/index.html'
+url <- 
+  c("http://law.e-gov.go.jp/htmldata/S25/S25HO201.html")
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- 表中"条文"欄のテキストは `r dataSource` からのコピーを利用しています。
+- 本ページから得た情報(以降"本情報")を利用する際は、毎回必ず、官報で本情報の正確性を確認する必要があります。
+- 本情報を根拠とした各種申請等の一切を禁止します。
+- 附則、別表等は官報で確認してください。
+- 法令ソース `r url[1]`
+
+***
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 # 括弧内の文字列のみ抽出
 # http://stackoverflow.com/questions/33066058/regex-in-r-replace-only-part-of-a-pattern
@@ -62,14 +82,15 @@ $(document).ready(function() {
 # http://stackoverflow.com/questions/8613237/extract-info-inside-all-parenthesis-in-r
 # http://stackoverflow.com/questions/28955367/extract-text-in-parentheses-in-r?noredirect=1&lq=1
 # http://stackoverflow.com/questions/36176442/highlight-search-result-in-datatables
-url <- 
-  "http://law.e-gov.go.jp/htmldata/S25/S25HO201.html"
+# http://stackoverflow.com/questions/7988959/splitting-string-based-on-letters-case
 htmlLines <- 
-  readLines(url,skipNul = F,encoding = 'shift_jis')
+  readLines(url[1],skipNul = F,encoding = 'shift_jis')
 lawText <- 
   Reduce(function(x, y) paste0(x, y), htmlLines)
+lawText <-
+  substring(lawText, 1,gregexpr('附　則　抄',lawText)[[1]][1]-1)
 lawTitle <-
-  regmatches(lawText, gregexpr("(?<=title>).*?(?=</title)", lawText, perl=T,ignore.case = T))[[1]]
+  regmatches(lawText, gregexpr("(?<=title>).*?(?=</title)", lawText, perl=T, ignore.case = T))[[1]]
 pattern <- 
   '<DIV\\s*?class=".*?">(\\s|\\S)*?</div>'
 divS <- 
@@ -77,10 +98,15 @@ divS <-
              gregexpr(pattern = pattern,
                       text = lawText,
                       ignore.case = T))[[1]]
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+library(Nippon)
 lawTable <- 
   data.frame()
-#for(iii in 1:length(divS)){
-for(iii in 1:50){
+cnt <- 0
+articleTextS <- arttitle <- arttitlePrevious <- ''
+for(iii in 1:length(divS)){
   textWithDIVremoved <-
     gsub('<div\\s*?class=".*?">|</div>',
          '',
@@ -120,21 +146,60 @@ for(iii in 1:50){
          '',
          finalText,
          ignore.case = T)
-  lawTable[iii,1] <- finalText
+  if(length(grep('arttitle',divS[iii],ignore.case = T)) == 1){
+    lawTable[iii,1] <- zen2han(finalText)
+  }else{
+    lawTable[iii,1] <- finalText
+  }
 }
+lawDF0 <- lawTable
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+lawDF1 <- lawDF2 <- lawDF3 <- lawDF4 <- 
+  data.frame(article = character(nrow(lawDF0)),stringsAsFactors = F)
+objRow <-
+  which(substring(lawDF0[,1],1,1) == '(')
+lawDF1[ objRow,1] <- lawDF0[ objRow,1]
+lawDF2[-objRow,1] <- lawDF0[-objRow,1]
+articleTextS <- ''
+for(rrr in rev(seq(nrow(lawDF2)))){
+  tmp <- lawDF2[rrr,1]
+  articleTextS <-
+    paste0(tmp,'<br>',articleTextS)
+  if(substring(tmp,4,4) == '第'){
+    lawDF1[rrr,1] <- articleTextS
+    articleTextS <- ''
+  }
+}
+for(rrr in rev(seq(nrow(lawDF1)))){
+  tmp <- lawDF1[rrr,1]
+  if(tmp != ''){
+    if(rrr != 1){
+      if(substring(lawDF1[rrr-1,1],1,1) != '('){
+        lawDF3[rrr,1] <- tmp
+      }
+    }
+    if(substring(tmp,1,1) == '('){
+      lawDF3[rrr,1] <- paste0(tmp,'<br>',lawDF1[rrr+1,1])
+    }
+  }
+}
+lawDF4 <- lawDF3[which(lawDF3[,1]!=''),1,drop=F]
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-lawTable <- 
-  data.frame(seq(nrow(lawTable)),
-             lawTable,
-             stringsAsFactors = F)
-colnames(lawTable) <-
+lawDF4 <- 
+  data.frame(seq(nrow(lawDF4)),
+             lawDF4,
+             stringsAsFactors = F,
+             row.names = NULL)
+colnames(lawDF4) <-
   c('No.', '条文')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(lawTable,
+knitr::kable(lawDF4,
              escape = F,
              format = 'html',
              table.attr = "ID = 'AMCC' class = 'display compact' width = '100%'")
