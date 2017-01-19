@@ -44,6 +44,24 @@ $(document).ready(function() {
 } );
 </script>
 
+<style>
+.dataTables_wrapper .dataTables_filter {
+float: left;
+text-align: right;
+}
+.dataTables_wrapper .dataTables_paging {
+float: right;
+text-align: right;
+}
+.dataTables_wrapper .dataTables_length {
+float: left;
+}
+.dataTables_wrapper .dataTables_info {
+float: right;
+text-align: right;
+}
+</style>
+
 <!-- <div class="arttitle"></div> -->
 <!-- <div class="item"></div> -->
 <!-- <div class="number"></div> -->
@@ -83,6 +101,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 # http://stackoverflow.com/questions/28955367/extract-text-in-parentheses-in-r?noredirect=1&lq=1
 # http://stackoverflow.com/questions/36176442/highlight-search-result-in-datatables
 # http://stackoverflow.com/questions/7988959/splitting-string-based-on-letters-case
+# https://victoriaanugrah.wordpress.com/2015/05/05/moving-datatables-search-box-to-the-left-very-easy-steps/
 htmlLines <- 
   readLines(url[1],skipNul = F,encoding = 'shift_jis')
 lawText <- 
@@ -104,8 +123,6 @@ divS <-
 library(Nippon)
 lawTable <- 
   data.frame()
-cnt <- 0
-articleTextS <- arttitle <- arttitlePrevious <- ''
 for(iii in 1:length(divS)){
   textWithDIVremoved <-
     gsub('<div\\s*?class=".*?">|</div>',
@@ -191,11 +208,12 @@ lawDF4 <- lawDF3[which(lawDF3[,1]!=''),1,drop=F]
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 lawDF4 <- 
   data.frame(seq(nrow(lawDF4)),
+             rep(lawTitle,nrow(lawDF4)),
              lawDF4,
              stringsAsFactors = F,
              row.names = NULL)
 colnames(lawDF4) <-
-  c('No.', '条文')
+  c('No.', '法令', '条文')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
