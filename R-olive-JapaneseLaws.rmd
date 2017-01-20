@@ -73,7 +73,7 @@ options(width = 1000)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dataTitle <- 
-  '建築関連法令'
+  '法令条文検索:建築関連法令'
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
 url <- 
