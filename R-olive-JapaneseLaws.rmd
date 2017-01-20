@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- 'ConstructionRelatedLawsInJapan'; rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText,'.html')) })
+knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- c'ConstructionRelatedLawsInJapan'); rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText[1],'.html')) })
 title : "`r gsub('(?!^)(?=[[:upper:]])', ' ', titleText, perl=T)`"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -77,7 +77,9 @@ dataTitle <-
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
 url <- 
-  c("http://law.e-gov.go.jp/htmldata/S25/S25HO201.html")
+  c("http://law.e-gov.go.jp/htmldata/S25/S25HO201.html",
+    "http://law.e-gov.go.jp/htmldata/S25/S25SE338.html",
+    "http://law.e-gov.go.jp/htmldata/S25/S25F04201000040.html")
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
@@ -89,7 +91,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - 本ページから得た情報(以降"本情報")を利用する際は、毎回必ず、官報で本情報の正確性を確認する必要があります。
 - 本情報を根拠とした各種申請等の一切を禁止します。
 - 附則等は官報で確認してください。
-- 法令ソース `r url[1]`
+- 法令ソース `r paste0(url,collapse = ' , ')`
 
 ***
 
@@ -102,25 +104,28 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 # http://stackoverflow.com/questions/36176442/highlight-search-result-in-datatables
 # http://stackoverflow.com/questions/7988959/splitting-string-based-on-letters-case
 # https://victoriaanugrah.wordpress.com/2015/05/05/moving-datatables-search-box-to-the-left-very-easy-steps/
+fun_divS <- function(iii = 1){
 htmlLines <- 
-  readLines(url[1],skipNul = F,encoding = 'shift_jis')
-lawText0 <- 
+  readLines(url[iii],skipNul = F,encoding = 'shift_jis')
+lawText0 <<- 
   Reduce(function(x, y) paste0(x, y), htmlLines)
 lawText <-
   substring(lawText0, 1,gregexpr('附　則　抄',lawText0)[[1]][1]-1)
-lawTitle <-
+lawTitle <<-
   regmatches(lawText, gregexpr("(?<=title>).*?(?=</title)", lawText, perl=T, ignore.case = T))[[1]]
 pattern <- 
   '<DIV\\s*?class=".*?">(\\s|\\S)*?</div>'
-divS <- 
+divS <<- 
   regmatches(lawText, 
              gregexpr(pattern = pattern,
                       text = lawText,
                       ignore.case = T))[[1]]
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 library(Nippon)
+fun_lawTable <- function(){
 lawTable <- 
   data.frame()
 for(iii in 1:length(divS)){
@@ -169,11 +174,13 @@ for(iii in 1:length(divS)){
     lawTable[iii,1] <- finalText
   }
 }
-lawDF0 <- lawTable
+lawDF0 <<- lawTable
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-lawDF1 <- lawDF2 <- lawDF3 <- lawDF4 <- 
+fun_articleWithoutTable <- function(){
+lawDF1 <- lawDF2 <- lawDF3 <- articleWithoutTable <- 
   data.frame(article = character(nrow(lawDF0)),stringsAsFactors = F)
 objRow <-
   which(substring(lawDF0[,1],1,1) == '(')
@@ -202,11 +209,12 @@ for(rrr in rev(seq(nrow(lawDF1)))){
     }
   }
 }
-lawDF4 <- lawDF3[which(lawDF3[,1]!=''),1,drop=F]
+articleWithoutTable <<- lawDF3[which(lawDF3[,1]!=''),1,drop=F]
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-# pattern <- '<table.*?>[^<>]*?</table>'
+fun_articleWithTable <- function(){
 pattern <- 
   '<a name[^<>]*?>別表[^<>]*?</a>.*?<table.*?>[^<>]*?</table>'
 tableS0 <- 
@@ -214,25 +222,42 @@ tableS0 <-
              gregexpr(pattern = pattern,
                       text = lawText0,
                       ignore.case = T))[[1]]
+if(length(tableS0) != 0){
 tableS <- 
   gsub('<a name.*?>|</a>','',tableS0,ignore.case = T)
 tableSDF <- 
   Reduce(function(x, y) rbind(x, y), tableS)
 colnames(tableSDF) <- 
-  colnames(lawDF4)
-lawDF5 <- 
-  rbind(lawDF4,tableSDF)
+  colnames(articleWithoutTable)
+articleWithTable <<-
+  rbind(articleWithoutTable,tableSDF)
+}else{
+articleWithTable <<-
+  articleWithoutTable
+}
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_ArticleAndTable <- function(){
 ArticleAndTable <- 
-  data.frame(seq(nrow(lawDF5)),
-             rep(lawTitle,nrow(lawDF5)),
-             lawDF5,
+  data.frame(seq(nrow(articleWithTable)),
+             rep(lawTitle,nrow(articleWithTable)),
+             articleWithTable,
              stringsAsFactors = F,
              row.names = NULL)
 colnames(ArticleAndTable) <-
   c('No.', '法令', '条文')
+ArticleAndTable <<- ArticleAndTable
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_divS(iii = 2)
+fun_lawTable()
+fun_articleWithoutTable()
+fun_articleWithTable()
+fun_ArticleAndTable()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
