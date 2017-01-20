@@ -88,7 +88,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - 表中"条文"欄のテキストは `r dataSource` からのコピーを利用しています。
 - 本ページから得た情報(以降"本情報")を利用する際は、毎回必ず、官報で本情報の正確性を確認する必要があります。
 - 本情報を根拠とした各種申請等の一切を禁止します。
-- 附則、別表等は官報で確認してください。
+- 附則等は官報で確認してください。
 - 法令ソース `r url[1]`
 
 ***
@@ -206,13 +206,16 @@ lawDF4 <- lawDF3[which(lawDF3[,1]!=''),1,drop=F]
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+# pattern <- '<table.*?>[^<>]*?</table>'
 pattern <- 
-  '<table.*?>[^<>]*?</table>'
-tableS <- 
+  '<a name[^<>]*?>別表[^<>]*?</a>.*?<table.*?>[^<>]*?</table>'
+tableS0 <- 
   regmatches(lawText0, 
              gregexpr(pattern = pattern,
                       text = lawText0,
                       ignore.case = T))[[1]]
+tableS <- 
+  gsub('<a name.*?>|</a>','',tableS0,ignore.case = T)
 tableSDF <- 
   Reduce(function(x, y) rbind(x, y), tableS)
 colnames(tableSDF) <- 
