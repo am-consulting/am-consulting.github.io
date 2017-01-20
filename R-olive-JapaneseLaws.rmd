@@ -29,7 +29,7 @@ output:
 <link  href="https://cdn.datatables.net/plug-ins/1.10.12/features/searchHighlight/dataTables.searchHighlight.css" rel="stylesheet">
 <script>
 $(document).ready(function() {
-  $('table').DataTable( {
+  $('#AMCC').DataTable( {
     "dom"            : '<"top"pf>rt<"bottom"il><"clear">',
     "order"          : [[ 0, "asc" ]],
     "lengthMenu"     : [[1, 5, 10, -1],[1, 5, 10, "All"]],
@@ -254,21 +254,45 @@ ArticleAndTable <<- ArticleAndTable
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_divS(iii = 3)
-fun_lawTable()
-fun_articleWithoutTable()
-fun_articleWithTable()
-fun_ArticleAndTable()
+for(lll in seq(length(url))){
+  fun_divS(iii = lll)
+  fun_lawTable()
+  fun_articleWithoutTable()
+  fun_articleWithTable()
+  fun_ArticleAndTable()
+  if(lll == 1){
+    ArticleAndTableS <- ArticleAndTable
+  }else{
+    ArticleAndTableS <- rbind(ArticleAndTableS,ArticleAndTable)
+  }
+}
+ArticleAndTableS[,1] <-
+  seq(nrow(ArticleAndTableS))
+selectedLaw <-
+  cbind(unique(ArticleAndTableS[,2]))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(ArticleAndTable,
+knitr::kable(ArticleAndTableS,
              escape = F,
              format = 'html',
              table.attr = "ID = 'AMCC' class = 'display compact' width = '100%'")
 ```
 
 ***
+#### <b>検索対象法規</b>
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+knitr::kable(selectedLaw,
+             escape = F,
+             format = 'html',
+             table.attr = "width = '100%'",
+             align = 'l',
+             row.names = F)
+```
+
+***
+
 <script>MakeNegative()</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
