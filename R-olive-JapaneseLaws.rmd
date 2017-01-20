@@ -104,10 +104,10 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 # https://victoriaanugrah.wordpress.com/2015/05/05/moving-datatables-search-box-to-the-left-very-easy-steps/
 htmlLines <- 
   readLines(url[1],skipNul = F,encoding = 'shift_jis')
-lawText <- 
+lawText0 <- 
   Reduce(function(x, y) paste0(x, y), htmlLines)
 lawText <-
-  substring(lawText, 1,gregexpr('附　則　抄',lawText)[[1]][1]-1)
+  substring(lawText0, 1,gregexpr('附　則　抄',lawText0)[[1]][1]-1)
 lawTitle <-
   regmatches(lawText, gregexpr("(?<=title>).*?(?=</title)", lawText, perl=T, ignore.case = T))[[1]]
 pattern <- 
@@ -206,18 +206,34 @@ lawDF4 <- lawDF3[which(lawDF3[,1]!=''),1,drop=F]
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-lawDF4 <- 
-  data.frame(seq(nrow(lawDF4)),
-             rep(lawTitle,nrow(lawDF4)),
-             lawDF4,
+pattern <- 
+  '<table.*?>[^<>]*?</table>'
+tableS <- 
+  regmatches(lawText0, 
+             gregexpr(pattern = pattern,
+                      text = lawText0,
+                      ignore.case = T))[[1]]
+tableSDF <- 
+  Reduce(function(x, y) rbind(x, y), tableS)
+colnames(tableSDF) <- 
+  colnames(lawDF4)
+lawDF5 <- 
+  rbind(lawDF4,tableSDF)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+ArticleAndTable <- 
+  data.frame(seq(nrow(lawDF5)),
+             rep(lawTitle,nrow(lawDF5)),
+             lawDF5,
              stringsAsFactors = F,
              row.names = NULL)
-colnames(lawDF4) <-
+colnames(ArticleAndTable) <-
   c('No.', '法令', '条文')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(lawDF4,
+knitr::kable(ArticleAndTable,
              escape = F,
              format = 'html',
              table.attr = "ID = 'AMCC' class = 'display compact' width = '100%'")
