@@ -18,8 +18,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -69,31 +68,22 @@ options(scipen = 999)
 #### 直近の営業毎旬報告
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = Assets[[1]],
-              orderDirection = 'asc',
-              dateFormat = 0,
-              needID = 1,
-              title = '資産 / Asset')
+cat(paste0('<b>','資産 / Asset','</b>'))
+fun_markdownTable(obj = Assets[[1]])
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = LiabilitiesAndNetWorth[[1]],
-              orderDirection = 'asc',
-              dateFormat = 0,
-              needID = 1,
-              title = '負債および純資産 / Liabilities and Net Worth')
+cat(paste0('<b>','負債および純資産 / Liabilities and Net Worth','</b>'))
+fun_markdownTable(obj = LiabilitiesAndNetWorth[[1]])
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = JGBbreakdown[[1]],
-              orderDirection = 'asc',
-              dateFormat = 0,
-              needID = 1,
-              title = '資産項目中の「国債」の内訳 / Breakdown for JGB of Assets')
+cat(paste0('<b>','資産項目中の「国債」の内訳 / Breakdown for JGB of Assets','</b>'))
+fun_markdownTable(obj = JGBbreakdown[[1]])
 ```
 
 ***
