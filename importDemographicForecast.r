@@ -27,17 +27,6 @@ for(iii in 1:length(hrefList0)){
                   mode = 'wb')
   }
   sheetNo <- 1
-  # if(iii <= 61 | 117 == iii | 148 == iii){
-  #   buf0 <-
-  #     XLConnect::readWorksheetFromFile(file = paste0(pathOutput, fileName),
-  #                                      sheet = sheetNo,
-  #                                      check.names = F,
-  #                                      header = F)
-  # }else{
-  #   buf0 <-
-  #     gdata::read.xls(xls = paste0(pathOutput, fileName), sheet = sheetNo,
-  #                     fileEncoding = 'shift_jis', stringsAsFactors = F)
-  # }
   buf0 <-
     gdata::read.xls(xls = paste0(pathOutput, fileName), sheet = sheetNo,
                     fileEncoding = 'shift_jis', stringsAsFactors = F)
@@ -51,7 +40,7 @@ for(iii in 1:length(hrefList0)){
   buf0 <-
     buf0[,apply(buf0,2,function(x)sum(is.na(x)))!=nrow(buf0)]
   objRow <-
-    which(apply(buf0,1,function(x)grep('注',x,ignore.case = T)[1])!=0)[1]
+    which(apply(buf0,1,function(x)grep('再掲',gsub('\\s','',x),ignore.case = T)[1])!=0)[1]
   if(length(objRow) != 0){
     buf0 <-
       buf0[-c(objRow:nrow(buf0)),]
@@ -106,6 +95,13 @@ for(iii in 1:length(hrefList0)){
   buf4 <- data.frame(`種別` = row.names(buf3),buf3,row.names = NULL,check.names = F,stringsAsFactors = F)
   buf5 <- buf4
   buf5[,1] <- as.Date('2000-1-1') # dammy
+  if(nchar(buf5[1,2])<=5){
+    buf5[,-1] <-
+      apply(buf5[,-1],2,function(x) as.numeric(x)*10)
+  }else{
+    buf5[,-1] <-
+      apply(buf5[,-1],2,function(x) as.numeric(x))
+  }
   if(cnt == 1){
     TotalBoth <- buf5[1,]
     TotalMale <- buf5[2,]
@@ -123,11 +119,11 @@ for(iii in 1:length(hrefList0)){
   }
   TotalBoth[cnt,1] <- TotalMale[cnt,1] <- TotalFemale[cnt,1] <-
     JaBoth[cnt,1] <- JaMale[cnt,1] <- JaFemale[cnt,1] <- sheetDate0
-  colnames(TotalBoth)[1] <- colnames(TotalMale)[1] <-
-    colnames(TotalFemale)[1] <- colnames(JaBoth)[1] <- colnames(JaMale)[1] <-
-    colnames(JaFemale)[1] <- 'Date'
   cnt <- cnt + 1
 }
+colnames(TotalBoth)[1] <- colnames(TotalMale)[1] <-
+  colnames(TotalFemale)[1] <- colnames(JaBoth)[1] <- colnames(JaMale)[1] <-
+  colnames(JaFemale)[1] <- 'Date'
 TotalBoth <- TotalBoth[order(TotalBoth[,1]),]
 TotalMale <- TotalMale[order(TotalMale[,1]),]
 TotalFemale <- TotalFemale[order(TotalFemale[,1]),]
