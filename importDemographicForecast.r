@@ -123,6 +123,9 @@ for(iii in 1:length(hrefList0)){
   }
   TotalBoth[cnt,1] <- TotalMale[cnt,1] <- TotalFemale[cnt,1] <-
     JaBoth[cnt,1] <- JaMale[cnt,1] <- JaFemale[cnt,1] <- sheetDate0
+  colnames(TotalBoth)[1] <- colnames(TotalMale)[1] <-
+    colnames(TotalFemale)[1] <- colnames(JaBoth)[1] <- colnames(JaMale)[1] <-
+    colnames(JaFemale)[1] <- 'Date'
   cnt <- cnt + 1
 }
 TotalBoth <- TotalBoth[order(TotalBoth[,1]),]
@@ -131,3 +134,31 @@ TotalFemale <- TotalFemale[order(TotalFemale[,1]),]
 JaBoth <- JaBoth[order(JaBoth[,1]),]
 JaMale <- JaMale[order(JaMale[,1]),]
 JaFemale <- JaFemale[order(JaFemale[,1]),]
+TotalBoth[,-1] <- apply(TotalBoth[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
+TotalMale[,-1] <- apply(TotalMale[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
+TotalFemale[,-1] <- apply(TotalFemale[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
+JaBoth[,-1] <- apply(JaBoth[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
+JaMale[,-1] <- apply(JaMale[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
+JaFemale[,-1] <- apply(JaFemale[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
+# csvへの書き出し
+fileName <-'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf000 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf000[2,1],'csv/')
+setwd(pathOutputTOcsv)
+write.csv(x = TotalBoth, file = paste0('TotalBoth','.csv'),
+          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+write.csv(x = TotalMale, file = paste0('TotalMale','.csv'),
+          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+write.csv(x = TotalFemale, file = paste0('TotalFemale','.csv'),
+          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+write.csv(x = JaBoth, file = paste0('JaBoth','.csv'),
+          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+write.csv(x = JaMale, file = paste0('JaMale','.csv'),
+          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+write.csv(x = JaFemale, file = paste0('JaFemale','.csv'),
+          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
