@@ -13,8 +13,6 @@ hrefList0 <-
 # Error: OldExcelFormatException (Java): The supplied spreadsheet seems to be Excel 5.0/7.0 (BIFF5) format. POI only supports BIFF8 format (from Excel versions 97/2000/XP/2003)
 cnt <- 1
 for(iii in 1:length(hrefList0)){
-#  iii <- 1
-#for(iii in 1:1){
   htmlMarkup <-
     read_html(paste0('http://www.e-stat.go.jp/SG1/estat/', gsub('\\./','',hrefList0[iii])))
   hrefList <-
@@ -29,7 +27,7 @@ for(iii in 1:length(hrefList0)){
                   mode = 'wb')
   }
   sheetNo <- 1
-  if(iii <= 61){
+  if(iii <= 61 | 117 == iii | 148 == iii){
     buf0 <-
       XLConnect::readWorksheetFromFile(file = paste0(pathOutput, fileName),
                                        sheet = sheetNo,
@@ -40,17 +38,22 @@ for(iii in 1:length(hrefList0)){
       gdata::read.xls(xls = paste0(pathOutput, fileName), sheet = sheetNo,
                       fileEncoding = 'shift_jis', stringsAsFactors = F)
   }
+  objRow <-
+    which(apply(buf0,1,function(x)grep('注',x,ignore.case = T)[1])!=0)[1]
+  if(length(objRow) != 0){
+    buf0 <-
+      buf0[-c(objRow:nrow(buf0)),]
+  }
   objRow <- which(apply(buf0,1,function(x)grep('確定値',x,ignore.case = T)[1])!=0)[1]
   objCol <- max(which(apply(buf0,2,function(x)grep('確定値',x,ignore.case = T)[1])!=0))
   sheetDate0 <- gsub('\\s','',zen2han(buf0[objRow,objCol]))
   buf1 <- buf0[,c(1,objCol:ncol(buf0))]
   sheetCheck <-
     which(apply(buf1,2,function(x)grep('概算値',x,ignore.case = T))!=0)
-  # iiiが38でエラーが出る。一列目に概算値表記有り故。
   if(length(sheetCheck)!=0){
     objCol <- max(sheetCheck)
+    buf1 <- buf1[,-c(objCol:ncol(buf1))]
   }
-  buf1 <- buf1[,-c(objCol:ncol(buf1))]
   objRow <- which(apply(buf1,1,function(x)grep('Total',x,ignore.case = T))!=0)[1]
   tmp <- NA
   for(ccc in 1:ncol(buf1)){
@@ -64,15 +67,15 @@ for(iii in 1:length(hrefList0)){
          gsub('totalpopulation','総人口',colnames(buf1),ignore.case = T),
          ignore.case = T)
   buf1[,-1] <-
-    apply(buf1[,-1],2,function(x)as.numeric(gsub(',','',x)))
+    apply(buf1[,-1],2,function(x)as.numeric(gsub(',|\\s','',x)))
   buf2 <-
     buf1[!is.na(buf1[,2]),]
   buf2[,1] <-
     gsub('\\s','',sapply(buf2[,1],zen2han))
   colnames(buf2)[1] <- '年齢階級'
   sheetCheck <-
-    length(grep('na',colnames(buf2),ignore.case = T))
-  if(sheetCheck!=0){
+    grep('na',colnames(buf2),ignore.case = T)
+  if(length(sheetCheck) != 0){
     buf2 <- buf2[,-sheetCheck]
   }
   buf3 <- t(buf2)
