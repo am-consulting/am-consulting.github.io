@@ -27,17 +27,29 @@ for(iii in 1:length(hrefList0)){
                   mode = 'wb')
   }
   sheetNo <- 1
-  if(iii <= 61 | 117 == iii | 148 == iii){
+  # if(iii <= 61 | 117 == iii | 148 == iii){
+  #   buf0 <-
+  #     XLConnect::readWorksheetFromFile(file = paste0(pathOutput, fileName),
+  #                                      sheet = sheetNo,
+  #                                      check.names = F,
+  #                                      header = F)
+  # }else{
+  #   buf0 <-
+  #     gdata::read.xls(xls = paste0(pathOutput, fileName), sheet = sheetNo,
+  #                     fileEncoding = 'shift_jis', stringsAsFactors = F)
+  # }
+  buf0 <-
+    gdata::read.xls(xls = paste0(pathOutput, fileName), sheet = sheetNo,
+                    fileEncoding = 'shift_jis', stringsAsFactors = F)
+  if(nrow(buf0) == 0){
     buf0 <-
       XLConnect::readWorksheetFromFile(file = paste0(pathOutput, fileName),
                                        sheet = sheetNo,
                                        check.names = F,
                                        header = F)
-  }else{
-    buf0 <-
-      gdata::read.xls(xls = paste0(pathOutput, fileName), sheet = sheetNo,
-                      fileEncoding = 'shift_jis', stringsAsFactors = F)
   }
+  buf0 <-
+    buf0[,apply(buf0,2,function(x)sum(is.na(x)))!=nrow(buf0)]
   objRow <-
     which(apply(buf0,1,function(x)grep('注',x,ignore.case = T)[1])!=0)[1]
   if(length(objRow) != 0){
@@ -47,6 +59,14 @@ for(iii in 1:length(hrefList0)){
   objRow <- which(apply(buf0,1,function(x)grep('確定値',x,ignore.case = T)[1])!=0)[1]
   objCol <- max(which(apply(buf0,2,function(x)grep('確定値',x,ignore.case = T)[1])!=0))
   sheetDate0 <- gsub('\\s','',zen2han(buf0[objRow,objCol]))
+  preDate <-
+    stringr::str_match(sheetDate0,'[^0-9]+?([0-9]+)年([0-9]+)月')
+  yyyy <-
+    as.numeric(preDate[2]) + 1988
+  mm <-
+    as.numeric(preDate[3])
+  sheetDate0 <-
+    as.Date(paste0(yyyy,'-',mm,'-1'))
   buf1 <- buf0[,c(1,objCol:ncol(buf0))]
   sheetCheck <-
     which(apply(buf1,2,function(x)grep('概算値',x,ignore.case = T))!=0)
@@ -78,28 +98,36 @@ for(iii in 1:length(hrefList0)){
   if(length(sheetCheck) != 0){
     buf2 <- buf2[,-sheetCheck]
   }
+  buf2 <-
+    buf2[buf2[,1]!='',]
   buf3 <- t(buf2)
   colnames(buf3) <- buf3[1,]
   buf3 <- buf3[-1,]
-  buf4 <- data.frame(`年齢階級` = row.names(buf3),buf3,row.names = NULL,check.names = F,stringsAsFactors = F)
+  buf4 <- data.frame(`種別` = row.names(buf3),buf3,row.names = NULL,check.names = F,stringsAsFactors = F)
+  buf5 <- buf4
+  buf5[,1] <- as.Date('2000-1-1') # dammy
   if(cnt == 1){
-    TotalBoth <- buf4[1,]
-    TotalMale <- buf4[2,]
-    TotalFemale <- buf4[3,]
-    JaBoth <- buf4[4,]
-    JaMale <- buf4[5,]
-    JaFemale <- buf4[6,]
-    TotalBoth[cnt,1] <- TotalMale[cnt,1] <- TotalFemale[cnt,1] <-
-      JaBoth[cnt,1] <- JaMale[cnt,1] <- JaFemale[cnt,1] <- sheetDate0
+    TotalBoth <- buf5[1,]
+    TotalMale <- buf5[2,]
+    TotalFemale <- buf5[3,]
+    JaBoth <- buf5[4,]
+    JaMale <- buf5[5,]
+    JaFemale <- buf5[6,]
   }else{
-    TotalBoth <- bind_rows(TotalBoth,buf4[1,])
-    TotalMale <- bind_rows(TotalMale,buf4[2,])
-    TotalFemale <- bind_rows(TotalFemale,buf4[3,])
-    JaBoth <- bind_rows(JaBoth,buf4[4,])
-    JaMale <- bind_rows(JaMale,buf4[5,])
-    JaFemale <- bind_rows(JaFemale,buf4[6,])
-    TotalBoth[cnt,1] <- TotalMale[cnt,1] <- TotalFemale[cnt,1] <-
-      JaBoth[cnt,1] <- JaMale[cnt,1] <- JaFemale[cnt,1] <- sheetDate0
+    TotalBoth <- bind_rows(TotalBoth,buf5[1,])
+    TotalMale <- bind_rows(TotalMale,buf5[2,])
+    TotalFemale <- bind_rows(TotalFemale,buf5[3,])
+    JaBoth <- bind_rows(JaBoth,buf5[4,])
+    JaMale <- bind_rows(JaMale,buf5[5,])
+    JaFemale <- bind_rows(JaFemale,buf5[6,])
   }
+  TotalBoth[cnt,1] <- TotalMale[cnt,1] <- TotalFemale[cnt,1] <-
+    JaBoth[cnt,1] <- JaMale[cnt,1] <- JaFemale[cnt,1] <- sheetDate0
   cnt <- cnt + 1
 }
+TotalBoth <- TotalBoth[order(TotalBoth[,1]),]
+TotalMale <- TotalMale[order(TotalMale[,1]),]
+TotalFemale <- TotalFemale[order(TotalFemale[,1]),]
+JaBoth <- JaBoth[order(JaBoth[,1]),]
+JaMale <- JaMale[order(JaMale[,1]),]
+JaFemale <- JaFemale[order(JaFemale[,1]),]
