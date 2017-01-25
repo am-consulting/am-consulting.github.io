@@ -291,8 +291,6 @@ for(lll in seq(length(url))){
 }
 ArticleAndTableS[,1] <-
   seq(nrow(ArticleAndTableS))
-selectedLaw <-
-  cbind(unique(ArticleAndTableS[,2]))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
@@ -306,11 +304,15 @@ knitr::kable(ArticleAndTableS,
 #### <b>検索対象法規</b>
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+selectedLaw <- 
+  lawList[objLawS:objLawE,c(2,1)]
+colnames(selectedLaw) <- 
+  c('法令','URL')
 knitr::kable(selectedLaw,
              escape = F,
              format = 'html',
              table.attr = "width = '100%'",
-             align = 'l',
+             align = c('l','l'),
              row.names = F)
 ```
 
