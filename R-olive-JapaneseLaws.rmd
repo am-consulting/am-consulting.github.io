@@ -72,7 +72,7 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1 
+#titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1 
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -92,8 +92,8 @@ dataTitle <-
   paste0('法令条文検索:',lawList[1,2])
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
-objLawS <- 5
-objLawE <- 5
+objLawS <- 2
+objLawE <- 7
 url <- 
   lawList[objLawS:objLawE,1]
 windowsFonts(Meiryo = windowsFont("Meiryo"))
