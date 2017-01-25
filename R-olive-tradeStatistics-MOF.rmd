@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -54,17 +53,33 @@ library(knitr)
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2016
-targetMonth <- 11
+targetMonth <- 12
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
 names(buf0)
 ```
 
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+buf <- data.frame(rbind(buf0$sogakutsuki$export,buf0$sogakutsuki$import,buf0$sogakutsuki$sashihiki))
+table01 <- sapply(buf, function(x) 
+  as.numeric(
+    gsub('△', '-',
+         gsub(',', '', x))))
+table01[,-3] <- table01[,-3]*10^-6
+colnames(table01) <- c(paste0(targetYear,'年',targetMonth,'月'),paste0(targetYear-1,'年',targetMonth,'月'),'伸率(%)')
+rownames(table01) <- c('輸出','輸入','差引')
+```
+
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- paste0('財務省貿易統計(速報) - ', targetYear,'年',targetMonth,'月分')
+dataTitle <- 
+  paste0('財務省貿易統計(速報):',
+         colnames(table01)[1],
+         ':前年同月比(%) ',
+         paste0(paste0(row.names(table01),':',table01[,3]),collapse = ','))
 dataSource <- '財務省'
 windowsFonts(Meiryo=windowsFont('Meiryo'))
+
 ```
 
 ***
@@ -76,18 +91,12 @@ windowsFonts(Meiryo=windowsFont('Meiryo'))
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-cat(paste0('<h3>',buf0$sogakutsuki$title),'</h3>\n')
-buf <- data.frame(rbind(buf0$sogakutsuki$export,buf0$sogakutsuki$import,buf0$sogakutsuki$sashihiki))
-table01 <- sapply(buf, function(x) 
-  as.numeric(
-    gsub('△', '-',
-         gsub(',', '', x))))
-table01[,-3] <- table01[,-3]*10^-6
-colnames(table01) <- c(paste0(targetYear,'年',targetMonth,'月'),paste0(targetYear-1,'年',targetMonth,'月'),'伸率(%)')
-rownames(table01) <- c('輸出','輸入','差引')
+cat(paste0('<h4>',buf0$sogakutsuki$title),'</h4>\n')
 cat('<h5>総額(原値,兆円)</h5>\n')
 fun_markdownTable(table01,rownames = T)
 ```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 byGoods <- list()
@@ -127,8 +136,6 @@ for(ggg in 4:21){
   byGoods[[cnt]] <- tmpDF
 }
 ```
-
-***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 table02 <- data.frame()
