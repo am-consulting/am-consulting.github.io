@@ -92,9 +92,10 @@ dataTitle <-
   paste0('法令条文検索:',lawList[1,2])
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
-objLaw <- 5
+objLawS <- 5
+objLawE <- 5
 url <- 
-  lawList[2:objLaw,1]
+  lawList[objLawS:objLawE,1]
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
@@ -199,8 +200,12 @@ lawDF1 <- lawDF2 <- lawDF3 <- articleWithoutTable <-
   data.frame(article = character(nrow(lawDF0)),stringsAsFactors = F)
 objRow <-
   which(substring(lawDF0[,1],1,1) == '(')
-lawDF1[ objRow,1] <- lawDF0[ objRow,1]
-lawDF2[-objRow,1] <- lawDF0[-objRow,1]
+if(length(objRow)!=0){ # arttitleが無い法令(例えば消防法)対応
+  lawDF1[ objRow,1] <- lawDF0[ objRow,1]
+  lawDF2[-objRow,1] <- lawDF0[-objRow,1]
+}else{
+  lawDF2[,1] <- lawDF0[,1]
+}
 articleTextS <- ''
 for(rrr in rev(seq(nrow(lawDF2)))){
   tmp <- lawDF2[rrr,1]
@@ -216,6 +221,10 @@ for(rrr in rev(seq(nrow(lawDF1)))){
   if(tmp != ''){
     if(rrr != 1){
       if(substring(lawDF1[rrr-1,1],1,1) != '('){
+        lawDF3[rrr,1] <- tmp
+      }
+    }else{
+      if(substring(tmp,1,1) != '('){
         lawDF3[rrr,1] <- tmp
       }
     }
