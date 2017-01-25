@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- c('ConstructionRelatedLawsInJapan'); rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText[1],'.html')) })
+knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1; rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText[titleNo],'.html')) })
 title : "`r gsub('(?!^)(?=[[:upper:]])', ' ', titleText, perl=T)`"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -72,14 +72,29 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
+titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1 
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/'
+lawList <- 
+  read.csv(paste0(baseURL,titleText[titleNo],'.csv'),
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dataTitle <- 
-  '法令条文検索:建築関連法令'
+  paste0('法令条文検索:',lawList[1,2])
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
+objLaw <- 5
 url <- 
-  c("http://law.e-gov.go.jp/htmldata/S25/S25HO201.html",
-    "http://law.e-gov.go.jp/htmldata/S25/S25SE338.html",
-    "http://law.e-gov.go.jp/htmldata/S25/S25F04201000040.html")
+  lawList[2:objLaw,1]
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
@@ -91,7 +106,6 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - 本ページから得た情報(以降"本情報")を利用する際は、毎回必ず、官報で本情報の正確性を確認する必要があります。
 - 本情報を根拠とした各種申請等の一切を禁止します。
 - 附則等は官報で確認してください。
-- 法令ソース `r paste0(url,collapse = ' , ')`
 
 ***
 
