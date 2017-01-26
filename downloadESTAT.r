@@ -1,4 +1,5 @@
-fun_downloadESTAT <- function(bid = '000001006005', cycode = '1', dateS = '2016-1-1', dateE = '2016-1-1', objXLS = 1){
+fun_downloadESTAT <-
+  function(bid = '000001006005', cycode = '1', dateS = '2016-1-1', dateE = '2016-1-1', objXLS = 1, folder = 'R_Data_Write'){
   library(rvest)
   urlToESTAT <-
     paste0('http://www.e-stat.go.jp/SG1/estat/OtherList.do?bid=',bid,'&cycode=',cycode)
@@ -33,7 +34,7 @@ fun_downloadESTAT <- function(bid = '000001006005', cycode = '1', dateS = '2016-
   username <-
     Sys.info()['user']
   pathOutput <-
-    paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+    paste0("C:/Users/", username, "/Desktop/",folder,"/")
   setwd(pathOutput)
   objlinkList <-
     subset(linkList, as.Date(dateS) <= linkList[,1] & linkList[,1] <= as.Date(dateE))
