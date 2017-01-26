@@ -61,5 +61,7 @@ buf4 <-
              stringsAsFactors = F,
              row.names = NULL)
 colnames(buf4)[1] <- 'Date'
+buf4[,-1] <-
+  apply(buf4[,-1],2,as.numeric)
 assign('JapanResidentalProperty', buf4, envir = .GlobalEnv)
 }
