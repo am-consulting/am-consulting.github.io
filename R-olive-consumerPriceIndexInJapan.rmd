@@ -74,7 +74,7 @@ options(scipen = 999)
 
 ***
 
-#### 直近`r tailN <- 6;tailN`ヶ月間の消費者物価指数前年同月比(%)
+#### 直近`r tailN <- 3;tailN`ヶ月間の消費者物価指数前年同月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = fun_transposeDataFrame(obj = consumerPriceIndexofJapan,
