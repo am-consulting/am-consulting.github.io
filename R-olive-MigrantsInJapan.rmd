@@ -1,9 +1,26 @@
-```{r}
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+importAMCC <-
+  c('downloadESTAT.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+                  importAMCC[iii]),
+           ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+folder <- 
+  'MigrantsInJapan'
+fun_downloadESTAT(dateS = '2015-1-1',dateE = '2016-10-1',folder = folder)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
 library(Nippon)
 username <- 
   Sys.info()['user']
 pathOutput <- 
-  paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+  paste0("C:/Users/", username, "/Desktop/",folder,"/")
 setwd(pathOutput)
 sheetNo <- 1
 fileList <-
@@ -14,6 +31,7 @@ for(iii in seq(length(fileList))){
                                      sheet = sheetNo,
                                      check.names = F,
                                      header = F)
+  gengou <- zen2han(buf0[8,9])
   buf0[10,] <-
     gsub('na',NA,sapply(gsub('\\s','',buf0[10,]),zen2han),ignore.case = T)
   buf0[10,] <-
@@ -38,8 +56,34 @@ for(iii in seq(length(fileList))){
     buf2[!is.na(buf2[,1]),]
   buf3[,-1] <- 
     apply(buf3[,-1],2,function(x)as.numeric(gsub(',|\\s','',x)))
+  buf3$`元号表記` <- gengou
+  yyyy <- 
+    as.numeric(gsub('平成([0-9]+)年([0-9]+)月','\\1' ,gengou)) + 1988
+  mm <- 
+    as.numeric(gsub('平成([0-9]+)年([0-9]+)月','\\2' ,gengou))
+  buf3$Date <-
+    as.Date(paste0(yyyy,'-',mm,'-1'))
   assign(paste0('data',gsub('.xls','',fileList[iii])),
          buf3,
          envir = .GlobalEnv)
 }
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+fun_createTimeSeries <- function(objPrefecture = '東京都'){
+  tsDF0 <- data.frame()
+  for(iii in seq(length(fileList))){
+    dfName <- 
+      paste0('data',gsub('.xls','',fileList[iii]))
+    tmp0 <- 
+      get(dfName)
+    tsDF0 <- 
+      rbind(tsDF0, tmp0[grep(paste0(objPrefecture,'\\b'), tmp0[,1]),])
+  }
+  assign('tsDF',tsDF0,envir = .GlobalEnv)
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+fun_createTimeSeries(objPrefecture = '神奈川県')
 ```
