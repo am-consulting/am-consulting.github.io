@@ -74,6 +74,11 @@ for(iii in seq(length(countryS))){
   colnames(TradeInGoodsByCountry[[iii]])[4] <-
     paste0(gsub('(.+):.+','\\1',colnames(TradeInGoodsByCountry[[iii]])[2]),':Balance(E-I)')
   print(tail(TradeInGoodsByCountry[[iii]],3))
+  if(iii == 1){
+    grandData <- TradeInGoodsByCountry[[iii]]
+  }else{
+    grandData <- merge(grandData,TradeInGoodsByCountry[[iii]],by='Date',all=T)
+  }
 }
 
 # - https://www.census.gov/foreign-trade/data/index.html
