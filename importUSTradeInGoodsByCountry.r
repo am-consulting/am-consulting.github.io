@@ -61,6 +61,16 @@ for(iii in seq(length(countryS))){
     merge(importData[[iii]],exportData[[iii]],by='Date',all=T)
   print(tail(TradeInGoodsByCountry[[iii]],3))
 }
+# omit blank data
+objCountry <-
+  grep('japan',countryS,ignore.case = T)
+endDate <-
+  tail(TradeInGoodsByCountry[[objCountry]][TradeInGoodsByCountry[[objCountry]][,2]!=0,],1)[,1]
+for(iii in seq(length(countryS))){
+  TradeInGoodsByCountry[[iii]] <-
+    subset(TradeInGoodsByCountry[[iii]], TradeInGoodsByCountry[[iii]][,1] <= endDate)
+  print(tail(TradeInGoodsByCountry[[iii]],3))
+}
 
 # - https://www.census.gov/foreign-trade/data/index.html
 # - https://www.census.gov/foreign-trade/statistics/historical/index.html
