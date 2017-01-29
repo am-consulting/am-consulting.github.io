@@ -69,6 +69,10 @@ endDate <-
 for(iii in seq(length(countryS))){
   TradeInGoodsByCountry[[iii]] <-
     subset(TradeInGoodsByCountry[[iii]], TradeInGoodsByCountry[[iii]][,1] <= endDate)
+  TradeInGoodsByCountry[[iii]]$Balance <-
+    TradeInGoodsByCountry[[iii]][,3] - TradeInGoodsByCountry[[iii]][,2]
+  colnames(TradeInGoodsByCountry[[iii]])[4] <-
+    paste0(gsub('(.+):.+','\\1',colnames(TradeInGoodsByCountry[[iii]])[2]),':Balance(E-I)')
   print(tail(TradeInGoodsByCountry[[iii]],3))
 }
 
