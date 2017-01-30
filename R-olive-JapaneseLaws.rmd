@@ -252,7 +252,7 @@ tableS <-
 tableSDF <- 
   Reduce(function(x, y) rbind(x, y), tableS)
 tableSDF <-
-  as.matrix(tableS)
+  as.matrix(tableSDF)
 colnames(tableSDF) <- 
   colnames(articleWithoutTable)
 articleWithTable <<-
