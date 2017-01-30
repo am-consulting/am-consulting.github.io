@@ -6,8 +6,8 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
-    fig_width: 10
+    fig_height: 4
+    fig_width: 13
     keep_md: no
     md_extensions: -ascii_identifiers
 ---
@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -45,6 +44,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+library(lubridate)
 dataTitle <- 'Latest GDPNow'
 dataSource <- 'Federal Reserve Bank of Atlanta , Federal Reserve Bank of St.Louis'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
@@ -54,6 +54,8 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Real GDP growth (seasonally adjusted annual rate)
+- Source https://www.frbatlanta.org/cqer/research/gdpnow.aspx?panel=1
 
 ***
 
@@ -121,6 +123,33 @@ for (lll in seq(1, length(importData), by = 2)) {
 }
 ```
 
+#### Actual Results:Real Gross Domestic Product
+###### Percent Change from Preceding Period,Seasonally Adjusted Annual Rate
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+RealGrossDomesticProduct <-
+  getSymbols('A191RL1Q225SBEA', src = 'FRED', auto.assign = F)
+colnames(RealGrossDomesticProduct) <- 'RealGrossDomesticProduct'
+RealGrossDomesticProduct <-
+  data.frame(Date = index(RealGrossDomesticProduct),
+             RealGrossDomesticProduct, 
+             row.names = NULL)
+fun_latestResult(obj = RealGrossDomesticProduct)
+n <- 1
+bufTitle <-
+  paste0(year(tail(RealGrossDomesticProduct,1)[,1]),
+         '-Q',
+         ceiling(month(tail(RealGrossDomesticProduct,1)[,1])/3),
+         ':',
+         tail(RealGrossDomesticProduct,1)[,2],
+         '%')
+fun_generateKnit(objDF = RealGrossDomesticProduct,plotNum = n,group = 0,barPlot = 1)
+eval(parse(text = paste0('dygraphPlot', n)))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = RealGrossDomesticProduct,dateFormat = '%Y-%m',tailN = 12))
+```
+
+***
+
 ```{r warning=F,error=F,message=F,echo=F}
 GDPNow0 <- tail(GDPNow00,1)
 GDPNow0 <- t(GDPNow0)
@@ -130,14 +159,14 @@ GDPNow0 <- GDPNow0[-1,]
 colnames(GDPNow0)[1] <- 'Observation Date'
 GDPNow0[,2] <- as.numeric(GDPNow0[,2])
 colnames(GDPNow0)[2] <- 
-  format(as.Date(colnames(GDPNow0)[2]),'%Y-%m')
+  paste0(year(as.Date(colnames(GDPNow0)[2])),'-Q',ceiling(month(as.Date(colnames(GDPNow0)[2]))/3))
 componentGDPNow <- GDPNow0[-grep('contributions to',GDPNow0[,1],ignore.case = T),]
 contributionsGDPNow <- GDPNow0[grep('contributions to',GDPNow0[,1],ignore.case = T),]
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = componentGDPNow,
-              title = paste0('GDPNow. データ取得日時:',dataImportedTime),
+              title = paste0('GDPNow. Nowcast'),
               dateFormat = 0,
               orderDirection = 'asc')
 ```
@@ -148,7 +177,7 @@ fun_dataTable(obj = componentGDPNow,
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = contributionsGDPNow,
-              title = paste0('GDPNow. データ取得日時:',dataImportedTime),
+              title = paste0('GDPNow. Contributions'),
               dateFormat = 0,
               orderDirection = 'asc')
 ```
@@ -156,7 +185,7 @@ fun_dataTable(obj = contributionsGDPNow,
 ##### Unit：Percentage Points,Seasonally Adjusted.
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
