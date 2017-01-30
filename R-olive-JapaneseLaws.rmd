@@ -72,7 +72,7 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-#titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1 
+titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1 
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -93,7 +93,7 @@ dataTitle <-
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
 objLawS <- 2
-objLawE <- 7
+objLawE <- 10
 url <- 
   lawList[objLawS:objLawE,1]
 windowsFonts(Meiryo = windowsFont("Meiryo"))
@@ -251,6 +251,8 @@ tableS <-
   gsub('<a name.*?>|</a>','',tableS0,ignore.case = T)
 tableSDF <- 
   Reduce(function(x, y) rbind(x, y), tableS)
+tableSDF <-
+  as.matrix(tableS)
 colnames(tableSDF) <- 
   colnames(articleWithoutTable)
 articleWithTable <<-
