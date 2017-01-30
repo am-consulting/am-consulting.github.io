@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 10
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -18,8 +18,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 100)
@@ -46,10 +45,13 @@ options(scipen = 100)
 
 ```{r,warning=F,error=F,message=F,echo=F}
 library(RCurl)
-importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
+functionList <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
+           header = F,
+           as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
     ssl.verifypeer = F
   )
   eval(parse(text = script))
@@ -57,23 +59,22 @@ for(iii in 1:length(importAMCC)){
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('財務省貿易統計 - ', format(tail(origData1[, 1], 1), '%Y年%m月'))
-dataSource <- '財務省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-dataTail <- 0
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-# cat(paste('Title       : ', dataTitle, '\n'))
-# cat(paste('Data Source : ', dataSource, '\n'))
-# cat(paste('Author      : ', Author, '\n'))
-# cat(paste('特  記      : ', notes, '\n'))
-# cat(paste('特  記      : ', notes0, '\n'))
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = origData4,objColumn = 2,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('財務省貿易統計:貿易収支 ', latestResult,'(単位:兆円)')
+dataSource <- 
+  '財務省'
 ```
 
 ***
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.customs.go.jp/toukei/suii/html/time.htm
+- Source http://www.customs.go.jp/toukei/suii/html/data/d41ma.csv
+- Source http://www.customs.go.jp/toukei/suii/html/data/d51ma.csv
+- Source http://www.customs.go.jp/toukei/suii/html/data/d61ma.csv
 
 ***
 
@@ -96,95 +97,6 @@ funSeasonal <- function() {
 }
 ```
 
-```{r,warning=F,error=F,message=F,echo=F} 
-funPlotTimeSeries <- function() {
-  plot(
-    dataSet[, 1],
-    dataSet[, obj01],
-    type = seriesType01,
-    col = if (sum(colnames(dataSet) == 'col') == 0) {lineColor[1]} else{dataSet$col}, 
-    xlab = '' ,
-    ylab = '' ,
-    panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-    xaxt = 'n',
-    ylim = if (needYlim == 1) {c(minValue, maxValue)},
-    main = paste(
-      mainTitle, '\n',
-      format(first(dataSet[, 1]), dateFormat), '~', format(last(dataSet[, 1]), dateFormat),
-      '\nSource:', dataSource),
-    cex.axis = 1,
-    cex.lab = 1,
-    cex.main = 1,
-    lwd = obj01lwd
-  )
-  if (needloess01 == 1) {
-    lo <- loess(dataSet[, obj01] ~ as.numeric(dataSet[, 1]), degree = 2)
-    lines(dataSet[, 1] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)
-  }
-  if (needSA01 == 1) {
-    lines(dataSetSA[, 1], dataSetSA[, obj01], col = lineColor[3], lwd = 1, lty = 1)
-  }
-  if (obj02 != 0) {
-    if (chartTtpe == 1) {
-      lines(dataSet[, 1], dataSet[, obj02], col = lineColor[2], lwd = obj02lwd)
-    } else{
-      par(new = T)
-      plot(
-        dataSet[, 1],
-        dataSet[, obj02],
-        col = if (sum(colnames(dataSet) == 'col') == 0) {lineColor[2]} else{dataSet$col}, 
-        type = seriesType02,
-        xlab = '' ,
-        ylab = '' ,
-        panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-        xaxt = 'n',
-        yaxt = 'n',
-        cex.axis = 1,
-        cex.lab = 1,
-        cex.main = 1,
-        lwd = obj02lwd
-      )
-      axis(4, cex.axis = 1, cex.lab = 1)
-      mtext(colnames(dataSet)[obj01], side = 2, line = 3.2, cex = 1)
-      mtext(colnames(dataSet)[obj02], side = 4, line = 3.2, cex = 1
-      )
-    }
-    if (needloess02 == 1) {
-      lo <- loess(dataSet[, obj02] ~ as.numeric(dataSet[, 1]), degree = 2)
-      lines(dataSet[, 1] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)
-    }
-    if (needSA02 == 1) {
-      lines(dataSetSA[, 1], dataSetSA[, obj02], col = lineColor[3], lwd = 1, lty = 1)
-    }
-    graphics::legend(
-      'topleft',
-      col = lineColor[-3],
-      lty = 1,
-      legend = c(colnames(dataSet)[obj01], colnames(dataSet)[obj02]),
-      cex = 1,
-      bty = 'n'
-    )
-  }
-  axis.Date(side = 1, at = dataSet[, 1], format = dateFormat, padj = 1, cex.axis = 1.0)
-  # 民主党パート
-  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(dataSet[1, 1]))
-  rectDateR <- as.numeric(as.Date('2012-12-26'))
-  if(as.numeric(dataSet[1,1]) < rectDateR){
-    rectText <- '民主党政権'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'dimgray', density = 10, angle = 45)
-    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 2)
-  }
-  # 民主党パート  
-}
-```
-
-```{r,warning=F,error=F,message=F,results='asis',echo=F}
-dateFormat <- '%Y-%m'
-lineColor <- c('black', 'red', 'blue')
-```
-
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 obj01 <- 2
 obj02 <- 3
@@ -194,31 +106,26 @@ dataSet <- tail(dataSet, dataTail)
 funSeasonal()
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
-mainTitle <- paste(colnames(dataSet)[obj01], ' × ', colnames(dataSet)[obj02])
-maxValue <- max(dataSet[, obj01], dataSet[, obj02])
-minValue <- min(dataSet[, obj01], dataSet[, obj02])
-chartTtpe <- 1
-if (chartTtpe == 1) {
-  needYlim <- 1
-} else{
-  needYlim <- 0
-}
-seriesType01 <- 'l'
-seriesType02 <- 'l'
-obj01lwd <- 1
-obj02lwd <- 1
-needloess01 <- 1
-needloess02 <- 1
-needSA01 <- 0
-needSA02 <- 0
-needCCF <- 1
-need1stdiff <- 0
-par(mfrow = c(1, 2), family = 'Meiryo', mar = c(3, 3, 4, 2), oma = c(0, 0, 1, 0))
-funPlotTimeSeries()
-dataSet <- dataSetSA
-funPlotTimeSeries()
-mtext('財務省貿易統計. 左:原数値、右:季節調整. 単位:兆円', side = 3, outer = T)
+#### 財務省貿易統計:輸出と輸入(単位:兆円、原数値)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
+n <- 1
+fun_generateKnit(objDF = dataSet,plotNum = n,group = 0)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
+```
+
+#### 財務省貿易統計:輸出と輸入(単位:兆円、季節調整値)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
+n <- 2
+fun_generateKnit(objDF = dataSetSA,plotNum = n,group = 0)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
@@ -230,24 +137,26 @@ dataSet <- tail(dataSet, dataTail)
 funSeasonal()
 ```
 
-***
+#### 財務省貿易統計:貿易収支(単位:兆円、原数値)
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5}
-dataSet$col <- ifelse(dataSet[, 2] < 0, 'red', 'blue')
-dataSetSA$col <- ifelse(dataSetSA[, 2] < 0, 'red', 'blue')
-mainTitle <- '貿易収支(単位:兆円)'
-obj01 <- 2
-obj02 <- 0
-seriesType01 <- 'h'
-obj01lwd <- 1
-needloess01 <- 1
-needSA01 <- 0
-needYlim <- 0
-par(mfrow = c(1, 2), family = 'Meiryo', mar = c(3, 3, 4, 2), oma = c(0, 0, 1, 0))
-funPlotTimeSeries()
-dataSet <- dataSetSA
-funPlotTimeSeries()
-mtext('財務省貿易統計. 左:原数値、右:季節調整. 単位:兆円', side = 3, outer = T)
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
+n <- 3
+fun_generateKnit(objDF = dataSet,plotNum = n,group = 0,barPlot = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
+```
+
+#### 財務省貿易統計:貿易収支(単位:兆円、季節調整値)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
+n <- 4
+fun_generateKnit(objDF = dataSetSA,plotNum = n,group = 0,barPlot = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -258,8 +167,6 @@ fungvisTable <- function(obj) {
   plot(PopTable,tag='chart')
 }
 ```
-
-***
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 dataSet<-merge(origData1,origData4)
@@ -278,8 +185,7 @@ funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
 ```{r,warning=F,error=F,message=F,echo=F} 
 funPlotBoxplotAmcharts(obj = dataSet[, -1],
                        bigTitle = paste0(
-                       dataTitle,
-                       ' - 原数値基本統計量\n',
+                       '財務省貿易統計:基本統計量:原数値(単位:兆円)\n',
                        head(dataSet[, 1], 1),
                        '~',
                        tail(dataSet[, 1], 1)
@@ -295,26 +201,25 @@ compareData01<-subset(compareData,as.Date('2009-09-01')<=compareData[,1] & compa
 compareData02<-subset(compareData,as.Date('2013-01-01')<=compareData[,1])
 compareData01[,1]<-format(compareData01[,1],'%Y-%m')
 compareData02[,1]<-format(compareData02[,1],'%Y-%m')
-colnames(compareData01)<-paste0(colnames(compareData01),'-民主党政権')
-colnames(compareData02)<-paste0(colnames(compareData02),'-自民党政権')
+colnames(compareData01)<-paste0(colnames(compareData01),':民主党政権')
+colnames(compareData02)<-paste0(colnames(compareData02),':自民党政権')
 compareData0<-qpcR:::cbind.na(compareData01[,-1], compareData02[,-1])
 funPlotBoxplotAmcharts(obj = compareData0,
                        bigTitle = paste0(
-                       dataTitle,
-                       ' - 原数値基本統計量\n',
+                       '財務省貿易統計:基本統計量:原数値(単位:兆円)\n',
                        '民主党政権:',head(compareData01[, 1], 1),'~',tail(compareData01[, 1], 1),
                        '\n自民党政権:',head(compareData02[, 1], 1),'~',tail(compareData02[, 1], 1)
                        ))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-summary(compareData0)
+apply(compareData0,2,function(x)summary(na.omit(x)))
 ```
 
-#### 輸出
+#### 直近`r tailN <-3;tailN`ヶ月の商品別輸出額(単位:億円)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-buf <- tail(na.omit(origData2), 3)
+buf <- tail(na.omit(origData2), tailN)
 buf0 <- t(buf)
 colnames(buf0) <- format(as.Date(buf0[1, ]), dateFormat)
 buf0 <- buf0[-1, ]
@@ -322,14 +227,14 @@ buf1 <- apply(buf0, 2, as.numeric)
 buf1 <- apply(buf1, 2, function(x) {round(x, 0)})
 expItem <- data.frame(ID = seq(1,nrow(buf1)), Item = row.names(buf0), buf1, check.names = F)
 colnames(expItem)[-c(1,2)] <- paste0(colnames(expItem)[-c(1,2)],'(億円)')
-fungvisTable(expItem)
+fun_dataTable(obj = expItem,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
-#### 輸入
+#### 直近`r tailN`ヶ月の商品別輸入額(単位:億円)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-buf <- tail(na.omit(origData3), 3)
+buf <- tail(na.omit(origData3), tailN)
 buf0 <- t(buf)
 colnames(buf0) <- format(as.Date(buf0[1, ]), dateFormat)
 buf0 <- buf0[-1, ]
@@ -337,11 +242,11 @@ buf1 <- apply(buf0, 2, as.numeric)
 buf1 <- apply(buf1, 2, function(x) {round(x, 0)})
 impItem <- data.frame(ID = seq(1,nrow(buf1)), Item = row.names(buf0), buf1, check.names = F)
 colnames(impItem)[-c(1,2)] <- paste0(colnames(impItem)[-c(1,2)],'(億円)')
-fungvisTable(impItem)
+fun_dataTable(obj = impItem,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
