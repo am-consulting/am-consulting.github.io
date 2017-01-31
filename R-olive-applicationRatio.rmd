@@ -117,7 +117,7 @@ fun_dataTable(obj = tail(dataSet0,12*5),dateFormat = dateFormat)
 ***
 #### 前月差(単位:万人、ポイント)
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 dataSet <- dataSet0[,grep('Date|季節調整値',colnames(dataSet0))]
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dataSet),
                                                dateFormat = dateFormat))
@@ -126,7 +126,7 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dat
 ***
 #### 前年同月差(単位:万人、ポイント)
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 dataSet <- dataSet0[,-grep('季節調整値',colnames(dataSet0))]
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dataSet,lag = 12),
                                                dateFormat = dateFormat))
