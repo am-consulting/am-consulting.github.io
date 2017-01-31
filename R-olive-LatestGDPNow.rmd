@@ -7,13 +7,14 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 13
+    fig_width: 11
     keep_md: no
     md_extensions: -ascii_identifiers
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1300px;}</style>
+<style>.main-container {max-width : 1100px;}</style>
+<style>table:not(#amcc) {font-size: 85%;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -54,8 +55,9 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- Real GDP growth (seasonally adjusted annual rate)
+- Real GDP growth (Seasonally adjusted annual rate,Quarterly percent change (SAAR))
 - Source https://www.frbatlanta.org/cqer/research/gdpnow.aspx?panel=1
+- Source https://www.frbatlanta.org/-/media/documents/cqer/researchcq/gdpnow/RealGDPTrackingSlides.pdf
 
 ***
 
@@ -145,7 +147,13 @@ bufTitle <-
          '%')
 fun_generateKnit(objDF = RealGrossDomesticProduct,plotNum = n,group = 0,barPlot = 1)
 eval(parse(text = paste0('dygraphPlot', n)))
-fun_markdownTable(obj = fun_transposeDataFrame(obj = RealGrossDomesticProduct,dateFormat = '%Y-%m',tailN = 12))
+cat('<br>')
+mergeData <-
+  merge(GDPNow00[,c(1,2)],RealGrossDomesticProduct,by = 'Date')
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData,
+                                               dateFormat = '%Y-%m',
+                                               tailN = 5),
+                  format = 'html')
 ```
 
 ***
