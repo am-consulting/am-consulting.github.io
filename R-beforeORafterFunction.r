@@ -1,12 +1,10 @@
-# script <- getURL("https://raw.githubusercontent.com/am-consulting/Rscript/master/consumerPriceIndexofJapan.r", ssl.verifypeer = F)
-# eval(parse(text = script))
-
 fun_beforeORafter <-
   function(obj,
            dateFormat = '%Y-%m',
            colName = '項目',
            grepWord = c('%', '倍率', '\\(倍\\)', '消費者態度指数', '消費者意識指標', '不足率'),
-           targetYear = 2012) {
+           targetYear = 2012,
+           checkBlankRowColumn = 2) {
     library(RCurl)
     library(lubridate)
     script <-
@@ -15,7 +13,7 @@ fun_beforeORafter <-
         ssl.verifypeer = F
       )
     eval(parse(text = script))
-    obj <- obj[!is.na(obj[, grep('労働力人口', colnames(obj))[1]]), ]
+    obj <- obj[!is.na(obj[, checkBlankRowColumn]), ]
     obj <-
       subset(obj, as.Date(paste0(targetYear, '-', month(tail(obj[, 1], 1)), '-1')) <= obj[, 1])
     obj <- obj[, !is.na(obj[1, ])]
