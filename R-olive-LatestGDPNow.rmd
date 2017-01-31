@@ -44,24 +44,8 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-library(lubridate)
-dataTitle <- 'Latest GDPNow'
-dataSource <- 'Federal Reserve Bank of Atlanta , Federal Reserve Bank of St.Louis'
-windowsFonts(Meiryo = windowsFont("Meiryo"))
-```
-
-***
-
-- `r paste0("タイトル : ", dataTitle)`
-- `r paste0("データ出所 : ", dataSource)`
-- Real GDP growth (Seasonally adjusted annual rate,Quarterly percent change (SAAR))
-- Source https://www.frbatlanta.org/cqer/research/gdpnow.aspx?panel=1
-- Source https://www.frbatlanta.org/-/media/documents/cqer/researchcq/gdpnow/RealGDPTrackingSlides.pdf
-
-***
-
 ```{r warning=F,error=F,message=F,echo=F}
+library(lubridate)
 dataImportedTime <- paste0(Sys.time(),' ',Sys.timezone(location = F))
 library(quantmod)
 cnt <- 0
@@ -124,6 +108,28 @@ for (lll in seq(1, length(importData), by = 2)) {
   if(lll == 1){GDPNow00 <- tmp}else{GDPNow00 <- merge(GDPNow00,tmp,by='Date')}
 }
 ```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- 
+  paste0('Latest ',
+         colnames(GDPNow01)[2],
+         ':',
+         paste0(year(tail(GDPNow01[,1],1)),'-Q',ceiling(month(tail(GDPNow01[,1],1))/3)),
+         ':',
+         tail(GDPNow01[,2],1),'%')
+dataSource <- 'Federal Reserve Bank of Atlanta , Federal Reserve Bank of St.Louis'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Real GDP growth (Seasonally adjusted annual rate,Quarterly percent change (SAAR))
+- Source https://www.frbatlanta.org/cqer/research/gdpnow.aspx?panel=1
+- Source https://www.frbatlanta.org/-/media/documents/cqer/researchcq/gdpnow/RealGDPTrackingSlides.pdf
+
+***
 
 #### Actual Results:Real Gross Domestic Product
 ###### Percent Change from Preceding Period,Seasonally Adjusted Annual Rate
