@@ -3,6 +3,7 @@ function MakeNegative() {
   TDs = document.getElementsByTagName('td');
   for (var i=0; i<TDs.length; i++) {
     var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
+/*    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";*/
+    if (temp.firstChild.nodeValue.replace(/(\r\n|\n|\r)/gm,"").indexOf('-') == 0) temp.className = "negative";
   }
 }
