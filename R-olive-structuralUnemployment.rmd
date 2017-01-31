@@ -10,26 +10,15 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>.main-container {max-width: 1000px;} td.negative {color: red;}</style>
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -43,70 +32,6 @@ library(XLConnect)
 library(knitr)
 library(Nippon)
 options(download.file.method='libcurl')
-```
-
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-# username <- Sys.info()['user']
-# pathOutput <- paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
-# setwd(pathOutput)
-# dateFormat <- '%Y-%m'
-# 労働力調査
-# dataType <- '季節調整値'
-# fileName <- 'lt01-a10.xls'
-# if(!file.exists(paste0(pathOutput, fileName))) {
-#   download.file(paste0('http://www.stat.go.jp/data/roudou/longtime/zuhyou/',fileName), fileName, mode = "wb")
-# }
-# buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = dataType, check.names = F, header = F)
-# buf <- buf0
-# for (rrr in 1:nrow(buf)) {
-#   tmp <- as.numeric(substr(buf[rrr, 1], 1, 4))
-#   if (!is.na(tmp)) {break}
-# }
-# year <- tmp
-# rrr <- rrr - 6
-# bufdataSet <- buf[rrr:nrow(buf), 5:ncol(buf)]
-# for (ccc in 1:ncol(bufdataSet)) {
-#   if (!is.na(bufdataSet[1, ccc])) {
-#     tmpcolname <- bufdataSet[1, ccc]
-#   }
-#   bufdataSet[3, ccc] <- paste(tmpcolname, "-",  bufdataSet[3, ccc], sep = "")
-# }
-# colnames(bufdataSet) <- paste0(bufdataSet[3, ],'-',dataType)
-# bufdataSet <- bufdataSet[-(1:5), ]
-# startDate <- as.Date(paste(year, "-1-1", sep = ""))
-#  
-# labourForce <-
-#   data.frame(Date = as.Date(seq(startDate, length.out = nrow(bufdataSet), by = "months")), bufdataSet, check.names = F)
-# labourForce[, -1] <-
-#   apply(labourForce[, -1], 2, function(x) {as.numeric(gsub("\\(|\\)|<|>", "", x))})
-# 労働力調査
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-# 一般職業紹介状況(職業安定業務統計)
-# http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=extendTclass&refTarget=toukeihyo&listFormat=hierarchy&statCode=00450222&tstatCode=000001020327&tclass1=&tclass2=&tclass3=&tclass4=&tclass5=
-# setwd(pathOutput)
-# fileName <- '第1表.xls'
-# if(!file.exists(paste0(pathOutput, fileName))) {
-#   download.file('http://www.e-stat.go.jp/SG1/estat/GL02020101.do?method=xlsDownload&fileId=000007766029&releaseCount=1', 
-#                 fileName, mode = "wb")
-# }
-# buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
-# buf <- buf0
-# dataType <- ""
-# for(ccc in 1:ncol(buf)){
-#   if(!is.na(buf[3,ccc])){dataType<-buf[3,ccc]}
-#   buf[4,ccc]<- paste0(buf[4,ccc],'-',dataType)  
-# }
-# colnames(buf) <- buf[4,]
-# rowS <- grep('14年1月', buf[,1])[1]-0
-# rowE <- grep('昭和39',  buf[,1])[1]-2
-# Date <- seq(from = as.Date('2002-1-1'), by = 'month', length.out = rowE-rowS+1)
-# tmp <- buf[rowS:rowE,]
-# tmp[,-1] <- as.numeric(gsub(',','',as.matrix(tmp[,-1])))
-# jobOpenings <- data.frame(Date,tmp,check.names = F,stringsAsFactors = F)
-# colnames(jobOpenings)[2] <- '元号'
-# 一般職業紹介状況(職業安定業務統計)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -125,14 +50,20 @@ script <-
 eval(parse(text = script))
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r warning = F, error = F, message = F, echo = F}
 library(RCurl)
-importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r')
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
-    ssl.verifypeer = F
-  )
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
   eval(parse(text = script))
 }
 ```
@@ -142,37 +73,8 @@ mergeData <- merge(laborforcesurvey, jobOpenings, by = 'Date')
 tmp <- grep('元号', colnames(mergeData))
 mergeData <- data.frame(mergeData[,c(1,tmp)],mergeData[,-c(1,tmp)],check.names = F,stringsAsFactors = F)
 colnames(mergeData) <- gsub('\n','',colnames(mergeData))
-dateFormat <- '%Y-%m'
+dateFormat <- '%Y年%m月'
 ```
-
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <-
-  paste0('日本の雇用失業率、欠員率、構造的失業率 - ', format(tail(mergeData[,1],1), '%Y年%m月'))
-dataSource <- '総務省,厚生労働省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-# cat(paste("Title       : ", dataTitle, "\n"))
-# cat(paste("Data Source : ", dataSource, "\n"))
-# cat(paste("Author      : ", Author, "\n"))
-# cat(paste("特記        : ", notes, "\n"))
-# cat(paste("特記        : ", notes0, "\n"))
-windowsFonts(Meiryo = windowsFont("Meiryo"))
-options(scipen = 999)
-```
-
-***
-
-- `r paste0("タイトル : ", dataTitle)`
-- `r paste0("データ出所 : ", dataSource)`
-
-####構造的失業率の定義
-- 雇用失業率 ＝ 完全失業者数 / （雇用者数 ＋ 完全失業者数）
-- 欠員率 ＝ （有効求人数 － 就職件数） / （雇用者数 ＋ 有効求人数 － 就職件数）
-- 『欠員率と失業率が一致した状態であるにもかかわらず発生している失業となることから、需給が均衡したときの失業率という意味で均衡失業率となる。また、企業が求める資格や条件と求職者の持つ能力や希望が合致しないために発生する失業であり、解消されることのない失業であることから、構造的失業率と捉えることができる。』
-- 引用元 : http://www.meti.go.jp/statistics/toppage/report/bunseki/pdf/h13/h4a2106j054.pdf#page=3
-
-***
 
 ```{r warning=F, error=F, message=F, echo=F}
 obj <- 
@@ -185,34 +87,29 @@ suRate0 <- data.frame(suRate$Date, suRate$`元号`, koyouUR, vaRate, round(koyou
 colnames(suRate0) <- c('Date','元号','雇用失業率','欠員率','雇用失業率と欠員率の差')
 ```
 
-```{r,warning=F,error=F,message=F,echo=F} 
-fun_plotTimeSeries <- function(obj, obj01 = 3, obj02 = 4) {
-lineColor <- c('blue','red')  
-mainTitle<-paste(colnames(obj)[obj01],' × ',colnames(obj)[obj02])
-maxValue<-max(obj[,obj01],obj[,obj02])
-minValue<-min(obj[,obj01],obj[,obj02])
-par(mar=c(3,5,4,2),family = 'Meiryo')
-plot(
-  obj[, 1], obj[, obj01], type = 'o', col = lineColor[1], xlab = '' , ylab = '' ,
-  xaxt = 'n', ylim = c(minValue, maxValue),
-  main = paste(mainTitle,':', paste0(format(range(obj[,1]) ,dateFormat),collapse = '~'),'\nSource:',dataSource),
-  cex.axis = 1.2, cex.lab = 1.2, cex.main = 1.2, lwd = 1)
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) 
-lines(obj[, 1],  obj[, obj02], col = lineColor[2], lwd = 1, type = 'o')
-graphics::legend('topright', col=lineColor, lty=1, 
-                 legend=c(colnames(obj)[obj01:obj02]), cex=1.2, bty='n', lwd = 2)
-axis.Date(side=1,at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0) 
-# rect part
-rectDateL <- as.numeric(as.Date('2009-09-16'))
-rectDateR <- as.numeric(as.Date('2012-12-26'))
-rectText <- '民主党政権'
-rect(xleft = rectDateL, ybottom = par('usr')[3], xright = rectDateR, ytop = par('usr')[4], 
-     col = 'dimgray', density = 10, angle = 45)
-text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
-# rect part
-}
-# fun_plotTimeSeries(obj = suRate0)
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+fun_latestResult(obj = suRate0,objColumn = c(3,4),dateFormat = dateFormat)
+dataTitle <-
+  paste0('日本の雇用失業率、欠員率、構造的失業率:', latestResult)
+dataSource <- '総務省,厚生労働省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
 ```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+****
+
+##### 構造的失業率の定義
+- 雇用失業率 ＝ 完全失業者数 / （雇用者数 ＋ 完全失業者数）
+- 欠員率 ＝ （有効求人数 － 就職件数） / （雇用者数 ＋ 有効求人数 － 就職件数）
+- 『欠員率と失業率が一致した状態であるにもかかわらず発生している失業となることから、需給が均衡したときの失業率という意味で均衡失業率となる。また、企業が求める資格や条件と求職者の持つ能力や希望が合致しないために発生する失業であり、解消されることのない失業であることから、構造的失業率と捉えることができる。』
+- 引用元 : http://www.meti.go.jp/statistics/toppage/report/bunseki/pdf/h13/h4a2106j054.pdf#page=3
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
@@ -222,7 +119,7 @@ fun_generateKnit(objDF = suRate0[,-c(2)], plotNum = n1, group = 0)
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = suRate0[,-2], leftcolumns = 1)
+fun_dataTable(obj = tail(suRate0[,-2],5*12), leftcolumns = 1,dateFormat = dateFormat)
 ```
 
 ***
@@ -232,15 +129,14 @@ fun_dataTable(obj = suRate0[,-2], leftcolumns = 1)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 objDF <- mergeData[,-grep('元号',colnames(mergeData))]
-objDF <- 
-  rbind(objDF[objDF[,1] == as.Date('2012-12-1'),], tail(objDF, 1))
-objDF[,-1] <- apply(objDF[,-1], 2, as.numeric)
-objDF <- fun_transposeDataFrame(obj = objDF, dateFormat = '%Y年%m月')
-objDF <- cbind(objDF, objDF[,ncol(objDF)] - objDF[,2])
-colnames(objDF)[ncol(objDF)] <- paste0(colnames(objDF)[ncol(objDF)-1],'と',colnames(objDF)[2],'との差')
-knitr::kable(objDF, row.names = F, 
-             align = rep('r',3), format = 'markdown', 
-             format.args = list(big.mark = ',', drop0trailing = T))
+colnames(objDF) <- sapply(colnames(objDF),zen2han)
+fun_beforeORafter(obj = objDF,dateFormat = dateFormat,targetYear = 2012,checkBlankRowColumn = 2)
+colnames(beforeORafter)[ncol(beforeORafter)] <-
+  paste0(colnames(beforeORafter)[ncol(beforeORafter)-2],
+         'から',
+         colnames(beforeORafter)[ncol(beforeORafter)-1],
+         'の',colnames(beforeORafter)[ncol(beforeORafter)])
+fun_markdownTable(obj = beforeORafter)
 ```
 
 ***
