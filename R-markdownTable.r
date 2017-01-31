@@ -1,9 +1,9 @@
-fun_markdownTable <- function(obj, rownames = F, table.attr = "id = 'amcc' width = '100%'"){
+fun_markdownTable <- function(obj, rownames = F, table.attr = "id = 'amcc' width = '100%'", format = 'markdown'){
   kableText <-
     knitr::kable(obj,
                  row.names = rownames,
                  align = 'r',
-                 format = 'markdown',
+                 format = format,
                  format.args = list(big.mark = ',', drop0trailing = T),
                  table.attr = table.attr)
   cat('\n<div class = "amccTableAutoScroll">\n')
