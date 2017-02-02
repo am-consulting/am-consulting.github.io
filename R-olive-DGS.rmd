@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 #options(width = 1000)
@@ -111,42 +110,8 @@ for (iii in 1:length(fredData)) {
 rAmCharts::amBoxplot(allData[, -1], horiz = T)
 ```
 <hr>
-```{r,warning=F,error=F,message=F,echo=F,fig.height=6,fig.width=10}
-# dataSet <- na.omit(allData[, c(1, 3, 7)])
-# lineColor <- c('blue', 'red', 'green', 'orange')
-# maxValue <- max(dataSet[, -1])
-# minValue <- min(dataSet[, -1])
-# par(mar = c(3, 3, 4, 1), family = 'Meiryo')
-# plot(
-#   dataSet[, 1],
-#   dataSet[, 2],
-#   type = 'l',
-#   col = lineColor[1],
-#   xlab = '' ,
-#   ylab = '' ,
-#   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-#   xaxt = 'n',
-#   ylim = c(minValue, maxValue),
-#   main = paste('Treasury Constant Maturity Rate(%)\nSource:', dataSource,
-#                '\n',paste(range(dataSet[, 1]), collapse = ' ~ ')),
-#   cex.axis = 1,
-#   cex.lab = 1,
-#   cex.main = 1,
-#   lwd = 1
-# )
-# lines(dataSet[, 1], dataSet[, 3], col = lineColor[2])
-# graphics::legend(
-#   'topleft',
-#   col = lineColor[1:2],
-#   lty = 1,
-#   legend = c(colnames(dataSet)[2:3]),
-#   cex = 1,
-#   bty = 'n'
-# )
-# axis.Date(side = 1, at = dataSet[, 1], format = dateFormat, padj = 1, cex.axis = 1.0)
-```
 
-```{r warning=F,error=F,message=F,echo=F,fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,fig.height=4}
 dataSet <- na.omit(allData[, c(1, 3, 5, 7)])
 n <- 1
 fun_generateKnit(objDF = dataSet,
@@ -208,7 +173,9 @@ axis(side = 1, at = 1:length(xRange), labels = xRange)
 ```
 <hr>
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = tail(na.omit(allData),500),title = 'Treasury Constant Maturity Rate(%)')
+fun_dataTable(obj = tail(na.omit(allData),12*5),
+              title = 'Treasury Constant Maturity Rate(%)',
+              dateFormat = dateFormat)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
