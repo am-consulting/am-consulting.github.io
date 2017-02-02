@@ -62,6 +62,7 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.boj.or.jp/statistics/boj/other/acmai/index.htm/
 
 ***
 
