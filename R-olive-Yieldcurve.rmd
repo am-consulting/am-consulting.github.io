@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -190,8 +189,22 @@ axis.Date(side=1,at=slopeTable[,1],format='%Y-%m-%d',padj=1,cex.axis=1.0)
 
 ***
 
+```{r,warning=F,error=F,message=F,echo=F,results='asis',fig.height=4}
+selectedDF <- jgbData[,c(1,3,6,11,16)]
+n <- 1
+fun_generateKnit(objDF = selectedDF,group = 0,plotNum = n)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
+cat('<hr>')
+```
+
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-tailN <- 100
+tailN <- 12*5
 fun_dataTable(obj = tail(slopeTable,tailN),
               title = paste0('線形回帰Slope.直近', tailN, '日分'))
 ```
@@ -204,6 +217,7 @@ fun_dataTable(obj = tail(jgbData,tailN),
 ```
 
 ***
+#### 「長短金利操作付き量的・質的金融緩和」導入時(2016年09月21日)と直近の日本国債金利の比較
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 buf01 <- tail(jgbData, 1)
@@ -221,14 +235,11 @@ tmp0 <- tmp0[-1,]
 tmp0 <- data.frame(No=seq(1,nrow(tmp0)),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
 colnames(tmp0)[2] <- 'Year'
 tmp0[,-c(1,2)] <- apply(tmp0[,-c(1,2)],2,as.numeric)
-fun_dataTable(obj = tmp0,
-              orderDirection = 'asc',
-              dateFormat = 0,
-              title = '「長短金利操作付き量的・質的金融緩和」導入時(2016年09月21日)と直近の日本国債金利の比較')
+fun_markdownTable(obj = tmp0)
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
