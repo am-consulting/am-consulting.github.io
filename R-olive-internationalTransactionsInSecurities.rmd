@@ -145,43 +145,6 @@ fun_dataTable(obj = tableStat,
                              head(origData[,2],1), ' ~ ', tail(origData[,2],1)))
 ```
 
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=5,fig.width=12}
-# for(iii in seq(3, ncol(origData)-4, by=2)){
-#   par(mfrow=c(1,2),mar = c(10, 5, 2, 2),oma=c(0,0,0,0),family='Meiryo')
-#   for(ccc in seq(iii,min(iii+1,ncol(origData)))){
-#     plotData <- origData[,c(1,2,ccc),drop=F]
-#     plotData <- tail(plotData, 15)
-#     plotData$color <- "blue"
-#     plotData[plotData[, 3] < 0, ncol(plotData)] <- "red"
-#     plotbuf <- 
-#       barplot(
-#         plotData[, 3],
-#         names.arg = plotData[,2],
-#         las = 3,
-#         main = colnames(plotData)[3],
-#         col = plotData$color,
-#         density = 10,
-#         ylab = "億円",
-#         cex.main = 1,
-#         cex.sub = 1,
-#         cex.lab = 1,
-#         cex.names = 1,
-#         cex.axis = 1
-#       )
-#     text(
-#       plotbuf,
-#       y = plotData[, 3],
-#       labels = plotData[, 3],
-#       srt = 90,
-#       cex = 1,
-#       adj = c(-0.1, 0.5),
-#       col = "black"
-#     )
-#   }
-#   cat('<hr>')
-# }
-```
-
 #### 株式･投資ファンド持分及び合計の基本統計量
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
