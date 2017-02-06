@@ -73,6 +73,7 @@ tmp[,-c(1:9)] <- apply(tmp[,-c(1:9)],2,as.numeric)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.e-stat.go.jp/SG1/estat/GL08020101.do?_toGL08020101_&tstatCode=000001011791
 
 ***
 
