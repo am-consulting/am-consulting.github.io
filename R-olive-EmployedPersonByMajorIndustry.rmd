@@ -1,0 +1,132 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-EmployedPersonByMajorIndustry.html')) })
+
+title : 'Employed Person By Major Industry'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importEmployedPersonByMajorIndustry.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = EmployedPersonByMajorIndustry,objColumn = c(2,3,4),dateFormat = dateFormat)
+dataTitle <- 
+  paste0('第12回改定日本標準産業分類別就業者(単位:',figureType,',',figureUnit,'):',latestResult) 
+dataSource <- 
+  '総務省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.stat.go.jp/data/roudou/longtime/03roudou.htm
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+texDygraph <- vector()
+cnt <- 0
+for(iii in 2:ncol(EmployedPersonByMajorIndustry)){
+  obj <- 
+    na.omit(EmployedPersonByMajorIndustry[,c(1,iii)])
+  # 原数値
+  obj$FittedCurve <-
+    predict(loess(obj[,2] ~ as.numeric(obj[,1]),degree = 2))
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = obj, 
+                   plotNum = cnt, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = paste0('原数値',figureType,':',colnames(obj)[2]))
+  assign(paste0('knit_expanded', cnt),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
+                "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', cnt))
+  # 前年同月比(%)
+  fun_makeDiffRatioTable(obj = obj[,-3],lag = 12,diff = 1)
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = diffRatioDF, 
+                   plotNum = cnt, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = paste0('前年同月比(%):',colnames(obj)[2]),
+                   barPlot = 1)
+  assign(paste0('knit_expanded', cnt),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
+                "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', cnt))
+}
+```
+
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
+#### 前年同月比寄与度(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_makeDiffTable(obj = EmployedPersonByMajorIndustry,lag = 12)
+contributionRatio <- 
+  data.frame(Date=diffDF[,1],
+             round(as.matrix(diffDF[,-1])/head(EmployedPersonByMajorIndustry[,2],-12)*100,2),
+             check.names = F,
+             stringsAsFactors = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = contributionRatio,dateFormat = dateFormat,tailN = 3))
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
