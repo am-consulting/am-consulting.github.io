@@ -5,38 +5,41 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 6
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -51,137 +54,127 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('株式月間売買高･売買代金 - ',format(tail(monthlyTradingVolumeValue [,1],1),'%Y年%m月分'))
+dateFormat <- '%Y年%m月'
+fun_latestResult(monthlyTradingVolumeValue,dateFormat = dateFormat,objColumn = c(2,3))
+dataTitle <- 
+  paste0('株式月間売買高･売買代金:',latestResult)
 dataSource <- '株式会社日本取引所グループ'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-dataTail <- 0 
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 lineColor <- c('blue','red')
-dateFormat <- '%Y年%m月'
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries <- 
-  function(obj, objX = 1, objY01 = 2, objY02 = 3, type01 = 'l', type02 = 'l', needylim = 2, dateFormat = '%Y-%m', chartTtpe = 2) {
-mainTitle <- paste0(colnames(obj)[objY01],' × ',colnames(obj)[objY02])
-maxValue <- max(obj[,objY01],obj[,objY02])
-minValue <- min(obj[,objY01],obj[,objY02])
-par(mar=c(3,5,6,5),family = 'Meiryo')
-plot(
-  obj[, objX]  , obj[, objY01],
-  type = type01, col = lineColor[1],
-  xlab = ''    , ylab = '' ,
-  xaxt = 'n'   , ylim = if(needylim == 1){c(minValue, maxValue)},
-  main = paste(mainTitle,'\n', paste0(format(range(obj[,objX]), dateFormat),collapse = '~'),'\nSource:',dataSource),
-  cex.axis = 1 , cex.lab = 1,   cex.main = 1, lwd = 1
-  )
-lo <- loess(obj[, objY01] ~ as.numeric(obj[,objX]), degree = 2)
-lines(obj[,objX] , predict(lo) , col = lineColor[1], lwd = 1, lty = 2)
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-if(chartTtpe == 1){
-lines(obj[,objX], obj[,objY02], col = lineColor[2], lwd = 1, type = type02)
-}else{  
-par(new=T)
-plot(
-  obj[, objX]  , obj[, objY02],
-  type = type02, col = lineColor[2],
-  xlab = ''    , ylab = '' ,
-  xaxt = 'n'   , yaxt = 'n'   , 
-  cex.axis = 1 , cex.lab = 1,   cex.main = 1, lwd = 1
-  )
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-axis(4, cex.axis = 1, cex.lab = 1)
-mtext(colnames(obj)[objY01], side=2, line=3.2, cex=1)
-mtext(colnames(obj)[objY02], side=4, line=3.2, cex=1)
-}
-lo <- loess(obj[, objY02] ~ as.numeric(obj[,objX]), degree = 2)
-lines(obj[,objX] , predict(lo) , col = lineColor[2], lwd = 1, lty = 2)
-graphics::legend('topleft',col=lineColor,lty=1,legend=c(colnames(obj)[objY01],colnames(obj)[objY02]),cex=1,bty='n',lwd = 2)
-axis.Date(side=1, at=obj[,objX],format=dateFormat,padj=1,cex.axis=1.0) 
-# rect part
-rectDateL <- as.numeric(as.Date('2009-09-16'))
-rectDateR <- as.numeric(as.Date('2012-12-26'))
-if(as.numeric(obj[1,objX]) < rectDateR){
-rectText <- '民主党政権'
-rect(xleft = rectDateL, ybottom = par('usr')[3], 
-     xright = rectDateR, ytop = par('usr')[4], col = 'dimgray', density = 10, angle = 45)
-text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
-# rect part
-}
-  }
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-fun_transport <- function(obj, tailN = "3"){
-  buf <- t(tail(obj,tailN))
-  buf <- data.frame(row.names(buf), buf, check.names = F, stringsAsFactors = F, row.names = NULL)
-  colnames(buf) <- buf[1,]
-  buf <- buf[-1,]
-  colnames(buf)[1] <- '項目'
-  buf[,-1] <- apply(buf[,-1,drop=F], 2, as.numeric)
-  tDF <- buf
-  return(tDF)
-}
-```
-
-### 平均売買高(億株)と平均売買代金高(兆円)
-
-```{r warning=F, error=F, message=F, echo=F}
-obj <- tail(monthlyTradingVolumeValue, 12 * 20)
-fun_plotTimeSeries(obj = obj)
-obj[,1] <- format(obj[,1], dateFormat)
-knitr::kable(fun_transport(obj = obj, tailN = 5), row.names = F)
-```
-
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
-cat(paste0(format(as.Date(range(monthlyTradingVolumeValue[,1])),dateFormat),collapse =" ~ "))
-cat('\n\n')
-apply(monthlyTradingVolumeValue[,-1],2,summary)
-
-top5 <- head(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,2],decreasing = T),-3],5)
-top5[,1] <- format(top5[,1],dateFormat)
-bottom5 <- tail(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,2],decreasing = T),-3],5)
-bottom5[,1] <- format(bottom5[,1],dateFormat)
-cat(paste0('\n\n',colnames(top5)[2],'-Top5 & bottom5\n'))
-knitr::kable(top5, row.names = F)
-knitr::kable(bottom5, row.names = F)
-
-top5 <- head(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,3],decreasing = T),-2],5)
-top5[,1] <- format(top5[,1],dateFormat)
-bottom5 <- tail(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,3],decreasing = T),-2],5)
-bottom5[,1] <- format(bottom5[,1],dateFormat)
-cat(paste0('\n\n',colnames(top5)[2],'-Top5 & bottom5\n'))
-knitr::kable(top5, row.names = F)
-knitr::kable(bottom5, row.names = F)
-```
-
-### 平均売買高(億株)と平均売買代金高(兆円):前月差
-
-```{r warning=F, error=F, message=F, echo=F}
-obj <- 
-  data.frame(tail(monthlyTradingVolumeValue[,1],-1),
-             diff(as.matrix(monthlyTradingVolumeValue[,-1])),check.names = F,stringsAsFactors = f)
-obj[,1] <- format(obj[,1], dateFormat)
-knitr::kable(fun_transport(obj = obj, tailN = 5), row.names = F)
 ```
 
 ***
-### 平均売買高(億株)と平均売買代金高(兆円):前年同月差
 
-```{r warning=F, error=F, message=F, echo=F}
-obj <- 
-  data.frame(tail(monthlyTradingVolumeValue[,1],-12),
-             diff(as.matrix(monthlyTradingVolumeValue[,-1]),lag = 12),check.names = F,stringsAsFactors = f)
-obj[,1] <- format(obj[,1], dateFormat)
-knitr::kable(fun_transport(obj = obj, tailN = 5), row.names = F)
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.jpx.co.jp/markets/statistics-equities/misc/index.html
+
+***
+
+#### 平均売買高(億株)と平均売買代金高(兆円)
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 1
+obj <- monthlyTradingVolumeValue[,c(1,2)]
+obj$FittedCurve <- predict(loess(obj[,2]~as.numeric(obj[,1])))
+fun_generateKnit(objDF = obj,plotNum = n,group = 0,dygraphTitle = colnames(obj)[2])
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
+cat('<hr>')
+n <- 2
+obj <- monthlyTradingVolumeValue[,c(1,3)]
+obj$FittedCurve <- predict(loess(obj[,2]~as.numeric(obj[,1])))
+fun_generateKnit(objDF = obj,plotNum = n,group = 0,dygraphTitle = colnames(obj)[2])
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = monthlyTradingVolumeValue,dateFormat = dateFormat))
+```
+
+***
+#### 平均売買高(億株)と平均売買代金高(兆円):前月比(%)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = monthlyTradingVolumeValue,
+                                                                            lag = 1,
+                                                                            diff = 1),
+                                               dateFormat = dateFormat))
+```
+
+***
+#### 平均売買高(億株)と平均売買代金高(兆円):前年同月比(%)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = monthlyTradingVolumeValue,
+                                                                            lag = 12,
+                                                                            diff = 1),
+                                               dateFormat = dateFormat))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat('<b><h5>',
+    paste0(format(as.Date(range(monthlyTradingVolumeValue[,1])),dateFormat),collapse =" ~ "),
+    '</h5></b>')
+knitr::kable(apply(monthlyTradingVolumeValue[,-1],2,summary),
+             row.names = T,
+             align = 'r',
+             format.args = list(big.mark = ',', drop0trailing = T),
+             format = 'markdown')
+top5 <- 
+  head(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,2],decreasing = T),-3],5)
+top5[,1] <- 
+  format(top5[,1],dateFormat)
+bottom5 <- 
+  head(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,2],decreasing = F),-3],5)
+bottom5[,1] <- 
+  format(bottom5[,1],dateFormat)
+cat(paste0('\n\n',colnames(top5)[2],':Top5 & bottom5\n'))
+knitr::kable(top5, 
+             row.names = F,
+             align = 'r',
+             format.args = list(big.mark = ',', drop0trailing = T),
+             format = 'markdown')
+knitr::kable(bottom5, 
+             row.names = F,
+             align = 'r',
+             format.args = list(big.mark = ',', drop0trailing = T),
+             format = 'markdown')
+top5 <- 
+  head(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,3],decreasing = T),-2],5)
+top5[,1] <- 
+  format(top5[,1],dateFormat)
+bottom5 <- 
+  head(monthlyTradingVolumeValue[order(monthlyTradingVolumeValue[,3],decreasing = F),-2],5)
+bottom5[,1] <- 
+  format(bottom5[,1],dateFormat)
+cat(paste0('\n\n',colnames(top5)[2],':Top5 & bottom5\n'))
+knitr::kable(top5, 
+             row.names = F,
+             align = 'r',
+             format.args = list(big.mark = ',', drop0trailing = T),
+             format = 'markdown')
+knitr::kable(bottom5, 
+             row.names = F,
+             align = 'r',
+             format.args = list(big.mark = ',', drop0trailing = T),
+             format = 'markdown')
 ```
 
 ***
