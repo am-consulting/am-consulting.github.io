@@ -107,7 +107,7 @@ for(iii in 2:ncol(EmployedPersonByMajorIndustry)){
 
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
-#### 前年同月比寄与度(%)
+#### 総数前年同月比寄与度(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_makeDiffTable(obj = EmployedPersonByMajorIndustry,lag = 12)
