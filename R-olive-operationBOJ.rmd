@@ -18,8 +18,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
@@ -60,9 +59,9 @@ setwd(pathOutput)
 baseURL <- 
   "http://www.boj.or.jp/statistics/boj/fm/ope/m_release/"
 YearFolder <- 
-  2016
+  2017
 fileName <- 
-  'ope1612.xlsx'
+  'ope1701.xlsx'
 download.file(url = paste0(baseURL,YearFolder,'/',fileName), destfile = fileName, mode = 'wb')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 2, check.names = F, header = F)
@@ -103,7 +102,7 @@ keyWord <- '種類'
 opeTable <- cbind(by(buf2[,bufC],`種類`,sum))
 opeTable <- data.frame(row.names(opeTable),opeTable,check.names = F,stringsAsFactors = F,row.names = NULL)
 opeTable[,1] <- sapply(opeTable[,1],zen2han)
-colnames(opeTable) <- c('種類',paste0('落札額(億円)-',yy,'年',mm,'月'))
+colnames(opeTable) <- c('種類',paste0('落札額(億円):',yy,'年',mm,'月'))
 jgb <- opeTable[grep('国債買入',opeTable[,1]),,drop=F]
 ```
 
@@ -144,6 +143,7 @@ cautionText <- gsub('\n|\\s','',cautionText)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.boj.or.jp/statistics/boj/index.htm/
 - Source http://www.boj.or.jp/statistics/boj/fm/ope/m_release/index.htm/
 - 以下は日本銀行Webサイトからの引用
 
@@ -169,16 +169,24 @@ cautionText <- gsub('\n|\\s','',cautionText)
 #### 国債買入、国庫短期証券買入・売却、社債等買入、CP等買入、指数連動型上場投資信託受益権買入、不動産投資法人投資口買入オペレーション
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_markdownTable(opeTable)
-cat('<b>落札額合計(億円):</b>',sum(opeTable[,2]))
+fun_markdownTable(opeTable[order(opeTable[,3],decreasing = T),])
+cat('<b>落札額合計(兆円):</b>',
+    format(sum(opeTable[,2])*10^-4,
+           big.mark = ',', 
+           trim = T, 
+           scientific = F))
 cat('<hr>')
 cat('<h4>国債買入のみ</h4>')
-fun_markdownTable(jgb)
-cat('<b>国債買入合計(億円):</b>',sum(jgb[,2]))
+fun_markdownTable(jgb[order(jgb[,3],decreasing = T),])
+cat('<b>国債買入合計(兆円):</b>',
+    format(sum(jgb[,2])*10^-4,
+           big.mark = ',',
+           trim = T,
+           scientific = F))
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
