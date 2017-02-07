@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -19,9 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
-
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
@@ -104,30 +102,29 @@ funamBarplot <- function(obj, mainTitle = '') {
 ```
 
 ####日本の外貨準備高
-```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=10}
-par(mfrow = c(2, 1), mar = c(5, 4, 5, 2), family = 'Meiryo', oma = c(0, 0, 0, 0))
-fun_plotTimeSeries(obj = origData1,
-                   chartType = 1,
-                   lwdR = 1,
-                   dateFormat = dateFormat,
-                   dataTitle = 'ドル建て(百万ドル)',
-                   dataSource = dataSource)
-fun_plotTimeSeries(obj = origData3,
-                   chartType = 1,
-                   lwdR = 1,
-                   dateFormat = dateFormat,
-                   dataTitle = '円建て(兆円)',
-                   dataSource = dataSource)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+n <- 1
+fun_generateKnit(objDF = origData1[,c(1,2,4)],plotNum = n,dygraphTitle = 'ドル建て(百万ドル)')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+n <- 2
+fun_generateKnit(objDF = origData3[,c(1,2,4)],plotNum = n,dygraphTitle = '円建て(兆円)')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
 ```
-<hr>
+
 ####外貨準備高の構成(ドル建て.百万ドル)
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData1[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
 buf <- tail(buf0, 12)
 buf[, 1] <- as.character(format(buf[, 1], dateFormat))
 funamBarplot(obj = buf, mainTitle = '外貨準備高')
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData1[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
 buf0 <- merge(buf0, origData5)
@@ -135,8 +132,10 @@ fun_dataTable(obj = tail(buf0,5*12),
               title = '日本の外貨準備高(単位:百万ドル)',
               dateFormat = dateFormat)
 ```
-<hr>
+
+***
 ####外貨準備高の構成(円建て.兆円)
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData3[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
 buf0[,-1] <- round(buf0[,-1],4)
@@ -144,7 +143,9 @@ buf <- tail(buf0, 12)
 buf[, 1] <- as.character(format(buf[, 1], dateFormat))
 funamBarplot(obj = buf, mainTitle = '外貨準備高')
 ```
-<hr>
+
+***
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData3[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
 buf0[,-1] <- round(buf0[,-1],4)
@@ -153,30 +154,31 @@ fun_dataTable(obj = tail(buf0,5*12),
               title = '日本の外貨準備高(単位:兆円)',
               dateFormat = dateFormat)
 ```
-<hr>
+
+***
 ####日本の金(ゴールド)保有量(百万トロイオンス)
+
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-par(mar = c(3, 4, 3, 2), family = 'Meiryo')
-dataSet <- origData4
-fun_plotTimeSeries(obj = dataSet,
-                   chartType = 0,
-                   needLefLab = 0,
-                   dataSource = dataSource,
-                   typeL = 'o',
-                   fitLcolor = 0,
-                   dateFormat = dateFormat)
-dataSet[, 1] <- format(dataSet[, 1], dateFormat)
-grid.table(tail(dataSet, 5), 
-           rows = NULL)
+n <- 3
+fun_generateKnit(objDF = origData4,
+                 plotNum = n,
+                 barPlot = 0,
+                 dygraphTitle = colnames(origData4)[2],colors = c('blue'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+fun_markdownTable(obj = fun_transposeDataFrame(obj = origData4,dateFormat = dateFormat))
 ```
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-cat(paste0('直近(',tail(dataSet[,1],1),')のゴールド保有量 : '))
-cat(paste0(tail(dataSet[,2],1),'百万トロイオンス = ',tail(dataSet[,2],1)*(10^6)*31.1034768*(1e-6),'トン'))
+cat(paste0('直近(',format(tail(origData4[,1],1),dateFormat),')のゴールド保有量 : '))
+cat(paste0(tail(origData4[,2],1),
+           '百万トロイオンス = ',
+           tail(origData4[,2],1)*(10^6)*31.1034768*(1e-6),
+           'トン'))
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
