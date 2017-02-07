@@ -27,6 +27,8 @@ fun_readXLS <- function(sheetNo = sheetNo){
     gsub('na:tx','定常人口:Tx',colnames(buf1),ignore.case = T)
   buf2 <-
     buf1[!is.na(as.numeric(buf1[,1])),]
+  buf2 <-
+    buf2[which(apply(buf2,1,function(x)grep('（年）',x))!=0):nrow(buf2),]
   buf3 <-
     buf2[,which(colnames(buf2)!='NA:NA')]
   colnames(buf3)[1] <-
