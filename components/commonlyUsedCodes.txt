@@ -8,3 +8,37 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 cat('<hr>')
+
+https://github.com/am-consulting/am-consulting.github.io/blob/1df2c1f62e3319a9804fa37488c8fe8252d0d796/R-olive-EmployedPersonByMajorIndustry.rmd
+
+timeSeriesDF <- 
+texDygraph <- vector()
+for(iii in 2:ncol(timeSeriesDF)){
+  fun_generateKnit(objDF = timeSeriesDF[,c(1,iii)], plotNum = iii, group = 0, barPlot = 0,
+                   colors = RColorBrewer::brewer.pal(ncol(timeSeriesDF)-1, "Accent")[iii-1],
+                   dygraphTitle = colnames(timeSeriesDF)[iii])
+  texDygraph <- c(texDygraph, paste0('knit_expanded', iii))
+}
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
+timeSeriesDF <- 
+texDygraph <- vector()
+cnt <- 0
+for(iii in 2:ncol(timeSeriesDF)){
+  obj <- 
+    na.omit(timeSeriesDF[,c(1,iii)])
+  obj$FittedCurve <-
+    predict(loess(obj[,2] ~ as.numeric(obj[,1]),degree = 2))
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = obj, 
+                   plotNum = cnt, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = colnames(obj)[2])
+  assign(paste0('knit_expanded', cnt),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
+                "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', cnt))
+}
