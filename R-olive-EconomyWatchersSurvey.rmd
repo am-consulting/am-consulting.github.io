@@ -85,7 +85,7 @@ cNames <-
               paste0(buf0[bufR,],'-',buf0[bufR+1,])),buf0[bufR,])
 cNames <- gsub('\n','',cNames)
 colnames(buf0) <- cNames
-title <- zen2han(paste0(buf0[2,1],'-',buf0[3,1]))
+title <- gsub('\\s','',zen2han(paste0(buf0[2,1],':',buf0[3,1])))
 bufC <- which(!is.na(as.numeric(substring(buf0[,1],1,4))))[1]
 buf1 <- buf0[-c(1:(bufC-1)),]
 dateStart <- as.Date(paste0(gsub('年','-',buf1[1,1]),zen2han(gsub('月','-1',buf1[1,2]))))
@@ -101,7 +101,7 @@ dataSet <- buf3
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = dataSet,dateFormat = dateFormat,objColumn = c(3,23))
 dataTitle <- 
-  paste0('景気ウォッチャー調査(原数値):', latestResult)
+  paste0('景気ウォッチャー調査(原数値):', title,':',latestResult)
 dataSource <- '内閣府'
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
@@ -116,19 +116,26 @@ options(scipen = 999)
 ***
 
 ```{r warning=F, error=F, message=F, echo=F}
+timeSeriesDF <- dataSet
 texDygraph <- vector()
-for(iii in 2:ncol(dataSet)){
-  fun_generateKnit(objDF = na.omit(dataSet[,c(1,iii)]), 
-                   plotNum = iii, 
+cnt <- 0
+for(iii in 2:ncol(timeSeriesDF)){
+  obj <- 
+    na.omit(timeSeriesDF[,c(1,iii)])
+  obj$FittedCurve <-
+    predict(loess(obj[,2] ~ as.numeric(obj[,1]),degree = 2))
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = obj, 
+                   plotNum = cnt, 
                    group = 0, 
                    colors = c('blue','red','green'), 
-                   dygraphTitle = colnames(dataSet)[iii])
-  assign(paste0('knit_expanded', iii),
+                   dygraphTitle = colnames(obj)[2])
+  assign(paste0('knit_expanded', cnt),
          paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
-                "eval(parse(text = paste0('dygraphPlot", iii," %>% ', primeMinisterOfJapan_dygraph)))",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
                 "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
   texDygraph <- 
-    c(texDygraph, paste0('knit_expanded', iii))
+    c(texDygraph, paste0('knit_expanded', cnt))
 }
 ```
 
