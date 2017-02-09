@@ -6,38 +6,41 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 3
     fig_width: 10  
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -107,21 +110,6 @@ funTimeSeries(obj = SSI2, cnt = 2)
 title1;title2
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataTitle <- 
-  paste0('特定サービス産業動態売上高指数-対事業所サービス業(調査10業種),対個人サービス業(調査9業種)の指数推移-季節調整済指数 - ',
-         format(tail(dataSet1[,1],1),'%Y年%m月分'))
-dataSource <- '経済産業省'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ', dataTitle,'\n'))
-cat(paste('Data Source : ', dataSource,'\n'))
-cat(paste('Author      : ', Author,'\n'))
-cat(paste('特  記      : ', notes,'\n'))
-cat(paste('特  記      : ', notes0,'\n'))
-```
-
 ```{r warning=F,error=F,message=F,echo=F}
 colnames(dataSet1) <- 
   gsub('^(\\s)*','',colnames(dataSet1))
@@ -153,167 +141,78 @@ iii <-iii+1;colnames(dataSet2)[iii] <- paste0('フィットネスクラブ','\n'
 iii <-iii+1;colnames(dataSet2)[iii] <- paste0('学習塾','\n',                                      colnames(dataSet2)[iii])
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_dataTable <- 
-  function(obj,orderColumn = 0,orderDirection = 'desc',
-           width00 = '5%',caption = '',title = '',append = '',leftcolumns = 1,dateFormat = '%Y-%m') {
-  cat(paste0('<h4>', title, append, '</h4>'))
-  obj[,1] <- format(obj[,1],dateFormat)  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, 
-      fixedHeader = T, fixedColumns = list(leftColumns = leftcolumns)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+colnames(dataSet1)[-1] <- 
+  sapply(colnames(dataSet1)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
+colnames(dataSet2)[-1] <- 
+  sapply(colnames(dataSet2)[-1],function(x)substring(x,1,regexpr('\n',x)-1))
 ```
 
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = dataSet1,objColumn = 2,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('特定サービス産業動態売上高指数:対事業所サービス業(調査10業種),対個人サービス業(調査9業種)の指数推移:季節調整済指数:',latestResult)
+dataSource <- '経済産業省'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source https://www.e-stat.go.jp/SG1/estat/GL08020101.do?_toGL08020101_&tstatCode=000001043078
+
+***
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-tmp <- dataSet1
-colnames(tmp)[-1] <- sapply(colnames(tmp)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
-fun_dataTable(obj = tmp,title = keyword201)
+fun_dataTable(obj = dataSet1,dateFormat = dateFormat)
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-tmp <- dataSet2
-colnames(tmp)[-1] <- sapply(colnames(tmp)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
-fun_dataTable(obj = tmp,title = keyword202)
-```
-
-```{r warning=F,error=F,message=F,echo=F}
-mergeData <- merge(dataSet1,dataSet2,by='Date')
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries <- 
-  function(obj, x = 1, y01 = 2, y02 = 4, type01 = 'l', type02 = 'l', dateFormat = '%Y-%m', tailN = nrow(obj), needRect = 1) {
-  lineColor <- c('blue','red')
-  obj <- tail(obj,tailN)
-  yMax <- max(obj[,c(y01,y01)])
-  yMin <- min(obj[,c(y01,y01)])
-  title <- paste0(colnames(obj)[y01],'\n',paste0(format(range(obj[,x]),dateFormat),collapse = '~'),'\nデータ出所:',dataSource)  
-  par(family='Meiryo',mar=c(4,4,5,2))
-  plot(obj[,x],obj[,y01],type=type01,col=lineColor[1],xlab='',ylab='',xaxt='n',
-       cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2,main = title,ylim=c(yMin,yMax))
-  Date <- as.numeric(obj[,x])
-  Value <- obj[,y01]
-  lo <- loess(Value ~ Date, degree = 2)
-  lines(obj[,x] , predict(lo) , col = lineColor[1], lwd = 2, lty = 2)  
-  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-  axis.Date(side=1, at=obj[,x],format=dateFormat,padj=1,cex.axis=1.0)
-  
-  # lines(obj[,x],obj[,y02],type = type02,col=lineColor[2],xlab='',ylab='',xaxt='n',
-  #      cex.axis=1.2,cex.lab=1.2,cex.main=1.2,lwd=2)
-  # Value <- obj[,y02]
-  # lo <- loess(Value ~ Date, degree = 2)
-  # lines(obj[,x] , predict(lo) , col = lineColor[2], lwd = 2, lty = 2)  
-  # graphics::legend('topleft',col=lineColor,lty=1,legend=colnames(obj)[c(y01,y02)],cex=1,bty='n',lwd = 2)
-  if(needRect!=0){
-  # 民主党パート
-  rectDateL <- max(as.numeric(as.Date('2009-09-16')),as.numeric(obj[1,1]))
-  rectDateR <- as.numeric(as.Date('2012-12-26'))
-  if(as.numeric(obj[1,1]) < rectDateR){
-    rectText <- '民主党政権'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'dimgray', density = 10, angle = 45)
-    text(rectDateR, par('usr')[4], labels = paste0('\n\n',rectText), pos = 2)
-  }
-  # 民主党パート
-  # 3%パート
-  rectDateL <- max(as.numeric(as.Date('1989-04-01')),as.numeric(obj[1,1]))
-  rectDateR <- as.numeric(as.Date('1997-03-31'))
-  if(as.numeric(obj[1,1]) < rectDateR){
-    rectText <- '消費税\n3%'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'darksalmon', density = 5, angle = 135)
-    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
-  }
-  # 3%パート
-  # 5%パート
-  rectDateL <- max(as.numeric(as.Date('1997-04-01')),as.numeric(obj[1,1]))
-  rectDateR <- as.numeric(as.Date('2014-03-31'))
-  if(as.numeric(obj[1,1]) < rectDateR){
-    rectText <- '消費税\n5%'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'yellowgreen', density = 5, angle = 135)
-    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
-  }
-  # 5%パート
-  # 8%パート
-  rectDateL <- max(as.numeric(as.Date('2014-04-01')),as.numeric(obj[1,1]))
-  rectDateR <- tail(obj[,1],1)
-  if(as.numeric(obj[1,1]) < rectDateR){
-    rectText <- '消費税\n8%'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'skyblue', density = 5, angle = 135)
-    text(rectDateR, par('usr')[3], labels = paste0(rectText,'\n\n\n'), pos = 2)
-  }
-  # 8%パート
-  # 東京オリンピック決定後パート
-  rectDateL <- max(as.numeric(as.Date('2013-9-8')),as.numeric(obj[1,1]))
-  rectDateR <- tail(obj[,1],1)
-  if(as.numeric(obj[1,1]) < rectDateR){
-    rectText <- '東京オリンピック決定後'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'orange', density = 5, angle = 45)
-    text(rectDateR, (par('usr')[3]+par('usr')[4])/2, labels = paste0(rectText,'\n\n\n'), pos = 2)
-  }
-  # 東京オリンピック決定後パート
-  # エコポイントパート
-  rectDateL <- max(as.numeric(as.Date('2009-5-15')),as.numeric(obj[1,1]))
-  rectDateR <- as.numeric(as.Date('2011-3-31'))
-  if(as.numeric(obj[1,1]) < rectDateR){
-    rectText <- 'エコポイント'
-    rect(xleft  = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop    = par('usr')[4], 
-         col    = 'red', density = 5, angle = 45)
-    text(rectDateR, (par('usr')[3]+par('usr')[4])/2, labels = paste0(rectText,'\n\n\n'), pos = 2)
-  }
-  # エコポイントパート
-  }
-}
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6,fig.width=10}
-for(ccc in 2:(ncol(mergeData)-1)){
-  cat('<hr>')
-  cat('<h4>',gsub('\n','<br>',colnames(mergeData)[ccc]),'</h4>')
-  fun_plotTimeSeries(obj = mergeData,y01 = ccc)
-}
-```
-
-```{r warning=F,error=F,message=F,echo=F}
-library(RCurl);library(knitr)
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
+fun_dataTable(obj = dataSet2,dateFormat = dateFormat)
 ```
 
 ***
+
+```{r warning=F,error=F,message=F,echo=F}
+mergeData <- 
+  merge(dataSet1,dataSet2,by='Date')
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+timeSeriesDF <- mergeData
+texDygraph <- vector()
+cnt <- 0
+for(iii in 2:ncol(timeSeriesDF)){
+  obj <- 
+    na.omit(timeSeriesDF[,c(1,iii)])
+  obj$FittedCurve <-
+    predict(loess(obj[,2] ~ as.numeric(obj[,1]),degree = 2))
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = obj, 
+                   plotNum = cnt, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = colnames(obj)[2])
+  assign(paste0('knit_expanded', cnt),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
+                "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', cnt))
+}
+```
+
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
 #### 前月差(ポイント)
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6,fig.width=10}
-colnames(mergeData)[-1] <- sapply(colnames(mergeData)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
-tmp <- data.frame(tail(mergeData[,1],-1),diff(as.matrix(mergeData[,-1])),check.names = F,stringsAsFactors = F)
-knitr::kable(fun_transposeDataFrame(obj = tmp, tailN = 6, dateFormat = '%Y-%m'),row.names = F)
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+tailN <- 6
+fun_makeDiffTable(obj = mergeData,lag = 1)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat,tailN = tailN))
 ```
 
 ***
