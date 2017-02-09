@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers
@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -79,9 +78,9 @@ mergeData0[,objColumn] <-
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = mergeData0,objColumn = c(2:3), dateFormat = dateFormat)
+fun_latestResult(obj = mergeData0,objColumn = c(2), dateFormat = dateFormat)
 dataTitle <- 
-  paste0('日本のマネーストックと信用乗数:M2、M3、広義流動性:',latestResult)
+  paste0('日本のマネーストックと信用乗数:',latestResult)
 dataSource <- '日本銀行'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
@@ -102,7 +101,8 @@ n1 <- 1
 fun_generateKnit(objDF = mergeData, 
                  plotNum = n1, 
                  barPlot = 0, 
-                 dygraphTitle = paste0(colnames(mergeData)[c(2,3)],collapse=' ~ '))
+                 dygraphTitle = paste0(colnames(mergeData)[c(2,3)],collapse=' ~ '),
+                 group = 0)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -116,10 +116,21 @@ colnames(creditMultiplier)[2] <- paste0(colnames(mergeData)[c(2,3)],collapse=' /
 fun_generateKnit(objDF = creditMultiplier, 
                  plotNum = n2, 
                  barPlot = 0, 
-                 dygraphTitle = paste0('信用乗数:',paste0(colnames(mergeData)[c(2,3)],collapse=' / ')))
+                 dygraphTitle = paste0('信用乗数:',paste0(colnames(mergeData)[c(2,3)],collapse=' / ')),
+                 group = 0)
 ```
 
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)))), collapse = '\n')`
+```{r warning=F, error=F, message=F, echo=F}
+obj <- MoneyStock[,c(1,2)]
+n3 <- 3
+fun_generateKnit(objDF = obj, 
+                 plotNum = n3, 
+                 barPlot = 1, 
+                 dygraphTitle = colnames(obj)[2],
+                 group = 0)
+```
+
+`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)),get(paste0('knit_expanded',n3)))), collapse = '\n')`
 
 #### 単位根検定
 ##### 原系列
@@ -141,7 +152,7 @@ apply(diffDF[,c(2,3),drop=F],2, tseries::adf.test)
 
 #### 一次差分同士の相互相関係数
 
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=5}
 par(mfrow = c(1,1), family = 'Meiryo', mar = c(5,5,6,4), cex.main = 1.1, font.main = 1)
 ccfResult <- 
   ccf(diffDF[,2], 
@@ -154,13 +165,13 @@ text(ccfResult$lag,
 ```
 
 ***
-#### 直近5ヶ月分
+#### 直近`r tailN <- 4;tailN`ヶ月分
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 objColumn <- 
   grep('マネーストック',colnames(mergeData0))
 fun_markdownTable(
-  fun_transposeDataFrame(obj = mergeData0[,c(1,objColumn)],dateFormat = dateFormat,tailN = 5))
+  fun_transposeDataFrame(obj = mergeData0[,c(1,objColumn)],dateFormat = dateFormat,tailN = tailN))
 ```
 
 ***
