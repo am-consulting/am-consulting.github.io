@@ -6,30 +6,20 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-body{font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;}
-.main-container {
-	max-width: 1000px;
-	margin-left: auto;
-	margin-right: auto;
-}
-table{
- white-space: nowrap;
-}
-</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -39,126 +29,127 @@ options(width = 1000)
 library(RCurl);library(lubridate);library(Nippon);library(knitr)
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
-    ssl.verifypeer = FALSE
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importDataFromBOJ.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-mergeData <- 
-  Reduce(function(x, y) merge(x, y, by='Date', all=T), list(d.csv_data,w1.csv_data,m.csv_data,q.csv_data,fy.csv_data))
-colnames(mergeData)
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-objWord <- '企業物価指数|マネタリーベース'
-dataSet0 <- mergeData[, c(1, grep(objWord, colnames(mergeData)))]
-colnames(dataSet0)
-objColumn <- c(1,6,14,16,17)
-dataSet <- na.omit(dataSet0[,objColumn])
-colnames(dataSet)
-if(length(unique(month(dataSet[,1])))==1){
-  dateFormat <- '%Y'
-}else if(length(unique(day(dataSet[,1])))==1){
-  dateFormat <- '%Y-%m'
-}else{
-  dateFormat <- '%Y-%m-%d'
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
 }
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+importAMCC <-
+  c('importMonetarybaseOfJapan-2017.r',
+    'importProducerPriceIndex-2017.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+                  importAMCC[iii]),
+           ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+mergeData <- 
+  merge(x = monetaryBase_Japan, y = ProducerPriceIndex, by = 'Date')
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- paste0('Producer Price Index In Japan / 日本の国内企業物価指数 - ',
-         format(tail(dataSet[, 1], 1), dateFormat))
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = ProducerPriceIndex,objColumn = 2,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('国内企業物価指数:',latestResult)
 dataSource <- '日本銀行'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- "表中、-9999はNAを意味します"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-cat(paste("Title       : ", dataTitle, "\n"))
-cat(paste("Data Source : ", dataSource, "\n"))
-cat(paste("Author      : ", Author, "\n"))
-cat(paste("特  記      : ", notes, "\n"))
-cat(paste("特  記      : ", notes0, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-n1 <- 1
-fun_generateKnit(objDF = dataSet[,-2],plotNum = n1,colors = c('blue','red','darkorange'))
-```
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
+***
 
-#### 単位根検定
-##### 原系列
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.stat-search.boj.or.jp/ssi/mtshtml/pr01_m_1.html
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+timeSeriesDF <- ProducerPriceIndex[,c(1:4)]
+texDygraph <- vector()
+cnt <- 0
+for(iii in 2:ncol(timeSeriesDF)){
+  obj <- 
+    na.omit(timeSeriesDF[,c(1,iii)])
+  # obj$FittedCurve <-
+  #   predict(loess(obj[,2] ~ as.numeric(obj[,1]),degree = 2))
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = obj, 
+                   plotNum = cnt, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = colnames(obj)[2],
+                   barPlot = 1)
+  assign(paste0('knit_expanded', cnt),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
+                "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', cnt))
+}
+```
+
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = ProducerPriceIndex,dateFormat = dateFormat))
+```
+
+***
+#### マネタリーベースとの比較
+##### 単位根検定
+- 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-apply(dataSet[,-1],2, tseries::adf.test)
+apply(mergeData[,c(6,14)],2, tseries::adf.test)
 ```
 
-##### 一次差分
+- 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-dataSet1stDiff <- diff(as.matrix(dataSet[,-1]),lag = 1, differences = 1)
-apply(dataSet1stDiff, 2, tseries::adf.test)
+fun_makeDiffTable(mergeData,lag = 1)
+apply(diffDF[,c(6,14)], 2, tseries::adf.test)
 ```
 
-#### 一次差分同士の相互相関係数
+##### 一次差分同士の相互相関係数
 
-```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=14, fig.width=10}
-par(mfrow = c(3,1), family = 'Meiryo', mar = c(5,5,6,4))
-objCCC <- 2
+```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=6}
+par(family = 'Meiryo', mar = c(5,5,5,2), font.main = 1, cex.main = 1.1)
 ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
-
-objCCC <- 3
-ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
-text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
-
-objCCC <- 4
-ccfResult <- 
-  ccf(dataSet1stDiff[,1], dataSet1stDiff[,objCCC], main = paste0(colnames(dataSet1stDiff)[c(1,objCCC)], collapse = '\n×\n'))
-panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  ccf(diffDF[,2], 
+      diffDF[,3], 
+      main = paste0(colnames(diffDF)[2:3], collapse = '\n×\n'),
+      panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T))
 text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-funDataTable <- 
-  function(obj, orderColumn = 0, orderDirection = 'desc', width00 = '5%', caption = '', dataTitle='',title='',append='') {
-  cat(paste('<h4>', dataTitle, '</h4>'))  
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10,-1), c(10,'All')),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width00, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = 1)),
-    rownames = F, class = 'display compact', escape = F, filter = 'top', 
-    caption = caption
-    # caption = htmltools::tags$caption(style = 'caption-side: bottom; text-align: center;','Table ', htmltools::em(caption))
-  )  
-  }
-dfData <- dataSet
-dfData[,1] <- format(dfData[,1], dateFormat)
-funDataTable(obj = dfData, dataTitle = dataTitle)
+fun_dataTable(obj = tail(ProducerPriceIndex,12*4),dateFormat = dateFormat)
 ```
 
 ***
-
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
