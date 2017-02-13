@@ -82,7 +82,26 @@ options(scipen = 999)
 - Source https://www.nhk.or.jp/bunken/research/yoron/index.html
 
 ***
+#### 自民党の政党支持率時系列推移
 
+```{r,warning=F,error=F,message=F,echo=F,results='asis',fig.height=3}
+objDF <- 
+  politicalPartyApprovalRatingsS[,c(1,grep('自民党',colnames(politicalPartyApprovalRatingsS)))]
+n <- 1
+fun_generateKnit(objDF = objDF,plotNum = n,group = 0,barPlot = 0,colors = 'blue')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+#### 内閣支持率、不支持率の時系列推移
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis',fig.height=3}
+n <- 2
+fun_generateKnit(objDF = cabinetApprovalRatingS[,-4],plotNum = n,group = 0,barPlot = 0,colors = c('blue','red'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
 #### 内閣毎の初回調査と最終調査(または現職)の月例内閣支持率とその差
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
