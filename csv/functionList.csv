@@ -12,3 +12,5 @@ timeSeriesDataFundamentalStatistics.r
 timeSeriesForecast.r
 transposeDataFrame.r
 R-updateURLcsv.r
+R-ACF.r
+R-adfTest.r
