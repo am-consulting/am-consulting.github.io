@@ -52,7 +52,11 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('日本銀行', gsub('資産:','',colnames(Assets[[1]])[1]))
+buf <- 
+  Assets[[1]][grep('国債',Assets[[1]][,1]),]
+tmp <-
+  paste0(buf[1,1],'(兆円):',round(buf[1,2]),',構成比(%):',buf[1,3])
+dataTitle <- paste0('日本銀行', gsub('資産:','',colnames(Assets[[1]])[1]),':',tmp)
 dataSource <- '日本銀行'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -70,14 +74,18 @@ options(scipen = 999)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 cat(paste0('<b>','資産 / Asset','</b>'))
-fun_markdownTable(obj = Assets[[1]])
+objDF <- Assets[[1]]
+objDF <- objDF[order(objDF[,2],decreasing = T),]
+fun_markdownTable(obj = objDF)
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 cat(paste0('<b>','負債および純資産 / Liabilities and Net Worth','</b>'))
-fun_markdownTable(obj = LiabilitiesAndNetWorth[[1]])
+objDF <- LiabilitiesAndNetWorth[[1]]
+objDF <- objDF[order(objDF[,2],decreasing = T),]
+fun_markdownTable(obj = objDF)
 ```
 
 ***
@@ -90,7 +98,7 @@ fun_markdownTable(obj = JGBbreakdown[[1]])
 ***
 #### 資産(負債および純資産)合計の時系列推移(単位:兆円)
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=4}
 tmp <-
   gsub('ac|\\.htm','',substring(pageList, regexpr('ac[0-9]{6}', pageList)))
 yyyy <-
@@ -110,25 +118,21 @@ accountsTimeSeries <-
   data.frame(Date,Total)
 colnames(accountsTimeSeries)[2] <-
   '資産(負債および純資産)合計の時系列推移(単位:兆円)'
-fun_plotTimeSeries(accountsTimeSeries,
-                   chartType = 0,
-                   typeL = 'h',
-                   lwdL = 2,
-                   fitLcolor = 2,
-                   dataSource = dataSource,
-                   needLefLab = 0)
+n <- 1
+fun_generateKnit(objDF = accountsTimeSeries,plotNum = n,barPlot = 1)
+eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = accountsTimeSeries)
 ```
 
 ***
 #### 資産項目中「国債」の時系列推移(単位:兆円)
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=4}
 Total <- data.frame()
 for(iii in 1:length(Assets)){
   Total <- 
@@ -138,28 +142,33 @@ accountsTimeSeries <-
   data.frame(Date,Total,check.names = F,stringsAsFactors = F)
 colnames(accountsTimeSeries)[2:3] <-
   c('資産項目中「国債」(単位:兆円)','資産項目中「国債」の構成比(単位:%)')
-fun_plotTimeSeries(accountsTimeSeries,
-                   chartType = 2,
-                   typeL = 'h',
-                   typeR = 'l',
-                   lwdL = 2,
-                   lwdR = 1,
-                   fitLcolor = 0,
-                   dataSource = dataSource,
-                   needLefLab = 1,
-                   fitRcolor = 0)
+colnames(accountsTimeSeries) <-
+  iconv(colnames(accountsTimeSeries),'cp932','utf8')
+n <- 2
+fun_generateKnit(objDF = accountsTimeSeries[,c(1,2)],
+                 plotNum = n,
+                 barPlot = 1,
+                 dygraphTitle = colnames(accountsTimeSeries)[2])
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+n <- 3
+fun_generateKnit(objDF = accountsTimeSeries[,c(1,3)],
+                 plotNum = n,
+                 barPlot = 0,
+                 dygraphTitle = colnames(accountsTimeSeries)[3])
+eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = accountsTimeSeries)
 ```
 
 ***
 #### 負債項目中「当座預金」の時系列推移(単位:兆円)
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=4}
 Total <- data.frame()
 for(iii in 1:length(LiabilitiesAndNetWorth)){
   Total <- 
@@ -169,16 +178,21 @@ accountsTimeSeries <-
   data.frame(Date,Total,check.names = F,stringsAsFactors = F)
 colnames(accountsTimeSeries)[2:3] <-
   c('負債項目中「当座預金」(単位:兆円)','負債項目中「当座預金」の構成比(単位:%)')
-fun_plotTimeSeries(accountsTimeSeries,
-                   chartType = 2,
-                   typeL = 'h',
-                   typeR = 'l',
-                   lwdL = 2,
-                   lwdR = 1,
-                   fitLcolor = 0,
-                   dataSource = dataSource,
-                   needLefLab = 1,
-                   fitRcolor = 0)
+colnames(accountsTimeSeries) <-
+  iconv(colnames(accountsTimeSeries),'cp932','utf8')
+n <- 2
+fun_generateKnit(objDF = accountsTimeSeries[,c(1,2)],
+                 plotNum = n,
+                 barPlot = 1,
+                 dygraphTitle = colnames(accountsTimeSeries)[2])
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+n <- 3
+fun_generateKnit(objDF = accountsTimeSeries[,c(1,3)],
+                 plotNum = n,
+                 barPlot = 0,
+                 dygraphTitle = colnames(accountsTimeSeries)[3])
+eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
