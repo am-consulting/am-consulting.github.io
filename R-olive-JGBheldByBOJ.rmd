@@ -60,47 +60,11 @@ script <-
 eval(parse(text = script))
 ```
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- title
-dataSource <- '日本銀行'
-```
-
-***
-
-- `r paste0("タイトル : ", dataTitle)`
-- `r paste0("データ出所 : ", dataSource)`
-- 『利付国債の保有額(受渡し完了ベース)。国債買入オペに加え、対政府取引等による増減も勘案した国債の残高。』(日本銀行資料より引用)
-- 『額面金額ベース(億円未満四捨五入)。』(日本銀行資料より引用)
-- Source https://www.boj.or.jp/statistics/boj/other/mei/index.htm/
-
-***
-
 ```{r,warning=F,error=F,message=F,echo=F}
-# tmp <-
-#   read.table(
-#     "clipboard",
-#     header = F,
-#     sep = "\t",
-#     stringsAsFactor = F,
-#     na.strings = c("NA", "-", "－", "… ", ".", ""),
-#     check.names = F
-#   )
 tmp <- JGBheldByBOJ
-# tmp[, 3] <- as.numeric(gsub(',','',tmp[, 3]))
 tmp[, 3] <- tmp[, 3] * 10 ^ -4
 colnames(tmp) <- c('JGB', '銘柄', '保有残高(兆円)')
 ```
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = tmp,
-              dateFormat = 0,
-              needID = 1,
-              orderDirection = 'asc',
-              title = dataTitle,
-              leftcolumns = 2)
-```
-
-***
 
 ```{r,warning=F,error=F,message=F,echo=F}
 for(iii in 1:length(unique(tmp[, 1]))) {
@@ -119,7 +83,34 @@ barDataRatio <- barData
 barDataRatio[, -1] <- round(barDataRatio[, -1] / totalJGB * 100, 2)
 colnames(barDataRatio) <- gsub('兆円', '%', colnames(barDataRatio))
 ```
-<h4>日本国債年限名称別合計残高(兆円)</h4>
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- paste0(title,'.保有国債残高合計(兆円):',totalJGB)
+dataSource <- '日本銀行'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- 『利付国債の保有額(受渡し完了ベース)。国債買入オペに加え、対政府取引等による増減も勘案した国債の残高。』(日本銀行資料より引用)
+- 『額面金額ベース(億円未満四捨五入)。』(日本銀行資料より引用)
+- Source https://www.boj.or.jp/statistics/boj/other/mei/index.htm/
+
+***
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = tmp,
+              dateFormat = 0,
+              needID = 1,
+              orderDirection = 'asc',
+              title = dataTitle,
+              leftcolumns = 2)
+```
+
+***
+#### 日本国債年限名称別合計残高(兆円)
+
 ```{r,warning=F,error=F,message=F,echo=F}
 rAmCharts::amBarplot(
   x = colnames(barData)[1] ,
@@ -137,8 +128,10 @@ rAmCharts::amBarplot(
   show_values = T
 )
 ```
-<hr>
-<h4>日本国債年限名称別合計残高構成比(%)</h4>
+
+***
+#### 日本国債年限名称別合計残高構成比(%)
+
 ```{r,warning=F,error=F,message=F,echo=F}
 rAmCharts::amBarplot(
   x = colnames(barDataRatio)[1] ,
@@ -156,26 +149,35 @@ rAmCharts::amBarplot(
   show_values = T
 )
 ```
-<hr>
-<h4>年限･国債名称(第x回債)毎の保有額(兆円)ボックスプロット</h4>
+
+***
+#### 年限･国債名称(第x回債)毎の保有額(兆円)ボックスプロット
+
 ```{r,warning=F,error=F,message=F,echo=F}
 rAmCharts::amBoxplot(jgbData, horiz = T)
 ```
-<hr>
-<h4>年限･国債名称(第x回債)毎の基本統計量(兆円)</h4>
+
+***
+
+#### 保有国債の基本統計量他 {.row}
+
+##### 年限･国債名称(第x回債)毎の基本統計量(兆円) {.col-md-6}
+
 ```{r,warning=F,error=F,message=F,echo=F}
 attach(tmp)
 by(tmp[, 3], JGB, summary)
 ```
 
-<h4>年限毎の保有残高(兆円)</h4>
+##### 年限毎の保有残高(兆円) {.col-md-6}
+
 ```{r,warning=F,error=F,message=F,echo=F}
 attach(tmp)
 by(tmp[, 3], JGB, sum)
 ```
 
-<h4>日本銀行が保有する国債残高合計(兆円)</h4>
-```{r,warning=F,error=F,message=F,echo=F}
+###### 日本銀行が保有する国債残高合計(兆円)
+
+```{r,warning=F,error=F,message=F,echo=F, results='hold'}
 totalJGB
 ```
 
