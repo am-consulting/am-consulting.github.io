@@ -12,5 +12,5 @@ fun_getStockPriceFromYJ <-
     colnames(tmp) <- buf
     tmp0 <-
       data.frame(Date = as.Date(row.names(tmp)),tmp[,1:5],stringsAsFactors = F,check.names = F,row.names = NULL)
-    assign(as.character(Symbol),tmp0,envir = .GlobalEnv)
+    assign(paste0('sp',as.character(Symbol)),tmp0,envir = .GlobalEnv)
   }
