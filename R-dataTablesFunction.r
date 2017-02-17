@@ -36,7 +36,8 @@ fun_dataTable <-
         buttons = I('colvis'),
         colReorder = T,
         fixedHeader = T,
-        fixedColumns = list(leftColumns = leftcolumns)
+        fixedColumns = list(leftColumns = leftcolumns),
+        columnDefs = list(list(className = 'dt-right', targets = 0:(ncol(obj)-1)))
       ),
       rownames = F,
       class = 'display compact',
