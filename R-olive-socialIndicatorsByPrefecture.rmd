@@ -126,6 +126,7 @@ for(iii in 1:length(linkLists)){
       if(tmp[ccc] != -999){
         cnt <- cnt + 1
         objCloumn[cnt] <- ccc
+        break
         }else{
           break
         }
