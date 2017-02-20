@@ -8,13 +8,18 @@ fun_dataTable <-
            dateFormat = '%Y-%m',
            menuLength = 10,
            needID = 0,
-           filter = 'none') {
+           filter = 'none',
+           bigmarkColumn = -1) {
     cat(paste0('<h5>', title, '</h5>'))
     if(dateFormat != 0){
       obj[, 1] <- format(obj[, 1], dateFormat)
     }
     if(needID == 1){
       obj <- data.frame(ID = seq(1,nrow(obj)), obj, check.names = F, stringsAsFactors = F)
+    }
+    if(bigmarkColumn != 0){
+      obj[,bigmarkColumn] <-
+        apply(obj[,bigmarkColumn], 2, function(x)format(x, big.mark = ",", scientific = F))
     }
     DT::datatable(
       obj,
