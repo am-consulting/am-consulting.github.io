@@ -52,12 +52,15 @@ fun_doSimulation <-
            panel.first = grid(nx = NULL,
                               ny = NULL,
                               lty = 2,
-                              equilogs = T))
+                              equilogs = T),
+           main = paste0('Initial:',startValue))
       for(iii in 2:simulationNumber){
         lines(simulationResultS[,iii],
               type = 'o',
               pch = 20)
       }
+
+      abline(h = startValue, col = 'red', lwd = 2)
       x0 <-
         unlist(tail(simulationResultS,1))
       breaks <-
@@ -73,5 +76,14 @@ fun_doSimulation <-
              envir = .GlobalEnv)
       assign('finalHist',
              finalHist,
+             envir = .GlobalEnv)
+      finalHistDF <-
+        data.frame(finalHist$mids,
+                   finalHist$counts,
+                   finalHist$counts/sum(finalHist$counts)*100)
+      colnames(finalHistDF) <-
+        c('Mid','Count','Ratio(%)')
+      assign('finalHistDF',
+             finalHistDF,
              envir = .GlobalEnv)
   }
