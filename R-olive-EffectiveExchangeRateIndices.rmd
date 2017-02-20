@@ -5,7 +5,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -105,137 +105,208 @@ options(scipen = 999)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph <- function(grepWord = 'Japan'){
-  obj <- grep(grepWord,colnames(dataSet),ignore.case = T)
-  timeSeries0 <- na.omit(dataSet[,c(1,obj)])
-  timeSeries <- xts(timeSeries0[,-1], order.by=timeSeries0[,1])
-  assign('df', data.frame(Date = index(timeSeries),timeSeries,check.names = F,stringsAsFactors = F),envir = .GlobalEnv)
-  dygraph(timeSeries,xlab = 'Date',main = paste0(colnames(timeSeries0)[-1],collapse = ' × '))  %>% 
-    dyLegend(width = 500) %>% dyRangeSelector() %>% 
-    dyEvent("2016-11-09", "United States presidential election of 2016", labelLoc = "bottom") %>% 
-    dyEvent("2008-09-15", "Bankruptcy of Lehman Brothers", labelLoc = "bottom") %>% 
-    dyEvent("2011-03-11", "Tohoku earthquake and tsunami", labelLoc = "bottom")
-}
-areaList <- c('Japan','United States','Euro area','Australia','China','United Kingdom','New Zealand','Korea','South Africa') 
+areaList <- 
+  c('Japan',
+    'United States',
+    'Euro area',
+    'Australia',
+    'China',
+    'United Kingdom',
+    'New Zealand',
+    'Korea',
+    'South Africa') 
 ```
 
 `r targetArea <- 1` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-# colnames(dataSet)
-fun_dygraph(grepWord = areaList[targetArea])
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(timeSeries[,-1])
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
-cat('\n\n')
-summary(df[,-1])
-```
+***
 
 `r targetArea <- 2` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 3` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 4` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 5` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 6` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 7` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 8` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
 cat('\n\n')
-summary(df[,-1])
+summary(timeSeries[,-1])
 ```
 
+***
 `r targetArea <- 9` 
 ##### Reference area:`r areaList[targetArea]`
 
-```{r warning=F,error=F,message=F,echo=F}
-fun_dygraph(grepWord = areaList[targetArea])
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- targetArea
+obj <- 
+  grep(areaList[targetArea], colnames(dataSet), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet[,c(1,obj)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('\n')
+cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
+cat('\n\n')
+summary(timeSeries[,-1])
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hold'}
-cat(paste0(range(df[,1]),collapse = ' ~ '))
-cat('\n\n')
-summary(df[,-1])
-```
+***
 
 #### Latest `r tailN <- 6;tailN` days
 
@@ -246,7 +317,40 @@ fun_dataTable(obj = fun_transposeDataFrame(obj = na.omit(dataSet),tailN = tailN)
 ```
 
 ***
+#### 日本、米国およびユーロ圏の比較
+- 原数値時系列推移
 
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 100
+obj <- 
+  grep('Japan|United States|Euro area', colnames(dataSet), ignore.case = T)
+dataSet0 <-
+  dataSet[,c(1,obj)]
+obj0 <- 
+  grep('n:b', colnames(dataSet0), ignore.case = T)
+timeSeries <- 
+  na.omit(dataSet0[,c(1,obj0)])
+fun_generateKnit(objDF = timeSeries,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+- 正規化後の時系列推移
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 101
+fun_scale(obj = timeSeries)
+fun_generateKnit(objDF = resultScale,
+                 plotNum = n,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(resultScale),collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+***
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
