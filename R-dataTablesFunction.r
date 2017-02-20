@@ -19,7 +19,7 @@ fun_dataTable <-
     }
     if(bigmarkColumn != 0){
       obj[,bigmarkColumn] <-
-        apply(obj[,bigmarkColumn], 2, function(x)format(x, big.mark = ",", scientific = F))
+        apply(obj[,bigmarkColumn,drop = F], 2, function(x)format(x, big.mark = ",", scientific = F))
     }
     DT::datatable(
       obj,
