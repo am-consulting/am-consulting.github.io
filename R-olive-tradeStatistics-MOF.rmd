@@ -52,8 +52,8 @@ library(knitr)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
-targetYear <- 2016
-targetMonth <- 12
+targetYear <- 2017
+targetMonth <- 1
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -152,7 +152,7 @@ table02[,c(3,5,7)] <- sapply(table02[,c(3,5,7)],function(x) x*10^-2)
 colnames(table02) <-
   c('ID', '地域･国', '輸出価額(億円)', '伸率(%)', '輸入価額(億円)', '伸率(%)', '差引価額(億円)', '伸率(%)')
 cat('<h5>地域(国)別輸出入</h5>\n')
-fun_dataTable(obj = table02,dateFormat = 0,orderDirection = 'asc')
+fun_dataTable(obj = table02,dateFormat = 0,orderDirection = 'asc',bigmarkColumn = 2)
 ```
 
 ***
@@ -162,9 +162,9 @@ out = NULL
 for (iii in 1:length(byGoods)) {
   knit_expanded <-
     paste0(
-      "\n```{r results='asis', echo=F}\n\n",
+      "\n```{r warning=F,error=F,message=F,results='asis',echo=F}\n\n",
       "cat(paste0('<h5>', byGoodsTitle[",iii,"],'</h5>'))\n\n",
-      "fun_dataTable(obj = byGoods[[",iii,"]],dateFormat = 0,orderDirection = 'asc')\n\n",
+      "fun_dataTable(obj = byGoods[[",iii,"]],dateFormat = 0,orderDirection = 'asc',bigmarkColumn = c(2,3))\n\n",
       "cat('<hr>')\n\n```"
     )
   out = c(out, knit_expanded)
