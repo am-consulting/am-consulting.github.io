@@ -18,8 +18,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -129,7 +128,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -151,7 +150,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -172,7 +171,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -193,7 +192,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -214,7 +213,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -235,7 +234,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -256,7 +255,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -277,7 +276,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -298,7 +297,7 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('\n')
 cat(paste0(range(timeSeries[,1]),collapse = ' ~ '))
@@ -333,10 +332,11 @@ timeSeries <-
 fun_generateKnit(objDF = timeSeries,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(timeSeries),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(timeSeries)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
+***
 - 正規化後の時系列推移
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
@@ -345,7 +345,7 @@ fun_scale(obj = timeSeries)
 fun_generateKnit(objDF = resultScale,
                  plotNum = n,
                  group = 0,
-                 dygraphTitle = paste0(colnames(resultScale),collapse = ' × '))
+                 dygraphTitle = paste0(colnames(resultScale)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
