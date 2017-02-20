@@ -53,9 +53,10 @@ eval(parse(text = script))
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = RealExportsAndRealImports02,dateFormat = dateFormat)
+fun_makeDiffRatioTable(obj = RealExportsAndRealImports01[,-4],lag = 1)
+fun_latestResult(obj = diffRatioDF,dateFormat = dateFormat,objColumn = c(2,3))
 dataTitle <- 
-  paste0('実質輸出入の動向 - 実質輸出、実質輸入:', latestResult) 
+  paste0('実質輸出入の動向:実質輸出、実質輸入:前月比(%):', latestResult) 
 dataSource <- 
   '日本銀行'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
