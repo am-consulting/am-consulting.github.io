@@ -1,13 +1,16 @@
 fun_fit <- function(obj, dateColumn = 1, objColumn = 2){
+  library(lubridate)
+  obj <-
+    na.omit(obj[,c(dateColumn,objColumn)])
   SAData <-
-    stl(ts(obj[,objColumn], start = c(year(obj[1,dateColumn]), month(obj[1,dateColumn])), frequency = 12),
+    stl(ts(obj[,2], start = c(year(obj[1,1]), month(obj[1,1])), frequency = 12),
         s.window = "periodic")
-  SeasonalAdjustment <- as.numeric(obj[,objColumn] - SAData$time.series[,1])
+  SeasonalAdjustment <- as.numeric(obj[,2] - SAData$time.series[,1])
   # SeasonalAdjustment <- SA$time.series[,2] + SA$time.series[,3]
-  loessResult <- loess(formula = obj[,objColumn] ~ as.numeric(obj[,dateColumn]), degree = 2)
-  lmResult <- lm(formula = obj[,objColumn] ~ as.numeric(obj[,dateColumn]))
+  loessResult <- loess(formula = obj[,2] ~ as.numeric(obj[,1]), degree = 2)
+  lmResult <- lm(formula = obj[,2] ~ as.numeric(obj[,1]))
   objDF <-
-    data.frame(obj[,c(dateColumn, objColumn)],
+    data.frame(obj,
                `fit-loess` = predict(loessResult),
                `fit-lm` = predict(lmResult),
                SeasonalAdjustment, check.names = F, stringsAsFactors = F)
