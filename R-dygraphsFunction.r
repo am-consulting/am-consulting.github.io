@@ -25,7 +25,8 @@ dyMultiColumn <- function(dygraph) {
 }
 
 fun_dygraph <-
-  function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both', plotNum = 1, barPlot0 = 0, colors = colors, group = group){
+  function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both',
+           plotNum = 1, barPlot = 0, colors = colors, group = group, quantiles = quantiles){
   xtsData <- xts(obj[,-1], order.by=obj[,1])
   colnames(xtsData) <- colnames(obj)[-1]
   if(group == 1){
@@ -40,7 +41,18 @@ fun_dygraph <-
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection) %>%
     dyOptions(colors = colors)
-  if(barPlot0 == 1){dygraphPlot <- dygraphPlot %>% dyBarChart()}
+  if(quantiles != 0){
+    summaryResult <-
+      summary(obj[,quantiles])
+    dygraphPlot <- dygraphPlot %>%
+      dyLimit(as.numeric(summaryResult[1]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[2]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[3]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[4]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[5]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[6]), color = "red")
+  }
+  if(barPlot == 1){dygraphPlot <- dygraphPlot %>% dyBarChart()}
   assign(paste0('dygraphPlot',plotNum), dygraphPlot, envir = .GlobalEnv)
 }
 
@@ -274,9 +286,12 @@ buf1 <-paste(out, collapse = ' %>% ')
 assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 }
 
-fun_plot_dygraph <- function(obj = tmp, plotNum = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0, colors = colors, group = group){
+fun_plot_dygraph <-
+  function(obj = tmp, plotNum = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0,
+           colors = colors, group = group, quantiles = quantiles){
   buf <- na.omit(obj)
-  fun_dygraph(obj = buf, mainTitle = dygraphTitle, plotNum = plotNum, legendWidth = legendWidth, barPlot0 = barPlot, colors = colors, group = group)
+  fun_dygraph(obj = buf, mainTitle = dygraphTitle, plotNum = plotNum, legendWidth = legendWidth,
+              barPlot = barPlot, colors = colors, group = group, quantiles = quantiles)
   fun_consumptionTax(obj = buf)
   fun_primeMinisterOfJapan(obj = buf)
   fun_boj(obj = buf)
@@ -302,9 +317,11 @@ fun_dygraph_shade <- function(plotNum = 1){
 
 fun_generateKnit <-
   function(objDF = dataSet, plotNum = 1, barPlot = 0, dygraphTitle = '',
-           legendWidth = 300, colors = RColorBrewer::brewer.pal(ncol(objDF)-1, "Dark2"), group = 1){
+           legendWidth = 300, colors = RColorBrewer::brewer.pal(ncol(objDF)-1, "Dark2"),
+           group = 1, quantiles = 0){
   fun_plot_dygraph(obj = objDF, plotNum = plotNum,
                    dygraphTitle = dygraphTitle,
-                   legendWidth = legendWidth, barPlot = barPlot, colors = colors, group = group)
+                   legendWidth = legendWidth, barPlot = barPlot, colors = colors,
+                   group = group, quantiles = quantiles)
   fun_dygraph_shade(plotNum = plotNum)
 }
