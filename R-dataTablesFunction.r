@@ -9,7 +9,7 @@ fun_dataTable <-
            menuLength = 10,
            needID = 0,
            filter = 'none',
-           bigmarkColumn = 1) {
+           bigmarkColumn = 0) {
     cat(paste0('<h5>', title, '</h5>'))
     if(dateFormat != 0){
       obj[, 1] <- format(obj[, 1], dateFormat)
