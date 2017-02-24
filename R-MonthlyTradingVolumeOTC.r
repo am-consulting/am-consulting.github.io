@@ -41,5 +41,5 @@ buf2[,-1] <- apply(buf2[,-1],2,function(x)as.numeric(gsub(',','',x)))
 buf3 <-
   buf2[order(buf2[,1],decreasing = F),]
 assign(sheetNo,buf3,envir = .GlobalEnv)
-assign(paste0(sheetNo,'-Title'),sheetTitle,envir = .GlobalEnv)
+assign(paste0(sheetNo,'Title'),sheetTitle,envir = .GlobalEnv)
 }
