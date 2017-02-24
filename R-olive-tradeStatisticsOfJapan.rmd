@@ -12,7 +12,8 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>.main-container {max-width: 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -59,6 +60,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+hashTag <- '#貿易黒字 #アベノミクス #金融緩和'
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = origData4,objColumn = 2,dateFormat = dateFormat)
 dataTitle <- 
@@ -71,6 +73,7 @@ dataSource <-
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- `r paste0("ハッシュタグ : ", hashTag)`
 - Source http://www.customs.go.jp/toukei/suii/html/time.htm
 - Source http://www.customs.go.jp/toukei/suii/html/data/d41ma.csv
 - Source http://www.customs.go.jp/toukei/suii/html/data/d51ma.csv
@@ -243,6 +246,14 @@ buf1 <- apply(buf1, 2, function(x) {round(x, 0)})
 impItem <- data.frame(ID = seq(1,nrow(buf1)), Item = row.names(buf0), buf1, check.names = F)
 colnames(impItem)[-c(1,2)] <- paste0(colnames(impItem)[-c(1,2)],'(億円)')
 fun_dataTable(obj = impItem,dateFormat = 0,orderDirection = 'asc')
+```
+
+***
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+fun_turningPoint(obj = origData4,dateFormat = dateFormat)
+cat(paste0('<br><h5>',texInclude0,'</h5><br>'))
+fun_markdownTable(obj = objPNinclude0)
 ```
 
 ***
