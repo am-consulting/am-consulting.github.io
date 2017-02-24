@@ -40,5 +40,5 @@ colnames(buf2)[1] <- 'Date'
 buf2[,-1] <- apply(buf2[,-1],2,function(x)as.numeric(gsub(',','',x)))
 buf3 <-
   buf2[order(buf2[,1],decreasing = F),]
-assign('MonthlyTradingVolumeOTC',buf3,envir = .GlobalEnv)
+assign(sheetNo,buf3,envir = .GlobalEnv)
 }
