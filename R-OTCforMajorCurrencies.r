@@ -14,8 +14,6 @@ if(!file.exists(paste0(pathOutput, fileName))) {
                 destfile = fileName,
                 mode = 'wb')
 }
-
-
 buf0 <-
   XLConnect::readWorksheetFromFile(file = paste0(pathOutput, fileName),
                                    sheet = sheetNo,
@@ -41,4 +39,5 @@ buf2[,-1] <- apply(buf2[,-1],2,function(x)as.numeric(gsub(',','',x)))
 buf3 <-
   buf2[order(buf2[,1],decreasing = F),]
 assign('OTCforMajorCurrencies',buf3,envir = .GlobalEnv)
+assign('OTCsheetTitle',sheetTitle,envir = .GlobalEnv)
 }
