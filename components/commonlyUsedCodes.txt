@@ -42,3 +42,23 @@ for(iii in 2:ncol(timeSeriesDF)){
   texDygraph <- 
     c(texDygraph, paste0('knit_expanded', cnt))
 }
+
+library(RCurl)
+fileName <- 
+  'functionList.csv'
+file0 <- 
+  paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+         fileName)
+functionList <-
+  read.csv(file = file0,
+           header = F,
+           as.is = T,
+           stringsAsFactors = F,
+           fileEncoding = as.character(unlist(readr::guess_encoding(file0)[1])))
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
