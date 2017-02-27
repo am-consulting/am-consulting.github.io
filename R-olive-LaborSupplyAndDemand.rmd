@@ -77,6 +77,13 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = laborSupplyAndDemand,
 
 ***
 #### `r  cc <- 2;colnames(laborSupplyAndDemand)[cc]`
+- `r monthS <- 12;monthS`ヶ月移動平均
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+fun_MovingAverage(obj = laborSupplyAndDemand,objColumn = cc,n = monthS,plot = 1)
+```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 1
@@ -97,6 +104,13 @@ summary(laborSupplyAndDemand[,cc])
 
 ***
 #### `r  cc <- 3;colnames(laborSupplyAndDemand)[cc]`
+- `r monthS`ヶ月移動平均
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+fun_MovingAverage(obj = laborSupplyAndDemand,objColumn = cc,n = monthS,plot = 1)
+```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 2
