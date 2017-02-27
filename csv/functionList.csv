@@ -20,3 +20,4 @@ R-cointegration.r
 R-scale.r
 R-getStockPriceFromYJ.r
 R-doSimulation.r
+R-MovingAverage.r
