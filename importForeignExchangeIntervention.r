@@ -62,6 +62,10 @@ htmList0[,2] <-
          '" target="_blank">',
          htmList0[,2],
          '</a>')
+htmList0 <-
+  data.frame(ID = seq(nrow(htmList0)),
+             htmList0,
+             stringsAsFactors = F, check.names = F, row.names = NULL)
 colnames(htmList0) <-
-  c('期間','URL','外国為替平衡操作額(億円)')
+  c('ID','期間','URL','外国為替平衡操作額(億円)')
 assign('ForeignExchangeIntervention',htmList0,envir = .GlobalEnv)
