@@ -43,51 +43,47 @@ for(iii in 1:nrow(functionList)){
 options(width = 1000)
 ```
 
+```{r warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importForeignExchangeIntervention.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
 ```{r,warning=F,error=F,message=F,echo=F}
-# Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
-library(DT)
+# # Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
+# library(DT)
 library(lubridate)
-library(pipeR)
+# library(pipeR)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-library(excel.link)
-fileName <-
-  'defaultPath.csv'
-username <- 
-  Sys.info()['user']
-pathToFile <- 
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-buf000 <- 
-  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
-pathOutput <- 
-  paste0("C:/Users/", username, buf000[3,1])
-setwd(pathOutput)
-fileName <- 
-  dir(pathOutput)[grep('外国為替平衡操作',dir(pathOutput))]
-tmp0 <- 
-  xl.read.file(fileName, header = T, top.left.cell = "A1", xl.sheet = 1, excel.visible = F)
-tmp0 <-
-  tmp0[,-grep('NA',colnames(tmp0))]
-```
-
-```{r,warning=F,error=F,message=F,echo=F}
-dataSet <- tmp0
-dataSet[,4] <- paste0('<a href=\"', dataSet[,4], '\" target=\"_blank\">',dataSet[,4],'</a>')
-yyyy <- as.numeric(substring(dataSet[,2],3,4))+1988
-mm <- as.numeric(gsub('月','',substring(dataSet[,2],6,7)))
-dataSet$`期間(西暦)` <- format(as.Date(paste0(yyyy,'-',mm,'-1')) %m+% months(1),'%Y年%m月')
-dataSetDT <- dataSet
-dataSetNA <- subset(dataSet, dataSet[,3]==-9999)
-dataSetIV <- subset(dataSet, dataSet[,3]!=-9999 & dataSet[,3]!=0)
+dataSet <- 
+  ForeignExchangeIntervention
+yyyy <- 
+  as.numeric(substring(dataSet[,2],3,4)) + 1988
+mm <- 
+  as.numeric(gsub('月','',substring(dataSet[,2],6,7)))
+dataSet$`期間(西暦)` <- 
+  format(as.Date(paste0(yyyy,'-',mm,'-1')) %m+% months(1),'%Y年%m月')
+dataSetDT <- 
+  dataSet
+dataSetDT[is.na(as.numeric(dataSetDT[,4])),4] <- -9999
+dataSetDT[,4] <- 
+  as.numeric(dataSetDT[,4])
+dataSetNA <- 
+  dataSet[dataSetDT[,4] == -9999,]
+dataSetIV <- 
+  subset(dataSetDT, dataSetDT[,4] != -9999 & dataSetDT[,4] != 0)
 commonCaption <- 
   paste0(tail(dataSetDT[,2],1),' - ',head(dataSetDT[,2],1))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 fun_latestResult(obj = dataSetDT,
-                 objColumn = 3,
+                 objColumn = 4,
                  orderDirection = 1,
                  orderColumn = 1,
                  dateColumn = 2,
@@ -123,7 +119,7 @@ fun_dataTable(obj = dataSetDT,
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_markdownTable(obj = dataSetIV)
-cat(paste0('<h5><b>合計(兆円) : ',sum(dataSetIV[,3])/10^4,'</b></h5>'))
+cat(paste0('<h5><b>合計(兆円) : ',sum(dataSetIV[,4])/10^4,'</b></h5>'))
 ```
 
 ***
@@ -131,7 +127,6 @@ cat(paste0('<h5><b>合計(兆円) : ',sum(dataSetIV[,3])/10^4,'</b></h5>'))
 - うち http://www.mof.go.jp/international_policy/reference/feio/monthly/index.htm からのリンク先が'404 Not Found'となる月。
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-dataSetNA[dataSetNA == -9999] <- '404 Not Found'
 fun_markdownTable(obj = dataSetNA)
 ```
 
