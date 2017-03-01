@@ -1,4 +1,4 @@
-library(Nippon)
+library(Nippon);library(lubridate)
 username <-
   Sys.info()['user']
 pathOutput <-
@@ -23,6 +23,7 @@ sheetTitle <-
   zen2han(buf1[1,1])
 sheetUnit <-
   zen2han(buf1[23,2])
+tmpColumn <- grep('^借入金',gsub('\\s','',buf1[1,]))
 tmp <- NA
 for(ccc in 1:ncol(buf1)){
   if(!is.na(buf1[1,ccc])){tmp <- buf1[1,ccc]}
@@ -30,6 +31,7 @@ for(ccc in 1:ncol(buf1)){
 }
 tmp <- NA
 for(ccc in 1:ncol(buf1)){
+  if(tmpColumn <= ccc){break}
   if(!is.na(buf1[2,ccc])){tmp <- buf1[2,ccc]}
   buf1[2,ccc] <- tmp
 }
@@ -48,8 +50,10 @@ yyyy <-
   as.numeric(substring(text = buf3[,1],first = 2,last = 3)) + 1988
 mm <-
   as.numeric(gsub('.+\\.([0-9]+)末','\\1',buf3[,1]))
+Date <-
+  as.Date(paste0(yyyy,'-',mm,'-1')) %m+% months(1) - 1
 buf4 <-
-  data.frame(Date = as.Date(paste0(yyyy,'-',mm,'-1')),
+  data.frame(Date,
              buf3[,-1],
              stringsAsFactors = F,
              check.names = F,
