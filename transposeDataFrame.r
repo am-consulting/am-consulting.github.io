@@ -6,6 +6,5 @@ fun_transposeDataFrame <- function(obj, tailN = 5, dateFormat = '%Y-%m-%d', colN
   buf <- buf[-1,]
   colnames(buf)[1] <- colName
   buf[,-1] <- apply(buf[,-1,drop=F], 2, as.numeric)
-  tDF <- buf
-  return(tDF)
+  assign('tDF',buf,envir = .GlobalEnv)
 }
