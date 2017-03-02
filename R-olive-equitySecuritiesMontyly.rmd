@@ -63,7 +63,7 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-tailN <- 3
+tailN <- 5
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = averageYield,dateFormat = dateFormat)
 dataTitle <- 
@@ -72,7 +72,6 @@ dataSource <-
   '株式会社日本取引所グループ、株式会社日本経済新聞社'
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
-lineColor <- c('blue','red')
 ```
 
 ***
@@ -89,7 +88,8 @@ lineColor <- c('blue','red')
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 1
 objDF <- PERPBR[,c(1,2)]
-fun_generateKnit(objDF = objDF,plotNum = n,group = 0,barPlot = 1)
+fun_generateKnit(objDF = objDF,plotNum = n,group = 0,barPlot = 1,
+                 quantiles = 2,dygraphTitle = colnames(objDF)[2])
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('<br>')
 fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateFormat,tailN = tailN))
@@ -102,7 +102,8 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateForm
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 2
 objDF <- PERPBR[,c(1,3)]
-fun_generateKnit(objDF = objDF,plotNum = n,group = 0,barPlot = 1)
+fun_generateKnit(objDF = objDF,plotNum = n,group = 0,barPlot = 1,
+                 quantiles = 2,dygraphTitle = colnames(objDF)[2])
 eval(parse(text = paste0('dygraphPlot', n)))
 cat('<br>')
 fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateFormat,tailN = tailN))
@@ -114,8 +115,9 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateForm
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 3
-objDF <- averageYield
-fun_generateKnit(objDF = objDF,plotNum = n,group = 0)
+objDF <- averageYield[,c(1,2)]
+fun_generateKnit(objDF = objDF,plotNum = n,group = 0,
+                 quantiles = 2,dygraphTitle = colnames(objDF)[2])
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
@@ -124,7 +126,8 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 cat('<br>')
-fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateFormat,tailN = tailN))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = averageYield,
+                                               dateFormat = dateFormat,tailN = tailN))
 ```
 
 ***
@@ -133,8 +136,9 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateForm
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 4
-objDF <- marketCapitalization[,c(1,2,8)]
-fun_generateKnit(objDF = objDF,plotNum = n,group = 0)
+objDF <- marketCapitalization[,c(1,2)]
+fun_generateKnit(objDF = objDF,plotNum = n,group = 0,
+                 quantiles = 2,dygraphTitle = colnames(objDF)[2])
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
@@ -143,7 +147,8 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 cat('<br>')
-fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateFormat,tailN = tailN))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = marketCapitalization,
+                                               dateFormat = dateFormat,tailN = tailN))
 ```
 
 ***
@@ -152,8 +157,9 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateForm
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 5
-objDF <- nikkeiMonthly
-fun_generateKnit(objDF = objDF,plotNum = n,group = 0)
+objDF <- nikkeiMonthly[,c(1,2)]
+fun_generateKnit(objDF = objDF,plotNum = n,group = 0,
+                 quantiles = 2,dygraphTitle = colnames(objDF)[2])
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
@@ -162,7 +168,8 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 cat('<br>')
-fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateFormat,tailN = tailN))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = nikkeiMonthly,
+                                               dateFormat = dateFormat,tailN = tailN))
 ```
 
 ***
