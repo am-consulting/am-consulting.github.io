@@ -57,6 +57,12 @@ buf <-
 tmp <-
   paste0(buf[1,1],'(兆円):',round(buf[1,2]),',構成比(%):',buf[1,3])
 dataTitle <- paste0('日本銀行', gsub('資産:','',colnames(Assets[[1]])[1]),':',tmp)
+
+buf <- 
+  LiabilitiesAndNetWorth[[1]][grep('当座預金',LiabilitiesAndNetWorth[[1]][,1]),]
+tmp <-
+  paste0(buf[1,1],'(兆円):',round(buf[1,2]),',構成比(%):',buf[1,3])
+dataTitle <- paste0(dataTitle,',',tmp)
 dataSource <- '日本銀行'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -197,7 +203,7 @@ eval(parse(text = paste0('dygraphPlot', n)))
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = accountsTimeSeries)
 ```
 
