@@ -6,35 +6,38 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10  
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
 
 ```{r warning=F,error=F,message=F,echo=F}
 library(XLConnect);library(Nippon)
@@ -97,42 +100,53 @@ for(iii in 1:length(origbsiData)){
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dateFormat <- '%Y年%m月期'
 dataTitle <- 
-  paste0('法人企業景気予測調査 - 景況判断、売上高判断、経常利益判断他 - ',
-         format(tail(bsiData[[1]][,1],1),'%Y年%m月期'))
+  paste0('法人企業景気予測調査:景況判断、売上高判断、経常利益判断他:BSI項目',
+         format(tail(bsiData[[1]][,1],1),dateFormat))
 dataSource <- '内閣府'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ', dataTitle,'\n'))
-cat(paste('Data Source : ', dataSource,'\n'))
-cat(paste('Author      : ', Author,'\n'))
-cat(paste('特  記      : ', notes,'\n'))
-cat(paste('特  記      : ', notes0,'\n'))
 ```
+***
 
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.esri.cao.go.jp/jp/stat/hojin/menu_hojin.html
+
+***
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=9999)
-library(RCurl)
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
+texDygraph <- vector()
 for(iii in 1:length(bsiData)){
   cat('<h4>',bsiTitle[iii],'</h4>\n')
-  print(knitr::kable(fun_transposeDataFrame(bsiData[[iii]],tailN = 5,dateFormat = '%Y年%m月期'),row.names = F))
+  fun_markdownTable(obj = fun_transposeDataFrame(bsiData[[iii]],
+                                                       tailN = 5,
+                                                       dateFormat = dateFormat))
   cat('\n<hr>\n')
+  obj <- 
+    bsiData[[iii]][c(1,grep('全産業-当期',colnames(bsiData[[iii]])))]
+  fun_generateKnit(objDF = obj, 
+                   plotNum = iii, 
+                   group = 1, 
+                   dygraphTitle = paste0(bsiTitle[iii]))
+  assign(paste0('knit_expanded', iii),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", 
+                iii,
+                " %>% ', primeMinisterOfJapan_dygraph , '%>%  dyLimit(0, color = \"red\")')))",
+                "\n\ncat('<hr>')\n\n```"),
+         envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', iii))
 }
 ```
 
-<script>MakeNegative();</script>
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
