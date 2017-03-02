@@ -77,7 +77,6 @@ windowsFonts(Meiryo=windowsFont("Meiryo"))
 - `r paste0("データ出所 : ", dataSource)`
 - Source https://stats.oecd.org/
 - Labour:Labour Force Statistics:Short-Term Statistics:Short-Term Labour Market Statistics:Unemployment Rates by age and gender
-- `r sdmxURL`
 
 ***
 #### `r sdmxTitle01` 
