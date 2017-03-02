@@ -114,6 +114,30 @@ dataSource <-
 
 ***
 
+#### 黒田日銀総裁就任時と直近の比較
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+compareDF <-
+  rbind(subset(monetaryBase_Japan,monetaryBase_Japan[,1] == as.Date('2013-3-1')),
+        tail(monetaryBase_Japan,1))
+fun_transposeDataFrame(obj = compareDF[,c(1,grep('兆円',colnames(compareDF)))],
+                       dateFormat = dateFormat)
+fun_markdownTable(obj = data.frame(tDF,`比較(倍)` = round(tDF[,3]/tDF[,2],1),
+                                   stringsAsFactors = F,check.names = F,row.names = NULL))
+
+```
+
+#### 前月比(%)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_makeDiffRatioTable(monetaryBase_Japan,lag = 1)
+fun_transposeDataFrame(obj = diffRatioDF[,c(1,grep('兆円',colnames(diffRatioDF)))],
+                       dateFormat = dateFormat,
+                       tailN = 4)
+fun_markdownTable(obj = tDF)
+```
+
+***
 #### 日本のマネタリーベース:平均残高(兆円)と前年比(%)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
@@ -164,7 +188,8 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = monetaryBase_Japan,
 n <- 3
 fun_generateKnit(objDF = mbUSA[,c(1,2)], 
                  plotNum = n,
-                 dygraphTitle = colnames(mbUSA)[2])
+                 dygraphTitle = colnames(mbUSA)[2],
+                 group = 0)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
 ```
 
@@ -211,7 +236,7 @@ mbRatio <-
 colnames(mbRatio)[2] <- 
   'The Ratio of USA to JAPAN(Billion dollar/Trillion JPY)'
 n <- 4
-fun_generateKnit(objDF = mbRatio,plotNum = n)
+fun_generateKnit(objDF = mbRatio,plotNum = n,group = 0)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
 cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
@@ -221,8 +246,6 @@ cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
 cat('\n\n<hr>\n\n')
 ```
-
-***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = mbRatio,
