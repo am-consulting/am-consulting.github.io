@@ -130,7 +130,7 @@ fun_markdownTable(obj = tDF)
 ```
 
 ***
-- 前年同月比(%):直近`r tailN <- 5;tailN`ヶ月
+- 前年同月比(%):直近`r tailN`ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_makeDiffRatioTable(obj = get(fileName),lag = 12)
@@ -172,7 +172,7 @@ fun_markdownTable(obj = tDF)
 ```
 
 ***
-- 前月比(%):直近`r tailN <- 5;tailN`ヶ月
+- 前月比(%):直近`r tailN`ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_makeDiffRatioTable(obj = get(fileName),lag = 1)
