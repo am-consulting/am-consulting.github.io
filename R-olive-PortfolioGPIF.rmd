@@ -1,0 +1,198 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-PortfolioGPIF.html')) })
+
+title : 'Portfolio GPIF'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1100px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 500)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importPortfolioGPIF.r",
+    ssl.verifypeer = FALSE
+  )
+eval(parse(text = script))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- 
+  paste0('年金積立金管理運用独立行政法人保有全銘柄:',gsub('.+:(平成.+時点)','\\1',sheetTitle1))
+dataSource <- 
+  '年金積立金管理運用独立行政法人'
+grandTotal <- 0
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- 構成比は各カテゴリ内における比率を示す
+- Source http://www.gpif.go.jp/index.html
+- Source http://www.gpif.go.jp/operation/state/index.html
+
+***
+
+#### `r sheetTitle1`
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- Portfolio1
+objColumn <- grep('時価総額',colnames(obj))
+obj[,objColumn] <- obj[,objColumn]*10^-8
+colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
+cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
+obj$`構成比(%)` <- 
+  round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
+fun_dataTable(obj = obj,
+              dateFormat = 0,
+              needID = 0,
+              orderDirection = 'asc',
+              leftcolumns = 2,
+              bigmarkColumn = c(1:3))
+grandTotal <- grandTotal + sum(obj[,objColumn])
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+cat(sheetTitle1)
+fun_markdownTable(obj = head(obj[order(obj[,objColumn],decreasing = T),][,-3],5))
+```
+
+***
+#### `r sheetTitle2`
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- Portfolio2
+objColumn <- grep('時価総額',colnames(obj))
+obj[,objColumn] <- obj[,objColumn]*10^-8
+colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
+cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
+obj$`構成比(%)` <- 
+  round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
+obj[,2] <-
+  paste0('<a href="',
+         'http://stocks.finance.yahoo.co.jp/stocks/detail/?code=',
+         obj[,2],
+         '.t',
+         '" target="_blank">',
+         obj[,2],
+         '</a>')
+fun_dataTable(obj = obj,
+              dateFormat = 0,
+              needID = 0,
+              orderDirection = 'asc',
+              leftcolumns = 2,
+              bigmarkColumn = c(1:4))
+grandTotal <- grandTotal + sum(obj[,objColumn])
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+cat(sheetTitle2)
+fun_markdownTable(obj = head(obj[order(obj[,objColumn],decreasing = T),][,-4],5))
+```
+
+***
+#### `r sheetTitle3`
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- Portfolio3
+objColumn <- grep('時価総額',colnames(obj))
+obj[,objColumn] <- obj[,objColumn]*10^-8
+colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
+cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
+obj$`構成比(%)` <- 
+  round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
+fun_dataTable(obj = obj,
+              dateFormat = 0,
+              needID = 0,
+              orderDirection = 'asc',
+              leftcolumns = 2,
+              bigmarkColumn = c(1:2))
+grandTotal <- grandTotal + sum(obj[,objColumn])
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+cat(sheetTitle3)
+fun_markdownTable(obj = head(obj[order(obj[,objColumn],decreasing = T),],5))
+```
+
+***
+#### `r sheetTitle4`
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- Portfolio4
+objColumn <- grep('時価総額',colnames(obj))
+obj[,objColumn] <- obj[,objColumn]*10^-8
+colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
+cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
+obj$`構成比(%)` <- 
+  round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
+fun_dataTable(obj = obj,
+              dateFormat = 0,
+              needID = 0,
+              orderDirection = 'asc',
+              leftcolumns = 2,
+              bigmarkColumn = c(1:3))
+grandTotal <- grandTotal + sum(obj[,objColumn])
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+cat(sheetTitle4)
+fun_markdownTable(obj = head(obj[order(obj[,objColumn],decreasing = T),][,-2],5))
+```
+
+***
+#### 国内債券、国内株式、外国債券および外国株式の総計
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+cat(paste0('<h4>',grandTotal*10^-4,' 兆円</h4>'))
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
