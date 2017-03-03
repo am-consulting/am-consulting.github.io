@@ -115,12 +115,47 @@ fun_dataTable(obj = tail(dataSet0,12*5), dateFormat = dateFormat)
 ```
 
 ***
-#### 前月差(単位:万人、%ポイント):直近`r tailN <- 6;tailN`ヶ月
+#### 直近`r tailN <- 6;tailN`ヶ月(単位:万人、%)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet0,
+                                               dateFormat = dateFormat,
+                                               tailN = tailN))
+```
+
+***
+#### 前月差(単位:万人、%ポイント):直近`r tailN`ヶ月
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dataSet0),
                                                dateFormat = dateFormat,
                                                tailN = tailN))
+```
+
+***
+#### 就業者数前月差(単位:万人)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj <- 
+  dataSet0[,c(1,grep('就業者',colnames(dataSet0),ignore.case=T))]
+obj <- 
+  obj[,c(1,grep('男女',colnames(obj)))]
+fun_makeDiffTable(obj = obj,lag = 1)
+n <- 100
+fun_generateKnit(objDF = diffDF,plotNum = n,barPlot = 1,group = 0,quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+#### 第2次安倍内閣発足後の就業者増減(単位:万人)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj0 <- 
+  subset(obj,as.Date('2012-12-26') <= obj[,1])
+obj0 <-
+  rbind(obj0[1,],obj0[nrow(obj0),])
+fun_transposeDataFrame(obj = obj0,dateFormat = dateFormat)
+fun_markdownTable(obj = data.frame(tDF,`増減`= tDF[,3]-tDF[,2],stringsAsFactors = F,check.names = F))
 ```
 
 ***
