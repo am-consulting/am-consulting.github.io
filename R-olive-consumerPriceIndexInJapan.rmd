@@ -74,7 +74,7 @@ options(scipen = 999)
 
 ***
 
-#### 直近`r tailN <- 3;tailN`ヶ月間の消費者物価指数前年同月比(%)
+#### 直近`r tailN <- 2;tailN`ヶ月間の消費者物価指数前年同月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = fun_transposeDataFrame(obj = consumerPriceIndexofJapan,
@@ -172,6 +172,11 @@ eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', boj_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_transposeDataFrame(obj = consumerPriceIndexofJapan[,c(1,2,3,6)],dateFormat = dateFormat,tailN = 3)
+fun_markdownTable(obj = tDF)
 ```
 
 <script>MakeNegative();</script>
