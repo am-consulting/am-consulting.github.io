@@ -24,7 +24,7 @@ for(sss in 2:5){
     which(apply(buf0,1,function(x)length(grep('時点\\b',x))!=0))
   objColumn <-
     which(apply(buf0,2,function(x)length(grep('時点\\b',x))!=0))
-  assign(paste0('sheetTitle',sss),
+  assign(paste0('sheetTitle',sss-1),
          zen2han(paste0(buf0[1,1],':',buf0[objRow,objColumn])),envir = .GlobalEnv)
   tmp <- NA
   for(ccc in 1:ncol(buf0)){
