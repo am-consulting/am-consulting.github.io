@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 10
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -85,20 +85,71 @@ tsData <-
 stlData <-
   stl(x = tsData, s.window = "per")
 par(family = 'Meiryo')
-plot(stlData,main = paste0(colnames(obj)[2],':',paste0(range(obj[,1]),collapse = '~')))
+dateRange <-
+  paste0(range(obj[,1]),collapse = '~')
+plot(stlData,main = paste0(colnames(obj)[2],':',dateRange))
 ```
 
 ***
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F,fig.height=5}
+```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
 specData <-
-  spec.pgram(obj[,2],log="yes",plot = F)
-par(family = 'Meiryo')
-plot(specData,main =paste0(colnames(obj)[2],'\n',specData$method))
+  spec.pgram(ts(obj[,2],frequency = frequencyN),log="yes",plot = F)
+par(family = 'Meiryo',mar=c(5,4,6,2))
+plot(specData,main =paste0(colnames(obj)[2],
+                           '\n',
+                           specData$method,
+                           '\nFrequency=',
+                           frequencyN,
+                           '\n',
+                           dateRange))
 panel.first = grid(nx = NULL,
                    ny = NULL,
                    lty = 2,
                    equilogs = T)
+cat('<hr>')
+par(family = 'Meiryo',mar=c(4,4,4,2))
+acf(x = obj[,2],lag.max = frequencyN * 2,main=paste0(colnames(obj)[2],'\n',dateRange))
+panel.first = grid(nx = NULL,
+                   ny = NULL,
+                   lty = 2,
+                   equilogs = T)
+```
+
+***
+#### `r objColumn <- 2;colnames(GMVI1)[objColumn]`
+- 原数値
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+obj <- GMVI1[,c(1,objColumn)]
+dateRange <-
+  paste0(range(obj[,1]),collapse = '~')
+n <- 1
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = dateRange)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+- 前日比(%)
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+fun_makeDiffRatioTable(obj = obj,lag = 1)
+dateRange <-
+  paste0(range(diffRatioDF[,1]),collapse = '~')
+n <- 2
+fun_generateKnit(objDF = diffRatioDF,plotNum = n,barPlot = 1,dygraphTitle = dateRange)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+#### `r objColumn <- c(3:5);paste0(colnames(GMVI1)[objColumn],collapse='×')`
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+obj <- GMVI1[,c(1,objColumn)]
+dateRange <-
+  paste0(range(obj[,1]),collapse = '~')
+n <- 3
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = dateRange)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
 
 ***
