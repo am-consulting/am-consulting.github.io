@@ -61,7 +61,7 @@ baseURL <-
 YearFolder <- 
   2017
 fileName <- 
-  'ope1701.xlsx'
+  'ope1702.xlsx'
 download.file(url = paste0(baseURL,YearFolder,'/',fileName), destfile = fileName, mode = 'wb')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 2, check.names = F, header = F)
@@ -180,6 +180,18 @@ cat('<h4>国債買入のみ</h4>')
 fun_markdownTable(jgb[order(jgb[,3],decreasing = T),])
 cat('<b>国債買入合計(兆円):</b>',
     format(sum(jgb[,2])*10^-4,
+           big.mark = ',',
+           trim = T,
+           scientific = F))
+cat('<hr>')
+cat('<h4>指数連動型上場投資信託受益権買入のみ</h4>')
+etf <- 
+  opeTable[grep('指数連動',opeTable[,1]),]
+etf$`構成比(%)` <- 
+  round(etf[,2]/sum(etf[,2])*100,2)
+fun_markdownTable(etf[order(etf[,3],decreasing = T),])
+cat('<b>指数連動型上場投資信託受益権買入合計(兆円):</b>',
+    format(sum(etf[,2])*10^-4,
            big.mark = ',',
            trim = T,
            scientific = F))
