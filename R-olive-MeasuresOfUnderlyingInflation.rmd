@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -78,7 +78,7 @@ options(scipen = 999)
 
 ```{r warning=F, error=F, message=F, echo=F}
 fun_plotTimeSeries <- function(obj,objColumn){
-  par(mar=c(3,3,3,2),family='Meiryo',font.main = 1)
+  par(mar=c(3,3,3,2),family='Meiryo',font.main = 1,cex.main = 1.1)
   yMax <- max(obj[,objColumn],na.rm = T)
   yMin <- min(obj[,objColumn],na.rm = T)
   titleText <- 
@@ -100,7 +100,7 @@ fun_plotTimeSeries <- function(obj,objColumn){
   if(as.numeric(obj[1,1]) < rectDateR){
     rectText <- '民主党政権'
     rect(xleft = rectDateL, ybottom = par('usr')[3], 
-         xright = rectDateR, ytop = par('usr')[4], col = 'dimgray', density = 10, angle = 45)
+         xright = rectDateR, ytop = par('usr')[4], col = 'dimgray', density = 5, angle = 45)
     text(rectDateL, par('usr')[4], labels = paste0('\n\n',rectText), pos = 4)
   }
   # rect part
@@ -137,7 +137,7 @@ fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = measuresOfUnderlyin
 
 #### マネタリーベースとの比較
 
-```{r warning=F, error=F, message=F, echo=F, fig.height=7, results='hide'}
+```{r warning=F, error=F, message=F, echo=F, fig.height=6, results='hide'}
 allData <- 
   merge(measuresOfUnderlyingInflation,monetaryBase_Japan,by='Date')
 colnames(allData)
@@ -145,28 +145,30 @@ scatterData <- na.omit(allData[,c(1,22,2)])
 fun_scatterPlot(obj = scatterData, 
                 cexText = 1, 
                 srtText = 0, 
-                posText = 4, 
-                offsetText = -1,
+                posText = 1, 
+                offsetText = 0,
                 dataSource = dataSource,
-                dateFormat = dateFormat)
+                dateFormat = '%Y%m',
+                cexPlot = 1.5)
 ```
 
 ***
 
-```{r warning=F, error=F, message=F, echo=F, fig.height=7, results='hide'}
+```{r warning=F, error=F, message=F, echo=F, fig.height=6, results='hide'}
 scatterData <- na.omit(allData[,c(1,23,2)])
 fun_scatterPlot(obj = scatterData, 
                 cexText = 1, 
                 srtText = 0, 
-                posText = 4, 
-                offsetText = -1,
+                posText = 1, 
+                offsetText = 0,
                 dataSource = dataSource,
-                dateFormat = dateFormat)
+                dateFormat = '%Y%m',
+                cexPlot = 1.5)
 ```
 
 ***
 
-```{r warning=F, error=F, message=F, echo=F, fig.height=7, results='hide'}
+```{r warning=F, error=F, message=F, echo=F, fig.height=6, results='hide'}
 allData <- 
   merge(measuresOfUnderlyingInflation,monetaryBase_Japan,by='Date')
 colnames(allData)
@@ -174,10 +176,16 @@ scatterData <- na.omit(allData[,c(1,25,2)])
 fun_scatterPlot(obj = scatterData, 
                 cexText = 1, 
                 srtText = 0, 
-                posText = 4, 
-                offsetText = -1,
+                posText = 1, 
+                offsetText = 0,
                 dataSource = dataSource,
-                dateFormat = dateFormat)
+                dateFormat = '%Y%m',
+                cexPlot = 1.5)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = measuresOfUnderlyingInflation,
+                                                       dateFormat = dateFormat)))
 ```
 
 ***
