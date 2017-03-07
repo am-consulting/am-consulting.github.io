@@ -75,6 +75,25 @@ dataSource <-
 
 ***
 
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_historicalVolatility <- 
+  function(obj, objColumn = 2, width = 30){
+    HV <- vector()
+    for(rrr in width:nrow(obj)){
+      tmp <- 
+        obj[c((rrr-width+1):rrr),c(1,objColumn)]
+      fun_makeDiffRatioTable(obj = tmp,lag = 1,roundDigits = 3)
+      HV[rrr] <- sd(diffRatioDF[,2]/100) * sqrt(260) * 100
+    }
+    assign('historicalVolatility',
+           data.frame(Date = tail(obj[,1],-(width-1)),
+                      `HistoricalVolatility(%)` = na.omit(HV),
+                      stringsAsFactors = F,
+                      check.names = F),
+           envir = .GlobalEnv)
+  }
+```
+
 #### Dow Jones Industrial Average
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
@@ -84,6 +103,19 @@ chartSeries(x = tail(DJI,tailN),
             type = 'candlesticks',
             name = 'Dow Jones Industrial Average',
             show.grid = T)
+cat('<hr>')
+obj <- DJI
+objColumn <- 5
+objDF <-
+  data.frame(Date = index(obj),obj,stringsAsFactors = F,check.names = F,row.names = NULL)
+fun_historicalVolatility(obj = objDF,objColumn = objColumn)
+mergeData <- merge(historicalVolatility,objDF,by='Date')
+fun_plotTimeSeries(obj = mergeData,
+                   objYL = 2,
+                   objYR = grep(colnames(objDF)[objColumn],colnames(mergeData)),
+                   chartType = 2,
+                   lwdL = 1,
+                   lwdR = 1)
 ```
 
 ***
@@ -97,6 +129,18 @@ for(iii in 1:length(dow30symbols)){
               type = 'candlesticks',
               name = dow30company[iii],
               show.grid = T)
+  cat('<hr>')
+  obj <- symbolsDOW30[[iii]]
+  objDF <-
+    data.frame(Date = index(obj),obj,stringsAsFactors = F,check.names = F,row.names = NULL)
+  fun_historicalVolatility(obj = objDF,objColumn = objColumn)
+  mergeData <- merge(historicalVolatility,objDF,by='Date')
+  fun_plotTimeSeries(obj = mergeData,
+                     objYL = 2,
+                     objYR = grep(colnames(objDF)[objColumn],colnames(mergeData)),
+                     chartType = 2,
+                     lwdL = 1,
+                     lwdR = 1)
   cat('<hr>')
 }
 ```
