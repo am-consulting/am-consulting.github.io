@@ -1,12 +1,12 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-DOW.html')) })
 
-title : 'Dow Jones Industrial Average'
+title : 'Dow Jones Industrial Average, Its Historical Volatility and Change since United States presidential election, 2016'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 4
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -96,35 +96,56 @@ fun_historicalVolatility <-
 
 #### Dow Jones Industrial Average
 
+- `r width <- 30;paste0('Historical Volatility:Width = ',width)`
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 tailN <- 20*5
-cat(paste0('<b>Dow Jones Industrial Average</b>'))
+cat(paste0('<div align="center"><h5><b>Dow Jones Industrial Average</b></h5></div>'))
 chartSeries(x = tail(DJI,tailN),
             type = 'candlesticks',
             name = 'Dow Jones Industrial Average',
             show.grid = T)
 cat('<hr>')
 obj <- DJI
-objColumn <- 5
+objColumn <- 7
 objDF <-
   data.frame(Date = index(obj),obj,stringsAsFactors = F,check.names = F,row.names = NULL)
-fun_historicalVolatility(obj = objDF,objColumn = objColumn)
+fun_historicalVolatility(obj = objDF,objColumn = objColumn,width = width)
 mergeData <- merge(historicalVolatility,objDF,by='Date')
+objYR <- grep(colnames(objDF)[objColumn],colnames(mergeData))
 fun_plotTimeSeries(obj = mergeData,
                    objYL = 2,
-                   objYR = grep(colnames(objDF)[objColumn],colnames(mergeData)),
+                   objYR = objYR,
                    chartType = 2,
                    lwdL = 1,
-                   lwdR = 1)
+                   lwdR = 1,
+                   dataSource = dataSource,
+                   mar = c(3,4.5,4,4.5))
+abline(v = as.numeric(as.Date('2016-11-8')),col='red',lty=2)
+text(x = as.numeric(as.Date('2016-11-8')),
+     y = median(mergeData[,objYR]),
+     labels = 'United States presidential election, 2016',
+     pos = 2)
+cat('<hr>')
+cat(paste0('<div align="center"><h5><b>Since United States presidential election, 2016</b></h5></div>'))
+sinceTrump <-
+  rbind(subset(objDF,objDF[,1] == as.Date('2016-11-8')),tail(objDF,1))
+fun_transposeDataFrame(obj = sinceTrump)
+fun_markdownTable(obj = data.frame(tDF,
+                                   `Change(%)`=round((tDF[,3]/tDF[,2]-1)*100,1),
+                                   stringsAsFactors = F,
+                                   check.names = F))
 ```
 
 ***
 #### By Company
 
+- `r paste0('Historical Volatility:Width = ',width)`
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 tailN <- 20*5
 for(iii in 1:length(dow30symbols)){
-  cat(paste0('<b>',dow30company[iii],'</b>'))
+  cat(paste0('<div align="center"><h5><b>',dow30company[iii],'</b></h5></div>'))
   chartSeries(x = tail(symbolsDOW30[[iii]],tailN),
               type = 'candlesticks',
               name = dow30company[iii],
@@ -135,13 +156,29 @@ for(iii in 1:length(dow30symbols)){
     data.frame(Date = index(obj),obj,stringsAsFactors = F,check.names = F,row.names = NULL)
   fun_historicalVolatility(obj = objDF,objColumn = objColumn)
   mergeData <- merge(historicalVolatility,objDF,by='Date')
+  objYR <- grep(colnames(objDF)[objColumn],colnames(mergeData))
   fun_plotTimeSeries(obj = mergeData,
                      objYL = 2,
-                     objYR = grep(colnames(objDF)[objColumn],colnames(mergeData)),
+                     objYR = objYR,
                      chartType = 2,
                      lwdL = 1,
-                     lwdR = 1)
+                     lwdR = 1,
+                     dataSource = dataSource,
+                     mar = c(3,4.5,4,4.5))
+  abline(v = as.numeric(as.Date('2016-11-8')),col='red',lty=2)
+  text(x = as.numeric(as.Date('2016-11-8')),
+       y = median(mergeData[,objYR]),
+       labels = 'United States presidential election, 2016',
+       pos = 2)
   cat('<hr>')
+  cat(paste0('<div align="center"><h5><b>Since United States presidential election, 2016</b></h5></div>'))
+  sinceTrump <-
+    rbind(subset(objDF,objDF[,1] == as.Date('2016-11-8')),tail(objDF,1))
+  fun_transposeDataFrame(obj = sinceTrump)
+  fun_markdownTable(obj = data.frame(tDF,
+                                     `Change(%)`=round((tDF[,3]/tDF[,2]-1)*100,1),
+                                     stringsAsFactors = F,
+                                     check.names = F))
 }
 ```
 
