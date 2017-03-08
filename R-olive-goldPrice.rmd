@@ -5,7 +5,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -18,8 +18,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options,echo=F,cache=F}
 options(width = 1000)
@@ -70,17 +69,54 @@ options(scipen = 999)
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_plotTimeSeries(obj = na.omit(goldPriceData[,c(1,2,4)]),
-                   objX = 1,
-                   objYL = 2,
-                   objYR = 3,
-                   lwdL = 1,
-                   lwdR = 1,
-                   dataTitle = paste0('ゴールド価格\n',title),
-                   mar = c(4,5,6,5),
-                   dataSource = dataSource)
+#### Time Series
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 2
+fun_fit(obj = goldPriceData,objColumn = n)
+fun_generateKnit(objDF = merge(goldPriceData[,c(1,n)],fittedDF[,c(1,3)]),
+                 plotNum = n,
+                 quantiles = 2,
+                 dygraphTitle = colnames(goldPriceData)[n])
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+n <- 3
+fun_fit(obj = goldPriceData,objColumn = n)
+fun_generateKnit(objDF = merge(goldPriceData[,c(1,n)],fittedDF[,c(1,3)]),
+                 plotNum = n,
+                 quantiles = 2,
+                 dygraphTitle = colnames(goldPriceData)[n])
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+n <- 4
+fun_fit(obj = goldPriceData,objColumn = n)
+fun_generateKnit(objDF = merge(goldPriceData[,c(1,n)],fittedDF[,c(1,3)]),
+                 plotNum = n,
+                 quantiles = 2,
+                 dygraphTitle = colnames(goldPriceData)[n])
+eval(parse(text = paste0('dygraphPlot', n)))
 ```
+
+***
+
+#### Historical Volatility
+- `r objColumn <- 2;colnames(goldPriceData)[objColumn]`
+- Width:`r width <- 30;width`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 5
+fun_historicalVolatility(obj = goldPriceData,objColumn = objColumn,width = width)
+fun_generateKnit(objDF = historicalVolatility,
+                 plotNum = n,
+                 quantiles = 2,
+                 group = 0,
+                 dygraphTitle = paste0(colnames(goldPriceData)[objColumn],
+                                       ':',
+                                       colnames(historicalVolatility)[2]))
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 2
