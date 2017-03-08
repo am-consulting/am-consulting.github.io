@@ -21,3 +21,4 @@ R-scale.r
 R-getStockPriceFromYJ.r
 R-doSimulation.r
 R-MovingAverage.r
+R-HistoricalVolatility.r
