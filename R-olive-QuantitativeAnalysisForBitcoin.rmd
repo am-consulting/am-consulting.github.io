@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo = F, cache = F}
 options(width = 1000)
@@ -78,6 +77,40 @@ if(nrow(bitCoinNew) != 0){
 }
 ```
 
+```{r warning = F, error = F, message = F, echo = F, results='hide'}
+# GOLD
+setwd(pathOutput)
+GoldPriceCSV <- 'GoldPrice.csv'
+GoldPriceOld <- 
+  read.csv(file = GoldPriceCSV, header = T, as.is = T, check.names = F)
+GoldPriceOld[,1] <-
+  as.Date(GoldPriceOld[,1])
+head(GoldPriceOld);tail(GoldPriceOld)
+tmp <- getSymbols('XAU/USD', 
+                  src = "oanda", 
+                  auto.assign = F, 
+                  from = Sys.Date() - 365 * 10, to = Sys.Date())
+GoldPriceNew <- 
+  data.frame(Date = as.Date(index(tmp)),
+             tmp,
+             check.names = F,
+             stringsAsFactors = F,
+             row.names = NULL)
+colnames(GoldPriceNew)[2] <- 
+  gsub('\\.','/',colnames(GoldPriceNew)[2])
+head(GoldPriceNew);tail(GoldPriceNew)
+GoldPriceNew <- 
+  subset(GoldPriceNew, tail(GoldPriceOld[,1],1) < GoldPriceNew[,1])
+if(nrow(GoldPriceNew) != 0){
+  GoldPrice <- 
+    rbind(GoldPriceOld,GoldPriceNew)
+  write.csv(x = GoldPrice, file = GoldPriceCSV, quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+}else{
+  GoldPrice <- GoldPriceOld
+}
+mergeData <- merge(bitCoin,GoldPrice,by = 'Date')
+```
+
 ```{r warning = F, error = F, message = F, echo = F}
 library(RCurl)
 fileName <- 'functionList.csv'
@@ -113,11 +146,55 @@ dataSource <-
 
 ***
 
-###  `r paste0(colnames(bitCoin)[2], ':', paste0(range(bitCoin[,1]), collapse = ' ~ '))`
+#### Comparing between Bitcoin and Gold
 
-#### Highest & Lowest
+```{r warning = F, error = F, message = F, echo = F, results='asis'}
+n <- 10
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 group = 0,
+                 dygraphTitle = 'Unit:$')
+eval(parse(
+  text =
+    paste0('dygraphPlot',
+           n,
+           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+cat('<hr>')
+fun_transposeDataFrame(obj = mergeData,tailN = 7)
+fun_markdownTable(obj = tDF)
+cat('<hr>')
+fun_transposeDataFrame(obj = rbind(head(mergeData,1),tail(mergeData,1)))
+fun_markdownTable(obj = data.frame(tDF,
+                                   `Change(%)`=round((tDF[,3]/tDF[,2]-1)*100,2),
+                                   stringsAsFactors = F,
+                                   check.names = F))
+```
 
-```{r warning = F, error = F, message = F, echo = F}
+***
+#### Historical Volatility of Bitcoin
+- Width:`r width <- 30;width`
+
+```{r warning = F, error = F, message = F, echo = F, results='asis'}
+n <- 100
+fun_historicalVolatility(obj = bitCoin,width = width)
+fun_generateKnit(objDF = historicalVolatility, 
+                 plotNum = n, 
+                 group = 0,
+                 dygraphTitle = 'Unit:%',
+                 quantiles = 2)
+eval(parse(
+  text =
+    paste0('dygraphPlot',
+           n,
+           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+```
+
+***
+#### `r paste0(colnames(bitCoin)[2], ':', paste0(range(bitCoin[,1]), collapse = ' ~ '))`
+
+- Highest & Lowest
+
+```{r warning = F, error = F, message = F, echo = F, results='asis'}
 tmp <-
   subset(bitCoin, max(bitCoin[,2]) == bitCoin[,2] | min(bitCoin[,2]) == bitCoin[,2])
 fun_markdownTable(obj = tmp)
@@ -131,7 +208,8 @@ fun_generateKnit(objDF = bitCoin,
                  plotNum = n, 
                  group = 0,
                  dygraphTitle = 'Unit:$',
-                 colors = RColorBrewer::brewer.pal(3, "Set2")[n])
+                 colors = RColorBrewer::brewer.pal(3, "Set2")[n],
+                 quantiles = 2)
 eval(parse(
   text =
     paste0('dygraphPlot',
@@ -149,7 +227,8 @@ fun_generateKnit(objDF = diffDF,
                  barPlot = 1, 
                  group = 0, 
                  dygraphTitle = 'Day over Day(Unit:$)',
-                 colors = RColorBrewer::brewer.pal(3, "Set2")[n])
+                 colors = RColorBrewer::brewer.pal(3, "Set2")[n],
+                 quantiles = 2)
 eval(parse(
   text =
     paste0('dygraphPlot',
@@ -167,7 +246,8 @@ fun_generateKnit(objDF = diffRatioDF,
                  barPlot = 1, 
                  group = 0, 
                  dygraphTitle = 'Day over Day(Unit:%)',
-                 colors = RColorBrewer::brewer.pal(3, "Set2")[n])
+                 colors = RColorBrewer::brewer.pal(3, "Set2")[n],
+                 quantiles = 2)
 eval(parse(
   text =
     paste0('dygraphPlot',
@@ -177,7 +257,7 @@ eval(parse(
 
 ***
 
-```{r warning = F, error = F, message = F, echo = F, fig.height=13}
+```{r warning = F, error = F, message = F, echo = F, fig.height=12}
 par(mfrow = c(3,1), family = 'Meiryo')
 fun_hist <- 
   function(obj,
@@ -300,7 +380,7 @@ fun_markdownTable(statDF)
 #### Autocorrelation
 ##### Lag=0:Dropped
 
-```{r warning = F, error = F, message = F, echo = F, results='asis', fig.height=10}
+```{r warning = F, error = F, message = F, echo = F, results='asis', fig.height=8}
 fun_plotACF <- 
   function(obj, acfLag, acfType = 'correlation', plot = T, acfMainTitle = '', drop0 = F){
     acf(x = obj,
@@ -315,7 +395,7 @@ fun_plotACF <-
                        lty = 2,
                        equilogs = T)
   }
-par(mfrow = c(2,1), family = 'Meiryo', cex.main = 1.2, cex.lab = 1.2, cex.axis = 1.2)
+par(mfrow = c(2,1), family = 'Meiryo', cex.main = 1.1, cex.lab = 1.0, cex.axis = 1.0, font.main = 1)
 fun_plotACF(obj = bitCoin[,2],
             acfLag = 365 * 2,
             acfMainTitle = colnames(bitCoin)[2],
