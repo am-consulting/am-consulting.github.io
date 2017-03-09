@@ -165,7 +165,7 @@ text(ccfResult$lag,
 ```
 
 ***
-#### 直近`r tailN <- 4;tailN`ヶ月分
+#### 直近`r tailN <- 3;tailN`ヶ月分
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 objColumn <- 
