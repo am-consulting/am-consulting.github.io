@@ -198,14 +198,23 @@ function expenseIppanKanri(){//一般管理費
 		//c:工事原価下限閾値,d:工事原価上限閾値,e:工事原価下限閾値一般管理費率,f:工事原価上限閾値一般管理費率
 		case 1://新築建築工事
 		case 2://改修建築工事
+			/*
 			a=15.065;b=1.028;c=5*Math.pow(10,6);d=3*Math.pow(10,9);e=11.26;f=8.41;break;
+			*/
+			a=28.978;b=3.173;c=5*Math.pow(10,6);d=3*Math.pow(10,9);e=17.24;f=8.43;break;//2017-03-09
 		case 3://新築電気設備工事
 		case 4://改修電気設備工事
+			/*
 			a=17.286;b=1.577;c=3*Math.pow(10,6);d=2*Math.pow(10,9);e=11.8;f=7.35;break;
+			*/
+			a=29.102;b=3.340;c=3*Math.pow(10,6);d=2*Math.pow(10,9);e=17.49;f=8.06;break;//2017-03-09
 		case 5://新築機械設備工事
 		case 6://改修機械設備工事
 		case 7://昇降機設備工事
+			/*
 			a=15.741;b=1.305;c=3*Math.pow(10,6);d=2*Math.pow(10,9);e=11.2;f=7.52;break;
+			*/
+			a=27.283;b=3.049;c=3*Math.pow(10,6);d=2*Math.pow(10,9);e=16.68;f=8.07;break;
 	}
 	if(costKoujiGenka<=c){rateIppanKanri=e;}
 	else
