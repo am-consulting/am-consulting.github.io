@@ -1,0 +1,137 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-SIPRItop100.html')) })
+
+title : 'SIPRI Arms Industry Database(Source:Stockholm International Peace Research Institute)'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(knitr)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+importAMCC <-c('importSIPRItop100.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+                  importAMCC[iii]),
+           ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 
+  paste0('軍事産業データベース:',tail(sheetYear,1),'年')
+dataSource <- 'ストックホルム国際平和研究所'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- https://www.sipri.org/
+- https://www.sipri.org/databases
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(iii in 1:length(armSales)){
+  cat(paste0('<div align="center"><h5>',sheetYear[iii],'年 Top 10</h5></div>'))
+  bufDF <- armSales[[iii]][,c(1,2,3,6)]
+  byCountry <- data.frame((table(bufDF[,2])))
+  byCountry <- byCountry[order(byCountry[,2],decreasing = T),]
+  colnames(byCountry)[1] <- 'Country'
+  bufDF <- head(bufDF[order(bufDF[,3],decreasing = T),],10)
+  fun_markdownTable(obj = bufDF)
+  cat(paste0('･ ',sheetTitle[iii]))
+  cat('<br>')
+  cat(paste0('･ ',sheetUnit[iii]))
+  fun_markdownTable(obj = byCountry)
+  cat('<hr>')
+}
+```
+
+#### Country:Japan
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(iii in 1:length(armSales)){
+  cat(paste0('<div align="center"><h5>',sheetYear[iii],'年</h5></div>'))
+  bufDF <- armSales[[iii]][,c(1,2,3,6)]
+  bufDF <- bufDF[order(bufDF[,3],decreasing = T),]
+  bufDF <- bufDF[grep('japan',bufDF[,2],ignore.case = T),]
+  fun_markdownTable(obj = bufDF)
+  cat(paste0('･ ',sheetTitle[iii]))
+  cat('<br>')
+  cat(paste0('･ ',sheetUnit[iii]))
+  cat('<hr>')
+}
+```
+
+#### Country:Korea
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(iii in 1:length(armSales)){
+  cat(paste0('<div align="center"><h5>',sheetYear[iii],'年</h5></div>'))
+  bufDF <- armSales[[iii]][,c(1,2,3,6)]
+  bufDF <- bufDF[order(bufDF[,3],decreasing = T),]
+  bufDF <- bufDF[grep('korea',bufDF[,2],ignore.case = T),]
+  fun_markdownTable(obj = bufDF)
+  cat(paste0('･ ',sheetTitle[iii]))
+  cat('<br>')
+  cat(paste0('･ ',sheetUnit[iii]))
+  cat('<hr>')
+}
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>

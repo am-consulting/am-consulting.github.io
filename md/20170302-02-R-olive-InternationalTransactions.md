@@ -1,17 +1,28 @@
 --- 
-tags : [財務省, 証券売買契約] 
+tags : [軍事産業データベース, ストックホルム国際平和研究所] 
 published : true
 ---
-# 対外及び対内証券売買契約等の状況(週次・指定報告機関ベース):2017.2.26～3.4(億円):対外-株式･投資ファンド持分-ネット:763,対内-株式･投資ファンド持分-ネット:-1671
+# 軍事産業データベース:2015年
 ## 統計データ概要
 
-1. 非居住者による証券投資(対内証券投資)について、 
-	1. 原数値の、
-		1. 株式・投資ファンド持分のネット ： 1671億円の処分超。
-		1. 中長期債のネット ： 6083億円の取得超。
-		1. 短期債のネット : 1兆7805億円の処分超。
-		1. 対内投資合計のネット ： 1兆3393億円の処分超。
+#### 2015年武器販売額Top10
+
+|                     Company (2015)| Country (2015) | Arms Sales (2015)| 
+|----------------------------------:|---------------:|-----------------:|
+|              Lockheed Martin Corp.|   United States|            36,440| 
+|                             Boeing|   United States|            27,960| 
+|                        BAE Systems|  United Kingdom|            25,510| 
+|                           Raytheon|   United States|            21,780| 
+|             Northrop Grumman Corp.|   United States|            20,060| 
+|             General Dynamics Corp.|   United States|            19,240| 
+|                       Airbus Group|  Trans-European|            12,860| 
+| BAE Systems Inc. (BAE Systems, UK)|   United States|             9,670| 
+|          United Technologies Corp.|   United States|             9,500| 
+|                       Finmeccanica|           Italy|             9,300| 
+
+- in millions of US$.
+
 	
 ## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html" width="100%" height="800px"></iframe>
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SIPRItop100.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SIPRItop100.html" width="100%" height="800px"></iframe>
