@@ -1,0 +1,35 @@
+```{r}
+library(quantmod);library(forecast)
+options(scipen = 999)
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+username <- Sys.info()['user']
+pathOutput <-
+  paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
+setwd(pathOutput)
+```
+
+```{r}
+# 1300 * 900
+rangeDays <- 60
+symbolS <- c('^DJI','Dow Jones Industrial Average',
+             '^N225','Nikkei 225',
+             '^FTSE','FTSE 100',
+             '^TNX','CBOE Interest Rate 10 Year T No',
+             'JPY=X','USD/JPY',
+             '^VIX','VOLATILITY S&P 500')
+par(mfrow=c(3,2))
+for(iii in seq(1,length(symbolS),by = 2)){
+  price <-
+    getSymbols(Symbols = symbolS[iii],auto.assign = F)
+  pars <- chart_pars()
+  pars$mar <- c(3,4,2,3)
+  pars$cex <- 1
+  dateRange <-
+    paste0(range(tail(index(price),rangeDays)),collapse = '::')
+  print(chart_Series(x = price,
+                     pars = pars,
+                     subset = dateRange,
+                     name = symbolS[iii+1],
+                     TA = if(10 <= nrow(price)){print(add_SMA())}))
+}
+```

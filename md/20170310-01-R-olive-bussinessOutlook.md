@@ -42,5 +42,5 @@ published : true
 ***	
 	
 ## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SIPRItop100.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SIPRItop100.html" width="100%" height="800px"></iframe>
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessOutlookSurvey.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BusinessOutlookSurvey.html" width="100%" height="800px"></iframe>
