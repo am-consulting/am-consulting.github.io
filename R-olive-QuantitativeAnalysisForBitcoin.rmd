@@ -71,6 +71,7 @@ bitCoinNew <-
 if(nrow(bitCoinNew) != 0){
   bitCoin <- 
     rbind(bitCoinOld,bitCoinNew)
+  setwd(pathOutput)
   write.csv(x = bitCoin, file = bitCoinCSV, quote = F, row.names = F, append = F, fileEncoding = 'utf8')
 }else{
   bitCoin <- bitCoinOld
