@@ -59,8 +59,9 @@ options(scipen=100)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = allIndustryActivity,dateFormat = dateFormat,objColumn = c(2,3,4))
-dataTitle <- paste0('全産業活動指数(季節調整値):',latestResult)
+fun_makeDiffRatioTable(obj = allIndustryActivity,lag = 1)
+fun_latestResult(obj = diffRatioDF,dateFormat = dateFormat,objColumn = c(2,3,4))
+dataTitle <- paste0('全産業活動指数(季節調整値):前月比(%):',latestResult)
 dataSource <- '経済産業省、日本銀行'
 ```
 
