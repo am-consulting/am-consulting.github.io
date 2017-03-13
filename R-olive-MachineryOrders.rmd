@@ -48,8 +48,8 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-yy <- 16
-mm <- 12
+yy <- 17
+mm <- 1
 mm <- formatC(mm, width=2, flag="0")
 fileName <- paste0(yy,mm,'chouki-2.xls')
 baseURL <- 'http://www.esri.cao.go.jp/jp/stat/juchu/'
@@ -136,9 +136,10 @@ fun_generateKnit(objDF = objDF,plotNum = n1,barPlot = 0,
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 tailN <- 8
-fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet,
-                                               tailN = tailN, 
-                                               dateFormat = dateFormat))
+fun_transposeDataFrame(obj = dataSet,
+                       tailN = tailN,
+                       dateFormat = dateFormat)
+fun_markdownTable(obj = tDF[order(tDF[,ncol(tDF)],decreasing = T),])
 ```
 
 ***
@@ -159,14 +160,14 @@ dataSetP <- tmp %>% dplyr::filter(tmp[,ncol(tmp)] >= 0)
 - 直近前年同月比:プラス
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_markdownTable(obj = dataSetP)
+fun_markdownTable(obj = dataSetP[order(dataSetP[,ncol(dataSetP)],decreasing = T),])
 ```
 
 ***
 - 直近前年同月比:マイナス
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_markdownTable(obj = dataSetN)
+fun_markdownTable(obj = dataSetN[order(dataSetN[,ncol(dataSetN)],decreasing = F),])
 ```
 
 ***
