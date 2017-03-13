@@ -165,13 +165,13 @@ dataSource <- '経済産業省'
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = dataSet1,dateFormat = dateFormat)
+fun_dataTable(obj = tail(dataSet1,12*3),dateFormat = dateFormat)
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = dataSet2,dateFormat = dateFormat)
+fun_dataTable(obj = tail(dataSet2,12*3),dateFormat = dateFormat)
 ```
 
 ***
