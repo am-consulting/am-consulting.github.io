@@ -182,6 +182,7 @@ totalJGB
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F, results='hide'}
+attach(tmp)
 bufMD <- 
   cbind(by(tmp[, 3], JGB, sum))
 bufMD <-
@@ -193,6 +194,8 @@ bufMD <-
   bufMD[order(bufMD[,2],decreasing = T),]
 bufMD$`構成比(%)` <- 
   round(bufMD[,2]/sum(bufMD[,2])*100,1)
+bufMD <-
+  rbind(bufMD,c('合計',sum(bufMD[,2]),100))
 fun_markdownTable(obj = bufMD)
 ```
 <script>MakeNegative();</script>
