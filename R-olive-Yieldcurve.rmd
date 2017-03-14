@@ -206,14 +206,16 @@ cat('<hr>')
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 tailN <- 12*5
 fun_dataTable(obj = tail(slopeTable,tailN),
-              title = paste0('線形回帰Slope.直近', tailN, '日分'))
+              title = paste0('線形回帰Slope.直近', tailN, '日分'),
+              dateFormat = dateFormat)
 ```
 
 ***
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = tail(jgbData,tailN),
-              title = paste0('日本国債金利情報.直近', tailN, '日分'))
+              title = paste0('日本国債金利情報.直近', tailN, '日分'),
+              dateFormat = dateFormat)
 ```
 
 ***
@@ -232,9 +234,9 @@ tmp0 <- t(tmp)
 tmp0 <- data.frame(row.names(tmp0),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
 colnames(tmp0) <- tmp0[1,]
 tmp0 <- tmp0[-1,]
-tmp0 <- data.frame(No=seq(1,nrow(tmp0)),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
-colnames(tmp0)[2] <- 'Year'
-tmp0[,-c(1,2)] <- apply(tmp0[,-c(1,2)],2,as.numeric)
+#tmp0 <- data.frame(No=seq(1,nrow(tmp0)),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(tmp0)[1] <- 'Year'
+tmp0[,-1] <- apply(tmp0[,-1,drop=F],2,as.numeric)
 fun_markdownTable(obj = tmp0)
 ```
 
