@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -65,7 +64,7 @@ mergeData <-
   merge(PrincipalFiguresOfFinancialInstitutions,monetaryBase_Japan,by='Date',all=T)
 dataSet0 <- 
   mergeData
-dateFormat <- '%Y-%m'
+dateFormat <- '%Y年%m月'
 # 単位変換パート
 objColumn <-
   grep('億円',colnames(dataSet0))
@@ -186,6 +185,44 @@ text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 fun_markdownTable(obj = 
                     fun_transposeDataFrame(dataSet0[,c(1,grep('貸出',colnames(dataSet0)))],
                                            dateFormat = dateFormat,tailN = 6))
+```
+
+***
+
+#### 貸出平均残高前年同月比(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+kashidashi <- dataSet0[,c(1,grep('兆円',colnames(dataSet0)))]
+kashidashi <- kashidashi[,c(1,grep('貸出',colnames(kashidashi)))]
+fun_makeDiffRatioTable(obj = kashidashi,lag = 12,roundDigits = 1)
+timeSeriesDF <- diffRatioDF
+texDygraph <- vector()
+cnt <- 0
+for(iii in 2:ncol(timeSeriesDF)){
+  obj <- 
+    na.omit(timeSeriesDF[,c(1,iii)])
+  cnt <- cnt + 1
+  fun_generateKnit(objDF = obj, 
+                   plotNum = cnt, 
+                   group = 0, 
+                   colors = c('blue','red','green'), 
+                   dygraphTitle = colnames(obj)[2],
+                   barPlot = 1,
+                   quantiles = 2)
+  assign(paste0('knit_expanded', cnt),
+         paste0("\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+                "eval(parse(text = paste0('dygraphPlot", cnt," %>% ', primeMinisterOfJapan_dygraph)))",
+                "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
+  texDygraph <- 
+    c(texDygraph, paste0('knit_expanded', cnt))
+}
+```
+
+`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_transposeDataFrame(obj = diffRatioDF,dateFormat = dateFormat,tailN = 5)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
