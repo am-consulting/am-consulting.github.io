@@ -160,7 +160,8 @@ fun_plotTimeSeries(obj = mergeData,lwdR = 1,dataSource = dataSource)
 - 2016年大統領選挙以降
 
 ```{r warning=F,error=F,message=F,echo=F,fig.height=5}
-fun_plotTimeSeries(obj = subset(mergeData,as.Date('2016-11-8')<=mergeData[,1]),lwdR = 1,dataSource = dataSource)
+fun_plotTimeSeries(obj = subset(mergeData,as.Date('2016-11-8')<=mergeData[,1]),lwdR = 1,dataSource = dataSource,
+                   typeL = 'o',typeR = 'o')
 ```
 
 ***
