@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -56,7 +55,7 @@ numberOfForeignVisitorsToJapan[,-1] <-
 
 ```{r warning=F,error=F,message=F,echo=F}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = numberOfForeignVisitorsToJapan,dateFormat = dateFormat)
+fun_latestResult(obj = numberOfForeignVisitorsToJapan,dateFormat = dateFormat,objColumn = c(2,4,5))
 dataTitle <- 
   paste0('国籍/月別 訪日外客数(単位:万人):',latestResult)
 dataSource <- 
@@ -69,6 +68,7 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.jnto.go.jp/jpn/statistics/visitor_trends/index.html
 
 ***
 
@@ -79,7 +79,7 @@ n1 <- 1
 objItem <- '総数'
 bufC <- grep(objItem,colnames(numberOfForeignVisitorsToJapan))
 bufDF <- na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
-fun_generateKnit(objDF = bufDF,plotNum = n1,colors = 'blue',group = 0)
+fun_generateKnit(objDF = bufDF,plotNum = n1,colors = 'blue',group = 0,quantiles = 2,dygraphTitle = colnames(bufDF)[2])
 eval(parse(text = paste0('dygraphPlot',n1,' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot',n1,' %>% ', primeMinisterOfJapan_dygraph)))
@@ -116,7 +116,7 @@ objItem <- c('中国','韓国','台湾')
 bufC <- grep(paste0(objItem,collapse = '|'),colnames(numberOfForeignVisitorsToJapan))
 bufDF <- na.omit(numberOfForeignVisitorsToJapan[,c(1,bufC)])
 fun_generateKnit(objDF = bufDF,plotNum = n2,
-                 colors = c('blue','red','green' ),group = 0)
+                 colors = c('blue','red','green' ),group = 0,dygraphTitle = paste0(colnames(bufDF)[2:4],collapse = ','))
 eval(parse(text = paste0('dygraphPlot',n2,' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot',n2,' %>% ', primeMinisterOfJapan_dygraph)))
@@ -169,7 +169,7 @@ fun_markdownTable(obj = bufDF)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = numberOfForeignVisitorsToJapan,
+fun_dataTable(obj = tail(numberOfForeignVisitorsToJapan,12*3),
               dateFormat = dateFormat,
               title = dataTitle,
               filter = 'none')
