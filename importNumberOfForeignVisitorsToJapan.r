@@ -4,13 +4,13 @@ rbind.fill
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileName <- 'since2003_tourists.xls'
+fileName <- 'since2003_tourists.xlsx'
 if(!file.exists(paste0(pathOutput, fileName))) {
   download.file(paste0('http://www.jnto.go.jp/jpn/statistics/',fileName),
                 fileName, mode = "wb")
 }
 cnt <- 0
-for(yyyy in 2003:2016){
+for(yyyy in 2003:2017){
   buf0 <-
     readWorksheetFromFile(paste0(pathOutput, fileName), sheet = as.character(yyyy), check.names = F, header = F)
   cnt <- cnt + 1
