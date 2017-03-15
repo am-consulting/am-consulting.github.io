@@ -97,20 +97,6 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ***
 
-```{r,warning=F,error=F,message=F,results='hold',echo=F}
-for (iii in 1:length(fredData)) {
-  obj <- na.omit(fredData[[iii]])
-  cat(paste(range(obj[, 1]), collapse = ' ~ '), '\n')
-  print(apply(obj[, 2, drop = F], 2, summary))
-  cat('\n\n')
-}
-```
-
-```{r,warning=F,error=F,message=F,echo=F}
-rAmCharts::amBoxplot(allData[, -1], horiz = T)
-```
-<hr>
-
 ```{r warning=F,error=F,message=F,echo=F,fig.height=4}
 dataSet <- na.omit(allData[, c(1, 3, 5, 7)])
 n <- 1
@@ -121,23 +107,23 @@ fun_generateKnit(objDF = dataSet,
                                       '<br>',
                                       paste(range(dataSet[, 1]), collapse = ' ~ ')),
                  group = 0)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot',n,
+                         '%>% dyEvent("2016-11-8", "United States presidential election, 2016", labelLoc = "bottom")',
+                         '%>% dyEvent("2008-9-15", "Bankruptcy of Lehman Brothers", labelLoc = "bottom")')))
 ```
 
-<hr>
+***
+
 ```{r,warning=F,error=F,message=F,echo=F,fig.height=5}
 xRange <- paste0(c(1, 2, 3, 5, 7, 10, 20, 30), 'Y')
 yieldCurve <- na.omit(allData)
-maxValue <- max(yieldCurve[, -1])
-minValue <- min(yieldCurve[, -1])
-#nrow(yieldCurve)
 buf01 <- unlist(head(yieldCurve, 1))
-buf02 <- unlist(yieldCurve[1000, ])
-buf03 <- unlist(yieldCurve[2000, ])
-buf04 <- unlist(yieldCurve[3000, ])
-buf05 <- unlist(yieldCurve[4000, ])
-buf06 <- unlist(tail(yieldCurve, 1))
-par(mar = c(3, 3, 4, 1), family = 'Meiryo', font.main = 1)
+buf02 <- unlist(subset(yieldCurve, yieldCurve[,1] == as.Date('2008-9-15')))
+buf03 <- unlist(subset(yieldCurve, yieldCurve[,1] == as.Date('2016-11-8')))
+buf04 <- unlist(tail(yieldCurve, 1))
+maxValue <- ceiling(max(buf01[-1],buf02[-1],buf03[-1],buf04[-1]))
+minValue <- floor(min(buf01[-1],buf02[-1],buf03[-1],buf04[-1]))
+par(mar = c(3, 3, 3, 1), family = 'Meiryo', font.main = 1)
 plot(
   buf01[-1],
   ylim = c(minValue, maxValue),
@@ -153,40 +139,63 @@ plot(
   cex.main = 1,
   lwd = 1,
   pch = 20,
-  cex = 2
+  cex = 1
 )
-lines(buf02[-1], type = 'o', col = 2, lwd = 1, pch = 20, cex =2)
-lines(buf03[-1], type = 'o', col = 3, lwd = 1, pch = 20, cex =2)
-lines(buf04[-1], type = 'o', col = 4, lwd = 1, pch = 20, cex =2)
-lines(buf05[-1], type = 'o', col = 5, lwd = 1, pch = 20, cex =2)
-lines(buf06[-1], type = 'o', col = 6, lwd = 1, pch = 20, cex =2)
+lines(buf02[-1], type = 'o', col = 2, lwd = 1, pch = 20, cex =1)
+lines(buf03[-1], type = 'o', col = 3, lwd = 1, pch = 20, cex =1)
+lines(buf04[-1], type = 'o', col = 4, lwd = 1, pch = 20, cex =1)
 graphics::legend(
   'topleft',
   col = 1:6,
   lty = 1,
-  legend = as.Date(c(buf01[1],buf02[1],buf03[1],buf04[1],buf05[1],buf06[1])),
+  legend = as.Date(c(buf01[1],buf02[1],buf03[1],buf04[1])),
   cex = 1,
   bty = 'n',
   lwd = 2
 )
 axis(side = 1, at = 1:length(xRange), labels = xRange)
 ```
-<hr>
+
+***
+#### 米国財務省証券利回り(%)
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+fun_transposeDataFrame(obj = allData,tailN = 5)
+fun_markdownTable(obj = tDF)
+```
+
+***
+#### 米国財務省証券利回り:前日比(PP)
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+fun_makeDiffTable(obj = allData,lag = 1)
+fun_transposeDataFrame(obj = diffDF)
+fun_markdownTable(obj = tDF)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+for (iii in 1:length(fredData)) {
+  obj <- na.omit(fredData[[iii]])
+  cat(paste(range(obj[, 1]), collapse = ' ~ '), '\n')
+  print(apply(obj[, 2, drop = F], 2, summary))
+  cat('\n\n')
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+rAmCharts::amBoxplot(allData[, -1], horiz = T)
+```
+
+***
+
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = tail(na.omit(allData),12*5),
               title = 'Treasury Constant Maturity Rate(%)',
               dateFormat = dateFormat)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F,results='hide'}
-buf <- t(tail(allData, 4))
-buf1 <- data.frame(rownames(buf), buf, check.names = F, row.names = NULL)
-colnames(buf1) <- unlist(buf1[1, ])
-buf2 <- buf1[-1, ]
-colnames(buf2)[1] <- 'Type'
-knitr::kable(buf2, row.names = F)
-```
-
+***
+<script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
   (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
