@@ -155,7 +155,7 @@ for(pm in 1:length(cabinetUnique)){
                      dataSource = dataSource,
                      dataTitle = cabinetUnique[pm],
                      mar = c(4,5,6,2),
-                     cex.main = 1.3)
+                     cex.main = 1.3,fitLcolor = 2)
 }  
 ```
 
@@ -177,7 +177,7 @@ for(pm in 1:length(cabinetUnique)){
                      dataSource = dataSource,
                      dataTitle = cabinetUnique[pm],
                      mar = c(4,5,6,2),
-                     cex.main = 1.3)
+                     cex.main = 1.3,fitLcolor = 2)
 }  
 ```
 
@@ -306,6 +306,42 @@ objDF <-
 objDF <-
   objDF[order(objDF[,ncol(objDF)],decreasing = T),]
 fun_markdownTable(obj = objDF)
+```
+
+***
+#### 第二次安倍政権発足以降の青木率(=内閣支持率 + 与党第一党政党支持率)
+- https://ja.wikipedia.org/wiki/%E9%9D%92%E6%9C%A8%E3%81%AE%E6%B3%95%E5%89%87
+- 『内閣支持率と与党第一党の政党支持率に関する法則であり、政界では有名であるとされている。この2つを足した数字が50％を下回った場合に政権が倒れるとされている。』(上記Wikipediaより引用)
+
+```{r,warning=F,error=F,message=F,echo=F,results='asis'}
+shinzohAbe <- 
+  subset(cabinetApprovalRatingS,as.Date('2013-1-1') <= cabinetApprovalRatingS[,1])
+naikakuSeitoh <-
+  merge(shinzohAbe,politicalPartyApprovalRatingsS,by='Date')
+naikakuSeitoh <- 
+  naikakuSeitoh[,c(1,2,3,5,4)]
+naikakuSeitoh$`青木率` <- 
+  naikakuSeitoh[,2] + naikakuSeitoh[,4]
+n <- 100
+objColumn <- 6
+obj <- 
+  naikakuSeitoh[,c(1,objColumn)]
+fun_fit(obj = obj,dateColumn = 1,objColumn = 2)
+fun_generateKnit(objDF = fittedDF[,-c(4,5)],
+                 plotNum = n,
+                 dygraphTitle = colnames(fittedDF)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- naikakuSeitoh[,c(1,2,3,4,6)]
+fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
+fun_markdownTable(obj = tDF)
+fun_makeDiffTable(obj = obj,lag = 1)
+fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
