@@ -1,0 +1,175 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-VIX.html')) })
+
+title : "Volatility Index:S&P500 and NIKKEI225"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+library(quantmod)
+SP500VIX <-
+  getSymbols(Symbols = '^VIX',auto.assign = F)
+SP500VIX <-
+  data.frame(Date = index(SP500VIX),SP500VIX,stringsAsFactors = F,check.names = F,row.names = NULL)
+NIKKEIVIX <-
+  read.csv(
+    file = 'http://indexes.nikkei.co.jp/nkave/historical/nikkei_stock_average_vi_daily_jp.csv',
+    header = T,
+    as.is = T,
+    check.names = F,
+    stringsAsFactors = F)
+NIKKEIVIX <- 
+  na.omit(NIKKEIVIX)
+colnames(NIKKEIVIX) <- 
+  c('Date',paste0('日経平均ボラティリティー･インデックス:',colnames(NIKKEIVIX)[-1]))
+NIKKEIVIX[,1] <- 
+  as.Date(NIKKEIVIX[,1])
+USDJPY <-
+  getSymbols(Symbols = 'JPY=X',auto.assign = F)
+USDJPY <-
+  data.frame(Date = index(USDJPY),USDJPY,stringsAsFactors = F,check.names = F,row.names = NULL)
+mergeData <- 
+  merge(merge(SP500VIX,NIKKEIVIX,by = 'Date'),USDJPY,by='Date')
+mergeDataClose <- 
+  mergeData[,c(1,grep('close|終値',colnames(mergeData),ignore.case = T))]
+mergeDataClose$Product <- 
+  mergeDataClose[,grep('vix',colnames(mergeDataClose),ignore.case = T)]*
+  mergeDataClose[,grep('日経',colnames(mergeDataClose),ignore.case = T)]
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dateFormat <- '%Y-%m-%d'
+fun_latestResult(obj = mergeDataClose,objColumn = c(2,3),dateFormat = dateFormat)
+dataTitle <- 
+  paste0('ボラティリティ･インデックス:',latestResult)
+dataSource <- 
+  '株式会社日本経済新聞社、YAHOO FINANCE'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- http://www.cboe.com/products/vix-index-volatility
+- http://indexes.nikkei.co.jp/nkave/index/profile
+
+***
+
+#### Time Series Chart
+- `r paste0(range(mergeDataClose[,1]),collapse=' ~ ')`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 1
+obj <- 
+  mergeDataClose[,c(1,2,3)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(obj)[-1],collapse = ' × '),
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+***
+#### Product(=`r paste0(colnames(mergeDataClose)[2],' × ',colnames(mergeDataClose)[3])`)
+- `r paste0(range(mergeDataClose[,1]),collapse=' ~ ')`
+- Moving Average=`r maN <- 20;maN`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 2
+obj <- 
+  mergeDataClose[,c(1,grep('product',colnames(mergeDataClose),ignore.case = T))]
+fun_MovingAverage(obj = obj,
+                  objColumn = 2,
+                  n = maN,
+                  dateFormat = dateFormat,
+                  plot = 0)
+fun_generateKnit(objDF = MovingAverageDF,
+                 plotNum = n,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2,
+                 group = 0)
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+par(family = 'Meiryo',font.main=1,mar=c(4,4,3,1))
+acf(x = obj[,2],
+    lag.max = 20*12,
+    drop.lag.0 = F,
+    main = colnames(obj)[2])
+cat('<hr>')
+cat('Rank in the top 10')
+fun_markdownTable(obj = head(obj[order(obj[,2],decreasing = T),],10))
+cat('<hr>')
+cat('Rank in the bottom 10')
+fun_markdownTable(obj = head(obj[order(obj[,2],decreasing = F),],10))
+cat('<hr>')
+obj <- 
+  mergeDataClose[,c(1,4,5)]
+fun_plotTimeSeries(obj = obj,lwdR = 1,dataSource = dataSource)
+cat('<hr>')
+par(family = 'Meiryo',font.main=1,mar=c(5,5,4,1))
+ccf(x = obj[,2],
+    y = obj[,3],
+    lag.max = 20*12,
+    main = paste0(colnames(obj)[c(2,3)],collapse = ' × '))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_makeDiffTable(obj = SP500VIX[,c(1,5)],lag = 1)
+fun_transposeDataFrame(obj = diffDF,tailN = 5)
+fun_markdownTable(obj = tDF)
+fun_makeDiffTable(obj = NIKKEIVIX[,c(1,2)],lag = 1)
+fun_transposeDataFrame(obj = diffDF,tailN = 5)
+fun_markdownTable(obj = tDF)
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
