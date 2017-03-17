@@ -58,6 +58,6 @@ for(mm in 1:12){
         }
   }
   abline(h = 0, lwd = 2, col = 'red')
-  mtext(text = paste0('Positive:',cntP,' , Negative:',cntN),side = 3,cex = 0.8)
+  mtext(text = paste0('Positive:',cntP,' , Negative:',cntN),side = 3,cex = 0.8,font = 1)
 }
 }
