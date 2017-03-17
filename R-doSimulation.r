@@ -1,7 +1,7 @@
 fun_doSimulation <-
   function(x,breaksBy = 0.01,finalbreaksBy = 2,startValue = 114,
            simulationLength = 100,simulationNumber = 100){
-    par(mfrow = c(1,2), family = 'Meiryo', font.main = 1, cex.main = 1.1, oma = c(1,1,1,1))
+    par(mfrow = c(1,2), family = 'Meiryo', font.main = 1, cex.main = 1.1, oma = c(0,0,0,0))
     breaks <-
       seq(from = floor(min(x)), to = ceiling(max(x)) + breaksBy, by = breaksBy)
     resultHist <-
