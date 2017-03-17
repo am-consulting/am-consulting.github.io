@@ -28,7 +28,7 @@ for(mm in 1:12){
   for(iii in 1:length(yyyy)){
     ifelse(0 <= tail(scaleData[[iii]],1),cntP <- cntP + 1,cntN <- cntN + 1)
     if(iii == 1){
-      par(family = 'Meiryo',font.main = 1)
+      par(family = 'Meiryo',font.main = 1,mar = c(3,4,3,1),cex.main = 1)
       plot(scaleData[[iii]],
            type = 'o',
            ylim = c(floor(ylimL),ceiling(ylimU)),
@@ -58,6 +58,6 @@ for(mm in 1:12){
         }
   }
   abline(h = 0, lwd = 2, col = 'red')
-  mtext(text = paste0('Positive:',cntP,',Negative:',cntN),side = 3,cex = 1)
+  mtext(text = paste0('Positive:',cntP,' , Negative:',cntN),side = 3,cex = 0.8)
 }
 }
