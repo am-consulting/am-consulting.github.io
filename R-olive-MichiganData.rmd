@@ -56,7 +56,7 @@ eval(parse(text = script))
 dateFormat <- '%Y-%m'
 fun_latestResult(IndexOfConsumerSentiment)
 dataTitle <- 
-  paste0('University of Michigan Consumer Sentiment Index / ミシガン大学消費者信頼感指数:',latestResult)
+  paste0('University of Michigan Consumer Sentiment Index/ミシガン大学消費者信頼感指数:',latestResult)
 dataSource <- 'University of Michigan'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
