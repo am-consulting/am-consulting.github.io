@@ -296,6 +296,8 @@ fun_plot_dygraph <-
   fun_primeMinisterOfJapan(obj = buf)
   fun_boj(obj = buf)
   fun_event(obj = buf)
+  fun_potus(obj = buf)
+  fun_frb(obj = buf)
 }
 
 fun_dygraph_shade <- function(plotNum = 1){
