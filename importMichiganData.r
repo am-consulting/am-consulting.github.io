@@ -18,9 +18,9 @@ for(iii in seq(length(csvURL))){
   colnames(tmp) <-
     gsub('icc','CurrentIndex',colnames(tmp),ignore.case = T)
   colnames(tmp) <-
-    gsub('ice','ExpectedIndex ',colnames(tmp),ignore.case = T)
+    gsub('ice','ExpectedIndex',colnames(tmp),ignore.case = T)
   colnames(tmp) <-
-    gsub('ICS_ALL','IndexOfConsumerSentiment ',colnames(tmp),ignore.case = T)
+    gsub('ICS_ALL','IndexOfConsumerSentiment',colnames(tmp),ignore.case = T)
   colnames(tmp) <-
     gsub('PX_MD','NextYear',colnames(tmp),ignore.case = T)
   colnames(tmp) <-
