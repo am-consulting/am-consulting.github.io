@@ -311,6 +311,12 @@ fun_dygraph_shade <- function(plotNum = 1){
            "eval(parse(text = paste0('dygraphPlot", plotNum," %>% ', boj_dygraph)))",
            "\n\ncat('<hr>')\n\n```",
            "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", plotNum," %>% ', potus_dygraph)))",
+           "\n\ncat('<hr>')\n\n```",
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", plotNum," %>% ', frb_dygraph)))",
+           "\n\ncat('<hr>')\n\n```",
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
            "eval(parse(text = paste0('dygraphPlot", plotNum," %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))",
            "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
 }
@@ -324,4 +330,104 @@ fun_generateKnit <-
                    legendWidth = legendWidth, barPlot = barPlot, colors = colors,
                    group = group, quantiles = quantiles)
   fun_dygraph_shade(plotNum = plotNum)
+  }
+
+fun_potus <- function(obj = dataSet){
+  potus <- c(
+    "1933-3-4"  ,    "Franklin Delano Roosevelt",
+    "1945-4-12" ,    "Harry S. Truman",
+    "1953-1-20" ,    "Dwight David Eisenhower",
+    "1961-1-20" ,    "John Fitzgerald Kennedy",
+    "1963-11-22",    "Lyndon Baines Johnson",
+    "1969-1-20" ,    "Richard Milhouse Nixon",
+    "1974-8-9"  ,    "Gerald Rudolph Ford Jr.",
+    "1977-1-20" ,    "James Earl Carter",
+    "1981-1-20" ,    "Ronald Wilson Reagan",
+    "1989-1-20" ,    "George H.W Bush",
+    "1993-1-20" ,    "Bill Clinton",
+    "2001-1-20" ,    "George W. Bush",
+    "2009-1-20" ,    "Barack Obama",
+    "2017-1-20" ,    "Donald Trump"
+  )
+  cnt <- 1
+  potusTable <- data.frame()
+  for(rrr in seq(1,length(potus),by = 2)){
+    potusTable[cnt,1] <- as.character(as.Date(potus[rrr]))
+    potusTable[cnt,2] <- as.character(as.Date(potus[rrr+2]))
+    potusTable[cnt,3] <- potus[rrr+1]
+    cnt <- cnt +1
+  }
+  potusTable[nrow(potusTable),2] <- as.character(Sys.Date())
+  write.table(potusTable, "clipboard", sep = "\t", row.names = F, col.names = T)
+  out <- NULL
+  for(rrr in 1:nrow(potusTable)){
+    if(rrr %% 2 == 0){col <- '#FFE6E6'}else{col <- '#CCEBD6'}
+    tmp1 <-
+      paste0('dyShading(from = \'',
+             potusTable[rrr,1],
+             '\', to = \'',
+             potusTable[rrr,2],
+             '\', color = \'',
+             col,
+             '\') %>% ')
+    if(rrr != nrow(potusTable)){
+      tmp2 <-
+        paste0('dyEvent(\'',potusTable[rrr,2],'\',\'',potusTable[rrr,3],'\', labelLoc = \'bottom\') %>% ')
+    }else{
+      tmp2 <-
+        paste0('dyEvent(\'',obj[nrow(obj),1],'\',\'',potusTable[rrr,3],'\', labelLoc = \'bottom\')')
+    }
+    out <-
+      c(out, tmp1, tmp2)
+  }
+  buf0 <-
+    paste(out, collapse = '')
+  assign('potus_dygraph', buf0, envir = .GlobalEnv)
+}
+
+fun_frb <- function(obj = dataSet){
+  frb <- c(
+    "1934-11-15",    "Marriner Eccles",
+    "1948-4-15" ,    "Thomas B. McCabe",
+    "1951-4-2"  ,    "William M. Martin",
+    "1970-2-1"  ,    "Arthur F.Burns",
+    "1978-3-8"  ,    "G.William Miller",
+    "1987-8-11" ,    "Alan Greenspan",
+    "2006-2-1"  ,    "Ben S.Bernanke",
+    "2014-2-1"  ,    "Janet Yellen"
+  )
+  cnt <- 1
+  frbTable <- data.frame()
+  for(rrr in seq(1,length(frb),by = 2)){
+    frbTable[cnt,1] <- as.character(as.Date(frb[rrr]))
+    frbTable[cnt,2] <- as.character(as.Date(frb[rrr+2]))
+    frbTable[cnt,3] <- frb[rrr+1]
+    cnt <- cnt +1
+  }
+  frbTable[nrow(frbTable),2] <- as.character(Sys.Date())
+  write.table(frbTable, "clipboard", sep = "\t", row.names = F, col.names = T)
+  out <- NULL
+  for(rrr in 1:nrow(frbTable)){
+    if(rrr %% 2 == 0){col <- '#FFE6E6'}else{col <- '#CCEBD6'}
+    tmp1 <-
+      paste0('dyShading(from = \'',
+             frbTable[rrr,1],
+             '\', to = \'',
+             frbTable[rrr,2],
+             '\', color = \'',
+             col,
+             '\') %>% ')
+    if(rrr != nrow(frbTable)){
+      tmp2 <-
+        paste0('dyEvent(\'',frbTable[rrr,2],'\',\'',frbTable[rrr,3],'\', labelLoc = \'bottom\') %>% ')
+    }else{
+      tmp2 <-
+        paste0('dyEvent(\'',obj[nrow(obj),1],'\',\'',frbTable[rrr,3],'\', labelLoc = \'bottom\')')
+    }
+    out <-
+      c(out, tmp1, tmp2)
+  }
+  buf0 <-
+    paste(out, collapse = '')
+  assign('frb_dygraph', buf0, envir = .GlobalEnv)
 }
