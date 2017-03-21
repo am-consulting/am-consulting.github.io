@@ -46,6 +46,8 @@ for(iii in 1:nrow(functionList)){
 ```{r,warning=F,error=F,message=F,echo=F}
 importAMCC <-
   c('importMonetarybaseOfJapan-2017.r','importJapanPropertyPriceIndex.r')
+importAMCC <-
+  c('importMonetarybaseOfJapan-2017.r','importJapanPropertyPriceIndexREV.r')
 for(iii in 1:length(importAMCC)){
   script <-
     getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
@@ -54,12 +56,12 @@ for(iii in 1:length(importAMCC)){
   )
   eval(parse(text = script))
 }
-fun_JapanPropertyPriceIndex(sheetNo = '全国')
+fun_JapanPropertyPriceIndexREV(sheetName = '全国')
 wholeData <- 
-  JapanResidentalProperty
-fun_JapanPropertyPriceIndex(sheetNo = '東京都')
+  JapanPropertyPriceIndex1
+fun_JapanPropertyPriceIndexREV(sheetName = '東京都')
 tokyoData <- 
-  JapanResidentalProperty
+  JapanPropertyPriceIndex1
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -77,7 +79,7 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- Source http://tochi.mlit.go.jp/kakaku/shisuu
+- Source http://tochi.mlit.go.jp/?post_type=secondpage&p=15623
 
 ***
 #### 対象:全国
