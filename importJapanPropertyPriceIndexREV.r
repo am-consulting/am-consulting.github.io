@@ -48,7 +48,7 @@ fun_JapanPropertyPriceIndexREV <- function(sheetName = '全国',objXLSX = 1,need
   buf1 <- apply(buf1,2,function(x)gsub('▲','-',x))
   buf1 <- apply(buf1,2,function(x)gsub('\\s|,','',x))
   buf2 <-
-    data.frame(buf1[,1],apply(buf1[,-1],2,as.numeric),stringsAsFactors = F,check.names = F,row.names = NULL)
+    data.frame(as.Date(buf1[,1]),apply(buf1[,-1],2,as.numeric),stringsAsFactors = F,check.names = F,row.names = NULL)
   colnames(buf2)[1] <- 'Date'
   colnames(buf2)[-1] <- paste0(sheetName,':',colnames(buf2)[-1])
   assign(paste0('JapanPropertyPriceIndex',objXLSX),buf2,envir = .GlobalEnv)
