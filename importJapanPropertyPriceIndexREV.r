@@ -37,7 +37,9 @@ for(ccc in seq(ncol(buf0))){
 colnames(buf0) <-
   sapply(gsub('\n','',paste0(buf0[4,],':',buf0[6,])),zen2han)
 buf1 <- buf0[!is.na(buf0[,1]),]
-buf1[,1] <- as.Date(buf1[,1],origin = "1899-12-30")
+buf1[,1] <- as.numeric(sapply(buf1[,1],zen2han))
+buf1 <- buf1[!is.na(buf1[,1]),]
+buf1[,1] <- as.Date(as.numeric(buf1[,1]),origin = "1899-12-30")
 buf1 <- apply(buf1,2,function(x)gsub('▲','-',x))
 buf1 <- apply(buf1,2,function(x)gsub('\\s|,','',x))
 buf2 <-
