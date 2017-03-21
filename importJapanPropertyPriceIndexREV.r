@@ -18,9 +18,11 @@ pathOutput <-
   paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 fileName <- obj[objXLSX,2]
+if(!file.exists(paste0(pathOutput, fileName))) {
 download.file(url = paste0('http://tochi.mlit.go.jp/wp-content/uploads/2017/02/',fileName),
               destfile = fileName,
               mode = 'wb')
+}
 getSheets(loadWorkbook(fileName))
 buf0 <-
   readWorksheetFromFile(file = paste0(pathOutput, fileName),
