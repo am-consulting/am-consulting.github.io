@@ -53,7 +53,7 @@ library(knitr)
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 1
+targetMonth <- 2
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
