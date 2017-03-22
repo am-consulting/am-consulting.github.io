@@ -51,6 +51,30 @@ library(XML)
 library(knitr)
 ```
 
+<!-- 前月データ取得 -->
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+targetYear <- 2017
+targetMonth <- 1
+targetMonth <- formatC(targetMonth, width=2, flag='0')
+targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
+buf0 <- xmlToList(targetURL)
+names(buf0)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+buf <- data.frame(rbind(buf0$sogakutsuki$export,buf0$sogakutsuki$import,buf0$sogakutsuki$sashihiki))
+table01 <- sapply(buf, function(x) 
+  as.numeric(
+    gsub('△', '-',
+         gsub(',', '', x))))
+table01[,-3] <- table01[,-3]*10^-6
+colnames(table01) <- c(paste0(targetYear,'年',targetMonth,'月'),paste0(targetYear-1,'年',targetMonth,'月'),'伸率(%)')
+rownames(table01) <- c('輸出','輸入','差引')
+lastMonthTable <- table01
+lastMonthBuf <- buf0
+```
+<!-- 前月データ取得 -->
+
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
 targetMonth <- 2
@@ -94,6 +118,14 @@ windowsFonts(Meiryo=windowsFont('Meiryo'))
 cat(paste0('<h4>',buf0$sogakutsuki$title),'</h4>\n')
 cat('<h5>総額(原値,兆円)</h5>\n')
 fun_markdownTable(table01,rownames = T)
+```
+
+***
+###### (参考)
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat(paste0('<h4>',lastMonthBuf$sogakutsuki$title),'</h4>\n')
+cat('<h5>総額(原値,兆円)</h5>\n')
+fun_markdownTable(lastMonthTable,rownames = T)
 ```
 
 ***
@@ -175,6 +207,17 @@ for (iii in 1:length(byGoods)) {
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 # xml_view(xml2::read_xml(targetURL))
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+bufTable <- table02[,c(2,3,5)]
+bufTable$`輸出価格構成比(%)` <-
+  round(bufTable[,grep('輸出',colnames(bufTable))]/
+          bufTable[grep('総額',bufTable[,1]) ,grep('輸出',colnames(bufTable))]*100,2)
+bufTable$`輸入価格構成比(%)` <-
+  round(bufTable[,grep('輸入',colnames(bufTable))]/
+          bufTable[grep('総額',bufTable[,1]) ,grep('輸入',colnames(bufTable))]*100,2)
+fun_markdownTable(obj = bufTable)
 ```
 
 <script>MakeNegative();</script>
