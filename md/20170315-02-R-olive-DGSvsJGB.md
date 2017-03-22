@@ -21,6 +21,11 @@ published : true
 
 
 ***
+#### 関連ニュース
+
+1. 2017年03月22日:財務省、国債市場特別参加者(PD)への国債応札義務を2017年7月から5%へと引き上げ。([ソース:ロイター](http://jp.reuters.com/article/%E3%80%94%E3%83%9E%E3%83%BC%E3%82%B1%E3%83%83%E3%83%88%E3%82%A2%E3%82%A4%E3%80%95%E9%87%91%E5%88%A9%EF%BC%9A%EF%BC%B0%EF%BC%A4%E4%BC%9A%E5%90%88%E3%81%A7%E5%9B%BD%E5%82%B5%E5%BF%9C%E6%9C%AD%E7%BE%A9%E5%8B%99%E5%BC%95%E3%81%8D%E4%B8%8A%E3%81%92%E3%81%AB%E8%B3%9B%E5%90%8C-%E6%9C%9B%E3%81%BE%E3%81%97%E3%81%84%E6%96%B9%E5%90%91%E3%81%A8%E3%81%AE%E5%A3%B0-idJPL3N1GZ2M8?il=0))
+
+***
 	
 ## データテーブル･チャート
 Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html)
