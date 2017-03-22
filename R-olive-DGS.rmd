@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:    
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers
@@ -85,7 +85,7 @@ for (lll in seq(1, length(treasuryRate), by = 2)) {
 dateFormat <- '%Y-%m-%d'
 fun_latestResult(obj = allData,objColumn = c(7),dateFormat = dateFormat)
 dataTitle <-
-  paste0('米国債金利:',latestResult)
+  paste0('米国債金利とイールドスプレッド:',latestResult)
 dataSource <- 'Federal Reserve Bank of St. Louis'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
@@ -94,6 +94,85 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+compareData <- allData[,c(1,2,5,7,8)]
+colnames(compareData)
+```
+
+#### Spread(%)
+- `r objX <- 4;objY <- 2;colnames(compareData)[objX]` to `r colnames(compareData)[objY]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+spreadData <-
+  data.frame(Date = compareData[,1], Spread = compareData[,objX]-compareData[,objY])
+n <- 1
+fun_generateKnit(objDF = spreadData,plotNum = n,barPlot = 1,group = 0,
+                 dygraphTitle = paste0(colnames(compareData)[c(objX,objY)],collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
+```
+
+***
+- `r objX <- 4;objY <- 3;colnames(compareData)[objX]` to `r colnames(compareData)[objY]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+spreadData <-
+  data.frame(Date = compareData[,1], Spread = compareData[,objX]-compareData[,objY])
+n <- 2
+fun_generateKnit(objDF = spreadData,plotNum = n,barPlot = 1,group = 0,
+                 dygraphTitle = paste0(colnames(compareData)[c(objX,objY)],collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
+```
+
+***
+- `r objX <- 5;objY <- 2;colnames(compareData)[objX]` to `r colnames(compareData)[objY]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+spreadData <-
+  data.frame(Date = compareData[,1], Spread = compareData[,objX]-compareData[,objY])
+n <- 3
+fun_generateKnit(objDF = spreadData,plotNum = n,barPlot = 1,group = 0,
+                 dygraphTitle = paste0(colnames(compareData)[c(objX,objY)],collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
+```
+
+***
+- `r objX <- 5;objY <- 3;colnames(compareData)[objX]` to `r colnames(compareData)[objY]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+spreadData <-
+  data.frame(Date = compareData[,1], Spread = compareData[,objX]-compareData[,objY])
+n <- 4
+fun_generateKnit(objDF = spreadData,plotNum = n,barPlot = 1,group = 0,
+                 dygraphTitle = paste0(colnames(compareData)[c(objX,objY)],collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
+```
+
+***
+- `r objX <- 5;objY <- 4;colnames(compareData)[objX]` to `r colnames(compareData)[objY]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+spreadData <-
+  data.frame(Date = compareData[,1], Spread = compareData[,objX]-compareData[,objY])
+n <- 5
+fun_generateKnit(objDF = spreadData,plotNum = n,barPlot = 1,group = 0,
+                 dygraphTitle = paste0(colnames(compareData)[c(objX,objY)],collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
+```
+
+***
+- `r objX <- 3;objY <- 2;colnames(compareData)[objX]` to `r colnames(compareData)[objY]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+spreadData <-
+  data.frame(Date = compareData[,1], Spread = compareData[,objX]-compareData[,objY])
+n <- 6
+fun_generateKnit(objDF = spreadData,plotNum = n,barPlot = 1,group = 0,
+                 dygraphTitle = paste0(colnames(compareData)[c(objX,objY)],collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
+```
 
 ***
 
@@ -123,40 +202,39 @@ buf03 <- unlist(subset(yieldCurve, yieldCurve[,1] == as.Date('2016-11-8')))
 buf04 <- unlist(tail(yieldCurve, 1))
 maxValue <- ceiling(max(buf01[-1],buf02[-1],buf03[-1],buf04[-1]))
 minValue <- floor(min(buf01[-1],buf02[-1],buf03[-1],buf04[-1]))
-par(mar = c(3, 3, 3, 1), family = 'Meiryo', font.main = 1)
-plot(
-  buf01[-1],
-  ylim = c(minValue, maxValue),
-  type = 'o',
-  col = 1 ,
-  xlab = '' ,
-  ylab = '' ,
-  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
-  xaxt = 'n',
-  main = paste('Treasury Constant Maturity Rate(%) - Yield Curve\nSource:', dataSource),
-  cex.axis = 1,
-  cex.lab = 1,
-  cex.main = 1,
-  lwd = 1,
-  pch = 20,
-  cex = 1
-)
-lines(buf02[-1], type = 'o', col = 2, lwd = 1, pch = 20, cex =1)
-lines(buf03[-1], type = 'o', col = 3, lwd = 1, pch = 20, cex =1)
-lines(buf04[-1], type = 'o', col = 4, lwd = 1, pch = 20, cex =1)
-graphics::legend(
-  'topleft',
-  col = 1:6,
-  lty = 1,
-  legend = as.Date(c(buf01[1],buf02[1],buf03[1],buf04[1])),
-  cex = 1,
-  bty = 'n',
-  lwd = 2
-)
-axis(side = 1, at = 1:length(xRange), labels = xRange)
+# par(mar = c(3, 3, 3, 1), family = 'Meiryo', font.main = 1)
+# plot(
+#   buf01[-1],
+#   ylim = c(minValue, maxValue),
+#   type = 'o',
+#   col = 1 ,
+#   xlab = '' ,
+#   ylab = '' ,
+#   panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T) ,
+#   xaxt = 'n',
+#   main = paste('Treasury Constant Maturity Rate(%) - Yield Curve\nSource:', dataSource),
+#   cex.axis = 1,
+#   cex.lab = 1,
+#   cex.main = 1,
+#   lwd = 1,
+#   pch = 20,
+#   cex = 1
+# )
+# lines(buf02[-1], type = 'o', col = 2, lwd = 1, pch = 20, cex =1)
+# lines(buf03[-1], type = 'o', col = 3, lwd = 1, pch = 20, cex =1)
+# lines(buf04[-1], type = 'o', col = 4, lwd = 1, pch = 20, cex =1)
+# graphics::legend(
+#   'topleft',
+#   col = 1:6,
+#   lty = 1,
+#   legend = as.Date(c(buf01[1],buf02[1],buf03[1],buf04[1])),
+#   cex = 1,
+#   bty = 'n',
+#   lwd = 2
+# )
+# axis(side = 1, at = 1:length(xRange), labels = xRange)
 ```
 
-***
 #### 米国財務省証券利回り(%)
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
