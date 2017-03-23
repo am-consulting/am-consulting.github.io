@@ -9,4 +9,4 @@ tmp1 <-
   tmp0[,colnames(tmp0) != ""]
 tmp1[,1] <-
   as.Date(gsub('([0-9]+)/([0-9]+)/([0-9]+)','\\3-\\1-\\2',tmp1[,1]))
-assign('skewCBOE',tmp1,envir = .GlobalEnv)
+assign('skewCBOE',na.omit(tmp1),envir = .GlobalEnv)
