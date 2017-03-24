@@ -342,11 +342,21 @@ eval(parse(text = paste0('dygraphPlot', n)))
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 n <- 101
 fun_scale(obj = timeSeries)
+resultScale[,-1] <-
+  apply(resultScale[,-1],2,function(x)x-head(x,1))
 fun_generateKnit(objDF = resultScale,
                  plotNum = n,
                  group = 0,
                  dygraphTitle = paste0(colnames(resultScale)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+mdTable <- 
+  na.omit(dataSet[,c(1,grep('japan|united states|euro area',colnames(dataSet),ignore.case = T))])
+fun_makeDiffRatioTable(obj = mdTable,lag = 1,roundDigits = 2)
+fun_transposeDataFrame(obj = diffRatioDF,tailN = 6)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
