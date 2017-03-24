@@ -87,7 +87,7 @@ colnames(allData)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_latestResult(obj = allData,objColumn = c(4),dateFormat = '%Y-%m-%d')
+fun_latestResult(obj = na.omit(allData[,c(1,4)]),objColumn = c(2),dateFormat = '%Y-%m-%d')
 dataTitle <- 
   paste0('期待インフレ率(米国)、米国財務省証券利回り、日本国債利回りおよびドル円為替レート:',latestResult)
 dataSource <- 
@@ -205,6 +205,12 @@ chart.Correlation(
 chart.Correlation(
   tail(diffDF[,-1],days),
   method = 'pearson')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- na.omit(allData[,c(1,3:5)])
+fun_transposeDataFrame(obj = obj,tailN = 6)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
