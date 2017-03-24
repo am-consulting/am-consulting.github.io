@@ -298,6 +298,7 @@ fun_plot_dygraph <-
   fun_event(obj = buf)
   fun_potus(obj = buf)
   fun_frb(obj = buf)
+  fun_eventE(obj = buf)
 }
 
 fun_dygraph_shade <- function(plotNum = 1){
@@ -320,6 +321,9 @@ fun_dygraph_shade <- function(plotNum = 1){
            "\n\ncat('<hr>')\n\n```",
            "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
            "eval(parse(text = paste0('dygraphPlot", plotNum," %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))",
+           "\n\ncat('<hr>')\n\n```",
+           "\n```{r warning=F, error=F, message=F, echo=F, results='asis'}\n\n",
+           "eval(parse(text = paste0('dygraphPlot", plotNum," %>% ', eventE_dygraph_point)))",
            "\n\ncat('<hr>')\n\n```"),envir = .GlobalEnv)
 }
 
@@ -432,4 +436,38 @@ fun_frb <- function(obj = dataSet){
   buf0 <-
     paste(out, collapse = '')
   assign('frb_dygraph', buf0, envir = .GlobalEnv)
+}
+
+fun_eventE <- function(obj = dataSet){
+  eventE <- c(
+    "1971-12-18", "Smithsonian Agreement",
+    "1985-09-22", "Plaza Accord",
+    "1987-02-22", "Louvre Accord",
+    "1987-10-19", "Black Monday",
+    "2008-09-15", "Bankruptcy of Lehman Brothers",
+    "2016-06-23", "United Kingdom European Union Membership Referendum",
+    "2016-11-09", "United States presidential election of 2016"
+  )
+  eventE <-
+    iconv(eventE,'shift_jis','utf8')
+  cnt <- 1
+  eventTable <- data.frame()
+  for(rrr in seq(1,length(eventE),by = 2)){
+    eventTable[cnt,1] <- as.character(as.Date(eventE[rrr]))
+    eventTable[cnt,2] <- eventE[rrr+1]
+    cnt <- cnt +1
+  }
+  cnt <- 1
+  out <- NULL
+  for(rrr in seq(1,length(eventE),by = 2)){
+    if(obj[1,1] <= eventE[rrr]){
+      tmp <-
+        paste0('dyEvent(\'',eventE[rrr],'\',\'',eventE[rrr+1],'\', labelLoc = \'bottom\')')
+      out <-
+        c(out, tmp)
+    }
+  }
+  buf1 <-
+    paste(out, collapse = ' %>% ')
+  assign('eventE_dygraph_point', buf1,envir = .GlobalEnv)
 }
