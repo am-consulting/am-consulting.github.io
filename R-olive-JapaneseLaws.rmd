@@ -1,6 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1; rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText[titleNo],'.html')) })
-title : "`r gsub('(?!^)(?=[[:upper:]])', ' ', titleText, perl=T)`"
+knit: (function(inputFile, encoding) {username <- Sys.info()['user']; fileName <- 'defaultPath.csv'; pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/'); setwd(pathToFile); buf0 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8'); titleText <- c('ConstructionRelatedLawsInJapan','SummoningOfSwornWitness'); titleNo <-2; rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',titleText[titleNo],'.html')) })
+title : "`r gsub('(?!^)(?=[[:upper:]])', ' ', titleText[titleNo], perl=T)`"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -72,7 +72,9 @@ options(width = 1000)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-titleText <- c('ConstructionRelatedLawsInJapan'); titleNo <-1 
+titleText <- c('ConstructionRelatedLawsInJapan',
+               'SummoningOfSwornWitness') 
+titleNo <- 2
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -93,7 +95,7 @@ dataTitle <-
 dataSource <- 
   'e-Gov http://www.e-gov.go.jp/index.html'
 objLawS <- 2
-objLawE <- 10
+objLawE <- 2
 url <- 
   lawList[objLawS:objLawE,1]
 windowsFonts(Meiryo = windowsFont("Meiryo"))
