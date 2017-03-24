@@ -12,6 +12,8 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', frb_dygraph)))
 cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', eventE_dygraph_range)))
+cat('<hr>')
 
 https://github.com/am-consulting/am-consulting.github.io/blob/1df2c1f62e3319a9804fa37488c8fe8252d0d796/R-olive-EmployedPersonByMajorIndustry.rmd
 
