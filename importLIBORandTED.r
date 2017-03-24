@@ -23,5 +23,5 @@ for (lll in seq(1, length(treasuryRate), by = 2)) {
   colnames(tmp)[2] <- treasuryRate[lll + 1]
   fredData[[cnt]] <- tmp
   tail(fredData[[cnt]])
-  if(lll == 1){allData <- tmp}else{allData <- merge(allData, tmp, by='Date', all=T)}
+  if(lll == 1){LIBOR <- tmp}else{LIBOR <- merge(LIBOR, tmp, by='Date', all=T)}
 }
