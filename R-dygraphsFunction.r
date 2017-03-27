@@ -249,7 +249,8 @@ event <- c(
   # "1971-12-18","スミソニアン協定",
   "1990-03-27","総量規制",
   "1987-10-19","ブラックマンデー",
-  "1987-02-22","ルーブル合意"
+  "1987-02-22","ルーブル合意",
+  "2017-03-24","オバマケア代替案撤回"
 )
 event <- iconv(event,'shift_jis','utf8')
 cnt <- 1
@@ -446,7 +447,8 @@ fun_eventE <- function(obj = dataSet){
     "1987-10-19", "Black Monday",
     "2008-09-15", "Bankruptcy of Lehman Brothers",
     "2016-06-23", "United Kingdom European Union Membership Referendum",
-    "2016-11-09", "United States presidential election of 2016"
+    "2016-11-09", "United States presidential election of 2016",
+    "2017-03-24", "Republicans failed to repeal Obamacare"
   )
   eventE <-
     iconv(eventE,'shift_jis','utf8')
