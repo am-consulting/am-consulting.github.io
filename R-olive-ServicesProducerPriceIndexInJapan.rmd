@@ -194,6 +194,19 @@ cat(paste0('<h4>', tail(objPNinclude0[,1],1),'から',
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_arfima(obj = ServicesProducerPriceIndex,objColumn = 4)
+Date <- 
+  tail(seq(from = tail(ServicesProducerPriceIndex[,1],1),
+           by = '+1 month',
+           length.out = nrow(forecastResultDF) + 1),-1)
+fun_markdownTable(obj = 
+                    data.frame(Date = format(Date,dateFormat), 
+                               forecastResultDF, 
+                               stringsAsFactors = F, check.names = F))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_transposeDataFrame(obj = ServicesProducerPriceIndex,dateFormat = dateFormat,tailN = 3)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
