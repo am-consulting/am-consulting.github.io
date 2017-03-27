@@ -19,7 +19,7 @@ fun_arfima <-
                      by = '+1 month',
                      length.out = length(seq(xlim[1],xlim[2]))),
              '%Y-%m')
-    par(family = 'Meiryo', mar = c(5,5,4,2))
+    par(family = 'Meiryo', mar = c(5,5,5.5,2))
     plot(forecastResult,
          xaxt = 'n',
          font.axis = 1,
@@ -44,14 +44,14 @@ fun_arfima <-
          pos = 3,
          offset = 2,
          cex = 0.8)
-    mtext(text = paste0('C.I:', paste0(ciLevel, collapse = ',')),
+    mtext(text = paste0(colnames(obj)[objColumn],'\nC.I:', paste0(ciLevel, collapse = ',')),
           side = 3,
           outer = F,
           line = 0)
-    mtext(text = colnames(obj)[objColumn],
-          side = 2,
-          outer = F,
-          line = 3)
+    # mtext(text = colnames(obj)[objColumn],
+    #       side = 2,
+    #       outer = F,
+    #       line = 3)
     assign('forecastResultDF',
            data.frame(forecastResult,row.names = NULL,stringsAsFactors = F,check.names = F),
            envir = .GlobalEnv)
