@@ -129,6 +129,10 @@ eval(parse(text = paste0('dygraphPlot',n,' %>% ', event_dygraph_point,' %>%  ',e
 summary(laborSupplyAndDemand[,cc])
 ```
 
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_transposeDataFrame(obj = laborSupplyAndDemand,tailN = 5,dateFormat = dateFormat)
+fun_markdownTable(obj = tDF)
+```
 ***
 <script>MakeNegative();</script>
 <script>
