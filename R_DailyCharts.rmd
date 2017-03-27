@@ -9,6 +9,7 @@ setwd(pathOutput)
 ```
 
 ```{r}
+# #DOW , #NIKKEI , #FTSE , #10yearT , #USDJPY , #VIX 
 # 1300 * 900
 rangeDays <- 60
 symbolS <- c('^DJI','Dow Jones Industrial Average',
