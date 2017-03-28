@@ -139,14 +139,14 @@ fun_plotTimeSeries <- function(ddd=2){
       rect(xleft  = rectDateL, ybottom = par('usr')[3], 
            xright = rectDateR, ytop    = par('usr')[4], 
            col    = potusDF[rrr,4], 
-           density = 5, 
+           density = 3, 
            angle = 45, 
            lty = 2, 
            lwd = 1,
            border = T)
     }
     buf <- subset(obj,potusDF[rrr,1] <= obj[,1] & obj[,1] < potusDF[rrr,2])
-    if(nrow(buf)!=0){
+    if(3 <= nrow(buf)){
       cnt <- cnt + 1
       buf$POTUS <- potusDF[rrr,3]
       ifelse(potusDF[rrr,4]=='blue',
@@ -156,7 +156,7 @@ fun_plotTimeSeries <- function(ddd=2){
                rbind(RepublicanParty,buf))
       lo <- loess(buf[, 2] ~ as.numeric(buf[, 1])) 
       lo <- lm(buf[, 2] ~ as.numeric(buf[, 1])) 
-      lines(buf[, 1] , predict(lo) , col = 'steelblue', lwd = 3, lty = 1)
+      lines(buf[, 1] , predict(lo) , col = 'forestgreen', lwd = 3, lty = 1)
       bufBox <- buf[,2,drop=F]
       colnames(bufBox)[1] <- unique(buf$POTUS)
       ifelse(cnt == 1,boxData <- bufBox,boxData <- qpcR:::cbind.na(boxData, bufBox))
@@ -177,7 +177,7 @@ ddd <- 1
 fun_plotTimeSeries(ddd = ddd)
 cat('<hr>')
 fun_generateKnit(objDF = fredData[[ddd]],plotNum = ddd,group = 0)
-eval(parse(text = paste0('dygraphPlot', ddd)))
+eval(parse(text = paste0('dygraphPlot', ddd, ' %>% ', potus_dygraph)))
 cat('<hr>')
 rAmCharts::amBoxplot(boxData,horiz=T)
 cat('<hr>')
@@ -194,7 +194,7 @@ ddd <- 2
 fun_plotTimeSeries(ddd = ddd)
 cat('<hr>')
 fun_generateKnit(objDF = fredData[[ddd]],plotNum = ddd,group = 0)
-eval(parse(text = paste0('dygraphPlot', ddd)))
+eval(parse(text = paste0('dygraphPlot', ddd, ' %>% ', potus_dygraph)))
 cat('<hr>')
 rAmCharts::amBoxplot(boxData,horiz=T)
 cat('<hr>')
@@ -211,7 +211,7 @@ ddd <- 3
 fun_plotTimeSeries(ddd = ddd)
 cat('<hr>')
 fun_generateKnit(objDF = fredData[[ddd]],plotNum = ddd,group = 0)
-eval(parse(text = paste0('dygraphPlot', ddd)))
+eval(parse(text = paste0('dygraphPlot', ddd, ' %>% ', potus_dygraph)))
 cat('<hr>')
 rAmCharts::amBoxplot(boxData,horiz=T)
 cat('<hr>')
@@ -228,7 +228,7 @@ ddd <- 4
 fun_plotTimeSeries(ddd = ddd)
 cat('<hr>')
 fun_generateKnit(objDF = fredData[[ddd]],plotNum = ddd,group = 0)
-eval(parse(text = paste0('dygraphPlot', ddd)))
+eval(parse(text = paste0('dygraphPlot', ddd, ' %>% ', potus_dygraph)))
 cat('<hr>')
 rAmCharts::amBoxplot(boxData,horiz=T)
 cat('<hr>')
@@ -245,7 +245,7 @@ ddd <- 5
 fun_plotTimeSeries(ddd = ddd)
 cat('<hr>')
 fun_generateKnit(objDF = fredData[[ddd]],plotNum = ddd,group = 0)
-eval(parse(text = paste0('dygraphPlot', ddd)))
+eval(parse(text = paste0('dygraphPlot', ddd, ' %>% ', potus_dygraph)))
 cat('<hr>')
 rAmCharts::amBoxplot(boxData,horiz=T)
 cat('<hr>')
@@ -253,6 +253,45 @@ rAmCharts::amBoxplot(boxDataParty,horiz=T)
 cat('<hr>')
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fredData[[ddd]],dateFormat = '%Y-%m-%d'))
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+#### Since Mr.Donald Trump’s Presidency 
+iii <- 1
+obj <- fredData[[iii]]
+obj <- na.omit(subset(obj,as.Date('2017-1-20')<=obj[,1]))
+fun_transposeDataFrame(obj = rbind(head(obj,1),tail(obj,1)))
+tDF$`Result(PP)` <- tDF[,3]-tDF[,2]
+fun_markdownTable(obj = tDF)  
+
+iii <- 2
+obj <- fredData[[iii]]
+obj <- na.omit(subset(obj,as.Date('2017-1-20')<=obj[,1]))
+fun_transposeDataFrame(obj = rbind(head(obj,1),tail(obj,1)))
+tDF$`Result(JPY)` <- tDF[,3]-tDF[,2]
+fun_markdownTable(obj = tDF)  
+
+iii <- 3
+obj <- fredData[[iii]]
+obj <- na.omit(subset(obj,as.Date('2017-1-20')<=obj[,1]))
+fun_transposeDataFrame(obj = rbind(head(obj,1),tail(obj,1)),dateFormat = '%Y-%m')
+tDF$`Result(PP)` <- tDF[,3]-tDF[,2]
+fun_markdownTable(obj = tDF)  
+
+iii <- 4
+obj <- fredData[[iii]]
+obj <- na.omit(subset(obj,as.Date('2017-1-20')<=obj[,1]))
+fun_transposeDataFrame(obj = rbind(head(obj,1),tail(obj,1)))
+tDF$`Result(Number)` <- tDF[,3]-tDF[,2]
+fun_markdownTable(obj = tDF)  
+
+iii <- 5
+obj <- fredData[[iii]]
+obj <- na.omit(subset(obj,as.Date('2017-1-20')<=obj[,1]))
+fun_transposeDataFrame(obj = rbind(head(obj,1),tail(obj,1)))
+tDF$`Result(US$)` <- tDF[,3]-tDF[,2]
+fun_markdownTable(obj = tDF)  
+```
+
 
 ***
 <script>MakeNegative()</script>
