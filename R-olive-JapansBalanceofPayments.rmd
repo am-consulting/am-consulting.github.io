@@ -191,6 +191,14 @@ cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+obj <- origData1
+colnames(obj) <-
+  gsub('.+/(.+)','\\1',colnames(obj),ignore.case = T)
+fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,tailN = 6)
+fun_markdownTable(obj = tDF)
+```
+
 ***
 <script>MakeNegative()</script>
 <script>
