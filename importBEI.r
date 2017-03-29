@@ -25,11 +25,26 @@ for(iii in seq(length(data))){
 }
 BEItable[,1] <- as.Date(BEItable[,1])
 colnames(BEItable) <- c('Year/Month','BEI','Nominal Yield','Real Yield')
-plot(BEItable[,2],type='o',pch=20,cex=0.8,ylab=colnames(BEItable)[2])
+# plot(BEItable[,2],type='o',pch=20,cex=0.8,ylab=colnames(BEItable)[2])
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_JGBInterestRate.r",
     ssl.verifypeer = F
   )
 eval(parse(text = script))
-jgb10Y <- na.omit(jgbData[,c(1,11)])
+jgb10Y <- na.omit(jgbData[,c(1,grep('10y',colnames(jgbData),ignore.case = T))])
+colnames(jgb10Y)[2] <- 'JGB:10Year'
+library(lubridate)
+mergeData0 <-
+  data.frame(tail(subset(jgb10Y,jgb10Y[,1] <= (tail(BEItable[,1],1) %m+% months(1) -1)),nrow(BEItable)),
+             BEItable,
+             stringsAsFactors = F,check.names = F)
+# 2016年4月分が11データセットしかないため国債データとのマージでは日付にズレが発生する。
+mergeData <-
+  subset(mergeData0,as.Date('2016-5-1') <= mergeData0[,1])
+mergeData$Check <-
+  ifelse(month(mergeData[,1]) == month(mergeData[,3]),0,10)
+sum(mergeData$Check)
+# ブレークイーブン･インフレ率(BEI)
+# 10年利付国債複利利回り(名目イールド)(nominal yield)
+# 10年物価連動国債複利利回り(実質イールド)(real yield)
