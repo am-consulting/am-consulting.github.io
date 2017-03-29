@@ -448,7 +448,8 @@ fun_eventE <- function(obj = dataSet){
     "2008-09-15", "Bankruptcy of Lehman Brothers",
     "2016-06-23", "United Kingdom European Union Membership Referendum",
     "2016-11-09", "United States presidential election of 2016",
-    "2017-03-24", "Republicans failed to repeal Obamacare"
+    "2017-03-24", "Republicans failed to repeal Obamacare",
+    "2017-03-29", "Theresa May triggers Article 50"
   )
   eventE <-
     iconv(eventE,'shift_jis','utf8')
