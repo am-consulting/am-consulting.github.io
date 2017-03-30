@@ -256,6 +256,13 @@ cat(paste0('<br><h5>',texInclude0,'</h5><br>'))
 fun_markdownTable(obj = objPNinclude0)
 ```
 
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+mergeData <- merge(origData1,origData4,by = 'Date')
+fun_transposeDataFrame(obj = mergeData,dateFormat = dateFormat,tailN = 6)
+cat('#### 直近6ヶ月の輸出額、輸入額および貿易収支(兆円)')
+fun_markdownTable(obj = tDF)
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
