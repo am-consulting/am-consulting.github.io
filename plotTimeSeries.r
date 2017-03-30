@@ -9,7 +9,7 @@ fun_plotTimeSeries <-
            chartType = 2,
            lineColor = c('blue', 'red', 'lightcoral', 'black'),
            lwdL = 1,
-           lwdR = 2,
+           lwdR = 1,
            dataTitle = '',
            mar = c(3,5,4,5),
            dataSource = '',
@@ -22,7 +22,7 @@ fun_plotTimeSeries <-
            font.axis = 1,
            font.main = 1,
            font.lab = 1,
-           font.sub = 1) {
+           font.sub = 1,pchL = 20,pchR = 20,cexL = 0.9,cexR = 0.9) {
     if(chartType != 0){
       obj <- obj[,c(objX,objYL,objYR)]
       mainTitle <- paste0(dataTitle,
@@ -80,7 +80,7 @@ fun_plotTimeSeries <-
          panel.first = grid(nx = NULL,
                             ny = NULL,
                             lty = 2,
-                            equilogs = T)
+                            equilogs = T),pch = pchL,cex = cexL
          )
     if(fitLcolor != 0){
     lo <- loess(formula = obj[,2] ~ as.numeric(obj[,1]),
@@ -98,7 +98,7 @@ fun_plotTimeSeries <-
               y = obj[,3],
               col = lineColor[2],
               lwd = lwdR,
-              type = typeR)
+              type = typeR,pch = pchR,cex = cexR)
       }else{
         par(new=T)
         plot(x = obj[, 1],
@@ -117,7 +117,7 @@ fun_plotTimeSeries <-
              panel.first = grid(nx = NULL,
                                 ny = NULL,
                                 lty = 2,
-                                equilogs = T))
+                                equilogs = T),pch = pchR,cex = cexR)
         axis(side = 4,
              cex.axis = cex.axis,
              cex.lab = cex.lab)
