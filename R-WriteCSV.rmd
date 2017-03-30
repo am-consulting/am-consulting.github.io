@@ -1,0 +1,23 @@
+```{r}
+# http://stackoverflow.com/questions/9620155/how-to-read-a-csv-file-containing-apostrophes-into-r
+csvfileName <- 'amcc.csv'
+username <- 
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,header = F,skip = 0,
+           stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'csv/')
+setwd(pathOutputTOcsv)
+tmp <-
+  read.table(file = "clipboard",header = T,sep = "\t",stringsAsFactor = F,
+             na.strings = c("na",""),check.names = F, quote="\"")
+getwd()
+write.csv(x = tmp,file = csvfileName,
+          quote = F,row.names = F,append = F,fileEncoding = 'utf8')
+```
