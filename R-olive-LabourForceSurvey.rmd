@@ -158,6 +158,17 @@ fun_transposeDataFrame(obj = obj0,dateFormat = dateFormat)
 fun_markdownTable(obj = data.frame(tDF,`増減`= tDF[,3]-tDF[,2],stringsAsFactors = F,check.names = F))
 ```
 
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+obj0 <- 
+  dataSet0[,c(1,grep('完全失業率',colnames(dataSet0),ignore.case=T))][,c(1,2)]
+fun_transposeDataFrame(obj = obj0,dateFormat = dateFormat)
+cat('#### 直近5ヶ月間の完全失業率')
+fun_markdownTable(obj = tDF)
+fun_transposeDataFrame(obj = subset(obj0,obj0[,2]==tail(obj0[,2],1)),tailN = 2,dateFormat = dateFormat)
+fun_markdownTable(obj = tDF)
+cat(paste0('#### 完全失業率(男女計)',tail(obj0[,2],1),'%を記録したのは',colnames(tDF)[2],'以来'))
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
