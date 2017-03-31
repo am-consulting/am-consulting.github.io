@@ -1,0 +1,147 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-FinancialStatementsOfJapan.html')) })
+title : "Financial Statements Of Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1100px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 100)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fileURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/FinancialStatementsOfJapan/fy2015-renketsu_01.csv'
+renketsu_taishakuTaishouhyou <-
+  read.csv(file = fileURL,header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf-8',quote = "\"")
+
+fileURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/FinancialStatementsOfJapan/fy2015-renketsu_02.csv'
+renketsu_gyoumuhiyouKeisansho <-
+  read.csv(file = fileURL,header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf-8',quote = "\"")
+
+fileURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/FinancialStatementsOfJapan/fy2015-renketsu_03.csv'
+houjinbetsu_renketsu_taishakuTaishouhyou <-
+  read.csv(file = fileURL,header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf-8',quote = "\"")
+
+fileURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/FinancialStatementsOfJapan/fy2015-renketsu_04.csv'
+houjinbetsu_renketsu_gyoumuhiyouKeisansho <-
+  read.csv(file = fileURL,header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf-8',quote = "\"")
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 
+  paste0('日本の財務書類:連結財務書類:平成27年度')
+dataSource <- 
+  '財務省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.mof.go.jp/budget/report/public_finance_fact_sheet/index.htm
+
+***
+
+#### 連結貸借対照表(単位:兆円)
+- 資産の部
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj <- renketsu_taishakuTaishouhyou
+obj[,c(3,4)] <-
+  apply(obj[,c(3,4)],2,function(x)x*10^-6)
+shisan <-
+  obj[obj[,1]=='資産の部',-1]
+shisanGoukei <-
+  shisan[shisan[,1]=='資産合計',3]
+shisan$`構成比(平成27年度,%)` <- round(shisan[,3]/shisanGoukei*100,2)
+fun_dataTable(obj = shisan,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(shisan),leftcolumns = 2)
+```
+
+***
+- 負債の部
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fusai <-
+  obj[obj[,1]=='負債の部',-1]
+fusaiGoukei <-
+  fusai[fusai[,1]=='負債合計',3]
+fusai$`構成比(平成27年度,%)` <- round(fusai[,3]/fusaiGoukei*100,2)
+fun_dataTable(obj = fusai,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(fusai),leftcolumns = 2)
+```
+
+***
+- 純資産の部
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+jyunshisan <-
+  obj[grep('資産･負債差額',obj[,1]),-1]
+fun_dataTable(obj = jyunshisan,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(jyunshisan),leftcolumns = 2)
+```
+
+***
+
+#### 連結業務費用計算書
+- 単位:兆円
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+hiyou <- renketsu_gyoumuhiyouKeisansho
+hiyou[,c(2,3)] <-
+  apply(hiyou[,c(2,3)],2,function(x)x*10^-6)
+hiyouGoukei <-
+  hiyou[grep('合計',hiyou[,1]),3]
+hiyou$`構成比(平成27年度,%)` <- round(hiyou[,3]/hiyouGoukei*100,2)
+colnames(hiyou) <- gsub('\\(単位.+?\\)','',colnames(hiyou))
+fun_dataTable(obj = hiyou,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(hiyou),leftcolumns = 2)
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
