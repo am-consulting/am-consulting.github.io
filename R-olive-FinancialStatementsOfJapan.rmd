@@ -93,6 +93,7 @@ shisan <-
 shisanGoukei <-
   shisan[shisan[,1]=='資産合計',3]
 shisan$`構成比(平成27年度,%)` <- round(shisan[,3]/shisanGoukei*100,2)
+shisan$`前年差` <- round(shisan[,3] - shisan[,2],8)
 fun_dataTable(obj = shisan,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(shisan),leftcolumns = 2)
 ```
 
@@ -105,6 +106,7 @@ fusai <-
 fusaiGoukei <-
   fusai[fusai[,1]=='負債合計',3]
 fusai$`構成比(平成27年度,%)` <- round(fusai[,3]/fusaiGoukei*100,2)
+fusai$`前年差` <- round(fusai[,3] - fusai[,2],8)
 fun_dataTable(obj = fusai,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(fusai),leftcolumns = 2)
 ```
 
@@ -114,13 +116,13 @@ fun_dataTable(obj = fusai,dateFormat = 0,needID = 1,orderDirection = 'asc',menuL
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 jyunshisan <-
   obj[grep('資産･負債差額',obj[,1]),-1]
+jyunshisan$`前年差` <- round(jyunshisan[,3] - jyunshisan[,2],8)
 fun_dataTable(obj = jyunshisan,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(jyunshisan),leftcolumns = 2)
 ```
 
 ***
 
-#### 連結業務費用計算書
-- 単位:兆円
+#### 連結業務費用計算書(単位:兆円)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 hiyou <- renketsu_gyoumuhiyouKeisansho
@@ -129,8 +131,43 @@ hiyou[,c(2,3)] <-
 hiyouGoukei <-
   hiyou[grep('合計',hiyou[,1]),3]
 hiyou$`構成比(平成27年度,%)` <- round(hiyou[,3]/hiyouGoukei*100,2)
+hiyou$`前年差` <- round(hiyou[,3] - hiyou[,2],8)
 colnames(hiyou) <- gsub('\\(単位.+?\\)','',colnames(hiyou))
 fun_dataTable(obj = hiyou,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(hiyou),leftcolumns = 2)
+```
+
+***
+
+#### 法人別連結貸借対照表(単位:兆円)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+library(Nippon)
+obj <- houjinbetsu_renketsu_taishakuTaishouhyou
+obj[,-1] <-
+  apply(obj[,-1],2,function(x)x*10^-6)
+obj$`資産構成比(%)` <- round(obj[,2]/tail(obj[,2],1)*100,2)
+obj$`負債構成比(%)` <- round(obj[,3]/tail(obj[,3],1)*100,2)
+obj[,1] <- sapply(obj[,1],zen2han)
+fun_dataTable(obj = obj,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(obj),leftcolumns = 2)
+```
+
+***
+
+#### 法人別連結業務費用計算書(単位:兆円)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj <- houjinbetsu_renketsu_gyoumuhiyouKeisansho
+obj[,-1] <-
+  sapply(obj[,-1],function(x)x*10^-6)
+obj$`構成比(%)` <- round(obj[,2]/tail(obj[,2],1)*100,2)
+obj[,1] <- sapply(obj[,1],zen2han)
+colnames(obj) <- gsub('\\(単位.+?\\)','',colnames(obj))
+fun_dataTable(obj = obj,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(obj),leftcolumns = 2)
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+cat('#### 日本の連結財務書類(単位:兆円)')
+fun_markdownTable(obj = rbind(tail(shisan[,-4],1),tail(fusai[,-4],1),tail(jyunshisan,1)))
 ```
 
 ***
