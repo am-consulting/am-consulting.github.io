@@ -165,7 +165,7 @@ colnames(obj) <- gsub('\\(単位.+?\\)','',colnames(obj))
 fun_dataTable(obj = obj,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = nrow(obj),leftcolumns = 2)
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
 cat('#### 日本の連結財務書類(単位:兆円)')
 fun_markdownTable(obj = rbind(tail(shisan[,-4],1),tail(fusai[,-4],1),tail(jyunshisan,1)))
 ```
