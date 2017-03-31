@@ -1,0 +1,139 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-taxMattersStatistics.html')) })
+title : "Statistics Of Tax Matters"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1100px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 100)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fileURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/nationalTaxAgency/k01.csv'
+corporateTax <-
+  read.csv(file = fileURL,header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf-8',quote = "\"")
+
+fileURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/nationalTaxAgency/m02.csv'
+averageSalary <-
+  read.csv(file = fileURL,header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf-8',quote = "\"")
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 
+  paste0('民間給与実態統計調査および会社標本調査')
+dataSource <- 
+  '国税庁'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source https://www.nta.go.jp/kohyo/tokei/kokuzeicho/jikeiretsu/01.htm
+
+***
+
+#### 会社標本調査結果(単位:兆円)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+options(scipen = 999)
+obj <- corporateTax
+objColumn <-
+  grep('\\(社|合計\\)',colnames(obj))
+obj[,-objColumn] <-
+  apply(obj[,-objColumn],2,function(x)x*10^-6)
+fun_transposeDataFrame(obj = obj,tailN = 100,dateFormat = 0)
+tDF[,1] <-
+  gsub('\\(百万円\\)','(兆円)',tDF[,1])
+fun_markdownTable(obj = tDF)
+```
+
+***
+#### 民間給与実態統計調査結果
+- 平均給与額
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj <- averageSalary[,c(1,4)]
+obj[,1] <- as.Date(obj[,1])
+n <- 1
+fun_generateKnit(objDF = obj,plotNum = n,barPlot = 0,dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+- 平均税額
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj <- averageSalary[,c(1,5)]
+obj[,1] <- as.Date(obj[,1])
+n <- 1
+fun_generateKnit(objDF = obj,plotNum = n,barPlot = 0,dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+obj <- averageSalary
+obj[,1] <- as.Date(obj[,1])
+fun_dataTable(obj = obj,dateFormat = '%Y年')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+cat('#### 会社標本調査結果前年比(単位:%)')
+fun_makeDiffRatioTable(obj = corporateTax,lag = 1)
+fun_transposeDataFrame(obj = diffRatioDF,dateFormat = 0)
+tDF[,1] <-
+  gsub('\\(.+\\)','',tDF[,1])
+fun_markdownTable(obj = tDF)
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
