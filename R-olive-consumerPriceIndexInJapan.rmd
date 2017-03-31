@@ -74,9 +74,10 @@ options(scipen = 999)
 
 ***
 
-#### 直近`r tailN <- 2;tailN`ヶ月間の消費者物価指数前年同月比(%)
+#### 消費者物価指数前年同月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+tailN <- 1
 fun_dataTable(obj = fun_transposeDataFrame(obj = consumerPriceIndexofJapan,
                                            tailN = tailN,
                                            dateFormat = dateFormat),
@@ -175,8 +176,12 @@ cat('<hr>')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
+cat('#### 直近3ヶ月の総合CPI、コアCPIおよびコアコアCPI')
 fun_transposeDataFrame(obj = consumerPriceIndexofJapan[,c(1,2,3,6)],dateFormat = dateFormat,tailN = 3)
 fun_markdownTable(obj = tDF)
+cat('#### 最大物価上昇項目と最大物価下落項目')
+fun_transposeDataFrame(obj = consumerPriceIndexofJapan,tailN = 1,dateFormat = dateFormat)
+fun_markdownTable(obj = rbind(subset(tDF,max(tDF[,2])==tDF[,2]),subset(tDF,min(tDF[,2])==tDF[,2])))
 ```
 
 <script>MakeNegative();</script>
