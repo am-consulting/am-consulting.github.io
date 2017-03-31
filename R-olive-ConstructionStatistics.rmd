@@ -80,6 +80,26 @@ options(scipen = 999)
 mergeData <- merge(NSAData,SAData,by='Date')
 ```
 
+```{r warning=F,error=F,message=F,echo=F}
+obj <- mergeData[,c(1,3)]
+n <- 100
+fun_generateKnit(objDF = obj,plotNum = n,barPlot = 1,dygraphTitle = colnames(obj)[2],group = 0,
+                 quantiles = 2,colors = 'blue')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F}
+obj <- mergeData[,c(1,5)]
+n <- 200
+fun_generateKnit(objDF = obj,plotNum = n,barPlot = 1,dygraphTitle = colnames(obj)[2],group = 0,
+                 quantiles = 2,colors = 'red')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
 fun_generateKnit(objDF = mergeData[,c(1,2,4)], plotNum = n1, colors = c('blue','red'), group = 0)
@@ -116,6 +136,13 @@ fun_scale(obj = mergeData)
 n <- 1
 fun_generateKnit(objDF = resultScale,plotNum = n)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+mergeData <- merge(NSAData,SAData,by='Date')
+fun_transposeDataFrame(obj = mergeData,dateFormat = dateFormat)
+cat('#### 直近5ヶ月間の時系列推移')
+fun_markdownTable(obj = tDF)
 ```
 
 ***
