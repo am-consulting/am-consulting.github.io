@@ -127,7 +127,17 @@ cat(paste0('<h5><b>合計(兆円) : ',sum(dataSetIV[,4])/10^4,'</b></h5>'))
 - うち http://www.mof.go.jp/international_policy/reference/feio/monthly/index.htm からのリンク先が'404 Not Found'となる月。
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
+if(nrow(dataSetNA)!=0){
 fun_markdownTable(obj = dataSetNA)
+}else{
+  cat('<div align="center"><b>なし</b></div>')
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_transposeDataFrame(obj = head(dataSetDT[,c(2,4)],2),dateFormat = 0,colName = '期間',tailN = 2)
+cat('#### 直近2ヶ月間の為替平衡操作額')
+fun_markdownTable(obj = tDF)
 ```
 
 ***
