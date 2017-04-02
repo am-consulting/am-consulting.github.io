@@ -9,7 +9,7 @@ setwd(pathOutput)
 ```
 
 ```{r}
-# #DOW , #NIKKEI , #FTSE , #10yearT , #USDJPY , #VIX 
+# #DOW , #NIKKEI , #FTSE , #10YrBond , #USDJPY , #VIX 
 # 1300 * 900
 rangeDays <- 60
 symbolS <- c('^DJI','Dow Jones Industrial Average',
@@ -18,12 +18,13 @@ symbolS <- c('^DJI','Dow Jones Industrial Average',
              '^TNX','CBOE Interest Rate 10 Year T No',
              'JPY=X','USD/JPY',
              '^VIX','VOLATILITY S&P 500')
-par(mfrow=c(3,2))
+par(mfrow=c(3,2),oma=c(3,0,0,0))
+maN <- 10
 for(iii in seq(1,length(symbolS),by = 2)){
   price <-
     getSymbols(Symbols = symbolS[iii],auto.assign = F)
   pars <- chart_pars()
-  pars$mar <- c(3,4,2,3)
+  pars$mar <- c(2,4,1,3)
   pars$cex <- 1
   dateRange <-
     paste0(range(tail(index(price),rangeDays)),collapse = '::')
@@ -31,6 +32,35 @@ for(iii in seq(1,length(symbolS),by = 2)){
                      pars = pars,
                      subset = dateRange,
                      name = symbolS[iii+1],
-                     TA = if(10 <= nrow(price)){print(add_SMA())}))
+                     TA = if(maN <= nrow(price)){print(add_SMA(n = maN))}))
 }
+mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' periods)'),side = 1,outer = T,col = 'red')
+```
+
+```{r}
+# #SP500 , #NASDAQ , #RUSSELL2000 , #DAX , #KOSPI , #HANGSENG
+rangeDays <- 60
+symbolS <- c('^GSPC','S&P 500',
+             '^IXIC','NASDAQ Composite',
+             '^RUT','RUSSELL 2000 INDEX',
+             '^GDAXI','DAX',
+             '^KS11','KOSPI Composite Index',
+             '^HSI','HANG SENG INDEX')
+par(mfrow=c(3,2),oma=c(3,0,0,0))
+maN <- 10
+for(iii in seq(1,length(symbolS),by = 2)){
+  price <-
+    getSymbols(Symbols = symbolS[iii],auto.assign = F)
+  pars <- chart_pars()
+  pars$mar <- c(2,4,1,3)
+  pars$cex <- 1
+  dateRange <-
+    paste0(range(tail(index(price),rangeDays)),collapse = '::')
+  print(chart_Series(x = price,
+                     pars = pars,
+                     subset = dateRange,
+                     name = symbolS[iii+1],
+                     TA = if(maN <= nrow(price)){print(add_SMA(n = maN))}))
+}
+mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' periods)'),side = 1,outer = T,col = 'red')
 ```
