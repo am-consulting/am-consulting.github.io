@@ -68,3 +68,24 @@ for(iii in 1:nrow(functionList)){
            ssl.verifypeer = F)
   eval(parse(text = script))
 }
+
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+out <- NULL
+obj <- list()
+for(sss in seq(length(sheetName))){
+  obj[[sss]] <- 
+    socialConsciousH28[,c(1,2,grep(gsub('\\(|\\)','',sheetName[sss]),
+                                   gsub('\\(|\\)','',colnames(socialConsciousH28))))]
+  if(sss == 1){colnames(obj[[sss]]) <- colnames(obj[[sss]])[c(1:6,10,7:9)]}
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis',echo=F}\n\n",
+      "fun_dataTable(obj = obj[[",sss,"]],dateFormat = 0,orderDirection = 'asc',leftcolumns = 2,title = paste0(",sss,",':',sheetName[",sss,"]))\n\n",
+      "cat('<hr>')\n\n```"
+    )
+  out <- c(out, knit_expanded)
+}
+```
+
+`r paste(knit(text = out), collapse = '\n')`

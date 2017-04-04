@@ -1,0 +1,164 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-SocialConsciousH28.html')) })
+title : "Social Conscious In Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 10
+    fig_width: 13
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1300px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options,echo=F,cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importSocialConsciousH28.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <-
+  paste0('社会意識に関する世論調査:平成28年度')
+dataSource <- '内閣府'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+library(knitr)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- http://survey.gov-online.go.jp/index.html
+- http://survey.gov-online.go.jp/h28/index-h28.html
+- http://survey.gov-online.go.jp/h28/h28-shakai/index.html
+- 国を愛する気持ちの程度(表1-1(CSV形式:3KB))について元csvデータ(h01-1.csv)の列名と図1-1に違いあり。
+    - 本ページでは図1-1を正としてcsvデータの列名(『弱い(小計)』、『どちらかといえば弱い』、『非常に弱い(全くない)』、『どちらともいえない(わからない)』)を修正。
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+sheetName <-
+  unique(substring(colnames(socialConsciousH28)[-c(1,2)],1,regexpr(':',colnames(socialConsciousH28)[-c(1,2)])))
+sheetName <- sapply(sheetName,zen2han)
+length(sheetName)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+out <- NULL
+obj <- list()
+for(sss in seq(length(sheetName))){
+  obj[[sss]] <- 
+    socialConsciousH28[,c(1,2,grep(gsub('\\(|\\)','',sheetName[sss]),
+                                   gsub('\\(|\\)','',colnames(socialConsciousH28))))]
+  if(sss == 1){colnames(obj[[sss]]) <- colnames(obj[[sss]])[c(1:6,10,7:9)]}
+  knit_expanded <-
+    paste0(
+      "\n```{r results='asis',echo=F}\n\n",
+      "fun_dataTable(obj = obj[[",sss,"]],dateFormat = 0,orderDirection = 'asc',leftcolumns = 2,title = paste0(",sss,",':',sheetName[",sss,"]))\n\n",
+      "cat('<hr>')\n\n```"
+    )
+  out <- c(out, knit_expanded)
+}
+```
+
+`r paste(knit(text = out), collapse = '\n')`
+
+#### 各調査結果同士の線形回帰
+- 性別及び年齢階級別 男:青丸、女:赤丸
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_plot <- function(yN){
+par(mfrow=c(2,2),mar=c(5,5,5,1),family='Meiryo',font.main=2)
+for(n in seq(length(yN))){
+obj0 <-
+  socialConsciousH28[grep('\\([男|女]性\\).+歳', socialConsciousH28[,2]),]
+obj <- na.omit(obj0[,c(2,4,yN[n])])
+obj$Color <- NA
+obj[grep('男性',obj[,1]),]$Color <- 'blue'
+obj[grep('女性',obj[,1]),]$Color <- 'red'
+objX <- 2
+objY <- 3
+minValue <- min(obj[,objX:objY])
+maxValue <- max(obj[,objX:objY])
+plot(obj[,objX],
+     obj[,objY],
+     asp = 1,
+     col = obj$Color,
+     cex = 2,
+     pch = 20,
+     type = 'p',
+     main = paste0(colnames(obj)[objX:objY],collapse = '\n × \n'),
+     cex.axis = 1, cex.lab = 1, cex.main = 1.2, cex.sub = 1,
+     xlab = colnames(obj)[objX],
+     ylab = colnames(obj)[objY])
+panel.first = grid(nx = NULL,
+                   ny = NULL,
+                   lty = 2,
+                   equilogs = T)
+lmResult <- 
+  lm(formula = obj[grep('男性',obj[,1]),objY]~obj[grep('男性',obj[,1]),objX])
+abline(lmResult,lwd=1,col='blue')
+lmResult <- 
+  lm(formula = obj[grep('女性',obj[,1]),objY]~obj[grep('男性',obj[,1]),objX])
+abline(lmResult,lwd=1,col='red')
+}
+}
+yN <- c(12,16,21,43)
+fun_plot(yN = yN)
+yN <- c(48,65,78,91)
+fun_plot(yN = yN)
+yN <- c(107,123,139,147)
+fun_plot(yN = yN)
+yN <- c(164,192)
+fun_plot(yN = yN)
+```
+
+***
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
