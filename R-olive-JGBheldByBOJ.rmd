@@ -196,6 +196,7 @@ bufMD$`構成比(%)` <-
   round(bufMD[,2]/sum(bufMD[,2])*100,1)
 bufMD <-
   rbind(bufMD,c('合計',sum(bufMD[,2]),100))
+colnames(bufMD)[2] <- paste0(gsub('.+\\((.+)\\)','\\1',title),colnames(bufMD)[2])
 fun_markdownTable(obj = bufMD)
 ```
 <script>MakeNegative();</script>
