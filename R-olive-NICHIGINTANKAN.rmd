@@ -60,7 +60,7 @@ for(iii in 1:8){
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月期'
-fun_latestResult(obj = NICHIGINTANKAN_1,dateFormat = dateFormat,objColumn = c(2,6,10))
+fun_latestResult(obj = na.omit(NICHIGINTANKAN_1),dateFormat = dateFormat,objColumn = c(2,6,10))
 dataTitle <-
   paste0('日銀短観:',latestResult)
 dataSource <- '日本銀行'
@@ -108,8 +108,8 @@ fun_markdownTable(obj = tDF)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_makeDiffTable(obj = allData,lag = 1)
-fun_transposeDataFrame(obj = diffDF,tailN = 3,dateFormat = dateFormat)
+fun_makeDiffTable(obj = na.omit(allData),lag = 1)
+fun_transposeDataFrame(obj = diffDF,tailN = 2,dateFormat = dateFormat)
 fun_markdownTable(obj = tDF)
 ```
 
