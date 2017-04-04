@@ -147,13 +147,9 @@ fun_generateKnit(objDF = monetaryBase_Japan[,c(1,6,9)],
                  dygraphTitle = colnames(monetaryBase_Japan)[6],
                  group = 0,
                  color = c('blue','red'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
-cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
-cat('\n\n<hr>\n\n')
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
 cat('\n\n<hr>\n\n')
 ```
 
@@ -165,13 +161,9 @@ fun_generateKnit(objDF = monetaryBase_Japan[,c(1,2)],
                  group = 0,
                  color = c('blue','red'),
                  barPlot = 1)
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
-cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
-cat('\n\n<hr>\n\n')
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
 cat('\n\n<hr>\n\n')
 ```
 
@@ -237,13 +229,9 @@ colnames(mbRatio)[2] <-
   'The Ratio of USA to JAPAN(Billion dollar/Trillion JPY)'
 n <- 4
 fun_generateKnit(objDF = mbRatio,plotNum = n,group = 0)
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
-cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
-cat('\n\n<hr>\n\n')
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ', event_dygraph_range)))
 cat('\n\n<hr>\n\n')
 ```
 
@@ -251,6 +239,11 @@ cat('\n\n<hr>\n\n')
 fun_markdownTable(obj = fun_transposeDataFrame(obj = mbRatio,
                                                dateFormat = dateFormat,
                                                tailN = 4))
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_transposeDataFrame(obj = monetaryBase_Japan,tailN = 2,dateFormat = dateFormat)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
