@@ -19,8 +19,7 @@ output:
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -51,16 +50,16 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
-fun_jobOffer(sheetNo = 14)
+fun_jobOffer(dataID = '000031557424', sheetNo = 14)
+colnames(jobOffer) <- gsub('\n','',colnames(jobOffer))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = jobOffer, dateFormat = dateFormat, objColumn = -1)
+fun_latestResult(obj = jobOffer, dateFormat = dateFormat, objColumn = 2)
 dataTitle <- 
   paste0('職業別労働市場関係指標(実数,平成23年改定):', 
-         sheetTitle,':',
-         format(tail(jobOffer[,1],1),dateFormat))
+         zen2han(sheetTitle2),':',latestResult)
 dataSource <- '厚生労働省'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -76,36 +75,37 @@ options(scipen = 999)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
+tailN <- 4
 buf <-
-  fun_transposeDataFrame(obj = jobOffer,dateFormat = dateFormat,colName = '職業')
+  fun_transposeDataFrame(obj = jobOffer,dateFormat = dateFormat,colName = '職業',tailN = tailN)
 under1 <-
   subset(buf, buf[,ncol(buf)] < 1)
 over1 <-
   subset(buf, buf[,ncol(buf)] >= 1)
 ```
 
-#### 直近の有効求人倍率が1.0以上の職業:直近5ヶ月
+#### 直近の有効求人倍率が1.0以上の職業:直近`r tailN`ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = over1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
-#### 直近の有効求人倍率が1.0未満の職業:直近5ヶ月
+#### 直近の有効求人倍率が1.0未満の職業:直近`r tailN`ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = under1,needID = 1,leftcolumns = 2,dateFormat = 0,orderDirection = 'asc')
 ```
 
 ***
-#### 直近の有効求人倍率上位10:直近5ヶ月
+#### 直近の有効求人倍率上位10:直近`r tailN`ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = head(buf[order(buf[,ncol(buf)],decreasing = T),],10))
 ```
 
 ***
-#### 直近の有効求人倍率下位10:直近5ヶ月
+#### 直近の有効求人倍率下位10:直近`r tailN`5ヶ月
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = head(buf[order(buf[,ncol(buf)],decreasing = F),],10))
@@ -127,7 +127,8 @@ colnames(topJobDF) <-
   c('Date','最高有効求人倍率の職業','有効求人倍率')
 fun_dataTable(obj = topJobDF,
               title = paste0(format(range(topJobDF[,1]),dateFormat),collapse = '~'),
-              leftcolumns = 2)
+              leftcolumns = 2,
+              dateFormat = dateFormat)
 ```
 
 ***
@@ -146,7 +147,13 @@ colnames(topJobDF) <-
   c('Date','最低有効求人倍率の職業','有効求人倍率')
 fun_dataTable(obj = topJobDF,
               title = paste0(format(range(topJobDF[,1]),dateFormat),collapse = '~'),
-              leftcolumns = 2)
+              leftcolumns = 2,
+              dateFormat = dateFormat)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_transposeDataFrame(obj = jobOffer,tailN = 1,dateFormat = dateFormat,colName = sheetTitle2)
+fun_markdownTable(obj = tDF)
 ```
 
 ***
