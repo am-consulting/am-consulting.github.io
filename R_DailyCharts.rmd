@@ -34,7 +34,7 @@ for(iii in seq(1,length(symbolS),by = 2)){
                      name = symbolS[iii+1],
                      TA = if(maN <= nrow(price)){print(add_SMA(n = maN))}))
 }
-mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' periods)'),side = 1,outer = T,col = 'red')
+mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' days)'),side = 1,outer = T,col = 'red')
 ```
 
 ```{r}
@@ -62,5 +62,5 @@ for(iii in seq(1,length(symbolS),by = 2)){
                      name = symbolS[iii+1],
                      TA = if(maN <= nrow(price)){print(add_SMA(n = maN))}))
 }
-mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' periods)'),side = 1,outer = T,col = 'red')
+mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' days)'),side = 1,outer = T,col = 'red')
 ```
