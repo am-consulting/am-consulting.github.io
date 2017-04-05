@@ -11,6 +11,7 @@ fun_jobOffer <- function(dataID = '000031515544', sheetNo = 1){
   buf0 <-
     readWorksheetFromFile(paste0(pathOutput, paste0(dataID,'.xls')), sheet = sheetNo, check.names = F, header = F)
   assign('sheetTitle', zen2han(buf0[1,6]), envir = .GlobalEnv)
+  assign('sheetTitle2', zen2han(buf0[1,7]), envir = .GlobalEnv)
   buf1 <-
     buf0[-c(1:2),c(1,grep('月',buf0[3,]))]
   yyyy <-
