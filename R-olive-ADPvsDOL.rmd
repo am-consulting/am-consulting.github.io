@@ -149,7 +149,7 @@ table01[2,2] <- diffN
 table01[2,3] <- round(diffN/nrow(mergeData)*100,2)
 table01[3,1] <- 'Total'
 table01[3,2] <- sameN + diffN
-table01[3,3] <- round(sameN + diffN/nrow(mergeData)*100,2)
+table01[3,3] <- round((sameN + diffN)/nrow(mergeData)*100,2)
 colnames(table01) <- c('Sign','n','%')
 fun_markdownTable(obj = table01)
 ```
@@ -171,6 +171,9 @@ table02[2,3] <- round(negativeN/nrow(mergeData)*100,2)
 table02[3,1] <- 'Equal'
 table02[3,2] <- equalN
 table02[3,3] <- round(equalN/nrow(mergeData)*100,2)
+table02[4,1] <- 'Total'
+table02[4,2] <- positiveN + negativeN + equalN
+table02[4,3] <- round((positiveN + negativeN + equalN)/nrow(mergeData)*100,2)
 colnames(table02) <- c('DOL minus ADP','n','%')
 fun_markdownTable(obj = table02)
 ```
