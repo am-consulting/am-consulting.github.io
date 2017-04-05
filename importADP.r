@@ -42,4 +42,7 @@ buf2 <-
   data.frame(Date, apply(buf1[,-1],2,function(x)as.numeric(gsub(',','',x))),
              check.names = F,
              stringsAsFactors = F)
-ADPreport <- buf2
+buf3 <-
+  buf2[,-which(apply(buf2,2,function(x)sum(is.na(x)))==nrow(buf2))]
+colnames(buf3)[-1] <- paste0('ADP:',colnames(buf3)[-1])
+ADPreport <- buf3
