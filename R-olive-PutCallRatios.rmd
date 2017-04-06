@@ -1,0 +1,268 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-PutCallRatios.html')) })
+
+title : 'CBOE Volume & Put/Call Ratios'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importPutCallRatios.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+mergeData <- merge(putCallRatio[[4]][,c(1,5)],putCallRatio[[5]][,c(1,2)],by = 'Date')
+mergeData <- merge(putCallRatio[[3]][,c(1,5)],mergeData,by = 'Date')
+mergeData <- merge(putCallRatio[[2]][,c(1,5)],mergeData,by = 'Date')
+mergeData <- merge(putCallRatio[[1]][,c(1,5)],mergeData,by = 'Date')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y-%m-%d'
+fun_latestResult(obj = mergeData, dateFormat = dateFormat, objColumn = -1)
+dataTitle <- 
+  paste0('CBOE Volume & Put/Call Ratios:',latestResult)
+dataSource <- 'Chicago Board Options Exchange'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+lineColors <- c('green','red','blue')
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.cboe.com/data/historical-options-data/volume-put-call-ratios
+- n:Moving Average during the last n trading days.
+
+***
+
+
+#### `r csvTitle[1]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 2
+obj <- mergeData[,c(1,n)]
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[n],group = 0,quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_timeSeriesDataFundamentalStatistics(obj = obj)
+fun_markdownTable(obj = statisticsTable[,-3],rownames = T)
+cat('<hr>')
+fun_transposeDataFrame(obj = obj)
+fun_markdownTable(obj = tDF)
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+maN <- c(5,20,60)
+for(mmm in seq(length(maN))){
+  fun_MovingAverage(obj = obj,n = maN[mmm],dateFormat = dateFormat,objColumn = 2)
+  buf <- MovingAverageDF[,c(1,3)]
+  if(mmm == 1){movingAve <- buf}else{movingAve <- merge(movingAve,buf,by='Date')}
+}
+fun_generateKnit(objDF = movingAve,
+                 plotNum = n,
+                 dygraphTitle = 'Moving Average during the last n trading days',
+                 colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+#### `r csvTitle[2]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 3
+obj <- mergeData[,c(1,n)]
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[n],group = 0,quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_timeSeriesDataFundamentalStatistics(obj = obj)
+fun_markdownTable(obj = statisticsTable[,-3],rownames = T)
+cat('<hr>')
+fun_transposeDataFrame(obj = obj)
+fun_markdownTable(obj = tDF)
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+maN <- c(5,20,60)
+for(mmm in seq(length(maN))){
+  fun_MovingAverage(obj = obj,n = maN[mmm],dateFormat = dateFormat,objColumn = 2)
+  buf <- MovingAverageDF[,c(1,3)]
+  if(mmm == 1){movingAve <- buf}else{movingAve <- merge(movingAve,buf,by='Date')}
+}
+fun_generateKnit(objDF = movingAve,
+                 plotNum = n,
+                 dygraphTitle = 'Moving Average during the last n trading days',
+                 colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+#### `r csvTitle[3]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 4
+obj <- mergeData[,c(1,n)]
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[n],group = 0,quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_timeSeriesDataFundamentalStatistics(obj = obj)
+fun_markdownTable(obj = statisticsTable[,-3],rownames = T)
+cat('<hr>')
+fun_transposeDataFrame(obj = obj)
+fun_markdownTable(obj = tDF)
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+maN <- c(5,20,60)
+for(mmm in seq(length(maN))){
+  fun_MovingAverage(obj = obj,n = maN[mmm],dateFormat = dateFormat,objColumn = 2)
+  buf <- MovingAverageDF[,c(1,3)]
+  if(mmm == 1){movingAve <- buf}else{movingAve <- merge(movingAve,buf,by='Date')}
+}
+fun_generateKnit(objDF = movingAve,
+                 plotNum = n,
+                 dygraphTitle = 'Moving Average during the last n trading days',
+                 colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+#### `r csvTitle[4]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 5
+obj <- mergeData[,c(1,n)]
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[n],group = 0,quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_timeSeriesDataFundamentalStatistics(obj = obj)
+fun_markdownTable(obj = statisticsTable[,-3],rownames = T)
+cat('<hr>')
+fun_transposeDataFrame(obj = obj)
+fun_markdownTable(obj = tDF)
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+maN <- c(5,20,60)
+for(mmm in seq(length(maN))){
+  fun_MovingAverage(obj = obj,n = maN[mmm],dateFormat = dateFormat,objColumn = 2)
+  buf <- MovingAverageDF[,c(1,3)]
+  if(mmm == 1){movingAve <- buf}else{movingAve <- merge(movingAve,buf,by='Date')}
+}
+fun_generateKnit(objDF = movingAve,
+                 plotNum = n,
+                 dygraphTitle = 'Moving Average during the last n trading days',
+                 colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+#### `r csvTitle[5]`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 6
+obj <- mergeData[,c(1,n)]
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[n],group = 0,quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_timeSeriesDataFundamentalStatistics(obj = obj)
+fun_markdownTable(obj = statisticsTable[,-3],rownames = T)
+cat('<hr>')
+fun_transposeDataFrame(obj = obj)
+fun_markdownTable(obj = tDF)
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+maN <- c(5,20,60)
+for(mmm in seq(length(maN))){
+  fun_MovingAverage(obj = obj,n = maN[mmm],dateFormat = dateFormat,objColumn = 2)
+  buf <- MovingAverageDF[,c(1,3)]
+  if(mmm == 1){movingAve <- buf}else{movingAve <- merge(movingAve,buf,by='Date')}
+}
+fun_generateKnit(objDF = movingAve,
+                 plotNum = n,
+                 dygraphTitle = 'Moving Average during the last n trading days',
+                 colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph, ' %>% dyLimit(1, color = \"black\")')))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_transposeDataFrame(obj = mergeData)
+fun_markdownTable(obj = tDF)
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
