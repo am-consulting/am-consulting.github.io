@@ -17,7 +17,7 @@ buf0 <-
                         sheet = 1,
                         check.names = F,
                         header = F)
-sheetDate <- paste0(buf0[2,6],buf0[2,7])
+assign('sheetDate',paste0(buf0[2,6],buf0[2,7]),envir = .GlobalEnv)
 symbolS <-
   read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/MonthlyLabourSurveySymbols.csv',
            header = F,quote = "\"",na.strings = c(''),check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
