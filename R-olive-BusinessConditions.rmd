@@ -168,7 +168,7 @@ fun_generateKnit(objDF = mergeData,
                  group = 0,
                  colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
-cat('\nSlopeの95%信頼区間 \n')
+cat('\n線形回帰Slopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
 ```
 
@@ -190,7 +190,7 @@ fun_generateKnit(objDF = mergeData,
                  group = 0,
                  colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
-cat('\nSlopeの95%信頼区間 \n')
+cat('\n線形回帰Slopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
 ```
 
