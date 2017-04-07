@@ -177,6 +177,14 @@ cat(paste0(tail(origData4[,2],1),
            'トン'))
 ```
 
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+fun_transposeDataFrame(obj = origData1,tailN = 3,dateFormat = dateFormat)
+tDF[,1] <-
+  gsub('.+/(.+)','\\1',tDF[,1])
+cat('#### 日本の外貨準備高(単位:百万ドル)')
+fun_markdownTable(obj = tDF)
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
