@@ -49,171 +49,84 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importMonthlyLabourSurvey.r",
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_MonthlyLabourSurvey(fileID = '000007913459')
+```
+
 ```{r,warning=F,error=F,message=F,echo=F}
-fileName <-'defaultPath.csv'
-username <- Sys.info()['user']
-pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-buf000 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
-pathOutput <- paste0("C:/Users/", username, buf000[3,1])
-setwd(pathOutput)
-fileName <- dir(pathOutput)[grep('template_20161111',dir(pathOutput))]
-tmp0 <- xl.read.file(fileName, header=T, top.left.cell = "A1", xl.sheet = 2, excel.visible = F)
+# fileName <-'defaultPath.csv'
+# username <- Sys.info()['user']
+# pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+# setwd(pathToFile)
+# buf000 <- read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+# pathOutput <- paste0("C:/Users/", username, buf000[3,1])
+# setwd(pathOutput)
+# fileName <- dir(pathOutput)[grep('template_20161111',dir(pathOutput))]
+# tmp0 <- xl.read.file(fileName, header=T, top.left.cell = "A1", xl.sheet = 2, excel.visible = F)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- paste0('毎月勤労統計調査 全国調査 実数原表 - ',substring(colnames(tmp0)[1],6))
-dataSource <- '厚生労働省'
-tmp <- tmp0
-colnames(tmp)[1] <- 'ID'
-tmp[,-c(1:9)] <- apply(tmp[,-c(1:9)],2,as.numeric)
+dataTitle <- 
+  paste0('毎月勤労統計調査 全国調査 実数原表:',sheetDate)
+dataSource <- 
+  '厚生労働省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
 ***
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- Source http://www.e-stat.go.jp/SG1/estat/GL08020101.do?_toGL08020101_&tstatCode=000001011791
+- Source http://www.e-stat.go.jp/SG1/estat/GL08020102.do?_toGL08020102_&tclassID=000001029065&cycleCode=1&requestSender=estat
 
 ***
 
-```{r,warning=F,error=F,message=F,echo=F,results='hide'}
-cnt <- 1
-dtData <- dtCaption <- list()
-dataset <- tmp[,-c(6:14)]
-as.matrix(colnames(dataset))
-industry <- unique(dataset[,2])
-for(iii in 1:length(industry)){
-  buf0 <- subset(dataset,dataset[,2]==industry[iii])
-  sex <- unique(buf0[,4])
-  for(sss in 1:length(sex)){
-    buf1 <- subset(buf0,buf0[,4]==sex[sss])
-    style <- unique(buf1[,5])
-    for(ddd in 1:length(style)){
-      buf2 <- subset(buf1,buf1[,5]==style[ddd])
-      if(nrow(buf2)!=0){
-        dtData[[cnt]] <- buf2
-        dtCaption[[cnt]] <- 
-          paste0(colnames(dataset)[2],':',industry[iii],',',colnames(buf0)[4],':',sex[sss],',',colnames(buf1)[5],':',style[ddd]) 
-        cnt <- cnt + 1
-      }
-    }
-  }
-}
-length(dtData)
-```
-
-```{r,warning=F,error=F,message=F,echo=F,include=F}
-outputObj <- c(1:5) 
-out = NULL
-for (iii in outputObj) {
-  knit_expanded <-
-    paste0(
-      "\n```{r results='asis', echo=F}\n\n",
-      "fun_dataTable(obj = dtData[[",iii,"]][,-c(2,4,5)], title = dtCaption[[",iii,
-      "]], orderDirection = 'asc', dateFormat = 0, leftcolumns = 2)\n\n",
-      "cat('<hr>')\n\n```"
-    )
-  out = c(out, knit_expanded)
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+for(iii in seq(length(industriesName))){
+  obj0 <- 
+    get(paste0('industry',formatC(iii,width = 3,flag = 0)))
+  obj1 <- 
+    obj0[,c(1:3,10,13)]
+  obj2 <- 
+    obj1[grep('男女計',obj1[,2]),]
+  obj3 <- 
+    obj2[grep('一般労働者',obj2[,3]),]
+  obj3$`時給換算:円/h` <- 
+    round(obj3[,5]/obj3[,4])
+  cat(paste0('<b><h4>',industriesName[iii],'</h4></b>'))
+  fun_markdownTable(obj = obj3)
+  cat('<hr>')
+  buf <-
+    obj3[grep('T:5人以上',obj3[,1]),]
+  buf$`産業` <- 
+    industriesName[iii]
+  if(iii == 1){compareData <- buf}else{compareData <- rbind(compareData,buf)}
 }
 ```
 
-`r paste(knit(text = out), collapse = '\n')`
+#### 産業別時給換算表
+- 規模:5人以上、性:男女計、形態:一般労働者の場合
 
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-statData <- subset(
-  dataset,dataset[,3]==unique(dataset[,3])[1] & dataset[,4]==unique(dataset[,4])[1] & dataset[,5]==unique(dataset[,5])[2])
-ind0 <- paste0('規模:',unique(dataset[,3])[1],',性別:',unique(dataset[,4])[1],',形態:',unique(dataset[,5])[2])
-buf0 <- statData[,-c(3,4,5)]
-```
-
-#### 各種ランキング
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-objColumn <- 4
-cat(paste0('<h5>',colnames(buf0)[objColumn],' Top 10</h5>'))
-buf <- head(buf0[order(buf0[,objColumn],decreasing = T),],10)
-buf <- buf[,c(1,2,objColumn)]
-
-cat(paste0('<h5>',ind0,'</h5>'))
-buf$Rank <- seq(nrow(buf))
-buf <- buf[,c(4,1:3)]
-fun_markdownTable(obj = buf)
-```
-
-***
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-cat(paste0('<h5>',colnames(buf0)[objColumn],' Bottom 10</h5>'))
-buf <- head(buf0[order(buf0[,objColumn],decreasing = F),],10)
-buf <- buf[,c(1,2,objColumn)]
-
-cat(paste0('<h5>',ind0,'</h5>'))
-buf$Rank <- seq(nrow(buf))
-buf <- buf[,c(4,1:3)]
-fun_markdownTable(obj = buf)
-```
-
-***
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-objColumn <- 7
-cat(paste0('<h5>',colnames(buf0)[objColumn],' Top 10</h5>'))
-buf <- head(buf0[order(buf0[,objColumn],decreasing = T),],10)
-buf <- buf[,c(1,2,objColumn)]
-
-cat(paste0('<h5>',ind0,'</h5>'))
-buf$Rank <- seq(nrow(buf))
-buf <- buf[,c(4,1:3)]
-fun_markdownTable(obj = buf)
-```
-
-***
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-cat(paste0('<h5>',colnames(buf0)[objColumn],' Bottom 10</h5>'))
-buf <- head(buf0[order(buf0[,objColumn],decreasing = F),],10)
-buf <- buf[,c(1,2,objColumn)]
-
-cat(paste0('<h5>',ind0,'</h5>'))
-buf$Rank <- seq(nrow(buf))
-buf <- buf[,c(4,1:3)]
-fun_markdownTable(obj = buf)
-```
-
-***
-##### 時給換算 Top10 (現金給与額.総額 ÷ 実労働時間.総額)
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-buf1 <- data.frame(buf0[,c(1,2)], round(buf0[,7]/buf0[,4]), check.names = F, stringsAsFactors = F)
-colnames(buf1)[3] <- paste0('時給換算:',colnames(buf0[7]),'/',colnames(buf0[4]))
-buf <- head(buf1[order(buf1[,3],decreasing = T),],10)
-
-cat(paste0('<h5>',ind0,'</h5>'))
-buf$Rank <- seq(nrow(buf))
-buf <- buf[,c(4,1:3)]
-fun_markdownTable(obj = buf)
-```
-
-***
-
-##### 時給換算 Bottom10 (現金給与額.総額 ÷ 実労働時間.総額)
-
-```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-buf <- head(buf1[order(buf1[,3],decreasing = F),],10)
-
-cat(paste0('<h5>',ind0,'</h5>'))
-buf$Rank <- seq(nrow(buf))
-buf <- buf[,c(4,1:3)]
-fun_markdownTable(obj = buf)
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+library(Nippon)
+dataDF <- compareData[,c(ncol(compareData),1:(ncol(compareData)-1))]
+dataDF[,1] <- sapply(dataDF[,1],zen2han)
+fun_dataTable(obj = dataDF[,c(1,5,6,7)],dateFormat = 0,needID = 1,leftcolumns = 2,orderDirection = 'asc')
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
-summary(buf1[,3])
-```
-
-```{r,warning=F,error=F,message=F,echo=F,results='hide'}
-knitr::kable(buf[,-1],row.names = F)
+top10 <- head(dataDF[order(dataDF[,7],decreasing = T),],10)[,-c(2:4)]
+bottom10 <- head(dataDF[order(dataDF[,7],decreasing = F),],10)[,-c(2:4)]
+cat('#### 規模:5人以上、性:男女計、形態:一般労働者の時給換算ランキング')
+cat('- Top10')
+fun_markdownTable(obj = top10)
+cat('- Bottom10')
+fun_markdownTable(obj = bottom10)
 ```
 
 ***
