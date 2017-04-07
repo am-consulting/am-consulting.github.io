@@ -46,6 +46,8 @@ for(iii in seq(length(industries))){
     paste0(obj[objColumn,],':',obj[objColumn+1,],':',obj[objColumn+2,],':',obj[objColumn+3,])
   tmp <-
     gsub('NA:パートタイム労働者数','本調査期間末:パートタイム労働者数',tmp)
+  tmp <-
+    gsub('規模:性','性',tmp)
   colnames(obj) <-
     gsub(':na','',tmp,ignore.case = T)
   industriesName[iii] <-
