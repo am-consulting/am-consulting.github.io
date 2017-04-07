@@ -135,15 +135,18 @@ objDF <- na.omit(dataSet[,c(1,objColumn)])
 lo <-
   lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
      data = objDF)
-objDF <-
-  data.frame(objDF, Fitted = lo$fitted.values,check.names = F,stringsAsFactors = F)
-fun_generateKnit(objDF = objDF,
+####
+fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
+####
+fun_generateKnit(objDF = mergeData,
                  plotNum = n,
                  dygraphTitle = colnames(objDF)[2],
                  group = 0,
-                 colors = c('blue','red'))
+                 colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
-cat('\nSlopeの95%信頼区間 \n')
+cat('\n線形回帰Slopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
 ```
 
@@ -154,13 +157,16 @@ objDF <- na.omit(dataSet[,c(1,objColumn)])
 lo <-
   lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
      data = objDF)
-objDF <-
-  data.frame(objDF, Fitted = lo$fitted.values,check.names = F,stringsAsFactors = F)
-fun_generateKnit(objDF = objDF,
+####
+fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
+####
+fun_generateKnit(objDF = mergeData,
                  plotNum = n,
                  dygraphTitle = colnames(objDF)[2],
                  group = 0,
-                 colors = c('blue','red'))
+                 colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
 cat('\nSlopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
@@ -173,13 +179,16 @@ objDF <- na.omit(dataSet[,c(1,objColumn)])
 lo <-
   lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
      data = objDF)
-objDF <-
-  data.frame(objDF, Fitted = lo$fitted.values,check.names = F,stringsAsFactors = F)
-fun_generateKnit(objDF = objDF,
+####
+fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
+####
+fun_generateKnit(objDF = mergeData,
                  plotNum = n,
                  dygraphTitle = colnames(objDF)[2],
                  group = 0,
-                 colors = c('blue','red'))
+                 colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
 cat('\nSlopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
