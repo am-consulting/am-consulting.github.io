@@ -1,11 +1,75 @@
 ```{r}
-library(quantmod);library(forecast)
+library(quantmod);library(forecast);library(gridExtra);library(grid)
 options(scipen = 999)
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 username <- Sys.info()['user']
 pathOutput <-
   paste("C:/Users/", username, "/Desktop/R_Data_Write/", sep = "")
 setwd(pathOutput)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r}
+vii <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/VeryImportantIndexes.csv',
+           header = F,
+           quote = "\"",
+           stringsAsFactors = F)
+```
+
+```{r}
+amccTheme <- 
+  gridExtra::ttheme_minimal(
+    core = list(fg_params = list(hjust=1, cex = 2.0, x = 1, fontfamily = 'Meiryo')),
+    colhead = list(fg_params = list(hjust=1, cex = 2.0, x = 1, fontfamily = 'Meiryo')),
+    rowhead = list(fg_params = list(hjust=1, cex = 2.0, x = 1, fontfamily = 'Meiryo')))
+```
+
+```{r}
+dateFormat <- '%Y-%m'
+dataSource <- 'Federal Reserve Bank of St. Louis'
+iii <- 2
+tmp <-
+  getSymbols(Symbols = vii[iii,1],auto.assign = F,src = 'FRED')
+buf <-
+  data.frame(Date = index(tmp),tmp,check.names = F,stringsAsFactors = F,row.names = NULL)
+colnames(buf)[2] <- 
+  paste0(vii[iii,2],':',vii[iii,3])
+if(length(grep('^percent change',vii[iii,3],ignore.case = T))!=0){
+  buf <-
+    fun_makeDiffRatioTable(obj = buf,lag = 1)
+}
+obj <- tail(buf,3*12)
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'h',
+                   dateFormat = dateFormat,
+                   lwdL = 2,
+                   dataSource = dataSource,
+                   needLefLab = 0,
+                   chartType = 0,mar = c(4,3,5,3),fitLcolor = 2)
+pushViewport(viewport(x = 0.2, y = 0.75))
+
+tableDF <- tail(buf,3)
+colnames(tableDF)[2] <- 'Value'
+tableDF[,1] <- format(tableDF[,1],dateFormat)
+grid.table(tableDF,row=NULL, theme = amccTheme)
 ```
 
 ```{r}
