@@ -42,7 +42,9 @@ for(rrr in 1:nrow(buf2)){
 buf2[,1] <-
   as.Date(paste0(buf2[,1],'-',as.numeric(gsub('月','',buf2[,4])),'-1'))
 buf2[,-1] <-
-  apply(buf2[,-1],2,function(x) as.numeric(gsub(',|△','',x)))
+  apply(buf2[,-1],2,function(x) gsub('△','-',x))
+buf2[,-1] <-
+  apply(buf2[,-1],2,function(x) as.numeric(gsub(',|\\s','',x)))
 tmp <- NA
 for(ccc in 1:ncol(buf1)){
   if(!is.na(buf1[3,ccc])){tmp <- gsub('\\s','',buf1[3,ccc])}
