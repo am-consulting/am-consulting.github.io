@@ -66,6 +66,16 @@ politicalPartyApprovalRatingsS[,-1] <-
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+lastDate <- tail(na.omit(cabinetApprovalRatingS),1)[,1]
+cabinetApprovalRatingS <- 
+  subset(cabinetApprovalRatingS,
+         cabinetApprovalRatingS[,1] <= lastDate)
+politicalPartyApprovalRatingsS <-
+  subset(politicalPartyApprovalRatingsS,
+         politicalPartyApprovalRatingsS[,1] <= lastDate)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = cabinetApprovalRatingS,objColumn = c(2,3),dateFormat = dateFormat)
 dataTitle <- 
@@ -80,6 +90,7 @@ options(scipen = 999)
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
 - Source https://www.nhk.or.jp/bunken/research/yoron/index.html
+- 『※2017年4月から固定電話に加えて携帯電話にも電話をかけて調査を実施しています。』(NHK放送文化研究所Webサイトより引用)
 
 ***
 #### 自民党の政党支持率時系列推移
