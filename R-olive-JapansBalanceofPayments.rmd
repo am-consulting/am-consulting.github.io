@@ -65,8 +65,15 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+colnames(origData1) <- gsub('.+/(.+)','\\1',colnames(origData1))
+colnames(origData2) <- gsub('.+/(.+)','\\1',colnames(origData2))
+colnames(origData3) <- gsub('.+/(.+)','\\1',colnames(origData3))
+colnames(origData4) <- gsub('.+/(.+)','\\1',colnames(origData4))
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = origData1,dateFormat = dateFormat)
+fun_latestResult(obj = origData1,dateFormat = dateFormat,objColumn = c(2,4))
 dataTitle <- 
   paste0('日本の国際収支:経常収支,資本移転等収支,金融収支,誤差脱漏,貿易収支,サービス収支,所得収支,輸出,輸入(億円):', latestResult) 
 dataSource <- '財務省'
@@ -116,7 +123,43 @@ funamBarplot(obj = bop, mainTitle = '日本の国際収支(単位：億円)' )
 ***
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-fun_dataTable(obj = tail(bop0,5*12),dateFormat = 0)
+obj <- origData1[, c(1, 2, 10, 11, 17)]
+fun_dataTable(obj = tail(obj,5*12),dateFormat =dateFormat,title = '単位:億円')
+```
+
+***
+#### 経常収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+fun_withList(obj = obj)
+fun_withWiki(obj = dfWithList)
+obj0 <- dfWithWiki[,-c(3:5,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+```
+
+***
+#### 金融収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj0 <- dfWithWiki[,-c(2,3,5,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+```
+
+***
+#### 資本移転収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj0 <- dfWithWiki[,-c(2,4,5,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
 ```
 
 ***
@@ -135,6 +178,53 @@ funamBarplot(obj = currentAccount, mainTitle = '日本の経常収支(単位：�
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 fun_dataTable(obj = tail(currentAccount0,5*12),dateFormat = 0)
+```
+
+***
+#### 貿易収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj <- origData1[, c(1,4,7:9)]
+fun_withList(obj = obj)
+fun_withWiki(obj = dfWithList)
+obj0 <- dfWithWiki[,-c(3:5,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+```
+
+***
+#### サービス収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj0 <- dfWithWiki[,-c(2,4,5,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+```
+
+***
+#### 第一次所得収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj0 <- dfWithWiki[,-c(2,3,5,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+```
+
+***
+#### 第二次所得収支の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj0 <- dfWithWiki[,-c(2,3,4,11:12)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('##### ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
 ```
 
 ***
@@ -191,11 +281,35 @@ cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
+***
+#### 貿易輸出の最高額と最低額(単位:億円)
+
+```{r,warning=F,error=F,message=F,results='asis',echo=F}
+obj <- origData1[, c(1,5:6)]
+fun_withList(obj = obj)
+fun_withWiki(obj = dfWithList)
+cat('- 輸出\n')
+obj0 <- dfWithWiki[,-c(3,9,10)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('- ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+cat('<hr>')
+cat('- 輸入\n')
+obj0 <- dfWithWiki[,-c(2,9,10)]
+obj0 <- rbind(subset(obj0,max(obj0[,2])==obj0[,2]),subset(obj0,min(obj0[,2])==obj0[,2]))
+obj0[,1] <- format(obj0[,1],dateFormat)
+cat(paste0('- ',paste0(format(range(dfWithWiki[,1]),dateFormat),collapse = ' ~ ')))
+fun_markdownTable(obj = obj0)
+```
+
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
-obj <- origData1
-colnames(obj) <-
-  gsub('.+/(.+)','\\1',colnames(obj),ignore.case = T)
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,tailN = 6)
+buf <- merge(origData3,origData4,by='Date')
+obj2 <- merge(origData2,buf,by='Date')
+obj1 <- origData1
+fun_transposeDataFrame(obj = obj1,dateFormat = dateFormat,tailN = 3)
+fun_markdownTable(obj = tDF)
+fun_transposeDataFrame(obj = obj2,dateFormat = dateFormat,tailN = 3)
 fun_markdownTable(obj = tDF)
 ```
 
