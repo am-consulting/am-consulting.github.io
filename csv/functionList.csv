@@ -23,3 +23,5 @@ R-doSimulation.r
 R-MovingAverage.r
 R-HistoricalVolatility.r
 R-monthlyTSbyYear.r
+R-ListOfPresidents.r
+R-withList.r
