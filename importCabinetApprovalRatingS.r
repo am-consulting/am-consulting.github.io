@@ -16,10 +16,22 @@ for(yyyy in 1998:2017){
   }
   tableList <-
     htmlMarkup0 %>% html_nodes(xpath = '//table') %>% html_table()
+  if(yyyy == 2017){
+    tableList[[1]] <-
+      tableList[[1]][,apply(tableList[[1]],2,function(x)sum(is.na(x)))!=nrow(tableList[[1]])]
+    tableList[[2]] <-
+      tableList[[2]][,apply(tableList[[2]],2,function(x)sum(is.na(x)))!=nrow(tableList[[2]])]
+  }
   for(iii in 1:2){
     buf0 <- tableList[[iii]]
-    if(2016 <= yyyy){
+    if(2016 == yyyy){
       buf0 <- rbind(colnames(buf0),buf0)
+      if(iii == 1){
+        buf0[nrow(buf0)+1,] <- rep(cabinet,ncol(buf0))
+        buf0[nrow(buf0),1] <- colnames(cabinetApprovalRatingS)[4]
+      }
+    }
+    if(2017 == yyyy){
       if(iii == 1){
         buf0[nrow(buf0)+1,] <- rep(cabinet,ncol(buf0))
         buf0[nrow(buf0),1] <- colnames(cabinetApprovalRatingS)[4]
