@@ -13,7 +13,7 @@ aLink <-
 objURL <- aLink[grep('.xls',aLink)]
 fileName <-
   gsub('.+/(.+\\.xls)','\\1',objURL)
-download.file(url = paste0('http://infographics.economist.com/2017/databank/',fileName),
+download.file(url = objURL,
               destfile = fileName,
               mode = 'wb')
 sheetName <-
