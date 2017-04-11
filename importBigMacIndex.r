@@ -18,12 +18,18 @@ download.file(url = objURL,
               mode = 'wb')
 sheetName <-
   getSheets(loadWorkbook(fileName))
-for(sss in 1:length(sheetName)){
+sheetS <- 1
+sheetE <- length(sheetName)
+for(sss in sheetS:sheetE){
   buf0 <-
     read.xls (xls = paste0(pathOutput, fileName),
               sheet = sheetName[sss],
               header = T,
-              na.strings = c(''))
+              na.strings = c(''),
+              stringsAsFactors = F,
+              check.names = F,
+              row.names = NULL)
+  buf0[,-1] <- apply(buf0[,-1],2,as.numeric)
   buf0 <-
     buf0[,apply(buf0,2,function(x)sum(is.na(x)))!=nrow(buf0)]
   buf0$Date <-
@@ -31,7 +37,7 @@ for(sss in 1:length(sheetName)){
                    match(gsub('(.+)[0-9]{4}','\\1',sheetName[sss]),month.abb),'-1'))
   buf0$cnt <- sss
   colnames(buf0) <- gsub('id','Country',colnames(buf0),ignore.case = T)
-  if(sss == 1){
+  if(sss == sheetS){
     bigMacIndex0 <- buf0
   }else{
     bigMacIndex0 <- rbind.fill(bigMacIndex0,buf0)
