@@ -157,6 +157,21 @@ if(loadTMP==1) {
 }
 ```
 
+```{r,warning=F,error=F,message=F,echo=F,results='hide'} 
+pathToCSV <- 
+  paste0("C:/Users/", username, buf000[2,1], 'csv/Intrusion/')
+setwd(pathToCSV)
+getwd()
+intrusionCSVData <- dataSet0
+csvfileName <- 'intrusionIntoTerritorialWaters.csv'
+write.csv(x = intrusionCSVData,
+          file = csvfileName,
+          quote = T,
+          row.names = F,
+          append = F,
+          fileEncoding = 'utf8')
+```
+
 ```{r,warning=F,error=F,message=F,echo=F} 
 funbarPlot <- function() {
   dataSet00 <- tail(dataSet, 10)
@@ -481,6 +496,11 @@ fun_dataTable(obj = tableObj,dateFormat = 0,orderDirection = 'asc')
 fun_markdownTable(obj = statResultDF[,-1])
 ```
 
+```{r,warning=F,error=F,message=F,results='hide',echo=F}
+fun_transposeDataFrame(obj = na.omit(dataSet),tailN = 5,dateFormat = '%Y年%m月%d日')
+fun_markdownTable(obj = tDF)
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
@@ -493,3 +513,35 @@ fun_markdownTable(obj = statResultDF[,-1])
   ga('send', 'pageview');
 
 </script>
+
+<!--
+
+--- 
+tags : [中国,海上保安庁,接続水域入域,領海侵入,尖閣] 
+published : true
+---
+
+# 中国公船による尖閣諸島接近(接続水域入域･領海侵入)状況の統計分析:2017-04-12更新
+## 統計データ概要
+
+***
+
+
+|               Item| 2017年04月06日| 2017年04月07日| 2017年04月08日| 2017年04月09日| 2017年04月10日|
+|------------------:|--------------:|--------------:|--------------:|--------------:|--------------:|
+|   接続水域入域(隻)|              4|              4|              4|              4|              4|
+|   うち領海侵入(隻)|              0|              0|              0|              0|              4|
+| うち非領海侵入(隻)|              4|              4|              4|              4|              0|
+
+
+
+
+
+***
+
+##データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html)
+
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-intrusion.html" width="100%" height="800px"></iframe>
+
+-->
