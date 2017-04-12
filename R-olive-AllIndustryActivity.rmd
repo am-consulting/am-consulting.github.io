@@ -106,7 +106,7 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatioDF,
 
 
 ***
-#### 全産業活動指数とマネタリーベースの比較:正規化(平均0、分散1)後の比較
+#### 全産業活動指数とマネタリーベースの比較:正規化(Center:平均値、Scale:標準偏差)後の比較
 - (注意)全産業活動指数:季節調整値、マネタリーベース:原数値
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis',fig.height=5}

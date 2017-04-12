@@ -254,7 +254,7 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF, dateFormat = dateFo
 ```
 
 ***
-####  CI指数(H22=100):一致指数とマネタリーベースの比較:正規化(平均0、分散1)後の比較
+####  CI指数(H22=100):一致指数とマネタリーベースの比較:正規化(Center:平均値、Scale:標準偏差)後の比較
 - (注意)マネタリーベース:原数値
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis',fig.height=5}
