@@ -1,0 +1,195 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);pathToFolder000<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,pathToFolder000[2,1],'charts/','am-consulting.co.jp-scrambleInResponse.html')) })
+title : "Scrambles In Response By Japan Self Defense Force planes"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(excel.link)
+fileName <-
+  'defaultPath.csv'
+username <-
+  Sys.info()['user']
+pathToFile <- 
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf000 <- 
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+pathOutput <- 
+  paste0("C:/Users/", username, buf000[3,1])
+setwd(pathOutput)
+fileName <- 
+  dir(pathOutput)[grep('scrambleinresponse',dir(pathOutput),ignore.case = T)]
+dataSet <- 
+  xl.read.file(fileName, header=T, top.left.cell = "A1", xl.sheet = 1, excel.visible = F)
+dataSet[,1] <- as.Date(dataSet[,1])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'} 
+pathToCSV <- 
+  paste0("C:/Users/", username, buf000[2,1], 'csv/Scrambles/')
+setwd(pathToCSV)
+getwd()
+csvfileName <- 'ScramblesInResponseByJSD.csv'
+write.csv(x = dataSet,
+          file = csvfileName,
+          quote = T,
+          row.names = F,
+          append = F,
+          fileEncoding = 'utf8')
+```
+
+```{r warning=F,error=F,message=F,results='hold',echo=F}
+dateFormat <- '%Y年度'
+fun_latestResult(obj = dataSet,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('自衛隊機によるスクランブル発進(緊急発進):対ロシア,中国,台湾,北朝鮮,その他:',latestResult)
+dataSource <- 
+  '防衛省・統合幕僚監部'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.mod.go.jp/js/Press/press2017/press_pdf/p20170120_02.pdf
+- 2016年度は3四半期までの回数(対象期間:平成28年4月1日~平成28年12月31日)
+- 時系列プロットに際して各年度日付は3月末としている。例 2015年度 → 2016年3月31日
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataFY <- dataSet
+dataFY[,1] <- dataFY[,1] %m+% months(15)-1
+n <- 1
+fun_generateKnit(objDF = dataFY[,c(1,2)],
+                 plotNum = n,
+                 barPlot = 0,
+                 group = 0,
+                 dygraphTitle = colnames(dataFY)[2],
+                 colors = 'red')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = dataSet,dateFormat = dateFormat,menuLength = 30)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+byCountry <- 
+  na.omit(dataSet[,-2])
+portionDF <- 
+  apply(byCountry[,-1],1,function(x)round(x/tail(x,1)*100,1))
+colnames(portionDF) <- 
+  format(byCountry[,1],dateFormat)
+byCountry[,1] <- 
+  format(byCountry[,1],dateFormat)
+fun_markdownTable(obj = byCountry)
+fun_markdownTable(obj = portionDF,rownames = T)
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!--
+
+--- 
+tags : [中国,ロシア,北朝鮮,台湾,スクランブル発進,緊急発進,自衛隊] 
+published : true
+---
+
+# 自衛隊機によるスクランブル発進(緊急発進):対ロシア,中国,台湾,北朝鮮,その他:2016年度:年度緊急発進回数:883
+## 統計データ概要
+
+***
+#### スクランブル発進回数
+
+
+
+|     年度| ロシア| 中国| 台湾| 北朝鮮| その他| 合計|
+|--------:|------:|----:|----:|------:|------:|----:|
+| 2012年度|    248|  306|    1|      0|     12|  567|
+| 2013年度|    359|  415|    1|      9|     26|  810|
+| 2014年度|    473|  464|    1|      0|      5|  943|
+| 2015年度|    288|  571|    2|      0|     12|  873|
+| 2016年度|    231|  644|    6|      0|      2|  883|
+
+
+
+
+
+
+***
+#### スクランブル発進回数国別構成比(%)
+
+
+
+
+|       | 2012年度| 2013年度| 2014年度| 2015年度| 2016年度|
+|:------|--------:|--------:|--------:|--------:|--------:|
+|ロシア |     43.7|     44.3|     50.2|       33|     26.2|
+|中国   |       54|     51.2|     49.2|     65.4|     72.9|
+|台湾   |      0.2|      0.1|      0.1|      0.2|      0.7|
+|北朝鮮 |        0|      1.1|        0|        0|        0|
+|その他 |      2.1|      3.2|      0.5|      1.4|      0.2|
+|合計   |      100|      100|      100|      100|      100|
+
+
+
+
+
+
+***
+
+##データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-scrambleInResponse.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-scrambleInResponse.html" width="100%" height="800px"></iframe>
+
+-->
