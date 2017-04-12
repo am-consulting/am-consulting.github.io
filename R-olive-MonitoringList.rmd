@@ -1,0 +1,216 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MonitoringList.html')) })
+title : "Currencies Of Monitoring List"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+# ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", functionList[iii,1]),
+    ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+# devtools::install_github("joshuaulrich/quantmod")
+# https://cran.r-project.org/bin/windows/Rtools/
+# https://github.com/joshuaulrich/quantmod/issues/144
+# https://github.com/joshuaulrich/quantmod/issues/145
+# https://github.com/joshuaulrich/quantmod/commit/79f0e1d17bb689dabf8c2aa19366fe881416b567
+library(quantmod)
+country <- 
+  c('JPY','CNY','TWD','EUR','KRW','CHF')
+for(iii in seq(length(country))){
+  tmp <- 
+    getSymbols(paste0('USD/',country[iii]), 
+               src = "oanda", 
+               auto.assign = F)
+  if(iii == 1){currencyData <- tmp}else{currencyData <- merge(currencyData,tmp)}
+}
+colnames(currencyData) <-
+  gsub('\\.','/',colnames(currencyData))
+currencyData <-
+  data.frame(Date = index(currencyData),currencyData,
+             stringsAsFactors = F,check.names = F,row.names = NULL)
+currencyName <-
+  c('Japanese Yen','日本円',
+    'Chinese Yuan Renminbi','中国元',
+    'Taiwan Dollar','台湾ドル',
+    'Euro','ユーロ',
+    'South-Korean Won','韓国ウォン',
+    'Swiss Franc','スイスフラン')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dateFormat <- '%Y-%m-%d'
+fun_latestResult(obj = currencyData,
+                 objColumn = -1,
+                 dateFormat = dateFormat)
+dataTitle <- 
+  paste0('米国為替報告書で監視の対象となった国のドルストレート為替レート:', latestResult)
+dataSource <- 
+  'U.S. Department of the Treasury Office of International Affairs、OANDA Corporation'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+lineColor <- c('blue','green')
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- チャート縦軸の上方に向かうほど米ドル高(監視通貨安)、下方に向かうほど米ドル安(監視通貨高)を意味します。
+
+***
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 2
+cat(paste0('#### ',currencyName[1],' / ',currencyName[2],'\n\n'))
+obj <- currencyData[,c(1,n)]
+dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
+fun_fit(obj = obj)
+fun_generateKnit(objDF = fittedDF[,c(1:3)],
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
+                 group = 0,
+                 quantiles = 2,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot',n)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 3
+cat(paste0('#### ',currencyName[3],' / ',currencyName[4],'\n\n'))
+obj <- currencyData[,c(1,n)]
+dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
+fun_fit(obj = obj)
+fun_generateKnit(objDF = fittedDF[,c(1:3)],
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
+                 group = 0,
+                 quantiles = 2,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot',n)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 4
+cat(paste0('#### ',currencyName[5],' / ',currencyName[6],'\n\n'))
+obj <- currencyData[,c(1,n)]
+dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
+fun_fit(obj = obj)
+fun_generateKnit(objDF = fittedDF[,c(1:3)],
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
+                 group = 0,
+                 quantiles = 2,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot',n)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 5
+cat(paste0('#### ',currencyName[7],' / ',currencyName[8],'\n\n'))
+obj <- currencyData[,c(1,n)]
+dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
+fun_fit(obj = obj)
+fun_generateKnit(objDF = fittedDF[,c(1:3)],
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
+                 group = 0,
+                 quantiles = 2,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot',n)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 6
+cat(paste0('#### ',currencyName[9],' / ',currencyName[10],'\n\n'))
+obj <- currencyData[,c(1,n)]
+dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
+fun_fit(obj = obj)
+fun_generateKnit(objDF = fittedDF[,c(1:3)],
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
+                 group = 0,
+                 quantiles = 2,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot',n)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 7
+cat(paste0('#### ',currencyName[10],' / ',currencyName[11],'\n\n'))
+obj <- currencyData[,c(1,n)]
+dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
+fun_fit(obj = obj)
+fun_generateKnit(objDF = fittedDF[,c(1:3)],
+                 plotNum = n,
+                 dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
+                 group = 0,
+                 quantiles = 2,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot',n)))
+cat('<hr>')
+```
+
+####  正規化後の比較
+- Center:`r currencyData[1,1]`の各通貨ペア為替レート
+- Scale:各通貨ペア時系列データの標準偏差
+
+```{r warning=F, error=F, message=F, echo=F, results='asis',fig.height=5}
+scaleData <-
+  data.frame(currencyData[,1], 
+             scale(x = currencyData[,-1],center = unlist(currencyData[1,-1])),
+             check.names = F, 
+             stringsAsFactors = F)
+dateRange <- paste0(range(scaleData[,1]),collapse = ' ~ ')
+n <- 10
+fun_generateKnit(objDF = scaleData,
+                 plotNum = n,dygraphTitle = paste0('正規化チャート<br>',dateRange))
+eval(parse(text = paste0('dygraphPlot',n,' %>% dyLimit(0, color = "black")')))
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
