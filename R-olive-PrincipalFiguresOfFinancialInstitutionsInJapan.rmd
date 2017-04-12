@@ -225,6 +225,11 @@ fun_transposeDataFrame(obj = diffRatioDF,dateFormat = dateFormat,tailN = 5)
 fun_markdownTable(obj = tDF)
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_transposeDataFrame(obj = PrincipalFiguresOfFinancialInstitutions,dateFormat = dateFormat,tailN = 3)
+fun_markdownTable(obj = tDF)
+```
+
 ***
 <script>MakeNegative()</script>
 <script>
@@ -237,3 +242,35 @@ fun_markdownTable(obj = tDF)
   ga('send', 'pageview');
 
 </script>
+
+<!--
+
+--- 
+tags : [貸出, 預金, 銀行, 都銀, 地銀, 日本銀行] 
+published : true
+---
+# 貸出･預金動向 速報:2017-03:貸出・預金動向(月次):総貸出平残(銀行計)(億円):4463838 , 貸出・預金動向(月次):総貸出平残(銀行計)前年比(%):3
+## 統計データ概要
+
+***
+
+|                                                        Item| 2017年01月| 2017年02月| 2017年03月|
+|-----------------------------------------------------------:|----------:|----------:|----------:|
+|      貸出・預金動向(月次):総貸出平残(銀行・信金計)(a)(億円)|  5,110,630|  5,107,886|  5,130,602|
+|               貸出・預金動向(月次):総貸出平残(銀行計)(億円)|  4,445,939|  4,443,976|  4,463,838|
+|            貸出・預金動向(月次):総貸出平残(銀行計)前年比(%)|        2.6|        2.9|          3|
+|             貸出・預金動向(月次):総貸出平残/都銀等(b)(億円)|  2,104,147|  2,100,668|  2,107,211|
+|          貸出・預金動向(月次):総貸出平残/地銀・地銀II(億円)|  2,341,792|  2,343,308|  2,356,627|
+|                  貸出・預金動向(月次):総貸出平残/地銀(億円)|  1,852,299|  1,854,740|  1,865,645|
+|                貸出・預金動向(月次):総貸出平残/地銀II(億円)|    489,493|    488,568|    490,982|
+|               貸出・預金動向(月次):総貸出平残/信金(c)(億円)|    664,691|    663,910|    666,764|
+|    貸出・預金動向(月次):総貸出平残/(参考)外銀(円貸出)(億円)|     21,342|     21,080|     22,219|
+| 貸出・預金動向(月次):総貸出平残/その他国内対象銀行(d)(億円)|     45,202|     45,193|     45,829|
+
+***
+	
+## データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-PrincipalFiguresOfFinancialInstitutionsInJapan.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-PrincipalFiguresOfFinancialInstitutionsInJapan.html" width="100%" height="800px"></iframe>
+
+-->
