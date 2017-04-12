@@ -15,15 +15,17 @@ published : true
 1. [財務省(日本)の外国為替平衡操作(為替介入)推移](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html)
 1. [黒田総裁就任以降の日本銀行金融政策の変遷](http://olive.saecanet.com/2016/09/blog-post_22.html)
 1. 監視リストで名指しされた国(Economy)のドルストレート為替レート
+	- [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MonitoringList.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MonitoringList.html" width="100%" height="600px"></iframe>
+
+
 
 ***
-
 ##### Page 1 ~ Page 2
 
 
 
 ***
-
 ##### Page 5
 
 
@@ -31,14 +33,12 @@ published : true
 
 
 ***
-
-
-
 ##### Page 19 ~ Page 21
 - 日本
 
 
-
+***
+	
 
 
 
