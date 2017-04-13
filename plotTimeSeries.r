@@ -21,7 +21,7 @@ fun_plotTimeSeries <-
            yaxisReverseR = FALSE,
            font.axis = 1,
            font.main = 1,
-           font.lab = 1,
+           font.lab = 1,fitlwdL = 1, fitlwdR = 1,
            font.sub = 1,pchL = 20,pchR = 20,cexL = 0.9,cexR = 0.9) {
     if(chartType != 0){
       obj <- obj[,c(objX,objYL,objYR)]
@@ -88,7 +88,7 @@ fun_plotTimeSeries <-
     lines(x = obj[,1],
           y = predict(lo),
           col = lineColor[fitLcolor],
-          lwd = lwdL,
+          lwd = fitlwdL,
           lty = 2)
     }
 
@@ -132,7 +132,7 @@ fun_plotTimeSeries <-
       lines(x = obj[,1],
             y = predict(lo),
             col = lineColor[fitRcolor],
-            lwd = lwdR,
+            lwd = fitlwdR,
             lty = 2)
       }
       graphics::legend(
