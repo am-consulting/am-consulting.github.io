@@ -94,19 +94,78 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ***
 
-```{r warning=F, error=F, message=F, echo=F}
-objX <- 10;objY <- 22
-mergeData <- na.omit(mergeData0[,c(1,objX,objY)])
-n1 <- 1
+#### マネーストック
+- `r objX <- 10;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 1
 fun_generateKnit(objDF = mergeData, 
-                 plotNum = n1, 
+                 plotNum = n, 
                  barPlot = 0, 
-                 dygraphTitle = paste0(colnames(mergeData)[c(2,3)],collapse=' ~ '),
-                 group = 0)
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-n2 <- 2
+- `r objX <- 11;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 2
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+- `r objX <- 12;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 3
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+- `r objX <- 13;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 4
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+#### 信用乗数
+- `r objX <- 10;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX,22)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 5
 creditMultiplier <- 
   data.frame(mergeData[,1], 
              mergeData[,2]/mergeData[,3],
@@ -114,28 +173,151 @@ creditMultiplier <-
              stringsAsFactors = F)
 colnames(creditMultiplier)[2] <- paste0(colnames(mergeData)[c(2,3)],collapse=' / ')
 fun_generateKnit(objDF = creditMultiplier, 
-                 plotNum = n2, 
+                 plotNum = n, 
                  barPlot = 0, 
-                 dygraphTitle = paste0('信用乗数:',paste0(colnames(mergeData)[c(2,3)],collapse=' / ')),
-                 group = 0)
+                 dygraphTitle = colnames(creditMultiplier)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-obj <- MoneyStock[,c(1,2)]
-n3 <- 3
-fun_generateKnit(objDF = obj, 
-                 plotNum = n3, 
+- `r objX <- 11;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX,22)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 5
+creditMultiplier <- 
+  data.frame(mergeData[,1], 
+             mergeData[,2]/mergeData[,3],
+             check.names = F,
+             stringsAsFactors = F)
+colnames(creditMultiplier)[2] <- paste0(colnames(mergeData)[c(2,3)],collapse=' / ')
+fun_generateKnit(objDF = creditMultiplier, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(creditMultiplier)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+- `r objX <- 12;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX,22)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 5
+creditMultiplier <- 
+  data.frame(mergeData[,1], 
+             mergeData[,2]/mergeData[,3],
+             check.names = F,
+             stringsAsFactors = F)
+colnames(creditMultiplier)[2] <- paste0(colnames(mergeData)[c(2,3)],collapse=' / ')
+fun_generateKnit(objDF = creditMultiplier, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(creditMultiplier)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+- `r objX <- 13;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX,22)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 5
+creditMultiplier <- 
+  data.frame(mergeData[,1], 
+             mergeData[,2]/mergeData[,3],
+             check.names = F,
+             stringsAsFactors = F)
+colnames(creditMultiplier)[2] <- paste0(colnames(mergeData)[c(2,3)],collapse=' / ')
+fun_generateKnit(objDF = creditMultiplier, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(creditMultiplier)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+#### マネーストック前年比(%)
+- `r objX <- 2;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 1
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
                  barPlot = 1, 
-                 dygraphTitle = colnames(obj)[2],
-                 group = 0)
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
 ```
 
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)),get(paste0('knit_expanded',n3)))), collapse = '\n')`
+- `r objX <- 3;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 1
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 1, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+- `r objX <- 4;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 1
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 1, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+- `r objX <- 5;colnames(mergeData0)[objX]`
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,objX)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 1
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 1, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
 
 #### 単位根検定
 ##### 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+mergeData <- na.omit(mergeData0[,c(1,10,22)])
 cat(paste0(format(range(mergeData[,1]),dateFormat),collapse = '~'))
 cat('\n\n')
 apply(mergeData[,c(2,3),drop=F],2, tseries::adf.test)
@@ -174,6 +356,22 @@ fun_markdownTable(
   fun_transposeDataFrame(obj = mergeData0[,c(1,objColumn)],dateFormat = dateFormat,tailN = tailN))
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- 
+  na.omit(mergeData0[,c(1,10:13,22)])
+cm <- 
+  data.frame(Date = obj[,1],round(obj[,-1]/obj[,ncol(obj)],2),
+             check.names = F,stringsAsFactors = F,row.names = NULL)
+fun_transposeDataFrame(obj = cm[,-ncol(cm)],dateFormat = dateFormat,tailN = 5)
+fun_markdownTable(obj = tDF)
+fun_withList(obj = cm[,c(1,2)])
+maxmin <-
+  rbind(subset(dfWithList,max(dfWithList[,2])==dfWithList[,2]),
+        subset(dfWithList,min(dfWithList[,2])==dfWithList[,2]))
+maxmin[,1] <- format(maxmin[,1],dateFormat)
+fun_markdownTable(obj = maxmin[,c(1:4)])
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
@@ -186,3 +384,43 @@ fun_markdownTable(
   ga('send', 'pageview');
 
 </script>
+
+<!--
+
+--- 
+tags : [マネーストック, 日本銀行, 広義流動性, M2, M3, 信用乗数] 
+published : true
+---
+# 日本のマネーストックと信用乗数:2017年03月:マネーストック(月次):M2/平残前年比/マネーストック(2004年3月以前はマネーサプライ)(%):4.3
+## 統計データ概要
+
+***
+#### 信用乗数
+
+|                                                    Item| 2016年11月| 2016年12月| 2017年01月| 2017年02月| 2017年03月|
+|-------------------------------------------------------:|----------:|----------:|----------:|----------:|----------:|
+|         マネーストック(月次):M2/平/マネーストック(兆円)|       2.28|       2.25|       2.21|       2.22|       2.21|
+|         マネーストック(月次):M3/平/マネーストック(兆円)|       3.05|       3.01|       2.95|       2.98|       2.95|
+|        マネーストック(月次):_M1/平/マネーストック(兆円)|       1.62|       1.62|       1.59|       1.61|        1.6|
+| マネーストック(月次):広義流動性/平/マネーストック(兆円)|       3.97|       3.92|       3.86|       3.89|       3.85|
+
+
+
+***
+#### 信用乗数:最高値と最低値
+
+
+
+|       Date| マネーストック(月次):M2/平/マネーストック(兆円)| PRIMEMINISTEROFJAPAN|      BOJ|
+|----------:|-----------------------------------------------:|--------------------:|--------:|
+| 2008年07月|                                             8.4|             福田康夫| 白川正明|
+| 2017年01月|                                            2.21|        安倍晋三(2,3)| 黒田東彦|
+| 2017年03月|                                            2.21|        安倍晋三(2,3)| 黒田東彦|
+
+***
+	
+## データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html" width="100%" height="800px"></iframe>
+
+-->
