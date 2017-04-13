@@ -50,6 +50,8 @@ for(iii in 1:nrow(functionList)){
 # https://github.com/joshuaulrich/quantmod/issues/145
 # https://github.com/joshuaulrich/quantmod/commit/79f0e1d17bb689dabf8c2aa19366fe881416b567
 library(quantmod)
+oanda <- 0
+if(oanda == 1){
 country <- 
   c('JPY','CNY','TWD','EUR','KRW','CHF')
 for(iii in seq(length(country))){
@@ -64,6 +66,7 @@ colnames(currencyData) <-
 currencyData <-
   data.frame(Date = index(currencyData),currencyData,
              stringsAsFactors = F,check.names = F,row.names = NULL)
+}
 currencyName <-
   c('Japanese Yen','日本円',
     'Chinese Yuan Renminbi','中国元',
@@ -71,6 +74,24 @@ currencyName <-
     'Euro','ユーロ',
     'South-Korean Won','韓国ウォン',
     'Swiss Franc','スイスフラン')
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+country <- 
+  c('DEXJPUS','DEXCHUS','DEXTAUS','DEXUSEU','DEXKOUS','DEXSZUS')
+for(iii in seq(length(country))){
+  tmp <- 
+    getSymbols(country[iii], 
+               src = "FRED", 
+               auto.assign = F)
+  if(substring(country[iii],6,7)!='US'){tmp[,1] <- 1/tmp[,1]}
+  if(iii == 1){currencyData <- tmp}else{currencyData <- merge(currencyData,tmp)}
+}
+colnames(currencyData) <- 
+  currencyName[seq(1,length(currencyName),by=2)]
+currencyData <-
+  data.frame(Date = index(currencyData),currencyData,
+             stringsAsFactors = F,check.names = F,row.names = NULL)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
@@ -92,13 +113,16 @@ lineColor <- c('blue','green')
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
 - チャート縦軸の上方に向かうほど米ドル高(監視通貨安)、下方に向かうほど米ドル安(監視通貨高)を意味します。
+- [米国財務省為替報告書 2016年10月公表分の直訳](http://olive.saecanet.com/2016/10/201610_17.html)
 
 ***
+
+#### Exchange rate to the dollar / 対ドル為替レート
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 2
 cat(paste0('#### ',currencyName[1],' / ',currencyName[2],'\n\n'))
-obj <- currencyData[,c(1,n)]
+obj <- na.omit(currencyData[,c(1,n)])
 dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
 fun_fit(obj = obj)
 fun_generateKnit(objDF = fittedDF[,c(1:3)],
@@ -106,14 +130,14 @@ fun_generateKnit(objDF = fittedDF[,c(1:3)],
                  dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
                  group = 0,
                  quantiles = 2,colors = lineColor)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 3
 cat(paste0('#### ',currencyName[3],' / ',currencyName[4],'\n\n'))
-obj <- currencyData[,c(1,n)]
+obj <- na.omit(currencyData[,c(1,n)])
 dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
 fun_fit(obj = obj)
 fun_generateKnit(objDF = fittedDF[,c(1:3)],
@@ -121,14 +145,14 @@ fun_generateKnit(objDF = fittedDF[,c(1:3)],
                  dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
                  group = 0,
                  quantiles = 2,colors = lineColor)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 4
 cat(paste0('#### ',currencyName[5],' / ',currencyName[6],'\n\n'))
-obj <- currencyData[,c(1,n)]
+obj <- na.omit(currencyData[,c(1,n)])
 dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
 fun_fit(obj = obj)
 fun_generateKnit(objDF = fittedDF[,c(1:3)],
@@ -136,14 +160,14 @@ fun_generateKnit(objDF = fittedDF[,c(1:3)],
                  dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
                  group = 0,
                  quantiles = 2,colors = lineColor)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 5
 cat(paste0('#### ',currencyName[7],' / ',currencyName[8],'\n\n'))
-obj <- currencyData[,c(1,n)]
+obj <- na.omit(currencyData[,c(1,n)])
 dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
 fun_fit(obj = obj)
 fun_generateKnit(objDF = fittedDF[,c(1:3)],
@@ -151,14 +175,14 @@ fun_generateKnit(objDF = fittedDF[,c(1:3)],
                  dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
                  group = 0,
                  quantiles = 2,colors = lineColor)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 6
 cat(paste0('#### ',currencyName[9],' / ',currencyName[10],'\n\n'))
-obj <- currencyData[,c(1,n)]
+obj <- na.omit(currencyData[,c(1,n)])
 dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
 fun_fit(obj = obj)
 fun_generateKnit(objDF = fittedDF[,c(1:3)],
@@ -166,14 +190,14 @@ fun_generateKnit(objDF = fittedDF[,c(1:3)],
                  dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
                  group = 0,
                  quantiles = 2,colors = lineColor)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 7
 cat(paste0('#### ',currencyName[10],' / ',currencyName[11],'\n\n'))
-obj <- currencyData[,c(1,n)]
+obj <- na.omit(currencyData[,c(1,n)])
 dateRange <- paste0(range(obj[,1]),collapse = ' ~ ')
 fun_fit(obj = obj)
 fun_generateKnit(objDF = fittedDF[,c(1:3)],
@@ -181,25 +205,26 @@ fun_generateKnit(objDF = fittedDF[,c(1:3)],
                  dygraphTitle = paste0(colnames(fittedDF)[2],'<br>',dateRange),
                  group = 0,
                  quantiles = 2,colors = lineColor)
-eval(parse(text = paste0('dygraphPlot',n)))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 ```
 
 ####  正規化後の比較
-- Center:`r currencyData[1,1]`の各通貨ペア為替レート
+- Center:`r na.omit(currencyData)[1,1]`の各通貨ペア為替レート
 - Scale:各通貨ペア時系列データの標準偏差
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis',fig.height=5}
+scaleData <- na.omit(currencyData)
 scaleData <-
-  data.frame(currencyData[,1], 
-             scale(x = currencyData[,-1],center = unlist(currencyData[1,-1])),
+  data.frame(scaleData[,1], 
+             scale(x = scaleData[,-1],center = unlist(scaleData[1,-1])),
              check.names = F, 
              stringsAsFactors = F)
 dateRange <- paste0(range(scaleData[,1]),collapse = ' ~ ')
 n <- 10
 fun_generateKnit(objDF = scaleData,
                  plotNum = n,dygraphTitle = paste0('正規化チャート<br>',dateRange))
-eval(parse(text = paste0('dygraphPlot',n,' %>% dyLimit(0, color = "black")')))
+eval(parse(text = paste0('dygraphPlot',n,' %>% dyLimit(0, color = "black")', ' %>% ', potus_dygraph)))
 ```
 
 ***
