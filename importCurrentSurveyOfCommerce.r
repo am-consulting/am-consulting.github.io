@@ -1,4 +1,4 @@
-fun_CurrentSurveyOfCommerce <- function(objTitle = '百貨店・スーパー商品別販売額及び前年'){
+fun_CurrentSurveyOfCommerce <- function(objTitle = '百貨店・スーパー商品別販売額及び前年',sheet = '百貨店　販売額　月次'){
 library(rvest);library(XLConnect);library(Nippon);library(lubridate)
 options(scipen = 999)
 username <-
@@ -39,7 +39,7 @@ sheetName <-
   getSheets(loadWorkbook(fileName))
 buf0 <-
   readWorksheetFromFile(file = paste0(pathOutput, fileName),
-                        sheet = "百貨店　販売額　月次",
+                        sheet = sheet,
                         check.names = F,
                         header = F)
 buf1 <- buf0
