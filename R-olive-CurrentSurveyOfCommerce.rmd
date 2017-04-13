@@ -1,0 +1,235 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-CurrentSurveyOfCommerce.html')) })
+
+title : 'Import Current Survey Of Commerce'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+importAMCC <-c('importCurrentSurveyOfCommerce.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+                  importAMCC[iii]),
+           ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+fun_CurrentSurveyOfCommerce(sheet = '百貨店　販売額　月次')
+CurrentSurveyOfCommerce[,-1] <- apply(CurrentSurveyOfCommerce[,-1],2,function(x)x*10^-2)
+departmentStore <- CurrentSurveyOfCommerce
+remove(CurrentSurveyOfCommerce);remove(sheetTitle);remove(sheetUnit)
+fun_CurrentSurveyOfCommerce(sheet = 'スーパー　販売額　月次')
+CurrentSurveyOfCommerce[,-1] <- apply(CurrentSurveyOfCommerce[,-1],2,function(x)x*10^-2)
+superMarket <- CurrentSurveyOfCommerce
+remove(CurrentSurveyOfCommerce);remove(sheetTitle);remove(sheetUnit)
+fun_CurrentSurveyOfCommerce(sheet = '合計　販売額　月次')
+CurrentSurveyOfCommerce[,-1] <- apply(CurrentSurveyOfCommerce[,-1],2,function(x)x*10^-2)
+totalSales <- CurrentSurveyOfCommerce
+remove(CurrentSurveyOfCommerce);remove(sheetTitle);remove(sheetUnit)
+# "合計　販売額　月次"      
+# "百貨店　販売額　月次"    
+# "スーパー　販売額　月次"  
+# "合計　伸び率　月次"      
+# "百貨店　伸び率　月次"    
+# "スーパー　伸び率　月次"  
+# "合計　既存店　月次"      
+# "百貨店　既存店　月次"    
+# "スーパー　既存店　月次"
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y年%m月'
+fun_latestResult(obj = totalSales,objColumn = c(2), dateFormat = dateFormat)
+dataTitle <- 
+  paste0('商業動態統計調査:百貨店・スーパー商品別販売額(単位:億円):百貨店+スーパー:',latestResult)
+dataSource <- '経済産業省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.e-stat.go.jp/SG1/estat/GL08020101.do?_toGL08020101_&tstatCode=000001081875
+
+***
+
+#### 商品別販売額(単位:億円):百貨店+スーパー
+
+```{r warning=F, error=F, message=F, echo=F,results='asis',fig.height=12}
+par(mfrow=c(5,3),oma=c(0,0,0,0))
+obj <- totalSales
+for(ccc in 2:ncol(obj)){
+  fun_plotTimeSeries(obj = obj[,c(1,ccc)],typeL = 'o',dateFormat = dateFormat,
+                     chartType = 0,dataSource = dataSource,fitLcolor = 2,pchL = 20,
+                     fitlwdL = 3,
+                     cexL = 1,lwdL = 1,mar = c(3,3,4,1),needLefLab = 0,dataTitle = '百貨店+スーパー')
+}
+```
+
+***
+#### 商品別販売額(単位:億円):百貨店
+
+```{r warning=F, error=F, message=F, echo=F,results='asis',fig.height=12}
+par(mfrow=c(5,3),oma=c(0,0,0,0))
+obj <- departmentStore
+for(ccc in 2:ncol(obj)){
+  fun_plotTimeSeries(obj = obj[,c(1,ccc)],typeL = 'o',dateFormat = dateFormat,
+                     chartType = 0,dataSource = dataSource,fitLcolor = 2,pchL = 20,
+                     fitlwdL = 3,
+                     cexL = 1,lwdL = 1,mar = c(3,3,4,1),needLefLab = 0,dataTitle = '百貨店')
+}
+```
+
+***
+#### 商品別販売額(単位:億円):スーパー
+
+```{r warning=F, error=F, message=F, echo=F,results='asis',fig.height=12}
+par(mfrow=c(5,3),oma=c(0,0,0,0))
+obj <- superMarket
+for(ccc in 2:ncol(obj)){
+  fun_plotTimeSeries(obj = obj[,c(1,ccc)],typeL = 'o',dateFormat = dateFormat,
+                     chartType = 0,dataSource = dataSource,fitLcolor = 2,pchL = 20,
+                     fitlwdL = 3,
+                     cexL = 1,lwdL = 1,mar = c(3,3,4,1),needLefLab = 0,dataTitle = 'スーパー')
+}
+```
+
+***
+#### 前年同月比(%):百貨店+スーパー
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+obj <- totalSales[,c(1,2)]
+fun_makeDiffRatioTable(obj = obj,lag = 12)
+n <- 1
+fun_generateKnit(objDF = diffRatioDF,plotNum = n,
+                 barPlot = 1,group = 0,quantiles = 2,
+                 dygraphTitle = paste0('前年同月比(%):百貨店+スーパー:',colnames(obj)[2]))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+#### 前年同月比(%):百貨店
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+obj <- departmentStore[,c(1,2)]
+fun_makeDiffRatioTable(obj = obj,lag = 12)
+n <- 1
+fun_generateKnit(objDF = diffRatioDF,plotNum = n,
+                 barPlot = 1,group = 0,quantiles = 2,
+                 dygraphTitle = paste0('前年同月比(%):百貨店:',colnames(obj)[2]))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+#### 前年同月比(%):スーパー
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+obj <- superMarket[,c(1,2)]
+fun_makeDiffRatioTable(obj = obj,lag = 12)
+n <- 1
+fun_generateKnit(objDF = diffRatioDF,plotNum = n,
+                 barPlot = 1,group = 0,quantiles = 2,
+                 dygraphTitle = paste0('前年同月比(%):スーパー:',colnames(obj)[2]))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='hide'}
+fun_transposeDataFrame(obj = totalSales,dateFormat = dateFormat,colName = '百貨店+スーパー(億円)')
+obj <-
+  tDF[order(tDF[,ncol(tDF)],decreasing = T),]
+fun_markdownTable(obj = obj)
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
+
+<!--
+
+--- 
+tags : [商業動態統計調査,:百貨店,スーパー,商品別販売額,経済産業省] 
+published : true
+---
+# 商業動態統計調査:百貨店・スーパー商品別販売額(単位:億円):百貨店+スーパー:2017年02月:合計:14493.28
+## 統計データ概要
+
+***
+
+
+|     百貨店+スーパー(億円)| 2016年10月| 2016年11月| 2016年12月| 2017年01月| 2017年02月|
+|-------------------------:|----------:|----------:|----------:|----------:|----------:|
+|                      合計|  15,970.24|  16,479.27|  20,675.83|  16,742.95|  14,493.28|
+|                  飲食料品|    9,198.9|   9,529.71|   12,190.7|    9,451.4|   8,858.28|
+|                    その他|   3,184.65|   3,298.63|   4,371.27|    3,306.3|   2,926.58|
+|                    衣料品|   3,586.69|   3,650.92|   4,113.85|   3,985.26|   2,708.42|
+|       その他:その他の商品|   2,405.73|   2,487.38|    3,349.7|   2,456.75|   2,238.85|
+|  衣料品:婦人･子供服・洋品|   1,855.69|   1,861.35|   1,936.79|   2,044.75|   1,378.14|
+|         衣料品:身の回り品|     844.84|     845.25|   1,145.43|     990.81|     719.35|
+|       衣料品:紳士服・洋品|     660.66|     716.29|     778.64|     728.69|     446.26|
+|           その他:家庭用品|     387.53|     393.95|     516.99|     423.36|     349.48|
+|     衣料品:その他の衣料品|      225.5|     228.03|     252.99|        221|     164.67|
+| その他:家庭用電気機械器具|     142.19|     167.46|     210.83|     180.87|     129.88|
+|          その他:食堂･喫茶|     147.39|     146.09|     173.51|        155|     129.23|
+|               その他:家具|     101.81|     103.75|     120.25|      90.31|      79.14|
+
+
+
+
+
+
+***
+
+## データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CurrentSurveyOfCommerce.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CurrentSurveyOfCommerce.html.html" width="100%" height="800px"></iframe>
+
+-->
