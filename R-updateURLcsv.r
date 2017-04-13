@@ -17,6 +17,8 @@ fun_updateURLcsv <- function(){
     read.table(fileName, sep = ',', fileEncoding = 'utf8', header = T)
   buf <-
     tmp0
+  buf[,1] <-
+    gsub(',','、',buf[,1])
   buf[,grep('title',colnames(buf),ignore.case = T)] <-
     paste0('<a href="',buf[,grep('url',colnames(buf),ignore.case = T)],
            '" target="_blank">',
