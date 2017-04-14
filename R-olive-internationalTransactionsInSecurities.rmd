@@ -229,6 +229,31 @@ tDF[,-1] <- apply(tDF[,-1],2,as.numeric)
 fun_markdownTable(tDF)
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+bufDF <- 
+  subset(specificDF,as.Date('2012-12-26') <= specificDF[,1])
+bufDF <-
+  cbind(apply(bufDF[,-1],2,sum))
+bufDF <-
+  data.frame(Item = row.names(bufDF),bufDF,stringsAsFactors = F,row.names = NULL)
+bufDF[,-1] <- apply(bufDF[,-1,drop=F],2,function(x)x*10^-4)
+colnames(bufDF)[2] <- '第2次安倍内閣発足以降のネット合計(兆円)'
+fun_markdownTable(obj = bufDF)
+###
+tailN <- 3
+buf <- tail(origData, tailN)
+buf <- buf[,-grep('year|month|h|q', colnames(buf), ignore.case = T)]
+buf <- t(buf)
+buf <- data.frame(rownames(buf), buf)
+colnames(buf) <- unlist(buf[2, ])
+buf <- buf[-(1:2), ]
+colnames(buf)[1] <- '対象'
+buf[,-1] <- apply(buf[,-1],2,as.numeric)
+fun_markdownTable(obj = buf)
+###
+fun_updateURLcsv()
+```
+
 ***
 <script>MakeNegative()</script>
 <script>
@@ -241,3 +266,67 @@ fun_markdownTable(tDF)
   ga('send', 'pageview');
 
 </script>
+
+<!--
+
+--- 
+tags : [財務省,証券売買契約] 
+published : true
+---
+# 対外及び対内証券売買契約等の状況(週次・指定報告機関ベース):2017.4.2～4.8(億円):対外-株式･投資ファンド持分-ネット:829,対内-株式･投資ファンド持分-ネット:4410
+## 統計データ概要
+
+***
+
+#### 第2次安倍内閣発足(2012年12月26日)以降のネット合計(兆円)
+
+
+
+|                              Item| 第2次安倍内閣発足以降のネット合計(兆円)|
+|---------------------------------:|---------------------------------------:|
+|              対外-中長期債-ネット|                                 26.0443|
+| 対内-株式･投資ファンド持分-ネット|                                 11.4873|
+|              対内-中長期債-ネット|                                 18.3284|
+
+
+
+***
+
+#### 原数値(単位:億円)
+
+
+|                              対象| 2017.3.19～3.25| 2017.3.26～4.1| 2017.4.2～4.8|
+|---------------------------------:|---------------:|--------------:|-------------:|
+|   対外-株式･投資ファンド持分-取得|          10,334|         15,264|        11,356|
+|   対外-株式･投資ファンド持分-処分|          13,274|         11,910|        10,528|
+| 対外-株式･投資ファンド持分-ネット|          -2,940|          3,354|           829|
+|                対外-中長期債-取得|          69,545|         79,469|        81,184|
+|                対外-中長期債-処分|          71,013|         68,471|       102,952|
+|              対外-中長期債-ネット|          -1,468|         10,998|       -21,768|
+|                  対外-小計-ネット|          -4,408|         14,352|       -20,939|
+|                  対外-短期債-取得|           7,626|         11,908|         9,750|
+|                  対外-短期債-処分|           7,815|         11,992|         8,559|
+|                対外-短期債-ネット|            -188|            -84|         1,191|
+|                  対外-合計-ネット|          -4,596|         14,268|       -19,748|
+|   対内-株式･投資ファンド持分-取得|          77,419|        100,832|       121,668|
+|   対内-株式･投資ファンド持分-処分|          84,962|         94,988|       117,258|
+| 対内-株式･投資ファンド持分-ネット|          -7,543|          5,845|         4,410|
+|                対内-中長期債-取得|          11,287|         18,000|        21,136|
+|                対内-中長期債-処分|          30,524|          9,100|        15,268|
+|              対内-中長期債-ネット|         -19,237|          8,900|         5,868|
+|                  対内-小計-ネット|         -26,780|         14,745|        10,278|
+|                  対内-短期債-取得|          34,692|         12,124|        64,583|
+|                  対内-短期債-処分|          50,098|         42,283|        45,279|
+|                対内-短期債-ネット|         -15,407|        -30,159|        19,303|
+|                  対内-合計-ネット|         -42,186|        -15,415|        29,581|
+
+
+
+
+***
+	
+## データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html" width="100%" height="800px"></iframe>
+
+-->
