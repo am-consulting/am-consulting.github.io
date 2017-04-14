@@ -6,97 +6,64 @@ author: 'アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width : 1000px; margin-left : auto; margin-right : auto;}
-table{white-space : nowrap;}
-td.negative {color : red;}
-</style>
-
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
 
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(RCurl);library(knitr)
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importOECDStatisticData.r",
     ssl.verifypeer = F
   )
 eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/timeSeriesForecast.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/plotTimeSeries.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/timeSeriesDataFundamentalStatistics.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
-
-windowsFonts(Meiryo=windowsFont("Meiryo"))
-options(scipen=100)
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-mm <- 10
-sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOTR_GYSA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=2016-",mm)
+yyyy <- 2017
+mm <- 12
+sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOTR_GYSA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=",yyyy,"-",mm)
 fun_OECDStatisticData(sdmxURL = sdmxURL)
 oecd01 <- allOECDData
 oecd01[,-1] <- apply(oecd01[,-1],2,function(x)round(x,1))
 sdmxTitle01 <- '12-month rate of change of the trend restored CLI'
 
-sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOAA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=2016-",mm)
+sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOAA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=",yyyy,"-",mm)
 fun_OECDStatisticData(sdmxURL = sdmxURL)
 oecd02 <- allOECDData
 oecd02[,-1] <- apply(oecd02[,-1],2,function(x)round(x,1))
@@ -105,50 +72,68 @@ sdmxTitle02 <- 'Amplitude adjusted'
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dateFormat <- '%Y-%m'
-dataTitle <- paste0('OECD 景気先行指数 - ', format(tail(allOECDData[,1],1),dateFormat))
-dataSource <- 'Organisation for Economic Co-operation and Development：経済協力開発機構'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-windowsFonts(Meiryo=windowsFont('Meiryo'))
-```
-
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-tsData <-
-  tail(na.omit(oecd01[,grep('date|jpn|chn|usa', colnames(oecd01), ignore.case = T)]),12*10)
-fun_dygraph(obj = tsData, colors = c('blue','red','green'),
-            mainTitle = paste0(sdmxTitle01,' - ', 
-                               paste0(format(range(tsData[,1]), dateFormat), collapse = '~')),
-            plotNum = 1, legendWidth = '300', barPlot0 = 0, group = 0)
-tsData <-
-  tail(na.omit(oecd02[,grep('date|jpn|chn|usa', colnames(oecd02), ignore.case = T)]),12*10)
-fun_dygraph(obj = tsData, colors = c('blue','red','green'),
-            mainTitle = paste0(sdmxTitle02,' - ', 
-                               paste0(format(range(tsData[,1]), dateFormat), collapse = '~')),
-            plotNum = 2, legendWidth = '300', barPlot0 = 0, group = 0)
-```
-
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-dygraphPlot1
+fun_latestResult(obj = oecd01,
+                 dateFormat = dateFormat,
+                 objColumn = grep('date|jpn|chn|usa',colnames(oecd01),ignore.case=T))
+dataTitle <- 
+  paste0('OECD 景気先行指数:',sdmxTitle01,':',latestResult)
+dataSource <-
+  'Organisation for Economic Co-operation and Development：経済協力開発機構'
 ```
 
 ***
 
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-dygraphPlot2
+n <- 1
+tsData <-
+  na.omit(oecd01[,grep('date|jpn|chn|usa',colnames(oecd01),ignore.case=T)])
+cat(paste0('<h5>',sdmxTitle01,':',paste0(format(range(tsData[,1]),dateFormat),collapse = '~'),'</h5>'))
+fun_generateKnit(objDF = tsData,
+                 plotNum = n,group = 0,
+                 dygraphTitle = paste0(paste0(format(range(tsData[,1]),dateFormat),collapse = '~'),
+                                       '<br>',
+                                       paste0(colnames(tsData)[-1],collapse = '×')))
+eval(parse(text = paste0('dygraphPlot',n,' %>% ',frb_dygraph)))
+cat('<hr>')
+n <- 2
+tsData <-
+  na.omit(oecd02[,grep('date|jpn|chn|usa',colnames(oecd02),ignore.case=T)])
+cat(paste0('<h5>',sdmxTitle02,':',paste0(format(range(tsData[,1]),dateFormat),collapse = '~'),'</h5>'))
+fun_generateKnit(objDF = tsData,
+                 plotNum = n,group = 0,
+                 dygraphTitle = paste0(paste0(format(range(tsData[,1]),dateFormat),collapse = '~'),
+                                       '<br>',
+                                       paste0(colnames(tsData)[-1],collapse = '×')))
+eval(parse(text = paste0('dygraphPlot',n,' %>% ',frb_dygraph)))
 ```
 
 ***
 #### `r sdmxTitle01` 
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = oecd01,dateFormat = dateFormat,colName = 'Country/Region'),row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = oecd01,dateFormat = dateFormat,colName = 'Country/Region'))
 ```
 
 ***
 #### `r sdmxTitle02` 
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = oecd02,dateFormat = dateFormat,colName = 'Country/Region'),row.names = F)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = oecd02,dateFormat = dateFormat,colName = 'Country/Region'))
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+obj <- na.omit(oecd01[,grep('date|jpn|chn|usa',colnames(oecd01),ignore.case=T)])
+fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,colName = 'Country/Region')
+fun_markdownTable(obj = tDF)
+obj <- na.omit(oecd02[,grep('date|jpn|chn|usa',colnames(oecd02),ignore.case=T)])
+fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,colName = 'Country/Region')
+fun_markdownTable(obj = tDF)
+fun_updateURLcsv()
 ```
 
 ***
@@ -163,3 +148,50 @@ knitr::kable(fun_transposeDataFrame(obj = oecd02,dateFormat = dateFormat,colName
   ga('send', 'pageview');
 
 </script>
+
+<!--
+
+--- 
+tags : [OECD,景気先行指数] 
+published : true
+---
+# OECD 景気先行指数:12-month rate of change of the trend restored CLI:2016-12:Date:17136 , Japan:JPN:1.3 , United States of America:USA:2.5 , China:CHN:7.1
+## 統計データ概要
+
+***
+
+#### 12-month rate of change of the trend restored CLI
+
+
+
+|               Country/Region| 2016-08| 2016-09| 2016-10| 2016-11| 2016-12|
+|----------------------------:|-------:|-------:|-------:|-------:|-------:|
+|                    Japan:JPN|     0.5|     0.7|     0.9|     1.1|     1.3|
+| United States of America:USA|     1.4|     1.7|     1.9|     2.2|     2.5|
+|                    China:CHN|     6.1|     6.3|     6.6|     6.8|     7.1|
+
+
+
+
+***
+
+#### Amplitude adjusted
+
+
+
+
+|               Country/Region| 2016-10| 2016-11| 2016-12| 2017-01| 2017-02|
+|----------------------------:|-------:|-------:|-------:|-------:|-------:|
+|                    Japan:JPN|    99.8|    99.9|     100|   100.1|   100.1|
+| United States of America:USA|    99.2|    99.4|    99.5|    99.7|    99.8|
+|                    China:CHN|    98.9|      99|    99.2|    99.4|    99.6|
+
+
+
+***
+	
+## データテーブル･チャート
+Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECD-CompositeLeadingIndicators.html)
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECD-CompositeLeadingIndicators.html" width="100%" height="800px"></iframe>
+
+-->
