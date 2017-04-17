@@ -147,6 +147,26 @@ buf <-
 fun_markdownTable(obj = buf)
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+buf <-
+  na.omit(fun_transposeDataFrame(obj = TotalBothProvisional,
+                                 tailN = 1,
+                                 dateFormat = dateFormat,
+                                 colName = '年齢階級'))
+buf$`総数:構成比(%)` <- 
+  round(as.vector(buf[,2])/buf[1,2]*100,1)
+buf0 <-
+  tail(buf,-1)
+tmp <- vector()
+tmp[1] <- buf0[1,3]
+for(rrr in 2:nrow(buf0)){
+  tmp[rrr] <- buf0[rrr,3] + tmp[rrr-1]
+}
+buf0$`総数:累積構成比(%)` <- tmp
+fun_markdownTable(obj = buf0)
+totalPortion <- buf0[,c(1,4)]
+```
+
 ***
 - 男
 
@@ -159,6 +179,26 @@ buf <-
 fun_markdownTable(obj = buf)
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+buf <-
+  na.omit(fun_transposeDataFrame(obj = TotalMaleProvisional,
+                                 tailN = 1,
+                                 dateFormat = dateFormat,
+                                 colName = '年齢階級'))
+buf$`男:構成比(%)` <- 
+  round(as.vector(buf[,2])/buf[1,2]*100,1)
+buf0 <-
+  tail(buf,-1)
+tmp <- vector()
+tmp[1] <- buf0[1,3]
+for(rrr in 2:nrow(buf0)){
+  tmp[rrr] <- buf0[rrr,3] + tmp[rrr-1]
+}
+buf0$`男:累積構成比(%)` <- tmp
+fun_markdownTable(obj = buf0)
+malePortion <- buf0[,c(1,4)]
+```
+
 ***
 - 女
 
@@ -169,6 +209,60 @@ buf <-
                                  dateFormat = dateFormat,
                                  colName = '年齢階級'))
 fun_markdownTable(obj = buf)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+buf <-
+  na.omit(fun_transposeDataFrame(obj = TotalFemaleProvisional,
+                                 tailN = 1,
+                                 dateFormat = dateFormat,
+                                 colName = '年齢階級'))
+buf$`女:構成比(%)` <- 
+  round(as.vector(buf[,2])/buf[1,2]*100,1)
+buf0 <-
+  tail(buf,-1)
+tmp <- vector()
+tmp[1] <- buf0[1,3]
+for(rrr in 2:nrow(buf0)){
+  tmp[rrr] <- buf0[rrr,3] + tmp[rrr-1]
+}
+buf0$`女:累積構成比(%)` <- tmp
+fun_markdownTable(obj = buf0)
+femalePortion <- buf0[,c(1,4)]
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6}
+lineColor <- c('','black','blue','red')
+totalPortion$ID <- 
+  seq(nrow(totalPortion))
+allData <-
+  merge(merge(totalPortion,malePortion,by = "年齢階級"),femalePortion,by = "年齢階級")
+allData <-
+  allData[order(allData$ID,decreasing = F),]
+allData <-
+  allData[,-grep('ID',colnames(allData))]
+n1 <- 2
+par(family='Meiryo',font.main=1)
+plot(allData[,n1],type = 'o',pch = 20,cex = 2,
+     xaxt = 'n',xlab = '',main = '累積構成比(%)',
+     ylab = '',col = lineColor[n1])
+n2 <- 3
+lines(allData[,n2],type = 'o',pch = 20,cex = 2,col = lineColor[n2])
+n3 <- 4
+lines(allData[,n3],type = 'o',pch = 20,cex = 2,col = lineColor[n3])
+panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+axis(side = 1,labels = buf0[,1],at = seq(nrow(buf0)),las=2)
+graphics::legend(x = 'topleft',
+                 col = lineColor[-1],
+                 lty = 1,
+                 legend = colnames(allData)[c(n1,n2,n3)],
+                 cex = 1.2,
+                 bty = 'n',
+                 lwd = 2)
+abline(h = 50,lty = 2)
+text(x = 1,y = 50,labels = '50%',pos = 3)
 ```
 
 ***
