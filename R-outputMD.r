@@ -2,6 +2,7 @@ fun_outputMD <-
   function(tags = '貸出約定平均金利,日本銀行',
            objDF = summaryByName,
            htmlName = htmlName,
+           tableTitle = tableTitle,
            tableName = '内閣総理大臣毎の基本統計量'){
     username <-
       Sys.info()['user']
@@ -37,6 +38,8 @@ fun_outputMD <-
   cat(paste0('***','\n\n'),
       file = mdFile,append = T)
   cat(paste0('#### ',tableName,'','\n\n'),
+      file = mdFile,append = T)
+  cat(paste0('- ',tableTitle,'','\n\n'),
       file = mdFile,append = T)
   cat(paste0(knitr::kable(x = objDF,
                           row.names = F,
