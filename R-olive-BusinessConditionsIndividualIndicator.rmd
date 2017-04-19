@@ -144,6 +144,7 @@ fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] < 0 | is.na(tDF[,ncol(tDF)]),])
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+remove(tDF)
 fun_transposeDataFrame(obj = allCI,dateFormat = dateFormat,tailN = 3)
 fun_outputMD(tags = '内閣府,景気動向指数',
              objDF = tDF,
