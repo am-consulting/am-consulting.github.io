@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-NumberOfForeignVisitorsToJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'NumberOfForeignVisitorsToJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "Number Of Foreign Visitors To Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -173,6 +173,17 @@ fun_dataTable(obj = tail(numberOfForeignVisitorsToJapan,12*3),
               dateFormat = dateFormat,
               title = dataTitle,
               filter = 'none')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objColumn <- 2
+obj <-
+  numberOfForeignVisitorsToJapan[,c(1,objColumn)]
+fun_summaryByName(obj = obj)
+fun_outputMD(tags = '日本政府観光局(JNTO),訪日外客数',
+             objDF = summaryByName,
+             htmlName = htmlName,
+             tableTitle = paste0('国籍/月別 訪日外客数(単位:万人):',colnames(obj)[2]))
 ```
 
 ***
