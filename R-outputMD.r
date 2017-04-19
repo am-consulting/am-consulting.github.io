@@ -27,10 +27,10 @@ fun_outputMD <-
   # md作成パート
   cat('',file = mdFile,append = F)
   cat(paste0('
-  ---
-  tags : [',tags,']
-  published : true
-  ---\n\n'),file = mdFile,append = T)
+---
+tags : [',tags,']
+published : true
+---\n\n'),file = mdFile,append = T)
   cat(paste0('# ',dataTitle,'\n\n'),
       file = mdFile,append = T)
   cat(paste0('## 統計データ概要','\n\n'),
