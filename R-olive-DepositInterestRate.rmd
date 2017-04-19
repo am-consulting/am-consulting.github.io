@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-DepositInterestRate.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'DepositInterestRate';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Deposit Interest Rate in Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -81,23 +81,25 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ***
 
-```{r warning=F, error=F, message=F, echo=F}
-n1 <- 1
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 1
 fun_generateKnit(objDF = DepositInterestRate, 
-                 plotNum = n1, 
+                 plotNum = n, 
                  barPlot = 0, 
                  dygraphTitle = '')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
+cat('<hr>')
 ```
 
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
-
-#### 直近5週分
+#### 直近`r tailN <- 3;tailN`週分
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(
   fun_transposeDataFrame(obj = DepositInterestRate,
                          dateFormat = dateFormat
-                         ,tailN = 5))
+                         ,tailN = tailN))
 ```
 
 ***
@@ -112,6 +114,15 @@ buf <-
 colnames(buf) <- 
   c('年利率(%)','利息(円)')
 fun_markdownTable(buf,rownames = T)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objColumn <- 2
+fun_summaryByName(obj = na.omit(DepositInterestRate),objColumn = objColumn)
+fun_outputMD(tags = '日本銀行,店頭表示金利',
+             objDF = summaryByName,
+             htmlName = htmlName,
+             tableTitle = colnames(DepositInterestRate)[objColumn])
 ```
 
 ***
