@@ -89,3 +89,13 @@ for(sss in seq(length(sheetName))){
 ```
 
 `r paste(knit(text = out), collapse = '\n')`
+
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objColumn <- 2
+fun_summaryByName(obj = na.omit(DepositInterestRate),objColumn = objColumn)
+fun_outputMD(tags = '日本銀行,店頭表示金利',
+             objDF = summaryByName,
+             htmlName = htmlName,
+             tableTitle = colnames(DepositInterestRate)[objColumn])
+```
