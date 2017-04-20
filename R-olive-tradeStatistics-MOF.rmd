@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-tradeStatistics.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'tradeStatistics';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Trade Statistics of Japan:Preliminary Report'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -43,6 +43,15 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+script <-
+  getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importExportAndImportSA.r",
+    ssl.verifypeer = F
+  )
+eval(parse(text = script))
+```
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 # devtools::install_github("hrbrmstr/xmlview")
 library(xml2)
@@ -54,7 +63,7 @@ library(knitr)
 <!-- 前月データ取得 -->
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 1
+targetMonth <- 2
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -77,7 +86,7 @@ lastMonthBuf <- buf0
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 2
+targetMonth <- 3 
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -218,6 +227,18 @@ bufTable$`輸入価格構成比(%)` <-
   round(bufTable[,grep('輸入',colnames(bufTable))]/
           bufTable[grep('総額',bufTable[,1]) ,grep('輸入',colnames(bufTable))]*100,2)
 fun_markdownTable(obj = bufTable)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+dateFormat <- '%Y年%m月'
+objColumn <- 2
+obj <-
+  ExportAndImportSA[,c(1,objColumn)]
+fun_summaryByName(obj = obj)
+fun_outputMD(tags = '財務省,貿易統計',
+             objDF = summaryByName,
+             htmlName = htmlName,
+             tableTitle = paste0('輸出額(兆円):季節調整済値',colnames(obj)[2]))
 ```
 
 <script>MakeNegative();</script>
