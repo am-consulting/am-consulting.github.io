@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-internationalTransactionsInSecurities.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'internationalTransactionsInSecurities';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "International Transactions In Securities"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -96,6 +97,8 @@ date <-
   as.Date(gsub('\\.','-',substring(origData[,2],1,unlist(regexec('～', origData[,2]))-1)))
 specificDF <-
   data.frame(Date = date, origData[,c(8,16,19)], stringsAsFactors = F, check.names = F)
+specificDFall <-
+  data.frame(Date = date, origData, stringsAsFactors = F, check.names = F)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=4}
@@ -251,7 +254,27 @@ colnames(buf)[1] <- '対象'
 buf[,-1] <- apply(buf[,-1],2,as.numeric)
 fun_markdownTable(obj = buf)
 ###
-fun_updateURLcsv()
+# fun_updateURLcsv()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+pmABE <- 
+  subset(specificDFall,as.Date('2012-12-26') <= specificDFall[,1])
+pmABE <-
+  pmABE[,c(1,grep('ネット',colnames(pmABE)))]
+pmABE <-
+  cbind(apply(pmABE[,-1],2,sum))
+pmABE <-
+  data.frame(Item = row.names(pmABE),pmABE,stringsAsFactors = F,row.names = NULL)
+pmABE[,-1] <- 
+  apply(pmABE[,-1,drop=F],2,function(x)x*10^-4)
+colnames(pmABE)[2] <- 
+  '第2次安倍内閣発足以降のネット合計(兆円)'
+fun_outputMD(tags = '財務省,証券売買契約',
+             objDF = pmABE,
+             htmlName = htmlName,
+             tableTitle = paste0('第2次安倍内閣発足以降のネット合計(兆円)'),
+             tableName = '第2次安倍内閣発足以降のネット合計(兆円)')
 ```
 
 ***
