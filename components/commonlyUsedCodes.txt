@@ -99,3 +99,6 @@ fun_outputMD(tags = '日本銀行,店頭表示金利',
              htmlName = htmlName,
              tableTitle = colnames(DepositInterestRate)[objColumn])
 ```
+
+objRow <- which(apply(buf1,1,function(x)(length(grep('単位',x))))!=0)
+objCol <- which(apply(buf1,2,function(x)(length(grep('単位',x))))!=0)
