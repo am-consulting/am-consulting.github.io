@@ -3,6 +3,8 @@ fun_outputMD <-
            objDF = summaryByName,
            htmlName = htmlName,
            tableTitle = tableTitle,
+           dataTitle = dataTitle,
+           image = 0,
            tableName = '内閣総理大臣毎の基本統計量'){
     username <-
       Sys.info()['user']
@@ -41,6 +43,14 @@ published : true
       file = mdFile,append = T)
   cat(paste0('- ',tableTitle,'','\n\n'),
       file = mdFile,append = T)
+  if(image!=0){
+    cat(paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
+               htmlName,
+               '.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+               htmlName,
+               '.png" width="100%" /></a>\n\n'),
+        file = mdFile,append = T)
+  }
   cat(paste0(knitr::kable(x = objDF,
                           row.names = F,
                           format = 'html',
