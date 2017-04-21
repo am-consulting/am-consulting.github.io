@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-DevelopmentsInRealExportsAndRealImports01.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'DevelopmentsInRealExportsAndRealImports01';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Developments In Real Exports And Real Imports of Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -53,7 +54,7 @@ eval(parse(text = script))
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_makeDiffRatioTable(obj = RealExportsAndRealImports01[,-4],lag = 1)
+fun_makeDiffRatioTable(obj = developmentsInRealExportsAndRealImports,lag = 1)
 fun_latestResult(obj = diffRatioDF,dateFormat = dateFormat,objColumn = c(2,3))
 dataTitle <- 
   paste0('実質輸出入の動向:実質輸出、実質輸入:前月比(%):', latestResult) 
@@ -72,7 +73,7 @@ options(scipen = 999)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-obj <- developmentsInRealExportsAndRealImports[,c(1,2,3,4)]
+obj <- developmentsInRealExportsAndRealImports[,1:3]
 fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat))
 ```
 
@@ -81,40 +82,95 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat
 #### 前月比(%)
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-obj <- developmentsInRealExportsAndRealImports[,c(1,2,3)]
 fun_makeDiffRatioTable(obj = obj,lag = 1)
 fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatioDF,dateFormat = dateFormat))
 ```
-
+<!--
 ***
 
 #### 前月比(PP)
-
+-->
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-obj <- developmentsInRealExportsAndRealImports[,c(1,4)]
-fun_makeDiffTable(obj = obj,lag = 1)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat))
+# obj <- developmentsInRealExportsAndRealImports[,c(1,4)]
+# fun_makeDiffTable(obj = obj,lag = 1)
+# fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat))
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 1
-obj <- developmentsInRealExportsAndRealImports[,c(1,2,3)]
+obj <- developmentsInRealExportsAndRealImports[,1:3]
 fun_generateKnit(objDF = obj,
                  dygraphTitle = paste0(colnames(obj)[-1],collapse = ' × '), 
                  group = 0,
                  plotNum = n)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
-cat('<hr>')
-n <- 2
-obj <- developmentsInRealExportsAndRealImports[,c(1,4)]
-fun_generateKnit(objDF = obj,
-                 dygraphTitle = colnames(obj)[-1], 
-                 group = 0,
-                 plotNum = n,
-                 barPlot = 1)
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+# cat('<hr>')
+# n <- 2
+# obj <- developmentsInRealExportsAndRealImports[,c(1,4)]
+# fun_generateKnit(objDF = obj,
+#                  dygraphTitle = colnames(obj)[-1], 
+#                  group = 0,
+#                  plotNum = n,
+#                  barPlot = 1)
+# eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <- 
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plotTimeSeries(obj = developmentsInRealExportsAndRealImports,
+                   chartType = 1, 
+                   objX = 1, 
+                   objYL = 2, 
+                   objYR = 3,
+                   typeL = 'o',
+                   typeR = 'o',
+                   pchL = 20,
+                   pchR = 20,
+                   dataTitle = dataTitle,
+                   dateFormat = dateFormat,
+                   dataSource = dataSource,
+                   cex.axis = 1, 
+                   cex.main = 1.2, 
+                   cex.lab = 2.0, 
+                   mar = c(5, 5, 13, 2), 
+                   needLefLab = 0,
+                   lwdL = 1,
+                   lwdR = 1,
+                   fitLcolor = 0,
+                   fitRcolor = 0)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '',
+             objDF = tail(obj,20),
+             htmlName = htmlName,
+             tableTitle = paste0(''),
+             tableName = '')
 ```
 
 ***
