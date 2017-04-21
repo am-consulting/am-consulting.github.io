@@ -173,7 +173,7 @@ fun_outputMD(tags = '[実質輸出入,日本銀行]',
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
-             tableTitle = paste0('実施輸出:前月比(%)'))
+             tableTitle = paste0('実質輸出:前月比(%)'))
 ```
 
 ***
