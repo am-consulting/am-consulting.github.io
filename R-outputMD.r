@@ -35,14 +35,6 @@ published : true
 ---\n\n'),file = mdFile,append = T)
   cat(paste0('# ',dataTitle,'\n\n'),
       file = mdFile,append = T)
-  cat(paste0('## 統計データ概要','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('***','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('#### ',tableName,'','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('- ',tableTitle,'','\n\n'),
-      file = mdFile,append = T)
   if(image!=0){
     cat(paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                htmlName,
@@ -51,6 +43,12 @@ published : true
                '.png" width="100%" /></a>\n\n'),
         file = mdFile,append = T)
   }
+  cat(paste0('***','\n\n'),
+      file = mdFile,append = T)
+  cat(paste0('#### ',tableName,'','\n\n'),
+      file = mdFile,append = T)
+  cat(paste0('- ',tableTitle,'','\n\n'),
+      file = mdFile,append = T)
   cat(paste0(knitr::kable(x = objDF,
                           row.names = F,
                           format = 'html',
