@@ -1,0 +1,100 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# Source http://www.env.go.jp/doc/toukei/contents/index.html
+# Source http://www.env.go.jp/doc/toukei/tokeisyu.html
+# R-EnvironmentalStatistic.rmd
+
+library(rvest);library(Nippon)
+htmlMarkup <- 
+  read_html(x = 'http://www.env.go.jp/doc/toukei/contents/index.html',
+            encoding = 'UTF-8')
+pageTitle <- 
+  htmlMarkup %>% html_nodes('title') %>% html_text()
+tableMarkup <-
+  htmlMarkup %>% html_nodes(xpath = "//table[@class = 'tbl_class']")
+chapterTitle <-
+  gsub('\\s','',sapply(tableMarkup %>% html_nodes('p') %>% html_text(),zen2han))
+hrefS <-
+  tableMarkup %>% html_nodes('p') %>% html_nodes('a') %>% html_attr('href')
+baseURL <- 'http://www.env.go.jp/doc/toukei/contents/'
+for(iii in 1:length(hrefS)){
+  htmlMarkup <- 
+    read_html(x = paste0(baseURL,hrefS[iii]),
+              encoding = 'UTF-8')
+  tableTItle <- 
+    htmlMarkup %>% html_nodes('h3') %>% html_text()
+  tableList <-
+    htmlMarkup %>% html_nodes(xpath = "//table[@class = 'tbl_class']")
+  for(sss in 1:length(tableList)){    
+    xlsTitle <- as.data.frame(tableList[sss] %>% html_table())
+    xlsFile <- tableList[sss] %>% html_nodes('a') %>% html_attr('href')
+    tmp <- cbind(xlsTitle,xlsFile)
+    if(iii*sss==1){allFile <- tmp}else{allFile <- rbind(allFile,tmp)}
+  }
+}
+allFile[,1] <- 
+  sapply(allFile[,1],zen2han)
+buf0 <- 
+  paste0('http://www.env.go.jp/doc/toukei',gsub('.*?(/.+)','\\1',allFile[,2]))
+buf1 <-
+  gsub('.+/(.+)','\\1',allFile[,2])
+allFile[,2] <-
+  paste0('<a href="',buf0,'">',buf1,'</a>')
+colnames(allFile) <- c('Title','Excel File')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD_PatternSimple <-
+  function(tags = '',
+           objDF = obj,
+           tableTitle = tableTitle,
+           tableName = ''){
+    username <-
+      Sys.info()['user']
+    pathToFile <-
+      paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+    setwd(pathToFile)
+    fileName <-
+      'defaultPath.csv'
+  buf <-
+    read.csv(file = fileName,
+             header = F,
+             skip = 0,
+             stringsAsFactor = F,
+             check.names = F,
+             fileEncoding = 'utf-8',quote = "\"")
+  pathOutputTOcsv <-
+    paste0("C:/Users/", username, buf[2,1],'md/')
+  setwd(pathOutputTOcsv)
+  getwd()
+  mdFile <-
+    paste0(format(Sys.Date(),'%Y%m%d'),'-olive.md')
+  # md作成パート
+  cat('',file = mdFile,append = F)
+  cat(paste0('
+---
+tags : [',tags,']
+published : true
+---\n\n'),file = mdFile,append = T)
+  cat(paste0('# ',tableName,'\n\n'),
+      file = mdFile,append = T)
+  cat(paste0('***','\n\n'),
+      file = mdFile,append = T)
+  cat(paste0('- ',tableTitle,'','\n\n'),
+      file = mdFile,append = T)
+  cat(paste0(knitr::kable(x = objDF,
+                          row.names = F,
+                          format = 'html',
+                          align = 'r',
+                          table.attr = "id = 'amcc' width = '100%'",
+                          format.args = list(big.mark = ',',drop0trailing = T),
+                          escape = F),'\n'),
+      file = mdFile,append = T)
+  cat(paste0('\n\n***','\n\n'),
+      file = mdFile,append = T)
+  # md作成パート
+  }
+fun_outputMD_PatternSimple(tags = '環境省,環境統計集',
+                           objDF = allFile,
+                           tableTitle = '全てのリンクは環境省ウェブサイトのエクセルファイル',
+                           tableName = '環境省 環境統計集へのリンク')
+```
