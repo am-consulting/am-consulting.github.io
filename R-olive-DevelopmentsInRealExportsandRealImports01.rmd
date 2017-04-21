@@ -150,13 +150,12 @@ fun_plotTimeSeries(obj = developmentsInRealExportsAndRealImports,
                    typeR = 'o',
                    pchL = 20,
                    pchR = 20,
-                   dataTitle = dataTitle,
                    dateFormat = dateFormat,
                    dataSource = dataSource,
-                   cex.axis = 1, 
-                   cex.main = 1.2, 
+                   cex.axis = 1.0, 
+                   cex.main = 1.0, 
                    cex.lab = 2.0, 
-                   mar = c(5, 5, 13, 2), 
+                   mar = c(4, 4, 5, 1), 
                    needLefLab = 0,
                    lwdL = 1,
                    lwdR = 1,
@@ -166,11 +165,15 @@ dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_outputMD(tags = '',
-             objDF = tail(obj,20),
+obj <- developmentsInRealExportsAndRealImports[,c(1,2)]
+fun_makeDiffRatioTable(obj = obj,lag = 1)
+fun_summaryByName(obj = diffRatioDF)
+fun_outputMD(tags = '[実質輸出入,日本銀行]',
+             objDF = summaryByName,
              htmlName = htmlName,
-             tableTitle = paste0(''),
-             tableName = '')
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = paste0('実施輸出:前月比(%)'))
 ```
 
 ***
