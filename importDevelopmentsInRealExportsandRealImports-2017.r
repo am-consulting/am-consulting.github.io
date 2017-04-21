@@ -51,6 +51,7 @@ tmp1 <-
 if(tmp1 != 0){
   buf0 <- buf0[,-tmp0]
 }
+if(!is.null(nrow(buf0))){
 colnames(buf0)[1] <-
   'Date'
 buf0[,-1] <-
@@ -69,3 +70,6 @@ allData <-
         all = T)
 write.table(allData, "clipboard-16384", sep = "\t", row.names = F, col.names = T, quote = F)
 assign('developmentsInRealExportsAndRealImports',allData,envir = .GlobalEnv)
+}else{
+  assign('developmentsInRealExportsAndRealImports',RealExportsAndRealImports01,envir = .GlobalEnv)
+}
