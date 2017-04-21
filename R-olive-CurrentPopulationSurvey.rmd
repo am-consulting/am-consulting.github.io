@@ -1,0 +1,218 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CurrentPopulationSurvey';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Current Population Survey'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F,results='hide'}
+csvFile <-
+  c('table2-1.csv','table2-2.csv','table3-2.csv','table7.csv')
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/CurrentPopulationSurvey/H27/'
+CPS <- list()
+for(iii in seq(length(csvFile))){
+  tmp0 <-
+    read.csv(file = paste0(baseURL,csvFile[iii]),
+             header = T,
+             quote = "\"",
+             check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
+  buf0 <- tmp0
+  if(iii == 1 | iii == 2){
+    buf0[,1] <-
+      as.Date(buf0[,1])
+  }
+  if(iii == 1 | iii == 2 | iii == 3){
+    buf0[,-1] <- 
+      apply(buf0[,-1],2,as.numeric)
+  }else{
+    buf0[,-c(1,2)] <- 
+      apply(buf0[,-c(1,2)],2,as.numeric)
+  }
+  CPS[[iii]] <- buf0
+  print(head(CPS[[iii]]))
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dateFormat <- '%Y年'
+dataTitle <- 
+  paste0('平成27年(2015)人口動態統計(確定数)')
+dataSource <- 
+  '厚生労働省'
+windowsFonts(Meiryo = windowsFont('Meiryo'))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.mhlw.go.jp/toukei/list/81-1a.html
+
+***
+
+#### 第2表-1 人口動態総覧の年次推移
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 1
+obj0 <- CPS[[n]]
+obj <- obj0[,c(1,2,3,6)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+cat('<hr>')
+obj <- obj0[,c(1,4,5)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+cat('<hr>')
+obj <- obj0[,c(1,7,8,9)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+cat('<hr>')
+obj <- obj0[,c(1,11,12)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('brown','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+```
+
+***
+
+#### 第2表-2 人口動態総覧(率)の年次推移
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 2
+obj0 <- CPS[[n]]
+obj <- obj0[,c(1,2,3,6)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+cat('<hr>')
+obj <- obj0[,c(1,4,5)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+cat('<hr>')
+obj <- obj0[,c(1,7,8,9)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+cat('<hr>')
+obj <- obj0[,c(1,11,12)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('brown','green'))
+eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+```
+
+***
+
+#### 第3表-2 人口動態総覧(率),都道府県(21大都市再掲)別
+- 降順上位5
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 3
+obj0 <- CPS[[n]]
+obj0 <-
+  obj0[-grep('全国',obj0[,1]),]
+obj0$ID <- 
+  seq(nrow(obj0))
+buf0 <-
+  subset(obj0,obj0$ID<=47)
+for(ccc in 2:(ncol(buf0)-1)){
+  fun_markdownTable(obj = head(buf0[order(buf0[,ccc],decreasing = T),c(1,ccc)],5))
+  cat('<hr>')
+}
+```
+
+- 昇順上位5
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+for(ccc in 2:(ncol(buf0)-1)){
+  fun_markdownTable(obj = head(buf0[order(buf0[,ccc],decreasing = F),c(1,ccc)],5))
+  cat('<hr>')
+}
+```
+
+#### 第7表 死因簡単分類別にみた性別死亡数･死亡率(人口10万対)
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+library(Nippon)
+n <- 4
+obj0 <- CPS[[n]]
+obj0[,2] <- 
+  sapply(obj0[,2],zen2han)
+fun_dataTable(obj = obj0,dateFormat = 0,orderDirection = 'asc',menuLength = 20)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+n <- 2
+obj0 <- CPS[[n]]
+obj <- obj0[,c(1,2,3,6)]
+obj[,1] <- format(obj[,1],'%Y年')
+fun_outputMD(tags = '厚生労働省,人口動態統計',
+             objDF = tail(obj,20),
+             htmlName = htmlName,
+             tableTitle = paste0('出生率、死亡率および自然増減率'),
+             tableName = '人口動態総覧(率)の年次推移')
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
