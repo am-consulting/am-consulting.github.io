@@ -26,7 +26,7 @@ published : true
 	- ２ 　国会法第百三十二条第二項 に規定する議員秘書は、給料月額として、別表第一による額を受ける。
 	- ３ 　別表第一及び別表第二（以下「給料表」という。）の給料の級及び号給の別は、議員秘書の在職期間及び年齢によるものとし、その基準は、両議院の議長が協議して定める。
 	
-[平成28年66月期の期末・勤勉手当を国家公務員に支給](http://www.cas.go.jp/jp/gaiyou/jimu/jinjikyoku/pdf/h28_bonus.pdf)
+[平成28年06月期の期末・勤勉手当を国家公務員に支給](http://www.cas.go.jp/jp/gaiyou/jimu/jinjikyoku/pdf/h28_bonus.pdf)
 [平成28年12月期の期末・勤勉手当を国家公務員に支給](http://www.cas.go.jp/jp/gaiyou/jimu/jinjikyoku/pdf/h28_bonus_dec.pdf)
 
 	
