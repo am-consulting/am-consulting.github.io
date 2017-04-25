@@ -48,6 +48,7 @@ lawmakerDF <-
 lawmakerDF[,3] <-
   as.numeric(gsub('([0-9]+).*','\\1',lawmakerDF[,3]))
 colnames(lawmakerDF)[4] <- 'URL'
+row.names(lawmakerDF) <- NULL
 assign('Shugiin',lawmakerDF)
 
 htmlMarkup <-
@@ -62,8 +63,9 @@ colnames(tableDF) <-
 tableDF <- tableDF[-1,]
 tableDF[,-1] <-
   apply(tableDF[,-1],2,function(x)as.numeric(gsub('([0-9]+).*','\\1',x)))
+row.names(tableDF) <- NULL
 URL <-
-  htmlMarkup %>% html_nodes('table') %>% html_nodes('tr')
+  tail(htmlMarkup %>% html_nodes('table') %>% html_nodes('tr'),-2)
 tableDF[grep('href',URL),9] <-
   URL %>% html_nodes('a') %>% html_attr('href')
 colnames(tableDF)[9] <- 'URL'
