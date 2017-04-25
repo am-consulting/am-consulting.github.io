@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-BankOfJapanAccounts.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'BankOfJapanAccounts';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Bank of Japan Accounts"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -146,6 +147,7 @@ for(iii in 1:length(Assets)){
 }
 accountsTimeSeries <-
   data.frame(Date,Total,check.names = F,stringsAsFactors = F)
+jgb_accountsTimeSeries <- accountsTimeSeries
 colnames(accountsTimeSeries)[2:3] <-
   c('資産項目中「国債」(単位:兆円)','資産項目中「国債」の構成比(単位:%)')
 colnames(accountsTimeSeries) <-
@@ -182,6 +184,7 @@ for(iii in 1:length(LiabilitiesAndNetWorth)){
 }
 accountsTimeSeries <-
   data.frame(Date,Total,check.names = F,stringsAsFactors = F)
+ca_accountsTimeSeries <- accountsTimeSeries
 colnames(accountsTimeSeries)[2:3] <-
   c('負債項目中「当座預金」(単位:兆円)','負債項目中「当座預金」の構成比(単位:%)')
 colnames(accountsTimeSeries) <-
@@ -214,6 +217,59 @@ fun_markdownTable(obj = Assets[[2]])
 fun_markdownTable(obj = LiabilitiesAndNetWorth[[2]])
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <- 
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+dateFormat <- '%Y年%m月%d日'
+obj <- na.omit(jgb_accountsTimeSeries[,c(1,2)])
+par(family = 'Meiryo',mar = c(4,4,5,2),cex.main = 1.2,font.main = 1)
+plot(obj,type = 'o',pch = 20,cex = 2,xlab = '',xaxt = 'n',ylab = '',
+     main = paste0('資産項目中「国債」の時系列推移(単位:兆円)','\n',
+                   paste0(range(obj[,1]),collapse = '~')),
+     panel.first = grid(nx = NULL,
+                        ny = NULL,
+                        lty = 2,
+                        equilogs = T))
+abline(h = 0,col = 'red',lwd = 2)
+axis.Date(side = 1,
+          at = obj[,1],
+          format = dateFormat,
+          padj = 1,
+          cex.axis = 1)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '日本銀行, 営業毎旬報告, 国債, 当座預金',
+             objDF = Assets[[1]],
+             htmlName = htmlName,
+             image = 0,
+             dataTitle = dataTitle,
+             tableTitle = '資産:営業毎旬報告',
+             tableName = '資産:営業毎旬報告')
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
@@ -226,91 +282,3 @@ fun_markdownTable(obj = LiabilitiesAndNetWorth[[2]])
   ga('send', 'pageview');
 
 </script>
-
-<!--
-
---- 
-tags : [日本銀行, 営業毎旬報告, 国債, 当座預金] 
-published : true
----
-# 日本銀行営業毎旬報告(4月10日現在):国債(兆円):417,構成比(%):85.18,当座預金(兆円):344,構成比(%):70.31
-## 統計データ概要
-
-***
-
-#### 直近
-
-|               資産:営業毎旬報告(4月10日現在)|  金額(兆円)| 構成比(%)|
-|--------------------------------------------:|-----------:|---------:|
-|                                       金地金|   0.4412534|      0.09|
-|                                         現金|   0.1961158|      0.04|
-|                                         国債| 417.0606586|     85.18|
-|                     コマーシャル・ペーパー等|   2.2806351|      0.47|
-|                                         社債|   3.2144285|      0.66|
-|                   金銭の信託（信託財産株式）|   1.1655458|      0.24|
-| 金銭の信託（信託財産指数連動型上場投資信託）|  13.1519593|      2.69|
-|         金銭の信託（信託財産不動産投資信託）|   0.3811516|      0.08|
-|                                       貸付金|   44.427568|      9.07|
-|                                     外国為替|   6.5944131|      1.35|
-|                                   代理店勘定|   0.0301915|      0.01|
-|                                       雑勘定|   0.6881007|      0.14|
-|                                         合計| 489.6320213|       100|
-
-***
-
-| 負債及び純資産:営業毎旬報告(4月10日現在)|  金額(兆円)| 構成比(%)|
-|----------------------------------------:|-----------:|---------:|
-|                               発行銀行券|  99.2521664|     20.27|
-|                                 当座預金| 344.2693728|     70.31|
-|                               その他預金|   12.690542|      2.59|
-|                                 政府預金|  24.4878996|         5|
-|                               売現先勘定|   0.1796474|      0.04|
-|                                   雑勘定|   1.1214349|      0.23|
-|                               引当金勘定|   4.4717599|      0.91|
-|                                   資本金|      0.0001|         0|
-|                                   準備金|   3.1590982|      0.65|
-|                                     合計| 489.6320213|       100|
-
-
-***
-
-#### 前回
-
-|               資産:営業毎旬報告(3月31日現在)|  金額(兆円)| 構成比(%)|
-|--------------------------------------------:|-----------:|---------:|
-|                                       金地金|   0.4412534|      0.09|
-|                                         現金|   0.2031115|      0.04|
-|                                         国債|  417.711474|     85.23|
-|                     コマーシャル・ペーパー等|   2.0357347|      0.42|
-|                                         社債|   3.2144285|      0.66|
-|                   金銭の信託（信託財産株式）|   1.1698917|      0.24|
-| 金銭の信託（信託財産指数連動型上場投資信託）|  12.9353753|      2.64|
-|         金銭の信託（信託財産不動産投資信託）|   0.3775387|      0.08|
-|                                       貸付金|   44.664568|      9.11|
-|                                     外国為替|   6.6625762|      1.36|
-|                                   代理店勘定|   0.0205574|         0|
-|                                       雑勘定|   0.6810656|      0.14|
-|                                         合計| 490.1175751|       100|
-
-***
-
-| 負債及び純資産:営業毎旬報告(3月31日現在)| 金額(兆円)| 構成比(%)|
-|----------------------------------------:|----------:|---------:|
-|                               発行銀行券|  99.800188|     20.36|
-|                                 当座預金| 342.755515|     69.93|
-|                               その他預金|  13.623336|      2.78|
-|                                 政府預金|  21.750733|      4.44|
-|                               売現先勘定|   3.425244|       0.7|
-|                                   雑勘定|   1.131601|      0.23|
-|                               引当金勘定|    4.47176|      0.91|
-|                                   資本金|     0.0001|         0|
-|                                   準備金|   3.159098|      0.64|
-|                                     合計| 490.117575|       100|
-
-***
-
-## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html" width="100%" height="800px"></iframe>
-
--->
