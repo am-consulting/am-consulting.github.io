@@ -225,10 +225,17 @@ pngFile <-
   paste0(htmlName, ".png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
+attach(formdfile)
 obj <- cbind(by(formdfile[, 3], JGB, sum))
 obj <- obj[order(obj[,1]),,drop=F]
+obj <- data.frame(rownames(obj),obj,stringsAsFactors = F,check.names = F,row.names = NULL)
+colnames(obj) <- c('国債銘柄','保有残高(兆円)')
 par(family = 'Meiryo',mar = c(4,6,5,2),cex.main = 1.2,font.main = 1)
-barplot(height = obj[,1],horiz = T,las=2,main = dataTitle)
+barplot(height = obj[,2],horiz = T,las=2,main = dataTitle,names.arg = obj[,1])
+panel.first = grid(nx = NULL,
+                   ny = NA,
+                   lty = 1,
+                   equilogs = T)
 dev.off()
 ```
 
