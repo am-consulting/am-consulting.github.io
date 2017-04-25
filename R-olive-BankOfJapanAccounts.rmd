@@ -264,7 +264,7 @@ dev.off()
 fun_outputMD(tags = '日本銀行, 営業毎旬報告, 国債, 当座預金',
              objDF = Assets[[1]],
              htmlName = htmlName,
-             image = 0,
+             image = 1,
              dataTitle = dataTitle,
              tableTitle = '資産:営業毎旬報告',
              tableName = '資産:営業毎旬報告')
