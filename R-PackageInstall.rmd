@@ -1,0 +1,43 @@
+```{r}
+csvFile <- 'installedPackages.csv'
+buf <-
+  read.csv(file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                         csvFile),
+           header = F,
+           na.strings = '',
+           stringsAsFactors = F,
+           fileEncoding = 'utf8')
+requiredPackageList <- buf[,1]
+colnames(installed.packages())
+notInstalledPackages <-
+  requiredPackageList[!(requiredPackageList %in% installed.packages()[,"Package"])]
+notInstalledPackages
+if(length(notInstalledPackages) != 0){
+  print(notInstalledPackages)
+  install.packages(notInstalledPackages)
+}
+# Reference 
+# http://stackoverflow.com/questions/4090169/elegant-way-to-check-for-missing-packages-and-install-them
+# http://stackoverflow.com/questions/8175912/load-multiple-packages-at-once
+```
+
+```{r}
+packageurl <- "http://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_1.0.0.tar.gz"
+packageurl <- "http://cran.r-project.org/src/contrib/Archive/ggplot2/ggplot2_1.0.1.tar.gz"
+packageurl <- "http://cran.r-project.org/src/contrib/Archive/gridExtra/gridExtra_0.9.1.tar.gz"
+packageurl <- "http://cran.r-project.org/src/contrib/Archive/seasonal/seasonal_0.80.0.tar.gz"
+install.packages(packageurl, repos=NULL, type="source")
+```
+
+```{r}
+username <- Sys.info()['user']
+Sys.setenv(X13_PATH = paste0("C:\\Users\\",username,"\\Downloads\\x13asall_V1.1_B19\\x13as"))
+```
+
+```{r}
+devtools::install_github("lionel-/gghorizon")
+devtools::install_github("animalito/rformat")
+devtools::install_github("am-consulting/performanceAsLeader")
+devtools::install_github("ellisp/ggseas/pkg")
+devtools::install_github("rstudio/addinexamples", type = "source")
+```
