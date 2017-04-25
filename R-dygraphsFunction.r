@@ -5,16 +5,29 @@ dyBarChart <- function(dygraph) {
             path = system.file("examples/plotters/barchart.js", package = "dygraphs"))
 }
 
+# dyUnzoom <-function(dygraph) {
+#   dyPlugin(dygraph = dygraph,
+#            name = "Unzoom",
+#            path = system.file("examples/plugins/unzoom.js", package = "dygraphs"))
+# }
+#
+# dyCrosshair <- function(dygraph, direction = c("both", "horizontal", "vertical")) {
+#   dyPlugin(dygraph = dygraph,
+#            name = "Crosshair",
+#            path = system.file("examples/plugins/crosshair.js", package = "dygraphs"),
+#            options = list(direction = match.arg(direction)))
+# }
+
 dyUnzoom <-function(dygraph) {
   dyPlugin(dygraph = dygraph,
            name = "Unzoom",
-           path = system.file("examples/plugins/unzoom.js", package = "dygraphs"))
+           path = system.file("plugins/unzoom.js", package = "dygraphs"))
 }
 
 dyCrosshair <- function(dygraph, direction = c("both", "horizontal", "vertical")) {
   dyPlugin(dygraph = dygraph,
            name = "Crosshair",
-           path = system.file("examples/plugins/crosshair.js", package = "dygraphs"),
+           path = system.file("plugins/crosshair.js", package = "dygraphs"),
            options = list(direction = match.arg(direction)))
 }
 
