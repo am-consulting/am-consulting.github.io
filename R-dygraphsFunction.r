@@ -39,7 +39,7 @@ dyMultiColumn <- function(dygraph) {
 
 fun_dygraph <-
   function(obj = dataSet, mainTitle = "", legendWidth = 600, hairDirection = 'both',
-           plotNum = 1, barPlot = 0, colors = colors, group = group, quantiles = quantiles){
+           plotNum = 1, barPlot = 0, colors = colors, group = group, quantiles = quantiles, strawBroom = strawBroom){
   xtsData <- xts(obj[,-1], order.by=obj[,1])
   colnames(xtsData) <- colnames(obj)[-1]
   if(group == 1){
@@ -66,6 +66,7 @@ fun_dygraph <-
       dyLimit(as.numeric(summaryResult[6]), color = "red")
   }
   if(barPlot == 1){dygraphPlot <- dygraphPlot %>% dyBarChart()}
+  if(strawBroom == 1){dygraphPlot <- dygraphPlot %>% dyRebase(percent = T)}
   assign(paste0('dygraphPlot',plotNum), dygraphPlot, envir = .GlobalEnv)
 }
 
@@ -302,10 +303,10 @@ assign('event_dygraph_point', buf1,envir = .GlobalEnv)
 
 fun_plot_dygraph <-
   function(obj = tmp, plotNum = 1, dygraphTitle = '', legendWidth = 600, barPlot = 0,
-           colors = colors, group = group, quantiles = quantiles){
+           colors = colors, group = group, quantiles = quantiles, strawBroom = strawBroom){
   buf <- na.omit(obj)
   fun_dygraph(obj = buf, mainTitle = dygraphTitle, plotNum = plotNum, legendWidth = legendWidth,
-              barPlot = barPlot, colors = colors, group = group, quantiles = quantiles)
+              barPlot = barPlot, colors = colors, group = group, quantiles = quantiles, strawBroom = strawBroom)
   fun_consumptionTax(obj = buf)
   fun_primeMinisterOfJapan(obj = buf)
   fun_boj(obj = buf)
@@ -344,11 +345,11 @@ fun_dygraph_shade <- function(plotNum = 1){
 fun_generateKnit <-
   function(objDF = dataSet, plotNum = 1, barPlot = 0, dygraphTitle = '',
            legendWidth = 300, colors = RColorBrewer::brewer.pal(ncol(objDF)-1, "Dark2"),
-           group = 1, quantiles = 0){
+           group = 1, quantiles = 0, strawBroom = 0){
   fun_plot_dygraph(obj = objDF, plotNum = plotNum,
                    dygraphTitle = dygraphTitle,
                    legendWidth = legendWidth, barPlot = barPlot, colors = colors,
-                   group = group, quantiles = quantiles)
+                   group = group, quantiles = quantiles, strawBroom = strawBroom)
   fun_dygraph_shade(plotNum = plotNum)
   }
 
