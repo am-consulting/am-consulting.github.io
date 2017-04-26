@@ -76,15 +76,15 @@ grid.table(tableDF,row=NULL, theme = amccTheme)
 # #DOW , #NIKKEI , #FTSE , #10YrBond , #USDJPY , #VIX 
 # 1300 * 900
 rangeDays <- 60
-symbolS <- c('^DJI','Dow Jones Industrial Average',
-             '^N225','Nikkei 225',
-             '^FTSE','FTSE 100',
-             '^TNX','CBOE Interest Rate 10 Year T No',
-             'JPY=X','USD/JPY',
-             '^VIX','VOLATILITY S&P 500')
+symbolS <- c('^DJI','Dow Jones Industrial Average','DJI',
+             '^N225','Nikkei 225','NIKKEI',
+             '^FTSE','FTSE 100','FTSE',
+             '^TNX','CBOE Interest Rate 10 Year T No','10Y T No',
+             '^GDAXI','DAX','DAX',
+             '^VIX','VOLATILITY S&P 500','VIX')
 par(mfrow=c(3,2),oma=c(3,0,0,0))
 maN <- 10
-for(iii in seq(1,length(symbolS),by = 2)){
+for(iii in seq(1,length(symbolS),by = 3)){
   price <-
     getSymbols(Symbols = symbolS[iii],auto.assign = F)
   pars <- chart_pars()
@@ -92,10 +92,12 @@ for(iii in seq(1,length(symbolS),by = 2)){
   pars$cex <- 1
   dateRange <-
     paste0(range(tail(index(price),rangeDays)),collapse = '::')
+  lastPrice <-
+    round(as.vector(tail(price[,grep('close',colnames(price),ignore.case = T)],1)),2)
   print(chart_Series(x = price,
                      pars = pars,
                      subset = dateRange,
-                     name = symbolS[iii+1],
+                     name = paste0(symbolS[iii+2],':',lastPrice),
                      TA = if(maN <= nrow(price)){print(add_SMA(n = maN))}))
 }
 mtext(text = paste0('Red Line:Moving Average(Over ',maN, ' days)'),side = 1,outer = T,col = 'red')
