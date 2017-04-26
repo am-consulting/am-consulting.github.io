@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ServicesProducerPriceIndexInJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ServicesProducerPriceIndexInJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Services Producer Price Index In Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -207,6 +207,51 @@ fun_markdownTable(obj =
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_transposeDataFrame(obj = ServicesProducerPriceIndex,dateFormat = dateFormat,tailN = 3)
 fun_markdownTable(obj = tDF)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <- 
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- tail(ServicesProducerPriceIndex[,c(1,3)],12*2)
+par(family = 'Meiryo',mar = c(7,4,5,2),cex.main = 1.2,font.main = 1)
+barplot(height = obj[,2],horiz = F,las=2,main = colnames(obj)[2],names.arg = format(obj[,1],dateFormat))
+panel.first = grid(nx = NA,
+                   ny = NULL,
+                   lty = 3,
+                   equilogs = T)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- na.omit(ServicesProducerPriceIndex[,c(1,3)])
+fun_summaryByName(obj = obj)
+fun_outputMD(tags = '日本銀行, 企業向けサービス価格指数',
+             objDF = summaryByName,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
