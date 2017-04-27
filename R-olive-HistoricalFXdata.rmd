@@ -121,10 +121,10 @@ for(ccc in startCol:ncol(buf)){
       allResult <- merge(allResult,ccfResultTable,by='Lag')
   }
 }
-fun_transposeDataFrame(obj = allResult,dateFormat = 0,tailN = 1000,colName = '通貨')
+tDF <- 
+  fun_transposeDataFrame(obj = allResult,dateFormat = 0,tailN = 1000,colName = '通貨')
 colnames(tDF)[-1] <- paste0('Lag:',colnames(tDF)[-1])
 fun_dataTable(obj = tDF,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20)
-remove(tDF)
 ```
 
 ***
@@ -164,7 +164,8 @@ for(ccc in startCol:ncol(buf)){
       allResult <- merge(allResult,ccfResultTable,by='Lag')
   }
 }
-fun_transposeDataFrame(obj = allResult,dateFormat = 0,tailN = 1000,colName = '通貨')
+tDF <- 
+  fun_transposeDataFrame(obj = allResult,dateFormat = 0,tailN = 1000,colName = '通貨')
 colnames(tDF)[-1] <- paste0('Lag:',colnames(tDF)[-1])
 fun_dataTable(obj = tDF,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20)
 ```
