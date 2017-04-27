@@ -67,6 +67,7 @@ fun_dygraph <-
   }
   if(barPlot == 1){dygraphPlot <- dygraphPlot %>% dyBarChart()}
   if(strawBroom == 1){dygraphPlot <- dygraphPlot %>% dyRebase(percent = T)}
+  dygraphPlot <- dygraphPlot %>% dyLimit(0, color = "red")
   assign(paste0('dygraphPlot',plotNum), dygraphPlot, envir = .GlobalEnv)
 }
 
