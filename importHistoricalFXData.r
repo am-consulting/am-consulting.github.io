@@ -11,4 +11,4 @@ historicalFXData <-
   data.frame(Date=as.Date(historicalFXData0[,1]),
              apply(historicalFXData0[,-1],2,as.numeric),
              stringsAsFactors = F,check.names = F,row.names = NULL)
-colnames(historicalFXData) <- colnames(historicalFXData0)
+colnames(historicalFXData)[-1] <- colnames(historicalFXData0)[-1]
