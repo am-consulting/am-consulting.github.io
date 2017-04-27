@@ -1,5 +1,5 @@
 fun_transposeDataFrame <- function(obj, tailN = 5, dateFormat = '%Y-%m-%d', colName = 'Item'){
-  obj[,1] <- format(obj[,1], dateFormat)
+  if(dateFormat!=0){obj[,1] <- format(obj[,1], dateFormat)}
   buf <- t(tail(obj, tailN))
   buf <- data.frame(row.names(buf), buf, check.names = F, stringsAsFactors = F, row.names = NULL)
   colnames(buf) <- buf[1,]
