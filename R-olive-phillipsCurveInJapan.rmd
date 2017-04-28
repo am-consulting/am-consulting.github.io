@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-Phillipscurve.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'Phillipscurve';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Simple Phillips Curve"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -88,7 +89,7 @@ options(scipen = 999)
 `r mainTitle <- paste(colnames(dataSet)[2], ' × ', colnames(dataSet)[3]); paste0('<h4>',mainTitle,'</h4>')`
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide',fig.height=10}
-par(mar = c(5, 5, 5, 1), family = 'Meiryo')
+par(mar = c(5, 5, 5, 1), family = 'Meiryo', font.main = 1)
 split.screen(figs = c(2, 1))
 split.screen(figs = c(1, 2), screen = 2)
 for (iii in 1:3) {
@@ -135,9 +136,9 @@ for (iii in 1:3) {
     xlim = if (iii == 1) {xRange},
     main = subTitle,
     cex.axis = 1,
-    cex.lab = 1.1,
-    cex.main = 1.1,
-    lwd = 1
+    cex.lab = 1.0,
+    cex.main = 1.0,
+    lwd = 1,pch =20
   )
   panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
   abline(lm(y ~ x), col = "red")
@@ -150,7 +151,7 @@ for (iii in 1:3) {
       xlim = xRange,
       ylim = yRange,
       col = "blue",
-      lwd = 1,
+      lwd = 2,
       xlab = '',
       ylab = ''
     )
@@ -276,13 +277,71 @@ fun_dataTable(obj = tail(mergeData,12*5), dateFormat = dateFormat)
 - 2012年12月:野田政権から安倍第二次政権への交代
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_beforeORafter(obj = mergeData,dateFormat = dateFormat)
+beforeORafter <- fun_beforeORafter(obj = mergeData,dateFormat = dateFormat)
 colnames(beforeORafter)[ncol(beforeORafter)] <-
   paste0(colnames(beforeORafter)[ncol(beforeORafter)-2],
          'から',
          colnames(beforeORafter)[ncol(beforeORafter)-1],
          'の',colnames(beforeORafter)[ncol(beforeORafter)])
 fun_markdownTable(obj = beforeORafter)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+par(family = 'Meiryo', mar =c(5,5,4,2), font.main = 1)
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+plot(x = mergeData[,2],
+     y = mergeData[,3],
+     type = 'p',
+     col = 'black',
+     xlab = colnames(mergeData)[2] ,
+     ylab = colnames(mergeData)[3],
+     main = paste0(paste0(colnames(mergeData)[-1],collapse = '×'),'\n',dateRange),
+     cex.axis = 1,
+     cex.lab = 1.0,
+     cex.main = 1.0,
+     lwd = 1,
+     pch = 20)
+panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T)
+abline(h = 0,col = 'red',lwd = 2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+outputDF <- 
+  fun_transposeDataFrame(obj = mergeData,
+                         tailN = 3,
+                         dateFormat = dateFormat,
+                         colName = '項目')
+fun_outputMD(tags = '総務省,完全失業率,消費者物価指数',
+             objDF = outputDF,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '完全失業率と消費者物価指数',
+             tableName = '完全失業率と消費者物価指数')
 ```
 
 ***
