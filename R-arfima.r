@@ -1,5 +1,6 @@
 fun_arfima <-
   function(obj, objColumn = 2, h = 12, displayRange = 12*2, ciLevel = c(0.95,0.7)){
+    if(exists('forecastResultDF',envir = .GlobalEnv)){remove('forecastResultDF',envir = .GlobalEnv)}
     library(forecast)
     result_arfima <-
       arfima(
@@ -52,8 +53,9 @@ fun_arfima <-
     #       side = 2,
     #       outer = F,
     #       line = 3)
-    assign('forecastResultDF',
-           data.frame(forecastResult,row.names = NULL,stringsAsFactors = F,check.names = F),
-           envir = .GlobalEnv)
+    # assign('forecastResultDF',
+    #        data.frame(forecastResult,row.names = NULL,stringsAsFactors = F,check.names = F),
+    #        envir = .GlobalEnv)
+    return(data.frame(forecastResult,row.names = NULL,stringsAsFactors = F,check.names = F))
   }
 
