@@ -1,4 +1,5 @@
 fun_summaryByName <- function(obj,omitFirst = 0,objColumn = 2,objPerson = 'primeminister',digits = 2){
+if(exists('summaryByName',envir = .GlobalEnv)){remove('summaryByName',envir = .GlobalEnv)}
 fun_withList(obj = obj[,c(1,objColumn)])
 objPersonColumn <-
   grep(objPerson,colnames(dfWithList),ignore.case = T)
@@ -23,7 +24,8 @@ Period <-
   sapply(uniqObj,function(x)paste0(format(range(buf0[buf0[,3]==x,1]),dateFormat),collapse = '~'))
 objColumn <- grep('Mean',colnames(allRecord))
 allRecord[,objColumn] <- round(allRecord[,objColumn],digits)
-assign('summaryByName',
-       data.frame(Name = uniqObj,allRecord,Period, stringsAsFactors = F,check.names = F,row.names = NULL),
-       envir = .GlobalEnv)
+# assign('summaryByName',
+#        data.frame(Name = uniqObj,allRecord,Period, stringsAsFactors = F,check.names = F,row.names = NULL),
+#        envir = .GlobalEnv)
+return(data.frame(Name = uniqObj,allRecord,Period, stringsAsFactors = F,check.names = F,row.names = NULL))
 }
