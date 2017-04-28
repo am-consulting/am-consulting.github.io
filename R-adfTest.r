@@ -4,8 +4,9 @@ fun_adfTest <-
     cat('原数値\n')
     print(apply(obj[,objColumn,drop = F],2,function(x)adf.test(x = x)))
     cat('一次差分\n')
-    fun_makeDiffTable(obj = obj,
-                      lag = lag,
-                      diff = diff)
+    diffDF <-
+      fun_makeDiffTable(obj = obj,
+                        lag = lag,
+                        diff = diff)
     print(apply(diffDF[,objColumn,drop = F],2,function(x)adf.test(x = x)))
   }
