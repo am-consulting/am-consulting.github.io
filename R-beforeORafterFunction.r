@@ -5,6 +5,7 @@ fun_beforeORafter <-
            grepWord = c('%', '倍率', '\\(倍\\)', '消費者態度指数', '消費者意識指標', '不足率'),
            targetYear = 2012,
            checkBlankRowColumn = 2) {
+    if(exists('beforeORafter',envir = .GlobalEnv)){remove('beforeORafter',envir = .GlobalEnv)}
     library(RCurl)
     library(lubridate)
     script <-
@@ -42,5 +43,6 @@ fun_beforeORafter <-
         check.names = F,
         stringsAsFactors = F
       )
-    assign('beforeORafter', obj0, envir = .GlobalEnv)
+    # assign('beforeORafter', obj0, envir = .GlobalEnv)
+    return(obj0)
   }
