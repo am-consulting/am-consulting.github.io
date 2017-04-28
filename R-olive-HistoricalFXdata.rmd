@@ -121,10 +121,18 @@ for(ccc in startCol:ncol(buf)){
       allResult <- merge(allResult,ccfResultTable,by='Lag')
   }
 }
-tDF <- 
+tDF <-
   fun_transposeDataFrame(obj = allResult,dateFormat = 0,tailN = 1000,colName = '通貨')
 colnames(tDF)[-1] <- paste0('Lag:',colnames(tDF)[-1])
 fun_dataTable(obj = tDF,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_remove <- function(){if(exists('tDF',where = .GlobalEnv)){remove('tDF',pos = .GlobalEnv)}}
+fun_remove()
+fun_remove <- function(){if(exists('tDF',envir = .GlobalEnv)){remove('tDF',envir = .GlobalEnv)}}
+fun_remove()
+# 未だtDFはremoveされず。
 ```
 
 ***
@@ -164,7 +172,7 @@ for(ccc in startCol:ncol(buf)){
       allResult <- merge(allResult,ccfResultTable,by='Lag')
   }
 }
-tDF <- 
+tDF <-
   fun_transposeDataFrame(obj = allResult,dateFormat = 0,tailN = 1000,colName = '通貨')
 colnames(tDF)[-1] <- paste0('Lag:',colnames(tDF)[-1])
 fun_dataTable(obj = tDF,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20)
