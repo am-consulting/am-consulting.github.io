@@ -1,21 +1,25 @@
 fun_makeDiffTable <-
   function(obj, lag = 1, diff = 1, roundDigits = 10){
+    if(exists('diffDF',envir = .GlobalEnv)){remove('diffDF',envir = .GlobalEnv)}
     diffDF <-
       data.frame(tail(obj[,1],- lag * diff),
                  round(diff(as.matrix(obj[,-1]), lag = lag, differences = diff), roundDigits),
                  check.names = F,
                  stringsAsFactors = F)
     colnames(diffDF) <- colnames(obj)
-    assign('diffDF', diffDF, envir = .GlobalEnv)
+    # assign('diffDF', diffDF, envir = .GlobalEnv)
+    return(diffDF)
   }
 
 fun_makeDiffRatioTable <-
   function(obj, lag = 1, diff = 1, roundDigits = 1){
+    if(exists('diffRatioDF',envir = .GlobalEnv)){remove('diffRatioDF',envir = .GlobalEnv)}
     diffRatioDF <-
       data.frame(tail(obj[,1],- lag * diff),
                  round(diff(as.matrix(obj[,-1]), lag = lag, differences = diff)/head(obj[,-1], - lag * diff) * 100, roundDigits),
                  check.names = F,
                  stringsAsFactors = F)
     colnames(diffRatioDF) <- colnames(obj)
-    assign('diffRatioDF', diffRatioDF, envir = .GlobalEnv)
+    # assign('diffRatioDF', diffRatioDF, envir = .GlobalEnv)
+    return(diffRatioDF)
   }
