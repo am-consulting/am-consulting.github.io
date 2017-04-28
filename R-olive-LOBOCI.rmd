@@ -89,16 +89,61 @@ options(scipen = 999)
 
 ```{r warning=F, error=F, message=F, echo=F}
 allLOBO <- LOBOCI[,c(1,grep('全産業',colnames(LOBOCI)))]
-texDygraph <- vector()
-for(iii in 2:ncol(allLOBO)){
-  fun_generateKnit(objDF = allLOBO[,c(1,iii)], plotNum = iii, group = 0, barPlot = 1,
-                   colors = RColorBrewer::brewer.pal(ncol(allLOBO)-1, "Accent")[iii-1],
-                   dygraphTitle = colnames(allLOBO)[iii])
-  texDygraph <- c(texDygraph, paste0('knit_expanded', iii))
-}
 ```
 
-`r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 2
+obj <- allLOBO[,c(1,n)]
+fun_generateKnit(objDF = obj, plotNum = n, group = 0, barPlot = 1,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 3
+obj <- allLOBO[,c(1,n)]
+fun_generateKnit(objDF = obj, plotNum = n, group = 0, barPlot = 1,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 4
+obj <- allLOBO[,c(1,n)]
+fun_generateKnit(objDF = obj, plotNum = n, group = 0, barPlot = 1,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 5
+obj <- allLOBO[,c(1,n)]
+fun_generateKnit(objDF = obj, plotNum = n, group = 0, barPlot = 1,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 6
+obj <- allLOBO[,c(1,n)]
+fun_generateKnit(objDF = obj, plotNum = n, group = 0, barPlot = 1,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+n <- 7
+obj <- allLOBO[,c(1,n)]
+fun_generateKnit(objDF = obj, plotNum = n, group = 0, barPlot = 1,
+                 dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
 
 #### 直近`r tailN <- 5;tailN`ヶ月
 - 原数値
@@ -113,18 +158,57 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = LOBOCI,
 - 前月差(ポイント)
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-fun_makeDiffTable(obj = LOBOCI)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF, 
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = LOBOCI), 
                                                tailN = tailN, 
                                                dateFormat = dateFormat))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
 objColumn <- 32
-fun_summaryByName(obj = na.omit(LOBOCI),objColumn = objColumn)
+obj <- na.omit(LOBOCI[,c(1,objColumn)])
+par(family = 'Meiryo', mar =c(5,5,4,2), font.main = 1)
+dateRange <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'o',
+                   dateFormat = dateFormat,
+                   chartType = 0,
+                   dataTitle = '商工会議所LOBO調査(早期景気観測)',
+                   dataSource = dataSource,
+                   fitLcolor = 2,
+                   fitlwdL = 2)
+abline(h = 0,col = 'red',lwd = 2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '日本商工会議所,商工会議所LOBO調査(早期景気観測)',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = na.omit(LOBOCI),objColumn = objColumn),
+             dataTitle = dataTitle,
              htmlName = htmlName,
+             image = 1,
              tableTitle = colnames(LOBOCI)[objColumn])
 ```
 
