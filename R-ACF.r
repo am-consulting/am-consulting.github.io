@@ -1,5 +1,6 @@
 fun_acf <-
   function(obj, lag.max = 12*3, objColumn = 2){
+    if(exists('acfDF',envir = .GlobalEnv)){remove('acfDF',envir = .GlobalEnv)}
     row.names(obj) <- NULL
     lag.max <- lag.max
     par(mar = c(5,5,4,2), family = 'Meiryo', font.main = 1, cex.main = 1.1)
@@ -13,7 +14,8 @@ fun_acf <-
                              equilogs = T),
           drop.lag.0 = F,
           plot = T)
-    assign(x = 'acfDF',
-           value = data.frame(Lag = resultACF$lag, ACF = resultACF$acf, stringsAsFactors = F),
-           envir = .GlobalEnv)
+    # assign(x = 'acfDF',
+    #        value = data.frame(Lag = resultACF$lag, ACF = resultACF$acf, stringsAsFactors = F),
+    #        envir = .GlobalEnv)
+    return(data.frame(Lag = resultACF$lag, ACF = resultACF$acf, stringsAsFactors = F))
   }
