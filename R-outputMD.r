@@ -43,6 +43,8 @@ published : true
                '.png" width="100%" /></a>\n\n'),
         file = mdFile,append = T)
   }
+  cat('\n\n<style>td {text-align:right;} </style>\n\n',
+      file = mdFile,append = T)
   cat(paste0('***','\n\n'),
       file = mdFile,append = T)
   cat(paste0('#### ',tableName,'','\n\n'),
