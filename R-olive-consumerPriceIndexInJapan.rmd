@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-consumerpriceindexInJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'consumerpriceindexInJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Consumer Price Index in Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -118,6 +119,17 @@ fun_markdownTable(obj = NegativeData)
 
 ***
 
+#### Straw Broom Chart
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+n <- 10
+obj <- consumerPriceIndexofJapan[,c(1,2,3,6)]
+fun_generateKnit(objDF = obj,plotNum = n,group = 0,strawBroom = 1)
+eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+
 #### `r  cc <- 2;colnames(consumerPriceIndexofJapan)[cc]`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
@@ -126,7 +138,9 @@ fun_generateKnit(objDF = consumerPriceIndexofJapan[,c(1,cc)],
                  colors = 'green',
                  barPlot = 1,
                  plotNum = n,
-                 dygraphTitle = colnames(consumerPriceIndexofJapan)[cc],group = 0)
+                 dygraphTitle = colnames(consumerPriceIndexofJapan)[cc],
+                 group = 0,
+                 quantiles = 2)
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', primeMinisterOfJapan_dygraph)))
@@ -145,7 +159,9 @@ fun_generateKnit(objDF = consumerPriceIndexofJapan[,c(1,cc)],
                  colors = 'green',
                  barPlot = 1,
                  plotNum = n,
-                 dygraphTitle = colnames(consumerPriceIndexofJapan)[cc],group = 0)
+                 dygraphTitle = colnames(consumerPriceIndexofJapan)[cc],
+                 group = 0,
+                 quantiles = 2)
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', primeMinisterOfJapan_dygraph)))
@@ -164,7 +180,9 @@ fun_generateKnit(objDF = consumerPriceIndexofJapan[,c(1,cc)],
                  colors = 'green',
                  barPlot = 1,
                  plotNum = n,
-                 dygraphTitle = colnames(consumerPriceIndexofJapan)[cc],group = 0)
+                 dygraphTitle = colnames(consumerPriceIndexofJapan)[cc],
+                 group = 0,
+                 quantiles = 2)
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', ConsumptionTax)))
 cat('<hr>')
 eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', primeMinisterOfJapan_dygraph)))
@@ -177,11 +195,62 @@ cat('<hr>')
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 cat('#### 直近3ヶ月の総合CPI、コアCPIおよびコアコアCPI')
-fun_transposeDataFrame(obj = consumerPriceIndexofJapan[,c(1,2,3,6)],dateFormat = dateFormat,tailN = 3)
+tDF <- fun_transposeDataFrame(obj = consumerPriceIndexofJapan[,c(1,2,3,6)],dateFormat = dateFormat,tailN = 3)
 fun_markdownTable(obj = tDF)
 cat('#### 最大物価上昇項目と最大物価下落項目')
-fun_transposeDataFrame(obj = consumerPriceIndexofJapan,tailN = 1,dateFormat = dateFormat)
+tDF <- fun_transposeDataFrame(obj = consumerPriceIndexofJapan,tailN = 1,dateFormat = dateFormat)
 fun_markdownTable(obj = rbind(subset(tDF,max(tDF[,2])==tDF[,2]),subset(tDF,min(tDF[,2])==tDF[,2])))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- tail(consumerPriceIndexofJapan[,c(1,79)],12*5)
+fun_plotTimeSeries(obj = obj,
+                   chartType = 0,
+                   dateFormat = dateFormat,
+                   dataTitle = '',
+                   dataSource = dataSource,
+                   mar = c(4,4,6,2),
+                   fitlwdL = 2,
+                   fitLcolor = 2,
+                   needLefLab = 0,
+                   typeL = 'o',
+                   cexL = 2)
+abline(h=0,col='red',lwd=2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- na.omit(consumerPriceIndexofJapan[,c(1,79)])
+fun_summaryByName(obj = obj)
+fun_outputMD(tags = '総務省, 消費者物価指数',
+             objDF = summaryByName,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 <script>MakeNegative();</script>
