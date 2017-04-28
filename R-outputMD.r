@@ -1,3 +1,4 @@
+# https://github.com/benweet/stackedit/issues/137
 fun_outputMD <-
   function(tags = '貸出約定平均金利,日本銀行',
            objDF = summaryByName,
@@ -43,8 +44,8 @@ published : true
                '.png" width="100%" /></a>\n\n'),
         file = mdFile,append = T)
   }
-  cat('\n\n<style>table#amcc td {text-align:right;} </style>\n\n',
-      file = mdFile,append = T)
+  # cat('\n\n<style>table#amcc td {text-align:right;} </style>\n\n',
+  #     file = mdFile,append = T)
   cat(paste0('***','\n\n'),
       file = mdFile,append = T)
   cat(paste0('#### ',tableName,'','\n\n'),
