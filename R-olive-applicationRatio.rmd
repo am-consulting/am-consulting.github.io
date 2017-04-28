@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-applicationRatioInJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'applicationRatioInJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Job Opening-to-Application Ratio In Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -98,7 +99,10 @@ n1 <- 1
 bufDF <- na.omit(dataSet0[,c(1,grep(objTitle, colnames(dataSet0), ignore.case = T))])
 fun_generateKnit(objDF = bufDF, plotNum = n1, colors = c('blue','red'), group = 0,
                  dygraphTitle = paste0(colnames(bufDF)[-1], collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n1, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F}
 objTitle <- '求人数\\(万人\\)-季節調整'
@@ -106,9 +110,10 @@ n2 <- 2
 bufDF <- na.omit(dataSet0[,c(1,grep(objTitle, colnames(dataSet0), ignore.case = T))])
 fun_generateKnit(objDF = bufDF, plotNum = n2, colors = c('blue','red'), group = 0,
                  dygraphTitle = paste0(colnames(bufDF)[-1], collapse = ' × '))
+eval(parse(text = paste0('dygraphPlot', n2, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
 
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)))), collapse = '\n')`
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_dataTable(obj = tail(dataSet0,12*5),dateFormat = dateFormat)
@@ -132,9 +137,55 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dat
                                                dateFormat = dateFormat))
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet0,
-                                               dateFormat = dateFormat))
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- jobOpenings[,c(1,4)]
+fun_plotTimeSeries(obj = obj,
+                   chartType = 0,
+                   dateFormat = dateFormat,
+                   dataTitle = '一般職業紹介状況',
+                   dataSource = dataSource,
+                   mar = c(4,4,6,2),
+                   fitlwdL = 2,
+                   fitLcolor = 2,
+                   needLefLab = 0,
+                   typeL = 'o',
+                   cexL = 1.2, 
+                   cex.main = 1.2)
+abline(h=0,col='red',lwd=2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- na.omit(jobOpenings[,c(1,4)])
+fun_outputMD(tags = '厚生労働省, 一般職業紹介状況, 有効求人倍率',
+             objDF = fun_summaryByName(obj = obj),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
