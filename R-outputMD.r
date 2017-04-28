@@ -43,7 +43,7 @@ published : true
                '.png" width="100%" /></a>\n\n'),
         file = mdFile,append = T)
   }
-  cat('\n\n<style>td {text-align:right;} </style>\n\n',
+  cat('\n\n<style>table#amcc td {text-align:right;} </style>\n\n',
       file = mdFile,append = T)
   cat(paste0('***','\n\n'),
       file = mdFile,append = T)
@@ -54,7 +54,7 @@ published : true
   cat(paste0(knitr::kable(x = objDF,
                           row.names = F,
                           format = 'html',
-                          align = 'r',
+                          # align = 'r',
                           table.attr = "id = 'amcc' width = '100%'",
                           format.args = list(big.mark = ',',drop0trailing = T),
                           escape = F),'\n'),
