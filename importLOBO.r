@@ -1,12 +1,21 @@
 # http://www.jcci.or.jp/
 # http://www.jcci.or.jp/lobo/lobo.html
 # －THE QUICK SURVEY SYSTEM OF LOCAL BUSINESS OUTLOOK－
-library(XLConnect);library(Nippon);library(lubridate)
+library(XLConnect);library(Nippon);library(lubridate);library(rvest)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileName <- 'lobodi.xls'
-download.file(paste0('http://www.jcci.or.jp/lobo/', fileName),
+# fileName <- 'lobodi.xls'
+# download.file(paste0('http://www.jcci.or.jp/lobo/', fileName),
+#               fileName, mode = 'wb')
+htmlMarkup <-
+  read_html(x = 'https://cci-lobo.jcci.or.jp/',
+            encoding = 'utf8')
+xlsLink <-
+  htmlMarkup %>% html_nodes(xpath = "//div[@class = 'partsBtn']") %>% html_nodes('a') %>% html_attr('href')
+fileName <-
+  gsub('.+/(.+.xls)','\\1',xlsLink)
+download.file(paste0('https://cci-lobo.jcci.or.jp', xlsLink),
               fileName, mode = 'wb')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
