@@ -193,11 +193,12 @@ eval(parse(text = paste0(paste0('dygraphPlot',n),' %>% ', event_dygraph_point,' 
 cat('<hr>')
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-cat('#### 直近3ヶ月の総合CPI、コアCPIおよびコアコアCPI')
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat('#### 直近3ヶ月の総合CPI、コアCPIおよびコアコアCPI\n\n')
 tDF <- fun_transposeDataFrame(obj = consumerPriceIndexofJapan[,c(1,2,3,6)],dateFormat = dateFormat,tailN = 3)
 fun_markdownTable(obj = tDF)
-cat('#### 最大物価上昇項目と最大物価下落項目')
+cat('\n\n<hr>\n\n')
+cat('#### 最大物価上昇項目と最大物価下落項目\n\n')
 tDF <- fun_transposeDataFrame(obj = consumerPriceIndexofJapan,tailN = 1,dateFormat = dateFormat)
 fun_markdownTable(obj = rbind(subset(tDF,max(tDF[,2])==tDF[,2]),subset(tDF,min(tDF[,2])==tDF[,2])))
 ```
