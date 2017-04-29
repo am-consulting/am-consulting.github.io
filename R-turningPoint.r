@@ -1,4 +1,11 @@
 fun_turningPoint <- function(obj, dateFormat = '%Y-%m', unit = '月', judge = c('輸入超','輸出超')){
+  if(exists('durationInclude0',envir = .GlobalEnv)){remove('durationInclude0',envir = .GlobalEnv)}
+  if(exists('objPNinclude0',envir = .GlobalEnv)){remove('objPNinclude0',envir = .GlobalEnv)}
+  if(exists('durationExclude0',envir = .GlobalEnv)){remove('durationExclude0',envir = .GlobalEnv)}
+  if(exists('objPNexclude0',envir = .GlobalEnv)){remove('objPNexclude0',envir = .GlobalEnv)}
+  if(exists('texInclude0',envir = .GlobalEnv)){remove('texInclude0',envir = .GlobalEnv)}
+  if(exists('texExclude0',envir = .GlobalEnv)){remove('texExclude0',envir = .GlobalEnv)}
+
   obj[,1] <- as.Date(obj[,1])
   obj0 <- obj
   obj0[obj0 == 0] <- 1
