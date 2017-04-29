@@ -123,9 +123,6 @@ if(durationInclude0 != 0){
              ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '</h4>'))
   cat('\n\n<hr>')
 }
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
 ccc <- 3
 fun_turningPoint(obj = dataSetDiff[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
