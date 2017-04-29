@@ -61,7 +61,7 @@ dataSet <- buf
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y-%m-%d'
-fun_makeDiffTable(obj = dataSet)
+diffDF <- fun_makeDiffTable(obj = dataSet)
 diffDF[,-1] <- 
   apply(diffDF[,-1], 2, function(x)round(x,1))
 fun_latestResult(obj = diffDF, dateFormat = dateFormat, objColumn = -1)
