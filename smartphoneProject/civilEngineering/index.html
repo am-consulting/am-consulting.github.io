@@ -164,7 +164,7 @@ $(function() {
 <td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="f" class="input01" size="30" id="f"></td>
 </tr>
 <tr>
-<td>イメージアップ経費対象支給品費等(円)</td>
+<td>現場環境改善費対象支給品費等(円)</td><!--2017-05-01-->
 <td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="g" class="input01" size="30" id="g"></td>
 </tr>
 <tr>
@@ -180,13 +180,14 @@ $(function() {
 <td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="j" class="input01" size="30" id="j"></td>
 </tr>
 <tr>
-<td>イメージアップ特別積上額(円)</td>
+<td>現場環境改善費特別積上額(円)</td><!--2017-05-01-->
 <td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="k" class="input01" size="30" id="k"></td>
 </tr>
 <tr>
 <td>その他積上分共通仮設費(円)</td>
 <td><INPUT type="text" style="ime-mode:disabled;text-align:right" name="l" class="input01" size="30" id="l"></td>
 </tr>
+<!--2017-05-01
 <tr>
 <td>率計算分イメージアップ経費</td>
 <td>
@@ -196,9 +197,22 @@ $(function() {
 </SELECT>
 </td>
 </tr>
+-->
+<!--2017-05-01-->
+<tr>
+<td>率計算分現場環境改善費</td>
+<td>
+<SELECT style="width:90%" name="allocateImageup" size="1">
+<OPTION value="0">計上しない</OPTION>
+<OPTION value="1">計上する:地方部</OPTION>
+<OPTION value="2">計上する:市街地</OPTION>
+</SELECT>
+</td>
+</tr>
+<!--2017-05-01-->
 <!--2016-05-03-->
 <tr>
-<td>イメージアップ経費補正(加算)</td>
+<td>現場環境改善費補正(加算)</td><!--2017-05-01-->
 <td>
 <SELECT style="width:90%" name="correctionRateImageup" size="1">
 <OPTION value="0">補正しない</OPTION>
@@ -208,7 +222,7 @@ $(function() {
 </tr>
 <!--2016-05-03-->
 <tr>
-<td>施工時期・工事期間等補正(%)</td>
+<td>施工時期・工事期間等補正(%、加算)</td>
 <td><INPUT type="number" style="ime-mode:disabled;text-align:right" name="correctionPeriod" class="input01" size="30"></td>
 </tr>
 <tr>
@@ -216,18 +230,19 @@ $(function() {
 <td><INPUT type="number" style="ime-mode:disabled;text-align:right" name="correctionContract" class="input01" size="30"></td>
 </tr>
 <tr>
-<td>前払金支出割合区分</td>
+<td>前払金支出割合区分(乗算)</td><!--2017-05-01-->
 <td>
 <SELECT style="width:90%" name="correctionMaebaraikin" size="1">
-<OPTION value="1.00">35％超40％以下</OPTION>
-<OPTION value="1.01">25％超35％以下</OPTION>
-<OPTION value="1.03">15％超25％以下</OPTION>
-<OPTION value="1.04">5％超15％以下</OPTION>
-<OPTION value="1.05">5％以下</OPTION>
+<OPTION value="1.00">35％超40％以下:1.00</OPTION><!--2017-05-01-->
+<OPTION value="1.01">25％超35％以下:1.01</OPTION><!--2017-05-01-->
+<OPTION value="1.03">15％超25％以下:1.03</OPTION><!--2017-05-01-->
+<OPTION value="1.04">5％超15％以下:1.04</OPTION><!--2017-05-01-->
+<OPTION value="1.05">5％以下:1.05</OPTION><!--2017-05-01-->
 </SELECT>
 </td>
 </tr>
 <!--2016-05-03-->
+<!--2017-05-01
 <tr>
 <td>施工地域・工事場所区分(加算)</td>
 <td>
@@ -240,7 +255,22 @@ $(function() {
 </SELECT>
 </td>
 </tr>
+-->
 <!--2016-05-03-->
+<!--2017-05-01-->
+<tr>
+<td>施工地域・工事場所区分(乗算)</td>
+<td>
+<SELECT style="width:90%" name="correctionArea" size="1">
+<OPTION value="0">補正非適用:共 1.0、現 1.0</OPTION>
+<OPTION value="1">全地域:一般交通影響有①:共 1.3、現 1.1</OPTION>
+<OPTION value="2">全地域:一般交通影響有②:共 1.2、現 1.1</OPTION>
+<OPTION value="3">市街地:一般交通影響無:共 1.2、現 1.1</OPTION>
+<OPTION value="4">山間僻地及び離島:共 1.3、現 1.0</OPTION>
+</SELECT>
+</td>
+</tr>
+<!--2017-05-01-->
 <!--2016-05-03-->
 <tr>
 <td>大都市補正/市街地補正(乗算)</td>
@@ -254,6 +284,18 @@ $(function() {
 </td>
 </tr>
 <!--2016-05-03-->
+<!--2017-05-01-->
+<tr>
+<td>被災地間接工事費補正(乗算)</td>
+<td>
+<SELECT style="width:90%" name="correctionHisaichi" size="1">
+<OPTION value="0">非適用:共 1.0,現 1.0</OPTION>
+<OPTION value="1">適用:共 1.5,現 1.2</OPTION>
+<OPTION value="2">適用:共 1.1,現 1.1</OPTION>
+</SELECT>
+</td>
+</tr>
+<!--2017-05-01-->
 <tr>
 <td>消費税</td>
 <td>
@@ -356,7 +398,7 @@ $(function() {
 <td><input type="text" style="ime-mode:disabled;text-align:right" name="rateTotalExpense" size="14" class="input01"></td>
 </tr>
 <tr>
-<td>ｲﾒｰｼﾞｱｯﾌﾟ経費率</td>
+<td>現場環境改善費率</td>
 <td><input type="text" style="ime-mode:disabled;text-align:right" name="rateImageup" size="14" class="input01"></td>
 </tr>
 <tr>
@@ -391,11 +433,11 @@ $(function() {
 <td>率計算分共通仮設費</td><td><input type="text" style="ime-mode:disabled;text-align:right" name="kyoutsuuKasetsuByRate" size="14" class="input01"></td>
 </tr>
 <tr>
-<td>率計算ｲﾒｰｼﾞｱｯﾌﾟ経費対象額</td>
+<td>率計算現場環境改善費対象額</td>
 <td><input type="text" style="ime-mode:disabled;text-align:right" name="Pi" size="14" class="input01"></td>
 </tr>
 <tr>
-<td>率計算分ｲﾒｰｼﾞｱｯﾌﾟ経費</td>
+<td>率計算分現場環境改善費</td>
 <td><input type="text" style="ime-mode:disabled;text-align:right" name="Ki" size="14" class="input01"></td>
 </tr>
 <tr>
@@ -406,6 +448,32 @@ $(function() {
 <td>率計算一般管理費対象額</td>
 <td><input type="text" style="ime-mode:disabled;text-align:right" name="Gp" size="14" class="input01"></td>
 </tr>
+<!--2017/05/01-->
+<tr>
+<td>共通仮設費率施工地域補正</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateKyoutsuukasetsuAreaCorrection" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費率施工地域補正</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateGenbakanriAreaCorrection" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>共通仮設費率被災地補正</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateKyoutsuukasetsuHisaichiCorrection" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費率被災地補正</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateGenbakanriHisaichiCorrection" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>共通仮設費率大都市補正</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="rateKyoutsuukasetsuBigsityCorrection" size="14" class="input01"></td>
+</tr>
+<tr>
+<td>現場管理費率大都市補正</td>
+<td><input type="text" style="ime-mode:disabled;text-align:right" name="genbakanriBigcityCorrection" size="14" class="input01"></td>
+</tr>
+<!--2017/05/01-->
 </tbody>
 </table>
 </form>
@@ -414,6 +482,9 @@ $(function() {
 <div class="box">
 <div class="divsrcollbar">
 <b>参考資料</b><br>
+<!-- 2017/05/01 -->
+・<a href="http://www.mlit.go.jp/report/press/kanbo08_hh_000396.html" title="" class="ext-link ext-icon-6" target="_blank">『平成29年度 国土交通省土木工事・業務の積算基準等の改定』(平成29年3月10日）</a><br>
+<!-- 2017/05/01 -->
 ・<a href="http://www.mlit.go.jp/report/press/kanbo08_hh_000334.html" title="" class="ext-link ext-icon-6" target="_blank">『国土交通省土木工事積算基準等の改定について』(平成28年3月14日）</a><br>
 ・<a href="http://www.mlit.go.jp/report/press/kanbo08_hh_000296.html" title="" class="ext-link ext-icon-6" target="_blank">『国土交通省土木工事積算基準等の改定について』(平成27年3月11日）</a><br>
 ・国土交通省web site.『国土交通省土木工事積算基準等の改正について 平成24年3月30日 国土交通省直轄土木工事における法定福利費の確保について 別紙-3』<br>
@@ -445,27 +516,27 @@ $(function() {
 </tr>
 <tr>
 <td>共通仮設費率</td>
-<td>共通仮設費率(補正前)*大都市補正+施工地域･工事場所区分補正</td>
+<td>共通仮設費率(補正前)*大都市補正*施工地域･工事場所区分補正*被災地間接工事費補正</td><!--2017-05-01-->
 </tr>
 <tr>
 <td>率計算分共通仮設費</td>
 <td>率計算共通仮設費対象額*共通仮設費率</td>
 </tr>
 <tr>
-<td>率計算ｲﾒｰｼﾞｱｯﾌﾟ経費対象額</td>
-<td>直接工事費-直接工事費に含まれる処分費+無償貸与機械等評価額+ｲﾒｰｼﾞｱｯﾌﾟ経費対象支給品費等</td>
+<td>率計算現場環境改善費対象額</td>
+<td>直接工事費-直接工事費に含まれる処分費+無償貸与機械等評価額+現場環境改善費対象支給品費等</td>
 </tr>
 <tr>
-<td>ｲﾒｰｼﾞｱｯﾌﾟ経費率</td>
-<td>ｲﾒｰｼﾞｱｯﾌﾟ経費率(補正前)+施工地域･工事場所区分補正</td>
+<td>現場環境改善費率</td>
+<td>現場環境改善費率(補正前)+現場環境改善費補正</td><!--2017-05-01-->
 </tr>
 <tr>
-<td>率計算分ｲﾒｰｼﾞｱｯﾌﾟ経費</td>
-<td>率計算ｲﾒｰｼﾞｱｯﾌﾟ経費対象額*ｲﾒｰｼﾞｱｯﾌﾟ経費率</td>
+<td>率計算分現場環境改善費</td>
+<td>率計算現場環境改善費対象額*現場環境改善費率</td>
 </tr>
 <tr>
 <td>共通仮設費合計</td>
-<td>率計算分共通仮設費+率計算分ｲﾒｰｼﾞｱｯﾌﾟ経費+事業損失防止施設費+ｲﾒｰｼﾞｱｯﾌﾟ特別計上額+その他積上共通仮設費</td>
+<td>率計算分共通仮設費+率計算分現場環境改善費+事業損失防止施設費+現場環境改善費特別計上額+その他積上共通仮設費</td>
 </tr>
 </tbody>
 </table>
@@ -483,7 +554,7 @@ $(function() {
 </tr>
 <tr>
 <td>現場管理費率</td>
-<td>現場管理費率(補正前)*大都市補正+施工地域･工事場所区分補正+施工時期･工事期間補正</td>
+<td>現場管理費率(補正前)*大都市補正*施工地域･工事場所区分補正*被災地間接工事費補正+施工時期･工事期間補正</td><!--2017-05-01-->
 </tr>
 <tr>
 <td>現場管理費</td>

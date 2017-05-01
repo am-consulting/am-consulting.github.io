@@ -61,6 +61,7 @@ function calcStep1(){
 	correctionArea=parseFloat(document.form1.correctionArea.value);
 	correctionBigcity=parseFloat(document.form1.correctionBigcity.value);
 	rateConsumptionTax=parseFloat(document.form1.rateConsumptionTax.value);
+	correctionHisaichi=parseFloat(document.form1.correctionHisaichi.value);//20170501
 	if(isNaN(rateConsumptionTax) || rateConsumptionTax<0){
 		rateConsumptionTax=0;
 	}
@@ -97,6 +98,7 @@ function calcStep1(){
 	P=Math.round(Math.floor(P*Math.pow(10,7))/10)/Math.pow(10,6);
 //率計算イメージアップ経費対象額=直接工事費-直接工事費に含まれる処分費等+イメージアップ経費対象支給品費等+無償貸与機械等評価額.
 	Pi=cost[1]-cost[9]+cost[7]+cost[5];
+	/*2017-05-01
 	if(Pi>500000000){
 		rateImageup=0.69;
 		Pi=500000000;
@@ -109,6 +111,37 @@ function calcStep1(){
 		rateImageup=0;
 	}
 	rateImageup=Math.round(Math.floor(rateImageup*allocateImageup*1000)/10)/100;
+	*/
+	//2017-05-01
+	if(Pi>500000000){
+		if(allocateImageup==1){
+			rateImageup=0.71;
+			}
+			else
+				if(allocateImageup==2){
+					rateImageup=1.73;
+					}
+					else
+						if(allocateImageup==0){
+							rateImageup=0;
+							}
+							Pi=500000000;
+	}
+	else{
+		if(allocateImageup==1){
+			rateImageup=39.9*Math.pow(Pi,-0.201);
+			}
+			else
+				if(allocateImageup==2){
+					rateImageup=56.6*Math.pow(Pi,-0.174);
+					}
+					else
+						if(allocateImageup==0){
+							rateImageup=0;
+							}
+	}
+	rateImageup=Math.round(Math.floor(rateImageup*1000)/10)/100;
+	//2017-05-01
 	originalRateImageup=rateImageup;
 /*20160503
 //	if(correctionArea==1){    //2015/05/28
@@ -121,7 +154,10 @@ function calcStep1(){
 	}
 20160503*/	
 	rateImageup=Math.round(Math.floor((rateImageup+correctionRateImageup)*1000)/10)/100;
+	/*2017-05-01
 	Ki=(Pi*rateImageup/100)*allocateImageup;
+	*/
+	Ki=(Pi*rateImageup/100);//2017-05-01
 	Ki=Math.round(Math.floor(Ki*Math.pow(10,7))/10)/Math.pow(10,6);
 	Ki=Math.floor(Ki/Math.pow(10,ketaMarume))*Math.pow(10,ketaMarume);
 	imageupCostTotal=Math.floor((Ki+cost[11])/Math.pow(10,ketaMarume))*Math.pow(10,ketaMarume);
@@ -225,7 +261,8 @@ function calcStep1(){
 	else{
 		rateKyoutsuukasetsuAreaCorrection=0;
 	}
-*/	
+*/
+/*2017-05-01	
 //20160503
 	if(correctionArea==1){
 		rateKyoutsuukasetsuAreaCorrection=2;
@@ -243,6 +280,43 @@ function calcStep1(){
 	}
 //20160503
 	rateKyoutsuukasetsu=Math.round(Math.floor((rateKyoutsuukasetsu+rateKyoutsuukasetsuAreaCorrection)*1000)/10)/100;
+*/
+//20170501
+	if(correctionArea==1){
+		rateKyoutsuukasetsuAreaCorrection=1.3;
+	}
+	else
+	if(correctionArea==2){
+		rateKyoutsuukasetsuAreaCorrection=1.2;
+	}
+	else
+	if(correctionArea==3){
+		rateKyoutsuukasetsuAreaCorrection=1.2;
+	}
+	else
+	if(correctionArea==4){
+		rateKyoutsuukasetsuAreaCorrection=1.3;
+	}
+	else
+	if(correctionArea==0){
+		rateKyoutsuukasetsuAreaCorrection=1;
+	}
+	rateKyoutsuukasetsu=Math.round(Math.floor((rateKyoutsuukasetsu*rateKyoutsuukasetsuAreaCorrection)*1000)/10)/100;
+//20170501
+//20170501 被災地補正 共通仮設費
+	if(correctionHisaichi == 1){
+		rateKyoutsuukasetsuHisaichiCorrection = 1.5;
+	}
+	else
+	if(correctionHisaichi == 2){
+		rateKyoutsuukasetsuHisaichiCorrection = 1.1;
+	}
+	else
+	if(correctionHisaichi == 0){
+		rateKyoutsuukasetsuHisaichiCorrection = 1;
+	}
+	rateKyoutsuukasetsu=Math.round(Math.floor((rateKyoutsuukasetsu*rateKyoutsuukasetsuHisaichiCorrection)*1000)/10)/100;
+//20170501 被災地補正 共通仮設費
 	if(P<=lowerLimit || upperLimit<P){
 		kyoutsuuKasetsuCoefA="*";
 		kyoutsuuKasetsuCoefb="*";
@@ -416,6 +490,7 @@ function calcStep2(){
 		rateGenbakanriAreaCorrection=0;
 	}
 */
+/*20170501
 //20160503
 	if(correctionArea==1){
 		rateGenbakanriAreaCorrection=1.5;
@@ -433,6 +508,43 @@ function calcStep2(){
 	}
 //20160503
 	rateGenbakanri=Math.round(Math.floor((rateGenbakanri+rateGenbakanriAreaCorrection)*1000)/10)/100;
+*/	
+//20170501
+	if(correctionArea==1){
+		rateGenbakanriAreaCorrection=1.1;
+	}
+	else
+	if(correctionArea==2){
+		rateGenbakanriAreaCorrection=1.1;
+	}
+	else
+	if(correctionArea==3){
+		rateGenbakanriAreaCorrection=1.1;
+	}
+	else
+	if(correctionArea==4){
+		rateGenbakanriAreaCorrection=1.0;
+	}
+	else
+	if(correctionArea==0){
+		rateGenbakanriAreaCorrection=1;
+	}
+	rateGenbakanri=Math.round(Math.floor((rateGenbakanri*rateGenbakanriAreaCorrection)*1000)/10)/100;
+//20170501
+//20170501 被災地補正 現場管理費
+	if(correctionHisaichi == 1){
+		rateGenbakanriHisaichiCorrection = 1.2;
+	}
+	else
+	if(correctionHisaichi == 2){
+		rateGenbakanriHisaichiCorrection = 1.1;
+	}
+	else
+	if(correctionHisaichi == 0){
+		rateGenbakanriHisaichiCorrection = 1;
+	}
+	rateGenbakanri=Math.round(Math.floor((rateGenbakanri*rateGenbakanriHisaichiCorrection)*1000)/10)/100;
+//20170501 被災地補正 現場管理費
 	if(Np<=lowerLimit || upperLimit<Np){
 		genbaKanriCoefA="*";
 		genbaKanriCoefb="*";
@@ -536,7 +648,8 @@ function output02(){
 	document.form3.rateGenbakanri.value=rateGenbakanri;
 	document.form3.rateIppanKanri.value=rateIppanKanri;
 	document.form3.coverageKyoutsuukasetsu.value=number[29];
-	document.form3.ratio.value=ratio.toExponential(6);
+	/*20170501 document.form3.ratio.value=ratio.toExponential(6); */
+	document.form3.ratio.value=ratio;
 	document.form3.P.value=number[13];
 	document.form3.Pi.value=number[14];
 	document.form3.allocateShobunCost.value=number[15];
@@ -544,5 +657,13 @@ function output02(){
 	document.form3.kyoutsuuKasetsuByRate.value=number[17];
 	document.form3.Np.value=number[20];
 	document.form3.Gp.value=number[23];
+	//2017-05-01
+	document.form3.rateKyoutsuukasetsuAreaCorrection.value=rateKyoutsuukasetsuAreaCorrection;
+	document.form3.rateGenbakanriAreaCorrection.value=rateGenbakanriAreaCorrection;
+	document.form3.rateKyoutsuukasetsuHisaichiCorrection.value=rateKyoutsuukasetsuHisaichiCorrection;
+	document.form3.rateGenbakanriHisaichiCorrection.value=rateGenbakanriHisaichiCorrection;
+	document.form3.rateKyoutsuukasetsuBigsityCorrection.value=rateKyoutsuukasetsuBigsityCorrection;
+	document.form3.genbakanriBigcityCorrection.value=genbakanriBigcityCorrection;
+	//2017-05-01
 }
 -->
