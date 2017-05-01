@@ -143,7 +143,8 @@ fun_outputMD(tags = '日本銀行,都道府県別預金・現金・貸出金(国
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
-             tableTitle = sheetTitle[objList])
+             tableTitle = sheetTitle[objList],
+             tableName = sheetTitle[objList])
 ```
 
 <script>MakeNegative();</script>
