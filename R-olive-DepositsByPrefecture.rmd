@@ -92,7 +92,7 @@ tsData <- timeSeriesData[timeSeriesData[,1]=='全国計',]
 fun_plotTimeSeries(obj = tsData,objX = 4,objYL = 2,objYR = 3,
                    typeL = 'o',typeR = 'o',dateFormat = dateFormat,
                    chartType = 2,dataTitle = paste0(dataTitle,':全国計'),
-                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0,cexL = 2.5,cexR = 2.5)
+                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0,cexL = 2.5,cexR = 2.5,mar = c(5,5,6,5))
 cat('<hr>\n')
 for(iii in seq(length(DepositsByPrefecture))){
   obj0 <- DepositsByPrefecture[[iii]]
@@ -131,7 +131,7 @@ tsData <- timeSeriesData[timeSeriesData[,1]=='東京',]
 fun_plotTimeSeries(obj = tsData,objX = 4,objYL = 2,objYR = 3,
                    typeL = 'o',typeR = 'o',dateFormat = dateFormat,
                    chartType = 2,dataTitle = paste0(dataTitle,':東京'),
-                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0,cexL = 2.5,cexR = 2.5)
+                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0,cexL = 2.5,cexR = 2.5,mar = c(5,5,6,5))
 dev.off()
 ```
 
