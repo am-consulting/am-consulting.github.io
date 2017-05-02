@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-monetaryBase.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'monetaryBase';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Monetary Base In Japan & USA'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -51,6 +51,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
+# 文字化け注意
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
 rFile <- 
   c('importMonetarybaseOfJapan-2017.r')
@@ -96,9 +97,6 @@ mbUSA <- tail(mbUSA,12*2000)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-```
-
-```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = monetaryBase_Japan,objColumn = c(2),dateFormat = dateFormat)
 dataTitle <- 
@@ -120,20 +118,23 @@ dataSource <-
 compareDF <-
   rbind(subset(monetaryBase_Japan,monetaryBase_Japan[,1] == as.Date('2013-3-1')),
         tail(monetaryBase_Japan,1))
-fun_transposeDataFrame(obj = compareDF[,c(1,grep('兆円',colnames(compareDF)))],
-                       dateFormat = dateFormat)
-fun_markdownTable(obj = data.frame(tDF,`比較(倍)` = round(tDF[,3]/tDF[,2],1),
+tDF <- 
+  fun_transposeDataFrame(obj = compareDF[,c(1,grep('兆円',colnames(compareDF)))],
+                         dateFormat = dateFormat)
+fun_markdownTable(obj = data.frame(tDF,`比較(倍)` = round(tDF[,3]/tDF[,2],2),
                                    stringsAsFactors = F,check.names = F,row.names = NULL))
-
 ```
 
+***
 #### 前月比(%)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_makeDiffRatioTable(monetaryBase_Japan,lag = 1)
-fun_transposeDataFrame(obj = diffRatioDF[,c(1,grep('兆円',colnames(diffRatioDF)))],
-                       dateFormat = dateFormat,
-                       tailN = 4)
+diffRatioDF <- 
+  fun_makeDiffRatioTable(monetaryBase_Japan,lag = 1)
+tDF <- 
+  fun_transposeDataFrame(obj = diffRatioDF[,c(1,grep('兆円',colnames(diffRatioDF)))],
+                         dateFormat = dateFormat,
+                         tailN = 4)
 fun_markdownTable(obj = tDF)
 ```
 
@@ -160,7 +161,7 @@ fun_generateKnit(objDF = monetaryBase_Japan[,c(1,2)],
                  dygraphTitle = colnames(monetaryBase_Japan)[2],
                  group = 0,
                  color = c('blue','red'),
-                 barPlot = 1)
+                 barPlot = 1,quantiles = 2)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('\n\n<hr>\n\n')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
@@ -208,7 +209,7 @@ fun_plotTimeSeries(obj = mergeData,
                    lwdL = 1,
                    lwdR = 1,
                    dataSource = dataSource,
-                   mar = c(3,5,5,5))
+                   mar = c(4,5,6,5))
 ```
 
 ***
@@ -241,9 +242,64 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = mbRatio,
                                                tailN = 4))
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_transposeDataFrame(obj = monetaryBase_Japan,tailN = 2,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+library(reshape2)
+library(ggplot2);library(scales)
+obj0 <- monetaryBase_Japan[,c(1,2)]
+fun_withList(obj = obj0)
+obj <- dfWithList[,2:3]
+colnames(obj)[2] <- "person"  
+obj[,2] <-
+  factor(obj[,2],levels = unique(obj[,2]))
+boxplotData <- 
+  melt(obj,id = "person")
+g <- ggplot(data = boxplotData,aes(x = person,y = value))
+g <- g + geom_boxplot(lwd = 1)
+g <- g + ggtitle(paste0(paste0(format(range(obj0[,1]),dateFormat),collapse = '~'),'.Source:',dataSource))
+g <- g + theme(axis.text.x = element_text(size = 13, angle = 0, hjust = 1, 
+                                          vjust = 0.5, face = "plain", family = "Meiryo")) 
+g <- g + theme(axis.text.y = element_text(size = 13, face = "plain", family = "Meiryo")) 
+g <- g + theme(axis.title = element_text(size = 13, face = "plain", family = "Meiryo")) 
+g <- g + theme(plot.title = element_text(size = 13, face = "plain", family = "Meiryo", hjust = 0.5)) 
+g <- g + xlab("")
+g <- g + ylab(unique(boxplotData$variable)) 
+g <- g + scale_y_continuous(labels = comma)
+g <- g + coord_flip()
+print(g)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- monetaryBase_Japan[,c(1,2)]
+fun_outputMD(tags = '日本銀行,マネタリーベース',
+             objDF = fun_summaryByName(obj = obj),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
