@@ -18,10 +18,12 @@ for(ccc in seq(ncol(buf1))){
   if(!is.na(buf1[objRow1,ccc])){
     tmp <-
       paste0(buf1[objRow1,ccc],buf1[objRow1+1,ccc],buf1[objRow1+2,ccc])
+    buf1[objRow1+1,ccc] <- buf1[objRow1+2,ccc] <- NA
   }
   buf1[objRow1,ccc] <- gsub('na','',tmp,ignore.case = T)
   buf1[objRow1+1,ccc] <-
-    gsub('na','',paste0(buf1[objRow1+1,ccc],buf1[objRow1+2,ccc],buf1[objRow1+3,ccc],buf1[objRow1+4,ccc]),ignore.case = T)
+    gsub('na','',
+         paste0(buf1[objRow1+1,ccc],buf1[objRow1+2,ccc],buf1[objRow1+3,ccc],buf1[objRow1+4,ccc]),ignore.case = T)
 }
 colnames(buf1) <-
   gsub(':$','',sapply(paste0(buf1[objRow1,],':',buf1[objRow1+1,]),zen2han))
