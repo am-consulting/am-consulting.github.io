@@ -14,5 +14,6 @@ fun_fit <- function(obj, dateColumn = 1, objColumn = 2){
                `fit-loess` = predict(loessResult),
                `fit-lm` = predict(lmResult),
                SeasonalAdjustment, check.names = F, stringsAsFactors = F)
-  assign('fittedDF', objDF, envir = .GlobalEnv)
+  # assign('fittedDF', objDF, envir = .GlobalEnv)
+  return(objDF)
 }
