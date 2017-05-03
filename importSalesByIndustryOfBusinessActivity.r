@@ -40,7 +40,7 @@ buf4 <-
              apply(buf3[,-c(1:4)],2,function(x)as.numeric(gsub(',','',x))),
              stringsAsFactors = F,check.names = F,row.names = NULL)
 sheetUnit <- zen2han(buf0[20,9])
-colnames(buf4)[-1] <- paste0(colnames(buf4)[-1],sheetUnit)
+colnames(buf4)[-1] <- paste0(colnames(buf4)[-1],':',sheetUnit)
 assign('sheetTitle',zen2han(buf0[5,9]),envir = .GlobalEnv)
 assign('SalesByIndustryOfBusinessActivity',buf4,envir = .GlobalEnv)
 }
