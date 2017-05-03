@@ -31,5 +31,6 @@ fun_downloadFromESTAT <- function(tclassID = '000001047452',targetFile = 1){
   download.file(url = fileLink,
                 destfile = paste0(buf2,'.xls'),
                 mode = 'wb')
-  assign('fileName',paste0(buf2,'.xls'),envir = .GlobalEnv)
+  assign('fileNameFromESTAT',paste0(buf2,'.xls'),envir = .GlobalEnv)
+  # fileNameとするとR-ListOfPresidents.rのfileNameと競合する(knitでhtmlを出力する際のみ)。
 }
