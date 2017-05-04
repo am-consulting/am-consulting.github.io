@@ -1,5 +1,5 @@
-fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999, readxls = 'xlconnect'){
-  library(XLConnect);library(lubridate);library(gdata)
+fun_MSPD <- function(startYear = 2010, breakYear =2017, breakMonth = 9999, readxls = 'xlconnect'){
+  library(XLConnect);library(lubridate)
   username <- Sys.info()['user']
   pathOutput <- paste0("C:/Users/", username, "/Desktop/MSPD/")
   setwd(pathOutput)
@@ -23,9 +23,14 @@ fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999, readx
         buf0 <-
           readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
         # 計算式のセルはNAとなる.
+        # ファイルのダウンロードに失敗した場合必ず当該ファイルをフォルダから削除。
+        # readWorksheetFromFileでエラー(Error: IndexOutOfBoundsException (Java): Block 1345 not found)が出る。
+        # 上記エラーで処理が止まる場合はファイル破損を疑うこと。
+        # ファイルサイズだけでは判断できない。
+        # 2009-01は計算式
       }else{
         buf0 <-
-          read.xls(paste0(pathOutput, fileName), sheet = 1, header = F)
+          gdata::read.xls(paste0(pathOutput, fileName), sheet = 1, header = F)
       }
       buf0[sapply(buf0,function(x){regexpr('\\w',x,ignore.case = T)}) == -1] <- NA
       buf1 <- buf0[,apply(buf0,2,function(x){sum(is.na(x))}) != nrow(buf0)]
@@ -33,7 +38,8 @@ fun_MSPD <- function(startYear = 2016, breakYear =2016, breakMonth = 9999, readx
       cnt <- cnt + 1
       MSPD[cnt,1] <- as.character(dataDate)
       MSPD[cnt,2] <-
-        as.numeric(gsub(',','',buf2[grep('Total Public Debt Outstanding',buf2[,1],ignore.case = T),ncol(buf2)]))
+        as.numeric(gsub(',','',
+                        buf2[grep('Total Public Debt Outstanding',buf2[,1],ignore.case = T),ncol(buf2)]))
       gc();gc()
       Sys.sleep(1) #avoid to overload
     }
