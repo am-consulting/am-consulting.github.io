@@ -1,12 +1,12 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MonthlyStatementOfThePublicDebtOfTheUnitedStates.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MonthlyStatementOfThePublicDebtOfTheUnitedStates';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Monthly Statement Of The Public Debt Of The United States'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -64,7 +64,7 @@ dateFormat <- '%Y-%m'
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_MSPD(startYear = 2011, breakYear = 2017, breakMonth = 3)
+fun_MSPD(breakYear = 2017, breakMonth = 4)
 # 2009-01は計算式
 ```
 
@@ -90,7 +90,8 @@ dataSource <- 'U.S. Department of the Treasury'
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 tmpDF <- MSPD
-tmpDF[,-1] <- tmpDF[,-1] * 10^-6 
+tmpDF[,-1] <- tmpDF[,-1] * 10^-6
+mdDF <- tmpDF
 n <- 1
 fun_generateKnit(objDF = tmpDF,
                  plotNum = n,
@@ -102,8 +103,7 @@ eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_transposeDataFrame(obj = tmpDF,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = tmpDF,dateFormat = dateFormat))
 ```
 
 ***
@@ -125,8 +125,7 @@ mergeData[,-1] <- mergeData[,-1] * 10^-6
 - Unit:Trillion $
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_transposeDataFrame(obj = mergeData,dateFormat = dateFormat,tailN = 5)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData,dateFormat = dateFormat,tailN = 5))
 ```
 
 ***
@@ -135,8 +134,7 @@ fun_markdownTable(obj = tDF)
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 mergeDataRatio <- mergeData
 mergeDataRatio[,-1] <- round(mergeDataRatio[,-1]/mergeDataRatio[,ccc2]*100,1)
-fun_transposeDataFrame(obj = mergeDataRatio,dateFormat = dateFormat,tailN = 5)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeDataRatio,dateFormat = dateFormat,tailN = 5))
 ```
 
 - Time Series Chart for Composition Ratio of U.S. citizens and American entities
@@ -145,6 +143,53 @@ fun_markdownTable(obj = tDF)
 n <- 2
 fun_generateKnit(objDF = mergeDataRatio[,c(1,ccc1)],plotNum = n,group = 0,quantiles = 2)
 eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- fun_makeDiffRatioTable(obj = mdDF)
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'h',typeR = 'o',
+                   dateFormat = dateFormat,
+                   chartType = 0,dataTitle = 'Year over Year(%)',
+                   dataSource = dataSource,
+                   fitLcolor = 2,fitlwdL = 3,cexL = 1.5,
+                   fitRcolor = 2,fitlwdR = 3,cexR = 1.5,
+                   mar = c(5,4,6,2),needLefLab = 0)
+abline(h = 0,col = 'red',lwd = 2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = 'U.S. Department of the Treasury,米国の公的債務',
+             objDF = tail(obj,10),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = 'Year over Year(%)',
+             tableName = 'Total Public Debt Outstanding')
 ```
 
 ***
