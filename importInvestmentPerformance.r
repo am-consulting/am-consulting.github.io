@@ -8,10 +8,11 @@ htmlMarkup <-
 linkList <-
   htmlMarkup %>% html_nodes(xpath = "//div[@class = 'jsda_table01 jsda_table01_data']") %>%
   html_nodes('table') %>% html_nodes('tr')
+targetLink <- 2
 sheetDate <-
-  gsub('\n','',zen2han(gsub('(.+末).+','\\1',linkList[2] %>% html_text())))
+  gsub('\n','',zen2han(gsub('(.+末).+','\\1',linkList[targetLink] %>% html_text())))
 xlsFile <-
-  linkList[2] %>% html_nodes('a') %>% html_attr('href')
+  linkList[targetLink] %>% html_nodes('a') %>% html_attr('href')
 targetFile <- 1
 targetURL <-
   paste0('http://www.jsda.or.jp/shiraberu/foreign/info4',gsub('^\\.','',xlsFile[targetFile]))
@@ -21,7 +22,7 @@ download.file(url = targetURL,
               destfile = fileName, mode = 'wb')
 sheetName <-
   sapply(getSheets(loadWorkbook(fileName)),zen2han)
-fundList <- list()
+fundList <- list();fundType <- vector()
 cnt <- 1
 for(iii in seq(length(sheetName))){
   if(length(grep('債券MMF型|表紙|について|注意書き',sheetName[iii]))==0){
@@ -61,6 +62,7 @@ for(iii in seq(length(sheetName))){
     buf4 <- buf3[,c(3,1,2,4:ncol(buf3))]
     print(head(buf4))
     fundList[[cnt]] <- buf4
+    fundType[cnt] <- sheetName[iii]
     cnt <- cnt + 1
   }
 }
