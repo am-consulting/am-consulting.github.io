@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-USTradeInGoodsByCountry.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'USTradeInGoodsByCountry';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'U.S. Trade In Goods By Country'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -51,7 +51,7 @@ objCountry <-
   grep('japan',countryS,ignore.case = T)
 fun_latestResult(obj = TradeInGoodsByCountry[[objCountry]],objColumn = c(2,3,4),dateFormat = dateFormat) 
 dataTitle <- 
-  paste0('U.S. Trade In Goods By Country:', 
+  paste0('米国の貿易収支:対日本、中国との貿易赤字/U.S. Trade In Goods By Country:百万ドル(名目値)/millions of U.S. dollars:', 
          latestResult)
 dataSource <- 'U.S. Census Bureau'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
@@ -68,7 +68,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - https://www.census.gov/foreign-trade/statistics/country/index.html
 
 ***
-#### Compare Japan and China
+#### <b>Compare Japan and China</b>
 ##### In millions of U.S. dollars on a nominal basis, not seasonally adjusted
 
 - Import
@@ -83,7 +83,8 @@ compareData <-
 importDF <-
   compareData[,c(1,grep('import',colnames(compareData),ignore.case = T))]
 n <- 1
-fun_generateKnit(objDF = importDF,plotNum = n,group = 0)
+fun_generateKnit(objDF = importDF,plotNum = n,group = 0,
+                 dygraphTitle = paste0(colnames(importDF)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
@@ -94,23 +95,25 @@ eval(parse(text = paste0('dygraphPlot', n)))
 exportDF <-
   compareData[,c(1,grep('export',colnames(compareData),ignore.case = T))]
 n <- 1
-fun_generateKnit(objDF = exportDF,plotNum = n,group = 0)
+fun_generateKnit(objDF = exportDF,plotNum = n,group = 0,
+                 dygraphTitle = paste0(colnames(exportDF)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
-- Balance
+- Balance(= Export - Import)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 balanceDF <-
   compareData[,c(1,grep('balance',colnames(compareData),ignore.case = T))]
 n <- 1
-fun_generateKnit(objDF = balanceDF,plotNum = n,group = 0)
+fun_generateKnit(objDF = balanceDF,plotNum = n,group = 0,
+                 dygraphTitle = paste0(colnames(balanceDF)[-1],collapse = ' × '))
 eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
-#### World
+#### <b>World</b>
 ##### In millions of U.S. dollars on a nominal basis, not seasonally adjusted
 - Export & Import
 
@@ -146,12 +149,73 @@ eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
-#### Latest`r tailN <- 3;tailN`months
+#### <b>Latest`r tailN <- 3;tailN`months</b>
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 tDF <-
   fun_transposeDataFrame(obj = grandData,dateFormat = dateFormat,colName = 'Country/Region',tailN = tailN)
 fun_dataTable(obj = tDF,orderDirection = 'asc',needID = 1,dateFormat = 0)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+objCountry <-
+  grep('japan',countryS,ignore.case = T)
+obj <- 
+  tail(TradeInGoodsByCountry[[objCountry]][,c(1,4)],12*15)
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'h',typeR = 'l',
+                   dateFormat = dateFormat,
+                   chartType = 0,dataTitle = '米国の対日本貿易収支(輸出(E)-輸入(I),百万ドル(名目値))',
+                   dataSource = dataSource,
+                   fitLcolor = 0,fitlwdL = 3,cexL = 1.2,
+                   fitRcolor = 0,fitlwdR = 3,cexR = 1.5,
+                   mar = c(5,4,6,2),needLefLab = 0,lwdL = 1,lineColor = 'red')
+abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
+text(x = as.Date('2008-9-15'),
+     y = max(na.omit(obj[,2])),
+     labels = 'Bankruptcy of Lehman Brothers',
+     pos = 2,
+     srt = 90,col = 'blue')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objCountry <-
+  grep('japan',countryS,ignore.case = T)
+obj <- 
+  TradeInGoodsByCountry[[objCountry]][,c(1,4)]
+summaryData <- fun_summaryByName(obj = obj)
+summaryData[,2:7] <- 
+  data.frame(apply(summaryData[,2:7],2,function(x)round(x,2)),stringsAsFactors = F,check.names = F)
+fun_outputMD(tags = '米国,貿易周囲,対日赤字,対中赤字',
+             objDF = summaryData,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '米国の対中貿易収支(百万ドル(名目値),millions of U.S. dollars)')
 ```
 
 ***
