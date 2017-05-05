@@ -80,6 +80,16 @@ for(iii in seq(length(countryS))){
     grandData <- merge(grandData,TradeInGoodsByCountry[[iii]],by='Date',all=T)
   }
 }
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = grandData,dataType = 1,csvFileName = 'USATradeInGoodsByCountry')
+# csv出力パート
 
 # - https://www.census.gov/foreign-trade/data/index.html
 # - https://www.census.gov/foreign-trade/statistics/historical/index.html
