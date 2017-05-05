@@ -102,3 +102,14 @@ fun_outputMD(tags = '日本銀行,店頭表示金利',
 
 objRow <- which(apply(buf1,1,function(x)(length(grep('単位',x))))!=0)
 objCol <- which(apply(buf1,2,function(x)(length(grep('単位',x))))!=0)
+
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = obj,dataType = 1,csvFileName = '')
+# csv出力パート
