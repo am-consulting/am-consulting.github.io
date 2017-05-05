@@ -1,0 +1,196 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'OECDSharePricesIndex';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'OECD Share Prices Index'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(
+      paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+             functionList[iii,1]),
+      ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+scriptFile <- 'importOECDStatisticData.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+```
+
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+yyyy <- 2017;mm <- 12
+# Share Prices, Index 2010=100
+OECD_SharePricesIndex_sdmxURL <-
+  paste0('http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_FIN/SP.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+OECDE+OECD+SDR+NMEC+BRA+CHN+COL+CRI+IND+IDN+LTU+RUS+ZAF.M/all?startTime=1950-01&endTime=',yyyy,'-',mm)
+fun_OECDStatisticData(sdmxURL = OECD_SharePricesIndex_sdmxURL)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+objCol <- grep(':jpn|:usa',colnames(allOECDData),ignore.case = T)
+fun_latestResult(allOECDData,objColumn = objCol)
+dataTitle <- 
+  paste0('OECD株価指数/OECD Share Prices Index:2010=100:',latestResult)
+dataSource <- 'OECD'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+dateFormat <- '%Y-%m'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://stats.oecd.org/
+
+***
+
+#### Time Series
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+par(mfrow = c(1,2),family = 'Meiryo',font.main = 1,oma =c(0,0,0,0))
+for(iii in 2:(ncol(allOECDData))){
+  fun_plotTimeSeries(obj = allOECDData[,c(1,iii)],
+                     typeL = 'l',
+                     dateFormat = dateFormat,
+                     chartType = 0,
+                     dataTitle = 'OECD Share Prices Index:2010=100',
+                     mar = c(5,2.5,5,1),
+                     dataSource = dataSource,
+                     needLefLab = 0,
+                     fitLcolor = 2,
+                     fitlwdL = 3,cexL = 0.9)
+  abline(h = max(na.omit(allOECDData[,iii])),lwd = 1.2,lty = 2)
+  abline(h = tail(na.omit(allOECDData[,iii]),1),lwd = 1.2,lty = 2)
+  abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
+  text(x = as.Date('2008-9-15'),
+       y = max(na.omit(allOECDData[,iii])),
+       labels = 'Bankruptcy of Lehman Brothers',
+       pos = 2,
+       srt = 90,col = 'red')
+}
+```
+
+***
+#### Straw Broom Chart
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+objCol <- grep(':jpn|:usa|:can|:fra|:ita|:gbr|:deu|:chn',colnames(allOECDData),ignore.case = T)
+obj <- na.omit(allOECDData[,c(1,objCol)])
+n <- 1
+fun_generateKnit(objDF = obj,
+                 plotNum = n,
+                 dygraphTitle = paste0(paste0(format(range(obj[,1]),dateFormat),
+                                              collapse = '~'),':G7+China'),
+                 group = 0,strawBroom = 1)
+eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+objCol <- grep(':jpn',colnames(allOECDData),ignore.case = T)
+obj <- allOECDData[,c(1,objCol)]
+n <- 12
+fun_MovingAverage(obj = obj,n = n)
+obj <- na.omit(MovingAverageDF[,c(1,2,3)])
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'o',typeR = 'l',
+                   dateFormat = dateFormat,
+                   chartType = 1,dataTitle = paste0('OECD Share Prices Index:2010=100:',
+                                                    n,'ヶ月移動平均:日本の株価指数'),
+                   dataSource = dataSource,
+                   fitLcolor = 2,fitlwdL = 3,cexL = 1.2,
+                   fitRcolor = 0,fitlwdR = 3,cexR = 1.5,
+                   mar = c(5,4,6,2),needLefLab = 0)
+abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
+text(x = as.Date('2008-9-15'),
+     y = max(na.omit(obj[,2])),
+     labels = 'Bankruptcy of Lehman Brothers',
+     pos = 2,
+     srt = 90,col = 'red')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objCol <- grep(':jpn',colnames(allOECDData),ignore.case = T)
+obj <- na.omit(allOECDData[,c(1,objCol)])
+summaryData <- fun_summaryByName(obj = obj)
+summaryData[,2:7] <- 
+  data.frame(apply(summaryData[,2:7],2,function(x)round(x,2)),stringsAsFactors = F,check.names = F)
+fun_outputMD(tags = 'OECD,Share Prices Index,株価指数',
+             objDF = summaryData,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '日本の株価指数')
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
