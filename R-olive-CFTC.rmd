@@ -61,6 +61,25 @@ for(iii in 1:length(dataset)){
 }
 ```
 
+```{r warning=F,error=F,message=F,results='hide',echo=F}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+for(iii in seq(length(dataset))){
+  obj <- 
+    dataset[[iii]][,-ncol(dataset[[iii]])]
+  csvFileName <- 
+    gsub('-','_',(gsub('\\s|\\.','',currency[iii])))
+  fun_writeCSVtoFolder(objData = obj,dataType = 1,csvFileName = csvFileName)
+}
+# csv出力パート
+```
+
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 lastNetPositions <-
   paste0('Net',
