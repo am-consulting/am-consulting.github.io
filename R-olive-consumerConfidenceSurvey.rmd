@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-consumerConfidenceSurvey.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'consumerConfidenceSurvey';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Consumer Confidence Survey'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -60,10 +60,10 @@ for(iii in 1:length(rFile)){
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- 
   '%Y年%m月'
-fun_makeDiffTable(obj = consumerConfidenceIndex)
-fun_latestResult(obj = diffDF, objColumn = -1, dateFormat = dateFormat)
+fun_latestResult(obj = fun_makeDiffTable(obj = consumerConfidenceIndex), 
+                 objColumn = -1, dateFormat = dateFormat)
 dataTitle <- 
-  paste0('消費動向調査:前月差:',latestResult)
+  paste0('消費動向調査:消費者態度指数(二人以上の世帯,季節調整値):前月差:',latestResult)
 dataSource <- 
   '内閣府 , 日本銀行'
 windowsFonts(Meiryo=windowsFont("Meiryo"))
@@ -83,32 +83,86 @@ options(scipen = 999)
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-cat(zen2han(paste0('<h4>',datatitle,'</h4>')))
+cat(zen2han(paste0('<h4><b>',datatitle,'</b></h4>')))
+lineColors <- c('blue','red')
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-library(knitr)
-n <- 1
-fun_generateKnit(objDF = consumerConfidenceIndex,group = 0,plotNum = n)
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 2
+obj0 <- consumerConfidenceIndex[,c(1,n)]
+obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+fun_generateKnit(objDF = obj,group = 0,plotNum = n,
+                 dygraphTitle = colnames(obj)[2],colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
 ```
 
-`r paste(knit(text = c(get(paste0('knit_expanded',n)))), collapse = '\n')`
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 3
+obj0 <- consumerConfidenceIndex[,c(1,n)]
+obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+fun_generateKnit(objDF = obj,group = 0,plotNum = n,
+                 dygraphTitle = colnames(obj)[2],colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 4
+obj0 <- consumerConfidenceIndex[,c(1,n)]
+obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+fun_generateKnit(objDF = obj,group = 0,plotNum = n,
+                 dygraphTitle = colnames(obj)[2],colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 5
+obj0 <- consumerConfidenceIndex[,c(1,n)]
+obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+fun_generateKnit(objDF = obj,group = 0,plotNum = n,
+                 dygraphTitle = colnames(obj)[2],colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 6
+obj0 <- consumerConfidenceIndex[,c(1,n)]
+obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+fun_generateKnit(objDF = obj,group = 0,plotNum = n,
+                 dygraphTitle = colnames(obj)[2],colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 7
+obj0 <- consumerConfidenceIndex[,c(1,n)]
+obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+fun_generateKnit(objDF = obj,group = 0,plotNum = n,
+                 dygraphTitle = colnames(obj)[2],colors = lineColors)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
 
 #### 指数値:季節調整値
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = consumerConfidenceIndex,dateFormat = dateFormat))
 ```
 
 ***
 #### 前月差
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat))
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = consumerConfidenceIndex)
+                                               ,dateFormat = dateFormat))
 ```
 
 ***
-#### 消費者態度指数とマネタリーベース
+#### <b>消費者態度指数とマネタリーベース</b>
 ##### 注意:消費者態度指数は季節調整値、マネタリーベースは原数値
 
 ```{r warning=F, error=F, message=F, echo=F, fig.height=8}
@@ -116,7 +170,69 @@ mergeData <-
   merge(consumerConfidenceIndex,monetaryBase_Japan,by='Date')
 mergeData <-
   mergeData[,c(1,2,12)]
-fun_plotTimeSeries(obj = mergeData,chartType = 2,lwdR = 1,dateFormat = dateFormat,dataSource = dataSource)
+fun_plotTimeSeries(obj = mergeData,chartType = 2,
+                   lwdR = 1,dateFormat = dateFormat,dataSource = dataSource,
+                   mar = c(4,5,5,5),fitlwdL = 2,fitlwdR = 2)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- consumerConfidenceIndex[,c(1,5)]
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'o',typeR = 'l',
+                   dateFormat = dateFormat,
+                   chartType = 0,dataTitle = '消費動向調査:消費者態度指数(二人以上の世帯,季節調整値)',
+                   dataSource = dataSource,
+                   fitLcolor = 2,fitlwdL = 3,cexL = 1.1,
+                   fitRcolor = 0,fitlwdR = 3,cexR = 1.5,
+                   mar = c(5,4,6,2),needLefLab = 0,lwdL = 1,cex.main=1.1)
+abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
+text(x = as.Date('2008-9-15'),
+     y = max(na.omit(obj[,2])),
+     labels = 'Bankruptcy of Lehman Brothers',
+     pos = 2,
+     srt = 90,col = 'blue')
+abline(v = as.Date('2012-12-26'),lwd = 1.2,lty = 2)
+text(x = as.Date('2012-12-26'),
+     y = max(na.omit(obj[,2])),
+     labels = '第2次安倍政権発足',
+     pos = 2,
+     srt = 90,col = 'blue')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+summaryData <- fun_summaryByName(obj = obj,omitFirst = 1)
+summaryData[,2:7] <- 
+  data.frame(apply(summaryData[,2:7],2,function(x)round(x,2)),stringsAsFactors = F,check.names = F)
+fun_outputMD(tags = '消費者態度指数,消費動向調査',
+             objDF = summaryData,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
