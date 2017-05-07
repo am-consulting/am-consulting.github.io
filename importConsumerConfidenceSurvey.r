@@ -30,3 +30,13 @@ colnames(buf4)[1] <- 'Date'
 buf4[,-1] <- apply(buf4[,-1],2,as.numeric)
 buf5 <- buf4[,colSums(is.na(buf4))!=nrow(buf4)]
 consumerConfidenceIndex <- buf5
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = consumerConfidenceIndex,dataType = 1,csvFileName = 'consumerConfidenceIndex')
+# csv出力パート
