@@ -100,6 +100,10 @@ blockquote em {
   font-style: italic;
 }
 
+h4, h5, h6 {
+  font-weight: bold;
+}
+
 /*
 pre:not([class]) {
 	background-color: white;
