@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-LatestGDPNow.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'LatestGDPNow';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Latest GDPNow(Source:Federal Reserve Bank of Atlanta , Federal Reserve Bank of St.Louis)'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -132,7 +132,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 ***
 
 #### Actual Results:Real Gross Domestic Product
-###### Percent Change from Preceding Period,Seasonally Adjusted Annual Rate
+- Percent Change from Preceding Period,Seasonally Adjusted Annual Rate
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 RealGrossDomesticProduct <-
@@ -185,7 +185,7 @@ fun_dataTable(obj = componentGDPNow,
               orderDirection = 'asc')
 ```
 
-##### Unit：Percent Change at Annual Rate,Seasonally Adjusted Annual Rate.
+- Unit：Percent Change at Annual Rate,Seasonally Adjusted Annual Rate.
 
 ***
 
@@ -196,7 +196,63 @@ fun_dataTable(obj = contributionsGDPNow,
               orderDirection = 'asc')
 ```
 
-##### Unit：Percentage Points,Seasonally Adjusted.
+- Unit：Percentage Points,Seasonally Adjusted.
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- tail(RealGrossDomesticProduct,4*10)
+fun_plotTimeSeries(obj = obj,
+                   typeL = 'o',typeR = 'o',
+                   dateFormat = '%Y-%m',
+                   chartType = 0,
+                   dataTitle = 'Percent Change from Preceding Period,Seasonally Adjusted Annual Rate',
+                   dataSource = dataSource,
+                   fitLcolor = 0,fitlwdL = 3,cexL = 1.4,
+                   fitRcolor = 2,fitlwdR = 3,cexR = 1.1,
+                   mar = c(5,4,6,2),needLefLab = 0,cex.main=1.1)
+abline(h = 0,lwd = 1.2,lty = 1,col='red')
+abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
+text(x = as.Date('2008-9-15'),
+     y = max(na.omit(obj[,2])),
+     labels = 'Bankruptcy of Lehman Brothers',
+     pos = 2,
+     srt = 90,col = 'blue')
+abline(v = as.Date('2009-1-20'),lwd = 1.2,lty = 2)
+text(x = as.Date('2009-1-20'),
+     y = max(na.omit(obj[,2])),
+     labels = 'POTUS:Barack Obama',
+     pos = 2,
+     srt = 90,col = 'blue')
+abline(v = as.Date('2017-1-20'),lwd = 1.2,lty = 2)
+text(x = as.Date('2017-1-20'),
+     y = max(na.omit(obj[,2])),
+     labels = 'POTUS:Donald Trump',
+     pos = 2,
+     srt = 90,col = 'blue')
+dev.off()
+```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- 
@@ -212,8 +268,13 @@ colnames(obj)[1] <-
   paste0('Contributions:Date confirmed:',format(Sys.time(),'%Y-%m-%d'))
 obj <-
   obj[order(obj[,2],decreasing = T),]
-fun_markdownTable(obj = obj)
-fun_updateURLcsv()
+fun_outputMD(tags = 'GDP,USA,GDPNow',
+             objDF = obj,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = 'Contributions',
+             tableName = dataTitle)
 ```
 
 ***
