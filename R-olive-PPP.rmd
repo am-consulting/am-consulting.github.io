@@ -194,7 +194,7 @@ dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '購買力平価,ドル円為替レート',
-             objDF = compareDF,
+             objDF = tail(compareDF),
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
