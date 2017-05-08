@@ -49,6 +49,8 @@ colnames(objDF2) <-
   sapply(colnames(objDF2),function(x)zen2han(gsub('\\s','',x)))
 objDF2[,-1] <-
   data.frame(apply(objDF2[,-1],2,function(x)as.numeric(gsub(',','',x))))
+colnames(objDF2) <- gsub('<|>','',colnames(objDF2))
+colnames(objDF2) <- gsub('─',':',colnames(objDF2))
 # Sources of Changes in Current Account Balances at the Bank of Japan (Projections)
 changesCurrentAccount[[iii]] <- objDF2
 print(changesCurrentAccount[[iii]])
