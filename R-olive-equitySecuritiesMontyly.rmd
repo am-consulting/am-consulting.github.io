@@ -1,6 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-equitySecurities.html')) })
-title : "株式関連月次統計情報"
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'equitySecurities';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : "Stock-related Monthly Statistics Information"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -189,8 +190,49 @@ colnames(mergeData) <- gsub('WeightedAve.of Yield','',colnames(mergeData))
 colnames(mergeData) <- gsub('　AverageYield','',colnames(mergeData))
 colnames(mergeData) <- gsub('1st Section|2nd Section|Mothers','',colnames(mergeData))
 colnames(mergeData) <- gsub('JASDAQ Growth|JASDAQ Standard|Total','',colnames(mergeData))
-fun_transposeDataFrame(obj = na.omit(mergeData),dateFormat = dateFormat,tailN = 5)
-fun_markdownTable(obj = tDF)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <-
+  na.omit(mergeData[,c(1,2,9)])
+colnames(obj)[2] <- paste0(colnames(obj)[2],'(兆円)')
+fun_plotTimeSeries(obj = obj,dateFormat = dateFormat,chartType = 2,
+                   typeL = 'o',typeR = 'o',mar = c(4,5,5,5),dataSource = dataSource,
+                   cexL = 1.5,cexR = 1.5)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '市場別時価総額,株式平均利回り,PER,PBR,日経平均株価',
+             objDF = fun_transposeDataFrame(obj = na.omit(mergeData),dateFormat = dateFormat,tailN = 5),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '直近5ヶ月',
+             tableName = '市場別時価総額(兆円)、株式平均利回り、PER･PBRおよび日経平均株価')
 ```
 
 ***
