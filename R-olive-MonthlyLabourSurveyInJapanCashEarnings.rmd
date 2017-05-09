@@ -185,7 +185,7 @@ dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '毎月勤労統計調査,月間現金給与額',
-             objDF = obj,
+             objDF = obj[,1:2],
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
