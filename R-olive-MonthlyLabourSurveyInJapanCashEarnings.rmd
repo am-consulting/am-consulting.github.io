@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MonthlyLabourSurveyInJapanCashEarnings.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MonthlyLabourSurveyInJapanCashEarnings';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Monthly Labour Survey In Japan - Cash Earnings'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -50,8 +50,8 @@ pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 baseURL <- 'http://www.mhlw.go.jp/toukei/itiran/roudou/monthly'
 fileName <- list()
-yyyy <- c(2016)
-mm <- c(12)
+yyyy <- c(2017)
+mm <- c(3)
 type <- 'p'
 cnt <- 0
 for(y in 1:length(yyyy)){
@@ -61,9 +61,9 @@ for(y in 1:length(yyyy)){
     cnt <- cnt + 1
     fileName[[cnt]] <- paste0(gengou,mmC,'c01',type,'.xls')
     folderName <- paste0('/',gengou,'/',gengou,mmC,type,'/xls/')
-    if(!file.exists(paste0(pathOutput, fileName[[cnt]]))) {
+    # if(!file.exists(paste0(pathOutput, fileName[[cnt]]))) {
       download.file(paste0(baseURL,folderName,fileName[[cnt]]), fileName[[cnt]] , mode = 'wb')
-    }
+    # }
   }
 }
 ```
@@ -72,35 +72,53 @@ for(y in 1:length(yyyy)){
 titleName <- vector()
 for(iii in 1:cnt){
   iii <- 1
-  buf0 <- readWorksheetFromFile(paste0(pathOutput, fileName[[iii]]), sheet = 1, header = F)
-  buf0[,1] <- sapply(buf0[,1],function(x)gsub('\\s','',x))
-  titleName <- c(titleName, zen2han(paste0(buf0[1,1],'-',buf0[2,1])))
-  buf0 <- buf0[-c(1,2),]
-  cccS <- which(apply(buf0,2,function(x)length(grep('現金給与総額',x)))!=0)
-  rrrS <- which(apply(buf0,1,function(x)length(grep('現金給与総額',x)))!=0)
-  buf0[which(apply(buf0,1,function(x)length(grep('きまって',x)))!=0),
-       which(apply(buf0,2,function(x)length(grep('きまって',x)))!=0)] <- 'きまって支給する給与'
-  buf0[which(apply(buf0,1,function(x)length(grep('特別に',x)))!=0),
-       which(apply(buf0,2,function(x)length(grep('特別に',x)))!=0)] <- '特別に支払われた給与'
-  for(rrr in 1:3){
-    tmp <- NA
-    for(ccc in cccS:ncol(buf0)){
-      if(!is.na(buf0[rrr,ccc])){tmp <- buf0[rrr,ccc]}
-      buf0[rrr,ccc] <- tmp
-    }
+  tmpDF <- 
+    readWorksheetFromFile(paste0(pathOutput, fileName[[iii]]), sheet = 1, header = F)
+  buf0 <- tmpDF
+  titleName <- 
+    c(titleName, zen2han(paste0(buf0[1,1],'-',buf0[2,1])))
+  cccS <- 
+    which(apply(buf0,2,function(x)length(grep('現金給与総額',x)))!=0)
+  rrrS <- 
+    which(apply(buf0,1,function(x)length(grep('現金給与総額',x)))!=0)
+  buf0 <- buf0[-c(1:(rrrS-1)),]
+  if(sum(is.na(as.numeric(gsub(',','',sapply(buf0[,ncol(buf0)],zen2han)))))==nrow(buf0)){
+    buf0 <- buf0[,-ncol(buf0)]
   }
-  colnames(buf0) <- sapply(gsub('-NA','',paste0(buf0[1,],'-',buf0[2,],'-',buf0[3,],'(',buf0[5,],')')),
-                           function(x)gsub('\\s','',x))
+  tmp <- NA
+  for(ccc in cccS:ncol(buf0)){
+    if(!is.na(buf0[1,ccc])){tmp <- buf0[1,ccc]}
+    buf0[1,ccc] <- tmp
+  }
+  tmp <- NA
+  for(ccc in cccS:ncol(buf0)){
+    if(!is.na(buf0[2,ccc])){tmp <- paste0(buf0[2,ccc],buf0[3,ccc]);buf0[3,ccc] <- NA}
+    buf0[2,ccc] <- tmp
+  }
+  tmp <- NA
+  for(ccc in cccS:ncol(buf0)){
+    if(!is.na(buf0[3,ccc])){tmp <- buf0[3,ccc]}
+    buf0[3,ccc] <- tmp
+  }
+  colnames(buf0) <- 
+    sapply(gsub(':NA','',paste0(buf0[1,],':',buf0[2,],':',buf0[3,],':',buf0[4,],'(',buf0[5,],')')),
+           function(x)gsub('\\s','',x))
   colnames(buf0) <- sapply(colnames(buf0),zen2han)
-  objWord <- '前年比'
-  bufCCC <- grep(objWord,buf0[4,])
-  colnames(buf0)[bufCCC] <- sapply(colnames(buf0)[bufCCC],function(x)gsub('%',paste0(objWord,',%'),x))
-  buf1 <- buf0[-c(1:5),-2]
-  buf1[,-1] <- apply(buf1[,-1],2,function(x)as.numeric(gsub(',','',x)))
-  buf2 <- buf1[,apply(buf1,2,function(x)sum(is.na(x)))!=nrow(buf1)]
-  colnames(buf2)[1] <- '産業'
-  buf2 <- na.omit(buf2)
-  buf3 <- data.frame(ID=seq(1,nrow(buf2)),buf2,check.names = F,stringsAsFactors = F)
+  buf1 <- buf0[-c(1:5),]
+  buf1[,1] <- gsub('na','',paste0(buf1[,1],buf1[,2]),ignore.case = T)
+  buf1[,1] <- sapply(buf1[,1],function(x)gsub('\\s','',x))
+  buf1 <- buf1[,-2]
+  buf2 <- buf1[!is.na(buf1[,2]),]
+  buf2[,-1] <- 
+    data.frame(apply(buf2[,-1],2,function(x)as.numeric(gsub(',','',sapply(x,zen2han)))),
+               stringsAsFactors = F,check.names = F)
+  tmp <- ''
+  for(rrr in 1:nrow(buf2)){
+    if(length(grep('労働者',buf2[rrr,1]))!=0){tmp <- paste0(buf2[rrr,1],':')}
+    buf2[rrr,1] <- paste0(tmp,buf2[rrr,1])
+  }
+  buf3 <- buf2[!is.na(buf2[,2]),]
+  colnames(buf3)[1] <- '産業'
   assign(paste0('CashEarnings',iii),buf3,envir = .GlobalEnv)
 }
 ```
@@ -108,7 +126,8 @@ for(iii in 1:cnt){
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- 
   paste0('毎月勤労統計調査:月間現金給与額:',yyyy,'年',mm,'月:',
-         paste0(CashEarnings1[1,2],'(円):',format(CashEarnings1[1,3],big.mark=',')))
+         paste0(CashEarnings1[1,1],'(円):',CashEarnings1[1,2],
+                ':前年比(%)',format(CashEarnings1[1,3],big.mark=',')))
 dataSource <- '厚生労働省'
 ```
 
@@ -120,21 +139,60 @@ dataSource <- '厚生労働省'
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}   
-fun_dataTable(obj = CashEarnings1,dateFormat = 0,orderDirection = 'asc')
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = CashEarnings1,dateFormat = 0,
+              orderDirection = 'asc',needID = 1,leftcolumns = 2,menuLength = 20)
 ```
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-obj <-
-  CashEarnings1[,c(2,grep('前年比',colnames(CashEarnings1)))]
-obj0 <-
-  data.frame(obj,obj[,1,drop=F],check.names = F,stringsAsFactors = F)
-fun_markdownTable(obj = obj0)
+obj <- CashEarnings1[,c(1,3)]
+obj <- obj[-grep('労働者',obj[,1]),]
+obj <- obj[order(obj[,2],decreasing = T),]
+obj$Col <- ifelse(0<=obj[,2],'blue','red')
 ```
 
-***
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+lineColor <- c('black','blue','red')
+par(family = 'Meiryo',font.main = 1, mar = c(5,10,3,1))
+barplot(height = obj[,2],names.arg = obj[,1],horiz = T,las=1,col=obj[,3],xlab = colnames(obj)[2],main = dataTitle)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '毎月勤労統計調査,月間現金給与額',
+             objDF = obj,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = paste0(yyyy,'年',mm,'月'),
+             tableName = colnames(obj)[2])
+```
+
 <script>MakeNegative()</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
