@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-monthlyTradingVolumeAndValue.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'monthlyTradingVolumeAndValue';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Monthly Trading Volume And Value"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -95,17 +96,15 @@ lineColor <- c('blue','green','red')
 ***
 
 #### 平均売買高(億株)と平均売買代金高(兆円)
-##### 原数値、近似曲線および`r monthS <- 6;monthS`ヶ月移動平均
+- 原数値、近似曲線および`r monthS <- 6;monthS`ヶ月移動平均
 - 平均売買代金高
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 n <- 1
 obj0 <- 
   na.omit(mergeData[,c(1,grep('1日平均:兆円',colnames(mergeData))[1])])
-fun_fit(obj = obj0)
-fun_MovingAverage(obj = obj0,n = monthS)
 obj <-
-  merge(fittedDF,MovingAverageDF[,-2],by='Date')
+  merge(fun_fit(obj = obj0),fun_MovingAverage(obj = obj0,n = monthS)[,-2],by='Date')
 fun_generateKnit(objDF = obj[,c(1,2,3,6)],
                  plotNum = n,group = 0,dygraphTitle = colnames(obj)[2],colors = lineColor)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
@@ -124,10 +123,8 @@ cat('<hr>')
 n <- 2
 obj0 <- 
   na.omit(mergeData[,c(1,grep('1日平均:億株',colnames(mergeData))[1])])
-fun_fit(obj = obj0)
-fun_MovingAverage(obj = obj0,n = monthS)
 obj <-
-  merge(fittedDF,MovingAverageDF[,-2],by='Date')
+  merge(fun_fit(obj = obj0),fun_MovingAverage(obj = obj0,n = monthS)[,-2],by='Date')
 fun_generateKnit(objDF = obj[,c(1,2,3,6)],
                  plotNum = n,group = 0,dygraphTitle = colnames(obj)[2],colors = lineColor)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
@@ -176,7 +173,7 @@ bottom5 <-
   head(obj[order(obj[,2],decreasing = F),-3],5)
 bottom5[,1] <- 
   format(bottom5[,1],dateFormat)
-cat(paste0('\n\n',colnames(top5)[2],':Top5 & bottom5\n'))
+cat(paste0('\n\n- ',colnames(top5)[2],':Top5 & bottom5\n'))
 fun_markdownTable(obj = top5)
 fun_markdownTable(obj = bottom5)
 top5 <- 
@@ -187,7 +184,7 @@ bottom5 <-
   head(obj[order(obj[,3],decreasing = F),-2],5)
 bottom5[,1] <- 
   format(bottom5[,1],dateFormat)
-cat(paste0('\n\n',colnames(top5)[2],':Top5 & bottom5\n'))
+cat(paste0('\n\n- ',colnames(top5)[2],':Top5 & bottom5\n'))
 fun_markdownTable(obj = top5)
 fun_markdownTable(obj = bottom5)
 ```
@@ -195,6 +192,65 @@ fun_markdownTable(obj = bottom5)
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData[,-c(2,37)],
                                                dateFormat = dateFormat))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plot4charts <- 
+  function(obj = obj,tailN = c(10^10,100,50,30),
+           oma = c(0,0,3,0),mar = c(4,4,2,1),type = 'o',dateFormat = '%Y-%m-%d',
+           cex.main = 1.2,cex.axis = 1.2){
+    par(mfrow = c(2,2),family = 'Meiryo',font.main = 1,oma = oma,mar = mar)
+    for(iii in 1:4){
+      tmpDF <-fun_fit(obj = tail(obj,tailN[iii]))[,c(1,2,3)]
+      dateRange <- paste0(format(range(tmpDF[,1]),dateFormat),collapse = '~')
+      plot(x = tmpDF[,1],y = tmpDF[,2],
+           type = type,pch = 20,xaxt = 'n',
+           xlab = '',ylab = '',
+           main = paste0(dateRange,'. n = ',nrow(tmpDF)),
+           panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
+      axis.Date(side = 1,at = tmpDF[,1],format = dateFormat,padj = 1,cex.axis = 1)
+      lines(x = tmpDF[,1],y = tmpDF[,3],type = 'l',col = 'red',lwd = 2)
+    }
+    mtext(text = paste0(colnames(tmpDF)[2],'\nSource:',dataSource),side = 3,outer = T)
+    #dev.off()
+  }
+obj <-
+  na.omit(mergeData[,c(1,6)])
+fun_plot4charts(obj = obj,dateFormat = '%Y-%m',tailN = c(10^10,12*5,12*3,12*1))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+summaryDF <- fun_summaryByName(obj = obj,omitFirst = 1)
+summaryDF[,-c(1,8)] <- apply(summaryDF[,-c(1,8)],2,function(x)round(x,2))
+fun_outputMD(tags = '株式月間売買高,売買代金',
+             objDF = summaryDF,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
