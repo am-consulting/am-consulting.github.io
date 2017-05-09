@@ -30,18 +30,29 @@ for(ccc in 1:ncol(buf1)){
 colnames(buf1) <- sapply(gsub('\\s|:na','',paste0(buf1[2,],':',buf1[3,],':',buf1[4,]),ignore.case = T),zen2han)
 buf2 <- buf1[!sapply(buf1[,1],is.na),-2]
 buf2[,2] <- sapply(gsub('年|月|\\s','',buf2[,2]),zen2han)
-tmp <- is.na(as.numeric(substring(buf2[,2],1,1))) 
+tmp <- is.na(as.numeric(substring(buf2[,2],1,1)))
 buf2[tmp,1] <- paste0(buf2[tmp,1],'-01-01')
 buf2[tmp,2] <- 'Yearly'
 tmp <- grep('yearly|~',buf2[,2],ignore.case = T)
-buf2[-tmp,1] <- 
+buf2[-tmp,1] <-
   paste0(buf2[-tmp,1],'-',formatC(as.numeric(buf2[-tmp,2]),width = 2,flag = '0'),'-01')
 buf2[-tmp,2] <- 'Monthly'
 
 tmp <- grep('~',buf2[,2],ignore.case = T)
-buf2[tmp,1] <- 
+buf2[tmp,1] <-
   paste0(buf2[tmp,1],'-',buf2[tmp,2])
 buf2[tmp,2] <- 'Quaterly'
 colnames(buf2)[1:2] <- c('Date','Period')
 buf2[,-c(1,2)] <- apply(buf2[,-c(1,2)],2,function(x)as.numeric(gsub(',','',x)))
 CrudeSteelProductionOfMainCountries <- buf2
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = CrudeSteelProductionOfMainCountries,dataType = 1,
+                     csvFileName = 'CrudeSteelProductionOfMainCountries')
+# csv出力パート
