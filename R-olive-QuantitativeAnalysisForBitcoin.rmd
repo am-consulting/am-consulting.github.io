@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-QuantitativeAnalysisForBitcoin.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'QuantitativeAnalysisForBitcoin';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Quantitative Analysis For Bitcoin'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -133,9 +133,11 @@ for(iii in 1:nrow(functionList)){
 ```{r warning = F, error = F, message = F, results = 'hide', echo = F}
 fun_latestResult(obj = bitCoin,dateFormat = '%Y-%m-%d')
 dataTitle <- 
-  paste0('ビットコインの計量分析:',latestResult)
+  paste0('-仮想通貨それは時代の要請あるいは狂乱に花咲くチューリップ-ビットコインの計量分析:',latestResult)
 dataSource <- 
   'OANDA Corporation'
+appendTxt <-
+  ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')'
 ```
 
 ***
@@ -159,12 +161,11 @@ eval(parse(
   text =
     paste0('dygraphPlot',
            n,
-           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+           appendTxt)))
 cat('<hr>')
-fun_transposeDataFrame(obj = mergeData,tailN = 7)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData,tailN = 7))
 cat('<hr>')
-fun_transposeDataFrame(obj = rbind(head(mergeData,1),tail(mergeData,1)))
+tDF <- fun_transposeDataFrame(obj = rbind(head(mergeData,1),tail(mergeData,1)))
 fun_markdownTable(obj = data.frame(tDF,
                                    `Change(%)`=round((tDF[,3]/tDF[,2]-1)*100,2),
                                    stringsAsFactors = F,
@@ -173,12 +174,12 @@ fun_markdownTable(obj = data.frame(tDF,
 
 ***
 #### Historical Volatility of Bitcoin
-- Width:`r width <- 30;width`
 
 ```{r warning = F, error = F, message = F, echo = F, results='asis'}
+width <- 30
+cat(paste0('- Width:',width))
 n <- 100
-fun_historicalVolatility(obj = bitCoin,width = width)
-fun_generateKnit(objDF = historicalVolatility, 
+fun_generateKnit(objDF = fun_historicalVolatility(obj = bitCoin,width = width), 
                  plotNum = n, 
                  group = 0,
                  dygraphTitle = 'Unit:%',
@@ -187,7 +188,7 @@ eval(parse(
   text =
     paste0('dygraphPlot',
            n,
-           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+           appendTxt)))
 ```
 
 ***
@@ -215,14 +216,14 @@ eval(parse(
   text =
     paste0('dygraphPlot',
            n,
-           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+           appendTxt)))
 ```
 
 ***
 
 ```{r warning = F, error = F, message = F, echo = F}
-fun_makeDiffTable(obj = bitCoin)
 n <- 2
+diffDF <- fun_makeDiffTable(obj = bitCoin)
 fun_generateKnit(objDF = diffDF, 
                  plotNum = n, 
                  barPlot = 1, 
@@ -234,14 +235,14 @@ eval(parse(
   text =
     paste0('dygraphPlot',
            n,
-           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+           appendTxt)))
 ```
 
 ***
 
 ```{r warning = F, error = F, message = F, echo = F}
-fun_makeDiffRatioTable(obj = bitCoin)
 n <- 3
+diffRatioDF <- fun_makeDiffRatioTable(obj = bitCoin)
 fun_generateKnit(objDF = diffRatioDF, 
                  plotNum = n, 
                  barPlot = 1, 
@@ -253,13 +254,12 @@ eval(parse(
   text =
     paste0('dygraphPlot',
            n,
-           ' %>% dyEvent(\'2014-2-28\', \'Mt. Gox filed for bankruptcy protection in Tokyo\', labelLoc = \'bottom\')')))
+           appendTxt)))
 ```
 
 ***
 
-```{r warning = F, error = F, message = F, echo = F, fig.height=12}
-par(mfrow = c(3,1), family = 'Meiryo')
+```{r warning = F, error = F, message = F, echo = F}
 fun_hist <- 
   function(obj,
            objColumn = 2,
@@ -268,14 +268,14 @@ fun_hist <-
            main = colnames(obj)[objColumn],
            xlab = '',
            labels = F,
-           mar = c(4,4,6,4),
+           mar = c(4,5,2,2),
            font.axis = 1,
            font.main = 1,
            font.lab = 1,
            font.sub = 1,
-           cex.main = 1.3,
-           cex.lab = 1.3,
-           cex.axis = 1.3){
+           cex.main = 1.1,
+           cex.lab = 1.0,
+           cex.axis = 1.0){
     breaks <-
       seq(floor(min(obj[,objColumn]) / histWidth) * histWidth, 
           ceiling(max(obj[,objColumn]) / histWidth) * histWidth, 
@@ -309,12 +309,17 @@ fun_hist <-
            font = 3)
     }
   }
+```
+
+```{r warning = F, error = F, message = F, echo = F, results='asis'}
 dataSet <- bitCoin
 n <- 1
 fun_hist(obj = dataSet, histWidth = 100.0, main =  paste0(colnames(dataSet)[2],'(Unit:$)'))
+cat('<hr>')
 dataSet <- diffDF
 n <- 2
 fun_hist(obj = dataSet, histWidth = 10.0, main =  paste0(colnames(dataSet)[2],':Day over Day(Unit:$)'))
+cat('<hr>')
 dataSet <- diffRatioDF
 n <- 3
 fun_hist(obj = dataSet, histWidth = 1.0, main =  paste0(colnames(dataSet)[2],':Day over Day(Unit:%)'))
@@ -322,7 +327,7 @@ fun_hist(obj = dataSet, histWidth = 1.0, main =  paste0(colnames(dataSet)[2],':D
 
 ***
 #### Fundamental Statistics
-##### `r colnames(bitCoin)[2]`
+- `r colnames(bitCoin)[2]`
 
 ```{r warning = F, error = F, message = F, echo = F, results='asis'}
 fun_timeSeriesDataFundamentalStatistics(obj = bitCoin)
@@ -333,7 +338,7 @@ fun_markdownTable(obj = data.frame(Item = row.names(statisticsTable),
 
 ***
 #### Fundamental Statistics By Year
-##### `r colnames(bitCoin)[2]`
+- `r colnames(bitCoin)[2]`
 
 ```{r warning = F, error = F, message = F, echo = F, results='asis'}
 library(lubridate)
@@ -379,9 +384,9 @@ fun_markdownTable(statDF)
 
 ***
 #### Autocorrelation
-##### Lag=0:Dropped
+- Lag = 0:Dropped
 
-```{r warning = F, error = F, message = F, echo = F, results='asis', fig.height=8}
+```{r warning = F, error = F, message = F, echo = F, results='asis'}
 fun_plotACF <- 
   function(obj, acfLag, acfType = 'correlation', plot = T, acfMainTitle = '', drop0 = F){
     acf(x = obj,
@@ -396,15 +401,73 @@ fun_plotACF <-
                        lty = 2,
                        equilogs = T)
   }
-par(mfrow = c(2,1), family = 'Meiryo', cex.main = 1.1, cex.lab = 1.0, cex.axis = 1.0, font.main = 1)
+par(family = 'Meiryo', cex.main = 1.1, cex.lab = 1.0, cex.axis = 1.0, font.main = 1)
 fun_plotACF(obj = bitCoin[,2],
             acfLag = 365 * 2,
             acfMainTitle = colnames(bitCoin)[2],
             drop0 = T)
+cat('<hr>')
 fun_plotACF(obj = diffRatioDF[,2],
             acfLag = 365 * 2,
             acfMainTitle = paste0(colnames(bitCoin)[2],':Day over Day(Unit:%)'),
             drop0 = T)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plot4charts <- 
+  function(obj = obj,tailN = c(10^10,100,50,30),
+           oma = c(0,0,3,0),mar = c(4,4,2,1),type = 'o',dateFormat = '%Y-%m-%d',
+           cex.main = 1.2,cex.axis = 1.2){
+    par(mfrow = c(2,2),family = 'Meiryo',font.main = 1,oma = oma,mar = mar)
+    for(iii in 1:4){
+      tmpDF <-fun_fit(obj = tail(obj,tailN[iii]))[,c(1,2,3)]
+      dateRange <- paste0(format(range(tmpDF[,1]),dateFormat),collapse = '~')
+      plot(x = tmpDF[,1],y = tmpDF[,2],
+           type = type,pch = 20,xaxt = 'n',
+           xlab = '',ylab = '',
+           main = paste0(dateRange,'. n = ',nrow(tmpDF)),
+           panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
+      axis.Date(side = 1,at = tmpDF[,1],format = dateFormat,padj = 1,cex.axis = 1)
+      lines(x = tmpDF[,1],y = tmpDF[,3],type = 'l',col = 'red',lwd = 2)
+    }
+    mtext(text = paste0(colnames(tmpDF)[2],'\nSource:',dataSource),side = 3,outer = T)
+    #dev.off()
+  }
+obj <- bitCoin
+fun_plot4charts(obj = obj,dateFormat = '%Y-%m-%d',tailN = c(10^10,30*6,30*1,7*2))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = 'ビットコイン,バブル経済',
+             objDF = fun_transposeDataFrame(obj = bitCoin),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '直近5日分',
+             tableName = 'ビットコイン価格')
 ```
 
 ***
