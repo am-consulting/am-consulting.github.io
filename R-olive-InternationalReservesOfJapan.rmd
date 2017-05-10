@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-internationalReservesOfJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'internationalReservesOfJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'International Reserves of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -27,14 +27,8 @@ options(width = 1000)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-library(DT)
-library(lubridate)
-library(googleVis)
-library(dplyr)
 library(rAmCharts)
-library(RCurl)
 library(pipeR)
-library(gridExtra)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen=100)
 ```
@@ -67,10 +61,14 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+origData1[,-1] <- apply(origData1[,-1],2,function(x)x*10^-6)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = origData1,dateFormat = dateFormat,objColumn = c(2,4))
 dataTitle <- 
-  paste0('日本の外貨準備等状況:', latestResult, '(単位:百万ドル)')
+  paste0('日本の外貨準備等状況:', latestResult, ':単位:兆ドル')
 dataSource <- 
   '財務省'
 ```
@@ -101,11 +99,11 @@ funamBarplot <- function(obj, mainTitle = '') {
 }  
 ```
 
-####日本の外貨準備高
+#### 日本の外貨準備高
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 n <- 1
-fun_generateKnit(objDF = origData1[,c(1,2,4)],plotNum = n,dygraphTitle = 'ドル建て(百万ドル)')
+fun_generateKnit(objDF = origData1[,c(1,2,4)],plotNum = n,dygraphTitle = 'ドル建て(兆ドル)')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('<hr>')
 n <- 2
@@ -114,34 +112,34 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph
 cat('<hr>')
 ```
 
-####外貨準備高の構成(ドル建て.百万ドル)
+#### 外貨準備高の構成(ドル建て)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData1[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
 buf <- tail(buf0, 12)
 buf[, 1] <- as.character(format(buf[, 1], dateFormat))
-funamBarplot(obj = buf, mainTitle = '外貨準備高')
+funamBarplot(obj = buf, mainTitle = '外貨準備高(兆ドル)')
 ```
 
 ***
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData1[, c(1, 2, 4, 6, 12, 13, 14, 15), drop = F]
-buf0 <- merge(buf0, origData5)
+buf0 <- merge(buf0, origData5,by = 'Date')
 fun_dataTable(obj = tail(buf0,5*12),
-              title = '日本の外貨準備高(単位:百万ドル)',
+              title = '日本の外貨準備高(単位:兆ドル)',
               dateFormat = dateFormat)
 ```
 
 ***
-####外貨準備高の構成(円建て.兆円)
+#### 外貨準備高の構成(円建て)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf0 <- origData3[, c(1, 4, 6, 12, 13, 14, 15), drop = F]
 buf0[,-1] <- round(buf0[,-1],4)
 buf <- tail(buf0, 12)
 buf[, 1] <- as.character(format(buf[, 1], dateFormat))
-funamBarplot(obj = buf, mainTitle = '外貨準備高')
+funamBarplot(obj = buf, mainTitle = '外貨準備高(兆円)')
 ```
 
 ***
@@ -156,7 +154,7 @@ fun_dataTable(obj = tail(buf0,5*12),
 ```
 
 ***
-####日本の金(ゴールド)保有量(百万トロイオンス)
+#### 日本の金(ゴールド)保有量(百万トロイオンス)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 n <- 3
@@ -177,12 +175,46 @@ cat(paste0(tail(origData4[,2],1),
            'トン'))
 ```
 
-```{r,warning=F,error=F,message=F,results='hide',echo=F}
-fun_transposeDataFrame(obj = origData1,tailN = 3,dateFormat = dateFormat)
-tDF[,1] <-
-  gsub('.+/(.+)','\\1',tDF[,1])
-cat('#### 日本の外貨準備高(単位:百万ドル)')
-fun_markdownTable(obj = tDF)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+buf0 <- origData1[,c(1,2)]
+buf0 <- merge(buf0, origData5,by = 'Date')
+fun_plotTimeSeries(obj = buf0,typeL = 'o',typeR = 'o',dateFormat = dateFormat,chartType = 2,
+                   mar = c(4,5,5,5),dataSource = dataSource,cex.main = 1.2,cex.lab = 1.1,
+                   dataTitle = '日本の外貨準備高(兆ドル)')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '外貨準備高',
+             objDF = fun_transposeDataFrame(obj = origData1,tailN = 2,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '直近2ヶ月分',
+             tableName = '日本の外貨準備高(兆ドル)')
 ```
 
 ***
