@@ -1,4 +1,4 @@
-fun_summaryByName <- function(obj,omitFirst = 0,objColumn = 2,objPerson = 'primeminister',digits = 2){
+fun_summaryByName <- function(obj,omitFirst = 1,objColumn = 2,objPerson = 'primeminister',digits = 2){
 if(exists('summaryByName',envir = .GlobalEnv)){remove('summaryByName',envir = .GlobalEnv)}
 fun_withList(obj = obj[,c(1,objColumn)])
 objPersonColumn <-
