@@ -15,5 +15,5 @@ fun_plot4charts <-
       lines(x = tmpDF[,1],y = tmpDF[,3],type = 'l',col = 'red',lwd = 2)
     }
     mtext(text = paste0(colnames(tmpDF)[2],'\nSource:',dataSource),side = 3,outer = T)
-    dev.off()
+    # dev.off()
   }
