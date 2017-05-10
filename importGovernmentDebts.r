@@ -63,3 +63,13 @@ colnames(buf4) <-
 buf4[,-1] <-
   apply(buf4[,-1],2,as.numeric)
 assign('GovernmentDebts',buf4,envir = .GlobalEnv)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = buf4,dataType = 1,csvFileName = '国債及び借入金並びに政府保証債務現在高(億円)')
+# csv出力パート
