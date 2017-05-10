@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-GovernmentDebts.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'GovernmentDebts';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Japanese Government Debts'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -57,7 +57,7 @@ dataSet <- GovernmentDebts
 dataSet[,-1] <- apply(dataSet[,-1],2,function(x)x*10^-4)
 dateFormat <- '%Y年%m月末'
 fun_latestResult(obj = dataSet,
-                 objColumn = 2,
+                 objColumn = 20,
                  orderDirection = 0,
                  orderColumn = 1,
                  dateColumn = 1,
@@ -116,8 +116,49 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet,dateFormat = dateFo
 #### 前期比(%)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_makeDiffRatioTable(obj = dataSet,lag = 1)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatioDF,dateFormat = dateFormat))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = dataSet,lag = 1),
+                                               dateFormat = dateFormat))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+buf0 <- dataSet[,c(1,2,20)]
+fun_plotTimeSeries(obj = buf0,typeL = 'o',typeR = 'o',dateFormat = dateFormat,chartType = 1,
+                   mar = c(4,3,6,1),dataSource = dataSource,cex.main = 1.2,cex.lab = 1.2,needLefLab = 0,
+                   dataTitle = dataTitle,fitLcolor = 0,fitRcolor = 0,cexL = 1.2,cexR = 1.2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '政府債務',
+             objDF = fun_transposeDataFrame(obj = dataSet,tailN = 2,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '直近2期分',
+             tableName = '国債及び借入金並びに政府保証債務現在高(兆円)')
 ```
 
 ***
