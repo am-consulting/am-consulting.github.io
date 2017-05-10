@@ -76,6 +76,19 @@ allCI[,-1] <- apply(allCI[,-1],2,function(x)as.numeric(gsub(',','',x)))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = allCI,dataType = 1,csvFileName = '景気動向指数個別系列')
+# csv出力パート
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
 dataTitle <- paste0('景気動向指数:個別系列の数値:', format(tail(allCI[,1],1),dateFormat))
 dataSource <- '内閣府'
@@ -102,11 +115,10 @@ fun_markdownTable(obj = tDF)
 - 逆サイクル指数に要注意
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_makeDiffTable(obj = allCI)
-tDF <- fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat,tailN = tailN)
+tDF <- fun_transposeDataFrame(obj = fun_makeDiffTable(obj = allCI),dateFormat = dateFormat,tailN = tailN)
 ```
 
-##### 直近前月差プラス
+###### 直近前月差プラス
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] >= 0 | is.na(tDF[,ncol(tDF)]),])
@@ -114,7 +126,7 @@ fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] >= 0 | is.na(tDF[,ncol(tDF)]),])
 
 ***
 
-##### 直近前月差マイナス
+###### 直近前月差マイナス
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] < 0 | is.na(tDF[,ncol(tDF)]),])
@@ -125,11 +137,10 @@ fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] < 0 | is.na(tDF[,ncol(tDF)]),])
 - 逆サイクル指数に要注意
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_makeDiffTable(obj = allCI,lag = 12)
-tDF <- fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat,tailN = tailN)
+tDF <- fun_transposeDataFrame(obj = fun_makeDiffTable(obj = allCI,lag = 12),dateFormat = dateFormat,tailN = tailN)
 ```
 
-##### 直近前年同差プラス
+###### 直近前年同差プラス
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] >= 0 | is.na(tDF[,ncol(tDF)]),])
@@ -137,19 +148,20 @@ fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] >= 0 | is.na(tDF[,ncol(tDF)]),])
 
 ***
 
-##### 直近前年同月差マイナス
+###### 直近前年同月差マイナス
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = tDF[tDF[,ncol(tDF)] < 0 | is.na(tDF[,ncol(tDF)]),])
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-remove(tDF)
-fun_transposeDataFrame(obj = allCI,dateFormat = dateFormat,tailN = 3)
 fun_outputMD(tags = '内閣府,景気動向指数',
-             objDF = tDF,
+             objDF = fun_transposeDataFrame(obj = allCI,dateFormat = dateFormat,tailN = 3),
              htmlName = htmlName,
-             tableTitle = '景気動向指数:個別系列の数値:直近3ヶ月')
+             image = 0,
+             tableTitle = '直近3ヶ月',
+             dataTitle = '景気動向指数',
+             tableName = '個別系列')
 ```
 ***
 <script>MakeNegative()</script>
