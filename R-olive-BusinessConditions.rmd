@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-BusinessConditions.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'BusinessConditions';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Business Conditions of Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -110,14 +111,26 @@ fun_reshapeData(iii = 1)
 dateFormat <- '%Y年%m月'
 obj <- 
   dataSet[,1:4]
-fun_makeDiffTable(obj = obj)
-fun_latestResult(obj = diffDF,
+fun_latestResult(obj = fun_makeDiffTable(obj = obj),
                  objColumn = c(2:4),
                  dateFormat = dateFormat)
 dataTitle <- paste0('景気動向指数:前月差:', latestResult)
 dataSource <- '内閣府、日本銀行'
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = dataSet,dataType = 1,csvFileName = '景気動向指数')
+# csv出力パート
 ```
 
 ***
@@ -136,8 +149,8 @@ lo <-
   lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
      data = objDF)
 ####
-fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
-fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+fittedDF <- fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+MovingAverageDF <- fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
 mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
 ####
 fun_generateKnit(objDF = mergeData,
@@ -146,9 +159,36 @@ fun_generateKnit(objDF = mergeData,
                  group = 0,
                  colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
-cat('\n線形回帰Slopeの95%信頼区間 \n')
+cat('線形回帰Slopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
 ```
+
+***
+- 第二次安倍政権発足以降
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+n <- 1
+objColumn <- n + 1
+objDF <- na.omit(subset(dataSet[,c(1,objColumn)],as.Date('2012-12-26')<=dataSet[,1]))
+lo <-
+  lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
+     data = objDF)
+####
+fittedDF <- fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+MovingAverageDF <- fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
+####
+fun_generateKnit(objDF = mergeData,
+                 plotNum = n,
+                 dygraphTitle = colnames(objDF)[2],
+                 group = 0,
+                 colors = c('blue','red','green','tomato'))
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('線形回帰Slopeの95%信頼区間 \n')
+print(confint(lo, 'Date', level=0.95))
+```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 n <- 2
@@ -158,8 +198,8 @@ lo <-
   lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
      data = objDF)
 ####
-fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
-fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+fittedDF <- fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+MovingAverageDF <- fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
 mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
 ####
 fun_generateKnit(objDF = mergeData,
@@ -168,9 +208,36 @@ fun_generateKnit(objDF = mergeData,
                  group = 0,
                  colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
-cat('\n線形回帰Slopeの95%信頼区間 \n')
+cat('線形回帰Slopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
 ```
+
+***
+- 第二次安倍政権発足以降
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+n <- 2
+objColumn <- n + 1
+objDF <- na.omit(subset(dataSet[,c(1,objColumn)],as.Date('2012-12-26')<=dataSet[,1]))
+lo <-
+  lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
+     data = objDF)
+####
+fittedDF <- fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+MovingAverageDF <- fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
+####
+fun_generateKnit(objDF = mergeData,
+                 plotNum = n,
+                 dygraphTitle = colnames(objDF)[2],
+                 group = 0,
+                 colors = c('blue','red','green','tomato'))
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('線形回帰Slopeの95%信頼区間 \n')
+print(confint(lo, 'Date', level=0.95))
+```
+
+***
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 n <- 3
@@ -180,8 +247,8 @@ lo <-
   lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
      data = objDF)
 ####
-fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
-fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+fittedDF <- fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+MovingAverageDF <- fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
 mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
 ####
 fun_generateKnit(objDF = mergeData,
@@ -190,14 +257,39 @@ fun_generateKnit(objDF = mergeData,
                  group = 0,
                  colors = c('blue','red','green','tomato'))
 eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
-cat('\n線形回帰Slopeの95%信頼区間 \n')
+cat('線形回帰Slopeの95%信頼区間 \n')
+print(confint(lo, 'Date', level=0.95))
+```
+
+***
+- 第二次安倍政権発足以降
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+n <- 3
+objColumn <- n + 1
+objDF <- na.omit(subset(dataSet[,c(1,objColumn)],as.Date('2012-12-26')<=dataSet[,1]))
+lo <-
+  lm(as.formula(paste0('`',colnames(objDF)[2],'`', "~", paste(colnames(objDF)[1], collapse = "+"))),
+     data = objDF)
+####
+fittedDF <- fun_fit(obj = objDF,dateColumn = 1,objColumn = 2)
+MovingAverageDF <- fun_MovingAverage(obj = objDF,n = 6,dateFormat = dateFormat,objColumn = 2)
+mergeData <- merge(fittedDF[,1:4],MovingAverageDF[,c(1,3)],by='Date')
+####
+fun_generateKnit(objDF = mergeData,
+                 plotNum = n,
+                 dygraphTitle = colnames(objDF)[2],
+                 group = 0,
+                 colors = c('blue','red','green','tomato'))
+eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph)))
+cat('線形回帰Slopeの95%信頼区間 \n')
 print(confint(lo, 'Date', level=0.95))
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_makeDiffTable(obj = dataSet)
+diffDF <- fun_makeDiffTable(obj = dataSet)
 n <- 4
 objDF <- na.omit(diffDF[,c(1,n-2)])
 fun_generateKnit(objDF = objDF,
@@ -238,19 +330,19 @@ eval(parse(text = paste0('dygraphPlot',n,' %>% ', primeMinisterOfJapan_dygraph))
 ```
 
 ***
-#### 直近`r tailN <- 5`ヶ月分
-##### 指数値
+#### 直近`r tailN <- 5;tailN`ヶ月分
+- 指数値
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet,tailN = tailN,dateFormat = dateFormat))
 ```
 
 ***
-##### 前月差(ポイント)
+- 前月差(ポイント)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_makeDiffTable(obj = dataSet)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF, dateFormat = dateFormat, tailN = tailN))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dataSet),
+                                               dateFormat = dateFormat, tailN = tailN))
 ```
 
 ***
@@ -268,9 +360,64 @@ fun_plotTimeSeries(obj = scaleDF,
                    dateFormat = dateFormat,
                    lwdR = 1,
                    dataSource = dataSource,
-                   typeL = 'h',
-                   typeR = 'l',
-                   mar = c(3,5,4,2))
+                   typeL = 'o',
+                   typeR = 'o',needLefLab = 0,
+                   mar = c(4,3,5,1))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- tail(na.omit(dataSet[,c(1,3,4)]),12*10)
+fun_plotTimeSeries(obj = obj,typeL = 'o',typeR = 'o',dateFormat = dateFormat,chartType = 1,
+                   dataTitle = '景気動向指数',mar = c(4,5,5,1),
+                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0)
+abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
+text(x = as.Date('2008-9-15'),
+     y = max(na.omit(obj[,2])),
+     labels = 'Bankruptcy of Lehman Brothers',
+     pos = 2,
+     srt = 90,col = 'blue')
+abline(v = as.Date('2012-12-26'),lwd = 1.2,lty = 2)
+text(x = as.Date('2012-12-26'),
+     y = max(na.omit(obj[,2])),
+     labels = '第2次安倍政権発足',
+     pos = 2,
+     srt = 90,col = 'blue')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- na.omit(dataSet[,c(1,3)])
+summaryDF <- fun_summaryByName(obj = obj)
+summaryDF[,-c(1,8)] <- apply(summaryDF[,-c(1,8)],2,function(x)round(x,2))
+fun_outputMD(tags = '景気動向指数',
+             objDF = summaryDF,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
