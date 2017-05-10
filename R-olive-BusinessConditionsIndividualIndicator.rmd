@@ -160,7 +160,7 @@ fun_outputMD(tags = '内閣府,景気動向指数',
              htmlName = htmlName,
              image = 0,
              tableTitle = '直近3ヶ月',
-             dataTitle = '景気動向指数',
+             dataTitle = dataTitle,
              tableName = '個別系列')
 ```
 ***
