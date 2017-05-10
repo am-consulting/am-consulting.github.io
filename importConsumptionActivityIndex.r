@@ -30,3 +30,13 @@ colnames(buf1)[1] <- 'Date'
 buf1[,-1] <-
   apply(buf1[,-1],2,as.numeric)
 assign('ConsumptionActivityIndex',buf1,envir = .GlobalEnv)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = buf1,dataType = 1,csvFileName = '消費活動指数')
+# csv出力パート
