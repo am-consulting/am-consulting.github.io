@@ -28,5 +28,6 @@ fun_writeCSVtoFolder <-
               quote = T,
               row.names = F,
               append = F,
+              na = '',
               fileEncoding = 'UTF-8')
 }
