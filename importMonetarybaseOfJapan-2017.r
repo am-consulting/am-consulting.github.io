@@ -38,5 +38,5 @@ script <-
            scriptFile),
     ssl.verifypeer = F)
 eval(parse(text = script))
-fun_writeCSVtoFolder(objData = monetaryBase_Japan,dataType = 1,csvFileName = 'monetaryBaseJapan')
+fun_writeCSVtoFolder(objData = monetaryBase_Japan,dataType = 1,csvFileName = '日本のマネタリーベース')
 # csv出力パート

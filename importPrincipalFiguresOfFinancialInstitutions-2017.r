@@ -30,3 +30,15 @@ colnames(buf1)[1] <-
 buf1[,-1] <-
   apply(buf1[,-1], 2, as.numeric)
 PrincipalFiguresOfFinancialInstitutions <- buf1
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = PrincipalFiguresOfFinancialInstitutions,
+                     dataType = 1,
+                     csvFileName = '貸出預金動向速報')
+# csv出力パート
