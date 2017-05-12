@@ -128,7 +128,8 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- Source http://www.stat-search.boj.or.jp/ssi/mtshtml/md13_m_1.html
+- 一目均衡表:株式会社経済変動総研の登録商標(<a href="https://ja.wikipedia.org/wiki/%E4%B8%80%E7%9B%AE%E5%9D%87%E8%A1%A1%E8%A1%A8" target="_blank">Wikipediaによる</a>)
+- <h4><b>本ページを根拠とした金融取引、判断は厳禁とします。</b></h4>
 
 ***
 
@@ -142,19 +143,20 @@ for(iii in 1:2){
 }
 dygraph(data = FXRateXTS[[1]],main = mainN[1]) %>% 
   dyCandlestick() %>% dyRangeSelector() %>% dyUnzoom() %>% 
-  dyLegend(width = 600,show = "follow") %>% dyOptions(digitsAfterDecimal = 15)
+  dyLegend(width = 600,show = "follow") %>% dyOptions(digitsAfterDecimal = 10)
 cat('<hr>')
 dygraph(data = FXRateXTS[[2]],main = mainN[2]) %>% 
   dyCandlestick() %>% dyRangeSelector() %>% dyUnzoom() %>% 
-  dyLegend(width = 600,show = "follow") %>% dyOptions(digitsAfterDecimal = 15)
+  dyLegend(width = 600,show = "follow") %>% dyOptions(digitsAfterDecimal = 10)
+cat('<hr>')
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning=F, error=F, message=F, echo=F,results='asis',fig.height=6}
 library(quantmod)
-par(mfrow=c(1,2),oma=c(0,0,0,0))
+par(mfrow = c(1,2),oma = c(3,0,0,0),family = 'Meiryo')
 rangeDays <- 60
 pars <- chart_pars()
-pars$mar <- c(3,4,1,3)
+pars$mar <- c(3,3,1,3)
 pars$cex <- 1
 for(iii in 1:2){
   obj <- FXRateXTS[[iii]]
@@ -165,9 +167,89 @@ maNum <- 10 # knitでchart_Seriesに渡されない
 chart_Series(x = obj,
              pars = pars,
              subset = dateRange,
-             name = gsub('(東京.+スポット).+','\\1',colnames(obj)[1]),
+             name = gsub('東京市場.?(.+).+スポット.+','\\1',colnames(obj)[1]),
              TA = if(10 <= nrow(obj)){print(add_SMA(n = 10))})
 }
+mtext(text = paste0('Red Line:Moving Average(Over ',maNum,' days)'),
+      side = 1,outer = T,col = 'red')
+cat('<hr>')
+```
+
+#### 一目均衡表
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+par(mfrow=c(1,1))
+fun_Ichimokukinkou(objDF = FXRate[[1]],objDateCol = 1,objCloseCol = 5,objPlotCol = 5)
+cat('<hr>')
+par(mfrow=c(1,1))
+fun_Ichimokukinkou(objDF = FXRate[[2]],objDateCol = 1,objCloseCol = 5,objPlotCol = 5)
+```
+
+#### Simulation
+
+```{r warning=F, error=F, message=F, echo=F,results='asis',fig.height=6}
+fun_doSimulation(obj = FXRate[[1]],
+                 breaksBy = 0.05,
+                 finalbreaksBy = 1.0,
+                 simulationLength = 30,objCol = 5,simulationNumber = 200)
+cat('<hr>')
+fun_doSimulation(obj = FXRate[[2]],
+                 breaksBy = 0.05,
+                 finalbreaksBy = 0.01,
+                 simulationLength = 30,objCol = 5,simulationNumber = 200)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <- 
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- FXRateXTS[[1]]
+par(mfrow = c(1,1),family = 'Meiryo',oma=c(3,0,0,0))
+rangeDays <- 60
+pars <- chart_pars()
+pars$mar <- c(3,3,1,3)
+pars$cex <- 1
+dateRange <-
+  paste0(range(tail(index(obj),rangeDays)),collapse = '::')
+colnames(obj)<- paste0(colnames(obj),c(':Open',':High',':Low',':Close'))
+chart_Series(x = obj,
+             pars = pars,
+             subset = dateRange,
+             name = gsub('(東京市場.+スポット).+','\\1',colnames(obj)[1]),
+             TA = if(10 <= nrow(obj)){print(add_SMA(n = 10))})
+mtext(text = paste0('Red Line:Moving Average(Over ',10,' days)'),
+      side = 1,outer = T,col = 'red')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- FXRate[[1]][,c(1,5)]
+fun_outputMD(tags = '日本銀行,東京市場,為替レート',
+             objDF = fun_summaryByName(obj = obj),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
