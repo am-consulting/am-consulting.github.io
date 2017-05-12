@@ -1,7 +1,10 @@
 fun_doSimulation <-
-  function(x,breaksBy = 0.01,finalbreaksBy = 2,startValue = 114,
+  function(obj,breaksBy = 0.01,finalbreaksBy = 2,objCol = 2,adjustment = 100,
            simulationLength = 100,simulationNumber = 100){
-    par(mfrow = c(1,2), family = 'Meiryo', font.main = 1, cex.main = 1.1, oma = c(0,0,0,0))
+    x <-
+      fun_makeDiffRatioTable(obj = obj,lag = 1,diff = 1,roundDigits = 5)[,objCol]
+    startValue <- tail(obj,1)[,objCol]
+    par(mfrow = c(1,2), family = 'Meiryo', font.main = 1, cex.main = 1.1, oma = c(0,0,2,0))
     breaks <-
       seq(from = floor(min(x)), to = ceiling(max(x)) + breaksBy, by = breaksBy)
     resultHist <-
@@ -63,14 +66,19 @@ fun_doSimulation <-
       abline(h = startValue, col = 'red', lwd = 2)
       x0 <-
         unlist(tail(simulationResultS,1))
+      # breaks <-
+      #   seq(from = floor(min(x0)), to = ceiling(max(x0)) + finalbreaksBy, by = finalbreaksBy)
       breaks <-
-        seq(from = floor(min(x0)), to = ceiling(max(x0)) + finalbreaksBy, by = finalbreaksBy)
+        seq(from = floor(min(x0)*adjustment)/adjustment,
+            to = ceiling(max(x0)*adjustment)/adjustment + finalbreaksBy,
+            by = finalbreaksBy)
       finalHist <-
         hist(x = x0, breaks = breaks,xlab = '',main = '',col='gray',plot = T)
       panel.first = grid(nx = NULL,
                          ny = NULL,
                          lty = 2,
                          equilogs = T)
+      mtext(text = colnames(obj)[objCol],side = 3,outer = T)
       assign('simulationResultS',
              simulationResultS,
              envir = .GlobalEnv)
