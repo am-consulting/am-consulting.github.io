@@ -1,0 +1,184 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ForeignExchangeRatesInTokyoMarket';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Foreign Exchange Rates In Tokyo Market'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(file = 
+             paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                    fileName),
+           header = F,as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+fun_FXrateFromJGB <- 
+  function(targetURL,csvFileName){
+    library(Nippon);library(rvest)
+    htmlMarkup <- read_html(x = targetURL,encoding = 'SHIFT_JIS')
+    obj <-
+      as.data.frame(htmlMarkup %>% html_nodes('table') %>% html_table())
+    colnames(obj) <- obj[1,]
+    obj <- obj[-1,]
+    colnames(obj)[1] <- 'Date'
+    colnames(obj) <- 
+      sapply(gsub('.+(東京市場.+)','\\1',colnames(obj)),zen2han)
+    obj[,-1] <- data.frame(apply(obj[,-1],2,as.numeric),stringsAsFactors = F,check.names = F)
+    obj <- na.omit(obj)
+    obj[,1] <- as.Date(obj[,1])
+    # csv出力パート
+    scriptFile <- 'R-writeCSVtoFolder.r'
+    script <-
+      RCurl::getURL(
+        paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+               scriptFile),
+        ssl.verifypeer = F)
+    eval(parse(text = script))
+    fun_writeCSVtoFolder(objData = obj,dataType = 1,csvFileName = csvFileName)
+    # csv出力パート
+  }
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+needImportFromJGB <- 0
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+#http://www.stat-search.boj.or.jp/ssi/cgi-bin/famecgi2?cgi=$nme_a000&lstSelection=FM08
+csvFileName1 <- '東京市場_USDJPY'
+csvFileName2 <- '東京市場_EURUSD'
+if(needImportFromJGB!=0){
+# ドル円
+targetURL1 <- 'http://www.stat-search.boj.or.jp/ssi/html/nme_R020DD.19789.20170512124347.01.html'
+fun_FXrateFromJGB(targetURL = targetURL1,csvFileName = csvFileName1)
+# ユーロドル
+targetURL2 <- 'http://www.stat-search.boj.or.jp/ssi/html/nme_R020DD.4119.20170512124513.02.html'
+fun_FXrateFromJGB(targetURL = targetURL2,csvFileName = csvFileName2)
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+FXRate <- list()
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathToFolder <- 'TSdata'
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'csv/csvData/',pathToFolder,'/')
+for(iii in 1:2){
+  FXRate[[iii]] <-
+    read.csv(file = paste0(pathOutputTOcsv,get(paste0('csvFileName',iii)),'.csv'),
+             header = T,
+             stringsAsFactors = F,
+             fileEncoding = 'UTF-8',check.names = F)
+  FXRate[[iii]][,1] <- as.Date(FXRate[[iii]][,1])
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 
+  paste0('外国為替市況:東京市場:ドル円、ユーロドル')
+dataSource <- 
+  '日本銀行'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.stat-search.boj.or.jp/ssi/mtshtml/md13_m_1.html
+
+***
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+library(dygraphs)
+FXRateXTS <- list()
+mainN <- vector()
+for(iii in 1:2){
+  FXRateXTS[[iii]] <- xts(FXRate[[iii]][,-1], order.by = FXRate[[iii]][,1])
+  mainN[iii] <- gsub('(.+スポット).+','\\1',colnames(FXRateXTS[[iii]] )[1])
+}
+dygraph(data = FXRateXTS[[1]],main = mainN[1]) %>% 
+  dyCandlestick() %>% dyRangeSelector() %>% dyUnzoom() %>% 
+  dyLegend(width = 600,show = "follow") %>% dyOptions(digitsAfterDecimal = 15)
+cat('<hr>')
+dygraph(data = FXRateXTS[[2]],main = mainN[2]) %>% 
+  dyCandlestick() %>% dyRangeSelector() %>% dyUnzoom() %>% 
+  dyLegend(width = 600,show = "follow") %>% dyOptions(digitsAfterDecimal = 15)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+library(quantmod)
+par(mfrow=c(1,2),oma=c(0,0,0,0))
+rangeDays <- 60
+pars <- chart_pars()
+pars$mar <- c(3,4,1,3)
+pars$cex <- 1
+for(iii in 1:2){
+  obj <- FXRateXTS[[iii]]
+dateRange <-
+  paste0(range(tail(index(obj),rangeDays)),collapse = '::')
+colnames(obj)<- paste0(colnames(obj),c(':Open',':High',':Low',':Close'))
+maNum <- 10 # knitでchart_Seriesに渡されない
+chart_Series(x = obj,
+             pars = pars,
+             subset = dateRange,
+             name = gsub('(東京.+スポット).+','\\1',colnames(obj)[1]),
+             TA = if(10 <= nrow(obj)){print(add_SMA(n = 10))})
+}
+```
+
+***
+<script>MakeNegative()</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
