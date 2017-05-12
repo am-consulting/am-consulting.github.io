@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-moneyStockInJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'moneyStockInJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Money Stock in Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -159,6 +159,23 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph
 cat('<hr>')
 ```
 
+- Straw Broom Chart
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+mergeData <- na.omit(mergeData0[,c(1,10:13)])
+dateRange <- paste0(format(range(mergeData[,1]),dateFormat),collapse = '~')
+n <- 40
+fun_generateKnit(objDF = mergeData, 
+                 plotNum = n, 
+                 barPlot = 0, 
+                 dygraphTitle = colnames(mergeData)[2],
+                 group = 0,
+                 strawBroom = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+
+```
+
 #### 信用乗数
 - `r objX <- 10;colnames(mergeData0)[objX]`
 
@@ -180,6 +197,7 @@ fun_generateKnit(objDF = creditMultiplier,
                  quantiles = 2)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('<hr>')
+mdDF <- creditMultiplier
 ```
 
 - `r objX <- 11;colnames(mergeData0)[objX]`
@@ -314,7 +332,7 @@ cat('<hr>')
 ```
 
 #### 単位根検定
-##### 原系列
+- 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 mergeData <- na.omit(mergeData0[,c(1,10,22)])
@@ -323,10 +341,10 @@ cat('\n\n')
 apply(mergeData[,c(2,3),drop=F],2, tseries::adf.test)
 ```
 
-##### 一次差分
+- 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-fun_makeDiffTable(obj = mergeData)
+diffDF <- fun_makeDiffTable(obj = mergeData)
 cat(paste0(format(range(diffDF[,1]),dateFormat),collapse = '~'))
 cat('\n\n')
 apply(diffDF[,c(2,3),drop=F],2, tseries::adf.test)
@@ -356,20 +374,62 @@ fun_markdownTable(
   fun_transposeDataFrame(obj = mergeData0[,c(1,objColumn)],dateFormat = dateFormat,tailN = tailN))
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
+***
+#### 信用乗数:直近5ヶ月と最高値･最低値
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 obj <- 
   na.omit(mergeData0[,c(1,10:13,22)])
 cm <- 
   data.frame(Date = obj[,1],round(obj[,-1]/obj[,ncol(obj)],2),
              check.names = F,stringsAsFactors = F,row.names = NULL)
-fun_transposeDataFrame(obj = cm[,-ncol(cm)],dateFormat = dateFormat,tailN = 5)
+tDF <- fun_transposeDataFrame(obj = cm[,-ncol(cm)],dateFormat = dateFormat,tailN = 5)
 fun_markdownTable(obj = tDF)
+cat('<hr>')
 fun_withList(obj = cm[,c(1,2)])
 maxmin <-
   rbind(subset(dfWithList,max(dfWithList[,2])==dfWithList[,2]),
         subset(dfWithList,min(dfWithList[,2])==dfWithList[,2]))
 maxmin[,1] <- format(maxmin[,1],dateFormat)
 fun_markdownTable(obj = maxmin[,c(1:4)])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plot4charts(obj = mdDF,tailN = c(10^10,12*5,12*3,12),dateFormat = dateFormat)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+summaryDF <- fun_summaryByName(obj = mdDF,omitFirst = 1)
+fun_outputMD(tags = 'マネーストック, 日本銀行, 広義流動性, M2, M3, 信用乗数',
+             objDF = summaryDF,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = paste0('信用乗数:',colnames(obj)[2]))
 ```
 
 ***
@@ -384,43 +444,3 @@ fun_markdownTable(obj = maxmin[,c(1:4)])
   ga('send', 'pageview');
 
 </script>
-
-<!--
-
---- 
-tags : [マネーストック, 日本銀行, 広義流動性, M2, M3, 信用乗数] 
-published : true
----
-# 日本のマネーストックと信用乗数:2017年03月:マネーストック(月次):M2/平残前年比/マネーストック(2004年3月以前はマネーサプライ)(%):4.3
-## 統計データ概要
-
-***
-#### 信用乗数
-
-|                                                    Item| 2016年11月| 2016年12月| 2017年01月| 2017年02月| 2017年03月|
-|-------------------------------------------------------:|----------:|----------:|----------:|----------:|----------:|
-|         マネーストック(月次):M2/平/マネーストック(兆円)|       2.28|       2.25|       2.21|       2.22|       2.21|
-|         マネーストック(月次):M3/平/マネーストック(兆円)|       3.05|       3.01|       2.95|       2.98|       2.95|
-|        マネーストック(月次):_M1/平/マネーストック(兆円)|       1.62|       1.62|       1.59|       1.61|        1.6|
-| マネーストック(月次):広義流動性/平/マネーストック(兆円)|       3.97|       3.92|       3.86|       3.89|       3.85|
-
-
-
-***
-#### 信用乗数:最高値と最低値
-
-
-
-|       Date| マネーストック(月次):M2/平/マネーストック(兆円)| PRIMEMINISTEROFJAPAN|      BOJ|
-|----------:|-----------------------------------------------:|--------------------:|--------:|
-| 2008年07月|                                             8.4|             福田康夫| 白川正明|
-| 2017年01月|                                            2.21|        安倍晋三(2,3)| 黒田東彦|
-| 2017年03月|                                            2.21|        安倍晋三(2,3)| 黒田東彦|
-
-***
-	
-## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html" width="100%" height="800px"></iframe>
-
--->
