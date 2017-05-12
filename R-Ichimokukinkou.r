@@ -1,7 +1,7 @@
 # 熊谷悦生、舟尾暢男(2008).『Rで学ぶデータマイニング　Ⅱシミュレーション編』.オーム社.248pp.
 # https://ja.wikipedia.org/wiki/%E4%B8%80%E7%9B%AE%E5%9D%87%E8%A1%A1%E8%A1%A8
 # http://equations.am-consulting.co.jp/2014/03/23/910/
-Ichimokukinkou <-
+fun_Ichimokukinkou <-
   function(objDF,objDateCol = 1,objCloseCol = 2,objPlotCol = 2,
            a1 = 26,a2 = 52,ct = 9,st = 26,dateFormat = '%Y-%m-%d',tailN = 20*6){
     lineColor <- c('','black','blue','red')
