@@ -43,48 +43,54 @@ fun_Ichimokukinkou <-
       tail(cbind(objDF[,c(objDateCol,objPlotCol)],KijyunSen,TenkanSen),tailN)
     y1 <- min(plotDF[,-1],na.rm = T)
     y2 <- max(plotDF[,-1],na.rm = T)
-    par(family='Meiryo',font.main=1,mar=c(4,4,3,2))
+    par(family='Meiryo',font.main=1,mar=c(4,4,3,2),cex.main=1.1,cex.axis=1)
     plot(plotDF[,c(1,2)],
          ylim = c(y1,y2),
          type = 'l',
-         main = paste0(colnames(plotDF)[2],'、基準線と転換線'),
+         main = paste0(colnames(plotDF)[2],'、基準線、転換線'),
          xlab = '',
          ylab = '',
          xaxt = 'n',
+         lty = 2,
          panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
     axis.Date(side = 1,at = plotDF[,1],format = dateFormat,padj = 1,cex.axis = 1)
     lines(plotDF[,c(1,3)],col='blue',lwd=2)
     lines(plotDF[,c(1,4)],col='red',lwd=3)
     graphics::legend(x = 'topleft',
                      col = lineColor[c(2,3,4)],
-                     lty = 1,
+                     lty = c(2,1,1),
                      legend = colnames(plotDF)[c(2,3,4)],
                      cex = 1.2,
                      bty = 'n',
                      lwd = 2)
+    cat('<hr>')
     # 先行スパン
     plotDF <-
       tail(cbind(SenkouSpan1,SenkouSpan2),length(SenkouSpan1)-nrow(objDF))
     row.names(plotDF) <- NULL
     y1 <- min(plotDF,na.rm = T)
     y2 <- max(plotDF,na.rm = T)
-    par(family='Meiryo',font.main=1,mar=c(4,4,3,2))
+    par(family='Meiryo',font.main=1,mar=c(4,4,3,2),cex.main=1.1,cex.axis=1)
     plot(plotDF[,1],
          ylim = c(y1,y2),
          type = 'o',
          pch = 20,
-         main = '先行スパン1と先行スパン2',
+         main = paste0(gsub('東京市場.?(.+).+スポット.+','\\1',colnames(objDF)[2]),
+                       ':先行スパン1と先行スパン2'),
          xlab = '',
          ylab = '',
          xaxt = 'n',
          col= lineColor[3],
+         lwd = 2,
+         cex = 1.2,
          panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
     axis(side = 1,at = index(plotDF),labels = paste0(index(plotDF),'日目'),las=2)
     lines(plotDF[,2],
           col = lineColor[4],
-          lwd = 1,
+          lwd = 2,
           type = 'o',
-          pch = 20)
+          pch = 20,
+          cex = 1.2)
     graphics::legend(x = 'topleft',
                      col = lineColor[c(3,4)],
                      lty = 1,
