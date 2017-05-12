@@ -103,6 +103,10 @@ fun_outputMD(tags = '日本銀行,店頭表示金利',
 objRow <- which(apply(buf1,1,function(x)(length(grep('単位',x))))!=0)
 objCol <- which(apply(buf1,2,function(x)(length(grep('単位',x))))!=0)
 
+keyWord <- ''
+objRow <- which(apply(buf1,1,function(x)(length(grep(keyWord,x))))!=0)
+objCol <- which(apply(buf1,2,function(x)(length(grep(keyWord,x))))!=0)
+
 # csv出力パート
 scriptFile <- 'R-writeCSVtoFolder.r'
 script <-
