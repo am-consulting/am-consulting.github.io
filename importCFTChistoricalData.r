@@ -39,7 +39,7 @@ for(mmm in seq(length(MarketNames))){
   objCol <- grep('yyyy-mm-dd',colnames(buf0),ignore.case = T)
   Date <- as.Date(buf0[,objCol])
   objCol <- grep('units',colnames(buf0),ignore.case = T)
-  Unit <- buf0[,objCol]
+  Unit <- gsub('\\s$','',buf0[,objCol])
   objCol <-
     grep('^(Commercial|Noncommercial).+(long|short).+(all)',colnames(buf0),ignore.case = T)
   objDF0 <-
