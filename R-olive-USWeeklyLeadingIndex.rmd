@@ -113,27 +113,27 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSetDiff, tailN = 7))
 ccc <- 2
 fun_turningPoint(obj = dataSetDiff[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
-  cat(paste0('<h4>',colnames(dataSetDiff)[ccc],'</h4>'))
+  cat(paste0('- ',colnames(dataSetDiff)[ccc],'\n'))
   cat('\n\n')
   fun_markdownTable(obj = tail(objPNinclude0,5))
   cat('\n\n')
-  cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
+  cat(paste0('- ', tail(objPNinclude0[,1],1), 'から',
              format(tail(dataSetDiff[,1],1), '%Y-%m-%d'), 'まで',
              durationInclude0, '週連続で',
-             ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '</h4>'))
+             ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '\n'))
   cat('\n\n<hr>')
 }
 ccc <- 3
 fun_turningPoint(obj = dataSetDiff[,c(1,ccc)], dateFormat = '%Y-%m-%d')
 if(durationInclude0 != 0){
-  cat(paste0('<h4>',colnames(dataSetDiff)[ccc],'</h4>'))
+  cat(paste0('- ',colnames(dataSetDiff)[ccc],'\n'))
   cat('\n\n')
   fun_markdownTable(obj = tail(objPNinclude0,5))
   cat('\n\n')
-  cat(paste0('<h4>', tail(objPNinclude0[,1],1), 'から',
+  cat(paste0('- ', tail(objPNinclude0[,1],1), 'から',
              format(tail(dataSetDiff[,1],1), '%Y-%m-%d'), 'まで',
              durationInclude0, '週連続で',
-             ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '</h4>'))
+             ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '\n'))
   cat('\n\n<hr>')
 }
 ```
