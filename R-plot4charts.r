@@ -12,7 +12,8 @@ fun_plot4charts <-
            main = paste0(dateRange,'. n = ',nrow(tmpDF)),
            panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
       axis.Date(side = 1,at = tmpDF[,1],format = dateFormat,padj = 1,cex.axis = 1)
-      lines(x = tmpDF[,1],y = tmpDF[,3],type = 'l',col = 'red',lwd = 2)
+      lines(x = tmpDF[,1],y = tmpDF[,3],type = 'l',col = 'red',lwd = 1)
+      abline(h=0,lwd=1,col='blue')
     }
     mtext(text = paste0(colnames(tmpDF)[2],'\nSource:',dataSource),side = 3,outer = T)
     # dev.off()
