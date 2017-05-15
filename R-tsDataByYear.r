@@ -63,7 +63,7 @@ fun_plotStrawBroomByYear <-
              ylim = ylim,
              panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
              main = paste0(gsub('(.+):([0-9]+)','\\1',colnames(obj)),
-                           ':',variation,'. Last:',format(x = lastDate,dateFormat)))
+                           ':',variation,' Since the Beginning of the Year . Last:',format(x = lastDate,dateFormat)))
       }else{
         lines(obj,
               xlab = '',
