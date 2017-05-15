@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ProducerPriceIndexInJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ProducerPriceIndexInJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Producer Price Index In Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -23,10 +23,6 @@ output:
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(RCurl);library(lubridate);library(Nippon);library(knitr)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -90,8 +86,6 @@ cnt <- 0
 for(iii in 2:ncol(timeSeriesDF)){
   obj <- 
     na.omit(timeSeriesDF[,c(1,iii)])
-  # obj$FittedCurve <-
-  #   predict(loess(obj[,2] ~ as.numeric(obj[,1]),degree = 2))
   cnt <- cnt + 1
   fun_generateKnit(objDF = obj, 
                    plotNum = cnt, 
@@ -110,13 +104,21 @@ for(iii in 2:ncol(timeSeriesDF)){
 
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
+```{r warning=F,error=F,message=F,echo=F,results='hold',fig.height=6}
+tmp0 <- fun_tsDataByYear(objDF = ProducerPriceIndex,dateCol = 1,dataCol = 2)
+tmp1 <- fun_strawBroomData(objDF = tmp0,varType = 2)
+fun_plotStrawBroomByYear(strawData = tmp1$strawData,lastDate = tmp1$lastDate,variation = tmp1$variation)
+```
+
+***
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = ProducerPriceIndex,dateFormat = dateFormat))
 ```
 
 ***
 #### マネタリーベースとの比較
-##### 単位根検定
+###### 単位根検定
 - 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
@@ -126,7 +128,7 @@ apply(mergeData[,c(6,14)],2, tseries::adf.test)
 - 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-fun_makeDiffTable(mergeData,lag = 1)
+diffDF <- fun_makeDiffTable(mergeData,lag = 1)
 apply(diffDF[,c(6,14)], 2, tseries::adf.test)
 ```
 
@@ -142,15 +144,44 @@ ccfResult <-
 text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 ```
 
-***
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = tail(ProducerPriceIndex,12*4),dateFormat = dateFormat)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- mergeData[,c(1,2,10)]
+obj <- subset(obj,as.Date('2013-4-1')<=obj[,1])
+fun_plotTimeSeries(obj = obj,typeL = 'o',typeR = 'o',
+                   dateFormat = '%Y-%m',chartType = 2,dataSource = dataSource,mar = c(4,5,6,5))
+dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_transposeDataFrame(obj = ProducerPriceIndex,dateFormat = dateFormat,tailN = 3)
-fun_markdownTable(obj = tDF)
+fun_outputMD(tags = '国内企業物価指数,輸出物価指数,輸入物価指数,日本銀行',
+             objDF = fun_summaryByName(obj = ProducerPriceIndex[,c(1,2)],dateFormat = '%Y-%m',objColumn = 2),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(ProducerPriceIndex)[2])
 ```
 
 ***
@@ -165,33 +196,3 @@ fun_markdownTable(obj = tDF)
   ga('send', 'pageview');
 
 </script>
-<!--
-
---- 
-tags : [国内企業物価指数,輸出物価指数,輸入物価指数,日本銀行] 
-published : true
----
-# 国内企業物価指数:2017年03月:企業物価指数(月次):[国内企業物価指数]総平均(前年比)(%):1.4
-## 統計データ概要
-
-***
-
-|                                                                  Item| 2017年01月| 2017年02月| 2017年03月|
-|---------------------------------------------------------------------:|----------:|----------:|----------:|
-|                企業物価指数(月次):[国内企業物価指数]総平均(前年比)(%)|        0.5|        1.1|        1.4|
-|           企業物価指数(月次):[輸出物価指数/円ベース]総平均(前年比)(%)|        0.8|        2.6|        3.7|
-|           企業物価指数(月次):[輸入物価指数/円ベース]総平均(前年比)(%)|        4.5|        9.8|       12.5|
-|  企業物価指数(月次):[連鎖方式による国内企業物価指数]総平均(前年比)(%)|        0.6|        1.2|        1.7|
-|               企業物価指数(月次):[国内企業物価指数]総平均(2015年=100)|       97.7|         98|       98.2|
-|        企業物価指数(月次):(参考)夏季電力料金調整後/総平均(2015年=100)|       97.7|         98|       98.2|
-|          企業物価指数(月次):[輸出物価指数/円ベース]総平均(2015年=100)|       95.5|       95.1|       95.4|
-|          企業物価指数(月次):[輸入物価指数/円ベース]総平均(2015年=100)|       92.3|       92.7|       93.6|
-| 企業物価指数(月次):[連鎖方式による国内企業物価指数]総平均(2015年=100)|       97.7|         98|       98.3|
-
-***
-
-## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html" width="100%" height="800px"></iframe>
-
--->
