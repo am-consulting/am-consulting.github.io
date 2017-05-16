@@ -63,7 +63,12 @@ colnames(buf1) <-
 colnames(buf1)[1] <- 'Date'
 colnames(buf3) <- colnames(buf1)
 buf4 <- buf3[,-grep('year',colnames(buf3),ignore.case = T)]
-assign('sheetTitle',zen2han(buf0[2,1]),envir = .GlobalEnv)
-assign('sheetUnit',zen2han(buf0[4,14]),envir = .GlobalEnv)
-assign('CurrentSurveyOfCommerce',buf4,envir = .GlobalEnv)
+# assign('sheetTitle',zen2han(buf0[2,1]),envir = .GlobalEnv)
+# assign('sheetUnit',zen2han(buf0[4,14]),envir = .GlobalEnv)
+# assign('CurrentSurveyOfCommerce',buf4,envir = .GlobalEnv)
+returnList <-
+  list('sheetTitle' = zen2han(buf0[2,1]),
+       'sheetUnit' = zen2han(buf0[4,14]),
+       'CurrentSurveyOfCommerce' = buf4)
+return(returnList)
 }
