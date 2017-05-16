@@ -250,7 +250,7 @@ fun_outputMD(tags = '米国債,日本,中国',
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
-             tableTitle = '直近6ヶ月(単位:兆円)',
+             tableTitle = '直近6ヶ月(単位:兆ドル)',
              tableName = '米国債保有額:日本と中国の比較')
 ```
 
