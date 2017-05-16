@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-cabinetApprovalRating.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'cabinetApprovalRating';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Cabinet Approval Rating'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -76,6 +76,13 @@ politicalPartyApprovalRatingsS <-
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
+colnames(cabinetApprovalRatingS)[2:3] <- 
+  paste0('内閣:',colnames(cabinetApprovalRatingS)[2:3])
+colnames(politicalPartyApprovalRatingsS)[-1] <- 
+  paste0(colnames(politicalPartyApprovalRatingsS)[-1],'支持率')
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
 fun_latestResult(obj = cabinetApprovalRatingS,objColumn = c(2,3),dateFormat = dateFormat)
 dataTitle <- 
@@ -140,13 +147,13 @@ fun_markdownTable(obj = cabinetDT)
 ***
 
 ```{r,warning=F,error=F,message=F,echo=F}
-library(lubridate)
-library(ggplot2)
-library(scales)
-library(zoo)
+# library(lubridate)
+# library(ggplot2)
+# library(scales)
+# library(zoo)
 library(reshape)
 library(rAmCharts)
-library(knitr)
+# library(knitr)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
@@ -337,7 +344,7 @@ n <- 100
 objColumn <- 6
 obj <- 
   naikakuSeitoh[,c(1,objColumn)]
-fun_fit(obj = obj,dateColumn = 1,objColumn = 2)
+fittedDF <- fun_fit(obj = obj,dateColumn = 1,objColumn = 2)
 fun_generateKnit(objDF = fittedDF[,-c(4,5)],
                  plotNum = n,
                  dygraphTitle = colnames(fittedDF)[2],
@@ -348,11 +355,79 @@ eval(parse(text = paste0('dygraphPlot', n)))
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- naikakuSeitoh[,c(1,2,3,4,6)]
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
-fun_makeDiffTable(obj = obj,lag = 1)
-fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = obj,lag = 1),
+                                               dateFormat = dateFormat))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+par(family = 'Meiryo',mfrow = c(1,2),oma=c(0,0,3,0),font.main=1,cex.main=1.1,mar=c(4,4,3,1))
+buf <-
+  cabinetApprovalRatingS[grep('安倍内閣', cabinetApprovalRatingS[,4]),]
+ylim <- c(min(buf[,2:3]),max(buf[,2:3]))
+lineColor <- c('blue','red')
+obj <-
+  cabinetApprovalRatingS[grep('安倍内閣$', cabinetApprovalRatingS[,4]),]
+dateRange <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
+plot(obj[,1],obj[,2],type='o',pch=20,cex=1.2,
+     col=lineColor[1],xaxt='n',xlab='',ylab='',ylim=ylim,
+     panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
+     main=paste0('第一次安倍政権\n',dateRange))
+lines(obj[,1],obj[,3],type='o',pch=20,cex=1.2,col=lineColor[2],xaxt='n',yaxt='n',xlab='',ylab='')
+graphics::legend(x = 'topright',col = lineColor,lty = 1,legend = colnames(obj)[c(2,3)],
+                 cex = 1,bty = 'n',lwd = 2)
+axis.Date(side = 1,at = obj[,1],format = dateFormat,padj = 1,cex.axis = 1)
+abline(h = 50)
+obj <-
+  cabinetApprovalRatingS[grep('安倍内閣\\(第2次', cabinetApprovalRatingS[,4]),]
+dateRange <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
+plot(obj[,1],obj[,2],type='o',pch=20,cex=1.2,
+     col=lineColor[1],xaxt='n',xlab='',ylab='',ylim=ylim,
+     panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
+     main=paste0('第二次安倍政権以降\n',dateRange))
+lines(obj[,1],obj[,3],type='o',pch=20,cex=1.2,col=lineColor[2],xaxt='n',yaxt='n',xlab='',ylab='')
+graphics::legend(x = 'topright',col = lineColor,lty = 1,legend = colnames(obj)[c(2,3)],
+                 cex = 1,bty = 'n',lwd = 2)
+axis.Date(side = 1,at = obj[,1],format = dateFormat,padj = 1,cex.axis = 1)
+abline(h = 50)
+mtext(text = '安倍政権の内閣支持率･不支持率(%)',side = 3,outer = T,cex=1.2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- naikakuSeitoh[,c(1,2,3,4,6)]
+tDF <- fun_transposeDataFrame(obj = fun_makeDiffTable(obj = obj,lag = 1),
+                       dateFormat = dateFormat)
+fun_outputMD(tags = '内閣支持率',
+             objDF = tDF,
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '直近5ヶ月',
+             tableName = '内閣支持率･不支持率前月比(パーセントポイント)')
 ```
 
 ***
