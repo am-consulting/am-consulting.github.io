@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-SurveyofSelectedServiceIndustries.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'SurveyofSelectedServiceIndustries';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Survey of Selected Service Industries - Sales Index'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -48,6 +48,7 @@ for(iii in 1:nrow(functionList)){
 library(DT)
 library(lubridate)
 library(rvest)
+library(Nippon)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -85,67 +86,83 @@ funDownloadXLS(objWord = keyword202, cnt =2)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-funTimeSeries <- function(obj,cnt){
-  assign(paste0('title',cnt),paste(na.omit(obj[,2]),collapse="-"),envir = .GlobalEnv)
+funTimeSeries <- function(objDF){
+  obj <- objDF
   obj[,4] <- as.numeric(gsub('月','',obj[,4]))
-  tmp <- NA
-  for(rrr in 1:nrow(obj)){
-   if(!is.na(obj[rrr,3])){tmp <- obj[rrr,3]}
-    obj[rrr,3] <- tmp
-    if(length(grep('平成[0-9]+',obj[rrr,3]))!=0){obj[rrr,3] <- 1988 + as.numeric(gsub('平成|年','',obj[rrr,3]))}
+  tmp <- NA;objRow <- 4
+  for(ccc in 1:ncol(obj)){
+   if(!is.na(obj[objRow,ccc])){tmp <- zen2han(gsub('\\s','',obj[objRow,ccc]))}
+    obj[objRow,ccc] <- tmp
   }
-  colnames(obj) <- obj[7,]
-  obj <- obj[-c(1:grep('ウェイト',obj[,3])[1]),]
-  obj[,3] <- as.numeric(obj[,3])
-  obj[,1] <- as.Date(paste0(obj[,3],'-',obj[,4],'-1'))
+  tmp <- NA;objRow <- 5
+  for(ccc in 1:ncol(obj)){
+   if(!is.na(obj[objRow,ccc])){tmp <- zen2han(gsub('\\s','',obj[objRow,ccc]))}
+    obj[objRow,ccc] <- tmp
+  }
+  colnames(obj) <-
+    sapply(gsub('[:]*na|\n','',paste0(obj[4,],':',obj[5,],obj[6,]),ignore.case = T),zen2han)
+  obj <- obj[!is.na(as.numeric(obj[,4])),]
+  tmp <- NA;objCol <- 3
+  for(rrr in 1:nrow(obj)){
+   if(!is.na(obj[rrr,objCol])){tmp <- obj[rrr,objCol]}
+    obj[rrr,objCol] <- tmp
+    if(length(grep('平成[0-9]+',obj[rrr,objCol]))!=0){
+      obj[rrr,objCol] <- 1988 + as.numeric(gsub('平成|年','',obj[rrr,objCol]))
+    }
+  }
+  obj[,1] <- as.Date(paste0(as.numeric(obj[,3]),'-',obj[,4],'-1'))
   obj <- obj[,-c(2:4)]
   colnames(obj)[1] <- 'Date'
-  obj <- obj[,-grep('NA',colnames(obj))]
+  obj <- obj[,-grep('month',colnames(obj),ignore.case = T)]
   obj <- na.omit(obj)
-  obj[,-1] <- apply(obj[,-1],2,as.numeric)
-  assign(paste0('dataSet',cnt),obj,envir = .GlobalEnv)
+  obj[,-1] <- data.frame(apply(obj[,-1],2,as.numeric),stringsAsFactors = F,check.names = F)
+  returnDF <-
+    list("title" = zen2han(paste(na.omit(objDF[,2]),collapse=":")), 
+         "dataSet" = obj)
+  return(returnDF)
 }
-funTimeSeries(obj = SSI1, cnt = 1)
-funTimeSeries(obj = SSI2, cnt = 2)
-title1;title2
+buf <- funTimeSeries(objDF = SSI1)
+dataSet1 <- buf$dataSet
+buf <- funTimeSeries(objDF = SSI2)
+dataSet2 <- buf$dataSet
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
-colnames(dataSet1) <- 
-  gsub('^(\\s)*','',colnames(dataSet1))
-colnames(dataSet2) <- 
-  gsub('^(\\s)*','',colnames(dataSet2))
-iii <-2;    colnames(dataSet1)[iii] <- paste0('特定サービス産業動態統計調査(調査19業種)総合','\n',colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('対事業所サービス業(調査10業種)総合','\n',          colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('物品賃貸業(リース)','\n',                          colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('物品賃貸業(レンタル)','\n',                        colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('情報サービス業','\n',                              colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('広告業','\n',                                      colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('クレジットカード業','\n',                          colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('エンジニアリング業','\n',                          colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('インターネット附随サービス業','\n',                colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('機械設計業','\n',                                  colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('自動車賃貸業','\n',                                colnames(dataSet1)[iii])
-iii <-iii+1;colnames(dataSet1)[iii] <- paste0('環境計量証明業','\n',                              colnames(dataSet1)[iii])
-iii <-2;    colnames(dataSet2)[iii] <- paste0('対個人サービス業(調査9業種)総合','\n',             colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('趣味・娯楽関連(調査5業種)','\n',                   colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ゴルフ場','\n',                                    colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ゴルフ練習場','\n',                                colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ボウリング場','\n',                                colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('遊園地・テーマパーク','\n',                        colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('パチンコホール','\n',                              colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('教養・生活関連(調査4業種)','\n',                   colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('葬儀業','\n',                                      colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('外国語会話教室','\n',                              colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('フィットネスクラブ','\n',                          colnames(dataSet2)[iii])
-iii <-iii+1;colnames(dataSet2)[iii] <- paste0('学習塾','\n',                                      colnames(dataSet2)[iii])
+# colnames(dataSet1) <- 
+#   gsub('^(\\s)*','',colnames(dataSet1))
+# colnames(dataSet2) <- 
+#   gsub('^(\\s)*','',colnames(dataSet2))
+# iii <-2;    colnames(dataSet1)[iii] <- paste0('特定サービス産業動態統計調査(調査19業種)総合','\n',colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('対事業所サービス業(調査10業種)総合','\n',          colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('物品賃貸業(リース)','\n',                          colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('物品賃貸業(レンタル)','\n',                        colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('情報サービス業','\n',                              colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('広告業','\n',                                      colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('クレジットカード業','\n',                          colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('エンジニアリング業','\n',                          colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('インターネット附随サービス業','\n',                colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('機械設計業','\n',                                  colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('自動車賃貸業','\n',                                colnames(dataSet1)[iii])
+# iii <-iii+1;colnames(dataSet1)[iii] <- paste0('環境計量証明業','\n',                              colnames(dataSet1)[iii])
+# iii <-2;    colnames(dataSet2)[iii] <- paste0('対個人サービス業(調査9業種)総合','\n',             colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('趣味・娯楽関連(調査5業種)','\n',                   colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ゴルフ場','\n',                                    colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ゴルフ練習場','\n',                                colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('ボウリング場','\n',                                colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('遊園地・テーマパーク','\n',                        colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('パチンコホール','\n',                              colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('教養・生活関連(調査4業種)','\n',                   colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('葬儀業','\n',                                      colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('外国語会話教室','\n',                              colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('フィットネスクラブ','\n',                          colnames(dataSet2)[iii])
+# iii <-iii+1;colnames(dataSet2)[iii] <- paste0('学習塾','\n',                                      colnames(dataSet2)[iii])
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-colnames(dataSet1)[-1] <- 
-  sapply(colnames(dataSet1)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
-colnames(dataSet2)[-1] <- 
-  sapply(colnames(dataSet2)[-1],function(x)substring(x,1,regexpr('\n',x)-1))
+# colnames(dataSet1)[-1] <- 
+#   sapply(colnames(dataSet1)[-1],function(x)substring(x,1,regexpr('\n',x)-1)) 
+# colnames(dataSet2)[-1] <- 
+#   sapply(colnames(dataSet2)[-1],function(x)substring(x,1,regexpr('\n',x)-1))
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
@@ -164,14 +181,18 @@ dataSource <- '経済産業省'
 
 ***
 
+#### 対事業所サービス
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = tail(dataSet1,12*3),dateFormat = dateFormat)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet1,tailN = 3,dateFormat = dateFormat))
 ```
 
 ***
 
+#### 対個人サービス
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = tail(dataSet2,12*3),dateFormat = dateFormat)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet2,tailN = 3,dateFormat = dateFormat))
 ```
 
 ***
@@ -210,9 +231,47 @@ for(iii in 2:ncol(timeSeriesDF)){
 #### 前月差(ポイント)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-tailN <- 6
-fun_makeDiffTable(obj = mergeData,lag = 1)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat,tailN = tailN))
+tailN <- 3
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = mergeData,lag = 1),
+                                               dateFormat = dateFormat,tailN = tailN))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- dataSet1[,c(1,2)]
+fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,12*5,12*3,12))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '特定サービス産業動態売上高指数',
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
