@@ -128,6 +128,22 @@ dataSet2 <- buf$dataSet
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+# csv出力パート
+fun_writeCSVtoFolder(objData = dataSet1,
+                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対事業所')
+fun_writeCSVtoFolder(objData = dataSet2,
+                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対個人')
+```
+
+```{r warning=F,error=F,message=F,echo=F}
 # colnames(dataSet1) <- 
 #   gsub('^(\\s)*','',colnames(dataSet1))
 # colnames(dataSet2) <- 
