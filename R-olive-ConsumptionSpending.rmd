@@ -54,8 +54,9 @@ eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- "家計調査(家計収支編):1世帯当たり1か月間の支出:2人以上の世帯"
-dataTitle0 <- format(tail(expenditure[,1],1),'%Y年%m月')
+fun_latestResult(obj = expenditure,dateFormat = '%Y年%m月')
+dataTitle <- 
+  paste0("家計調査(家計収支編):1世帯当たり1か月間の支出:2人以上の世帯:",latestResult)
 dataSource <- "総務省"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -63,7 +64,7 @@ options(scipen = 999)
 
 ***
 
-- `r paste0("タイトル : ", dataTitle, ':', dataTitle0)`
+- `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
 - Source http://www.stat.go.jp/data/kakei/longtime/index.htm#time
 
