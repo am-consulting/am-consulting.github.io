@@ -35,20 +35,32 @@ fun_extract <-
     colnames(buf3)[1] <- 'Date'
     buf3[,-1] <- apply(buf3[,-1],2,function(x)as.numeric(gsub(',','',x)))
     return(buf3)
-}
+  }
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+# csv出力パート
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = '支出金額（月）', check.names = F, header = F)
 buf0 <- fun_extract(buf0 = buf0)
 colnames(buf0)[2] <- gsub('円','円,原数値',colnames(buf0)[2])
-assign('expenditure', buf0, envir = .GlobalEnv)
+assign('expenditure', buf0)
+fun_writeCSVtoFolder(objData = buf0,dataType = 1,csvFileName = '支出金額(月)')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = '実質増減率（月）', check.names = F, header = F)
 buf0 <- fun_extract(buf0 = buf0)
 colnames(buf0)[2] <- gsub('円','前年同月比(%),実質',colnames(buf0)[2])
-assign('realIncreaseDecreaseRate', buf0, envir = .GlobalEnv)
+assign('realIncreaseDecreaseRate', buf0)
+fun_writeCSVtoFolder(objData = buf0,dataType = 1,csvFileName = '実質増減率(月)')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput, fileName), sheet = '名目増減率（月）', check.names = F, header = F)
 buf0 <- fun_extract(buf0 = buf0)
 colnames(buf0)[2] <- gsub('円','前年同月比(%),名目',colnames(buf0)[2])
-assign('nominalIncreaseDecreaseRate', buf0, envir = .GlobalEnv)
-sheetTitle <<- '家計調査(家計収支編):1世帯当たり1か月間の支出:2人以上の世帯'
+assign('nominalIncreaseDecreaseRate', buf0)
+fun_writeCSVtoFolder(objData = buf0,dataType = 1,csvFileName = '名目増減率(月)')
+sheetTitle <- '家計調査(家計収支編):1世帯当たり1か月間の支出:2人以上の世帯'
