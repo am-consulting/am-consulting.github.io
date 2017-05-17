@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MachineryOrders.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MachineryOrders';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Machinery Orders In Japan"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -49,7 +50,7 @@ username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 yy <- 17
-mm <- 2
+mm <- 3
 mm <- formatC(mm, width=2, flag="0")
 fileName <- paste0(yy,mm,'chouki-2.xls')
 baseURL <- 'http://www.esri.cao.go.jp/jp/stat/juchu/'
@@ -104,6 +105,19 @@ dataSource <- '内閣府'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = dataSet,dataType = 1,csvFileName = '機械受注額_機種別機械受注額(原系列_億円)')
+# csv出力パート
+```
+
 ***
 
 - `r paste0("タイトル : ", dataTitle)`
@@ -136,9 +150,7 @@ fun_generateKnit(objDF = objDF,plotNum = n1,barPlot = 0,
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 tailN <- 8
-fun_transposeDataFrame(obj = dataSet,
-                       tailN = tailN,
-                       dateFormat = dateFormat)
+tDF <- fun_transposeDataFrame(obj = dataSet,tailN = tailN,dateFormat = dateFormat)
 fun_markdownTable(obj = tDF[order(tDF[,ncol(tDF)],decreasing = T),])
 ```
 
@@ -146,11 +158,7 @@ fun_markdownTable(obj = tDF[order(tDF[,ncol(tDF)],decreasing = T),])
 #### 前年同月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F}
-fun_makeDiffRatioTable(obj = dataSet,lag = 12,diff = 1)
-```
-
-```{r warning=F,error=F,message=F,echo=F}
-tmp <- fun_transposeDataFrame(obj = diffRatioDF,
+tmp <- fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = dataSet,lag = 12,diff = 1),
                               tailN = tailN, 
                               dateFormat = dateFormat)
 dataSetN <- tmp %>% dplyr::filter(tmp[,ncol(tmp)] <  0)
@@ -175,6 +183,49 @@ fun_transposeDataFrame(obj = dataSet,tailN = 5,dateFormat = dateFormat)
 fun_markdownTable(obj = tDF[order(tDF[,ncol(tDF)],decreasing = T),])
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- dataSet[,c(1,2,3)]
+fun_plotTimeSeries(obj = obj,chartType = 1,typeL = 'o',typeR = 'o',
+                   dateFormat = '%Y年%m月',dataSource = dataSource,
+                   needLefLab = 0,fitlwdL = 3,fitlwdR = 3,mar = c(4,4,5,1),
+                   dataTitle = dataTitle)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj0 <- fun_makeDiffRatioTable(obj = dataSet,lag = 12,diff = 1)
+obj <- obj0[,c(1,grep('合計',colnames(obj0)))]
+fun_outputMD(tags = '機械受注額,機種別機械受注額,内閣府',
+             objDF = fun_summaryByName(obj = obj,dateFormat = '%Y年%m月'),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = paste0('機械受注額前年同月比(%):',colnames(obj)[2]))
+```
+
 ***
 <script>MakeNegative();</script>
 <script>
@@ -187,60 +238,3 @@ fun_markdownTable(obj = tDF[order(tDF[,ncol(tDF)],decreasing = T),])
   ga('send', 'pageview');
 
 </script>
-
-<!--
-
---- 
-tags : [機械受注額,機種別機械受注額,内閣府] 
-published : true
----
-# 機械受注額:機種別機械受注額(原系列、億円):2017年02月:合計:20537.14
-## 統計データ概要
-
-***
-#### 単位:億円
-
-
-
-|             Item| 2016年10月| 2016年11月| 2016年12月| 2017年01月| 2017年02月|
-|----------------:|----------:|----------:|----------:|----------:|----------:|
-|             合計|  18,397.17|  20,997.57|  26,180.91|  19,401.16|  20,537.14|
-|       電子計算機|   2,657.24|   2,823.51|   3,739.27|   2,908.73|   2,931.78|
-|         建設機械|   1,459.77|   1,540.97|   1,879.73|   1,433.15|   2,023.51|
-|   半導体製造装置|   1,776.71|   1,911.97|    2,153.2|   2,347.69|   1,688.84|
-|         道路車両|    1,096.2|   1,194.96|   1,214.44|   1,095.51|   1,331.02|
-|     その他重電機|   1,432.81|   1,507.37|   1,610.46|   1,339.34|   1,319.78|
-|           航空機|      645.4|      908.5|   1,061.11|     683.89|   1,085.39|
-|     原子力原動機|     209.11|     380.73|     481.86|     280.74|   1,038.34|
-|           通信機|   1,055.12|     812.85|   1,129.59|     928.73|     953.31|
-|         工作機械|     769.51|     871.83|     869.44|      827.4|     845.07|
-|         運搬機械|      746.2|     753.38|     808.24|     683.66|     811.35|
-|       風水力機械|     676.43|     740.84|     775.81|     668.04|     722.14|
-|           その他|     427.89|     840.68|   1,174.23|     655.72|     673.53|
-|     火水力原動機|     515.29|   1,624.51|   2,409.55|     833.23|     539.24|
-|       農林用機械|     480.57|     459.21|     448.86|     379.04|     520.71|
-|         内燃機関|     753.11|     549.71|     531.99|     500.02|      501.7|
-|         化学機械|     679.95|     367.98|   1,927.68|     738.38|     468.94|
-|   産業用ロボット|      383.5|     427.34|     441.94|     459.61|      454.2|
-|             船舶|     488.86|     560.73|     469.12|     147.59|     443.62|
-|     電子応用装置|     361.72|     366.75|      478.1|     541.97|     427.32|
-|       電気計測器|     345.98|     356.07|     610.44|     412.43|     402.51|
-|         鉄道車両|     601.64|     867.88|     887.86|     431.12|     371.46|
-|         冷凍機械|     257.14|     369.43|     352.88|     275.54|     328.68|
-|     金属加工機械|     202.24|     220.92|     197.57|      201.3|      229.4|
-| 合成樹脂加工機械|     187.82|     185.85|     213.76|     232.63|     212.04|
-|         繊維機械|      119.6|     120.24|     136.17|     156.19|     132.19|
-|           発電機|      54.53|      223.2|     162.28|     226.92|       64.5|
-|         鉱山機械|      12.83|      10.16|      15.33|      12.59|      16.57|
-
-
-
-
-
-***
-	
-## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MachineryOrders.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MachineryOrders.html" width="100%" height="800px"></iframe>
-
--->
