@@ -97,12 +97,11 @@ colnames(obj)[2] <-
 dailyChart[[cnt]] <- obj
 print(tail(dailyChart[[cnt]]))
 cnt <- cnt + 1
-fromYahoo <- c('^TNX','10-Yr U.S.Bond Yield')
+fromYahoo <- c('DGS10','10-Year Treasury Constant Maturity Rate')
 for(iii in seq(1,length(fromYahoo),by = 2)){
-  obj <- getSymbols(Symbols = fromYahoo[iii],auto.assign = F)
+  obj <- getSymbols(Symbols = fromYahoo[iii],auto.assign = F,src = 'FRED')
   obj <-
-    data.frame(Date = index(obj),
-               obj[,grep('close',colnames(obj),ignore.case = T)],
+    data.frame(Date = index(obj),obj,
                stringsAsFactors = F,check.names = F,row.names = NULL)
   colnames(obj)[2] <- fromYahoo[iii+1]
   dailyChart[[cnt]] <- obj
@@ -151,7 +150,7 @@ plot(obj[,1],
      xlab = '',
      ylab = '',
      pch = 20,
-     cex = 1.3,
+     cex = 1.3,ylim = c(min(obj[,2:3]),max(obj[,2:3])),
      main = paste0(colnames(obj)[2],'.',tail(obj,1)[,1],':',round(tail(obj,1)[,2],3),'\n',
                    paste0(range(obj[,1]),collapse = '~')),
      panel.first = grid(nx = NULL,
