@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ConsumptionSpending.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ConsumptionSpending';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Family Income and Expenditure Survey:Consumption Spending'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -11,38 +11,34 @@ output:
     keep_md: no
     md_extensions: -ascii_identifiers 
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet"> 
-<style>.main-container {max-width: 1000px;}</style>
-<script>
-<!-- # Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx -->
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r warning = F, error = F, message = F, echo = F}
 library(RCurl)
-importAMCC <- c('R-dygraphsFunction.r','R-dataTablesFunction.r','R-turningPoint.r','transposeDataFrame.r','R-fit.r')
-for(iii in 1:length(importAMCC)){
-  script <- getURL(
-    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",importAMCC[iii]),
-    ssl.verifypeer = F
-  )
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
   eval(parse(text = script))
 }
 ```
@@ -58,15 +54,9 @@ eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
-dataTitle <- "家計調査(家計収支編)-1世帯当たり1か月間の支出-2人以上の世帯"
+dataTitle <- "家計調査(家計収支編):1世帯当たり1か月間の支出:2人以上の世帯"
 dataTitle0 <- format(tail(expenditure[,1],1),'%Y年%m月')
 dataSource <- "総務省"
-notes <- "複数のワードで検索する際は半角スペースで区切ってください"
-Author <- "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
-# cat(paste("Title       : ", dataTitle, dataTitle0, "\n"))
-# cat(paste("Data Source : ", dataSource, "\n"))
-# cat(paste("Author      : ", Author, "\n"))
-# cat(paste("特  記      : ", notes, "\n"))
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -75,6 +65,7 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle, ':', dataTitle0)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.stat.go.jp/data/kakei/longtime/index.htm#time
 
 ***
 
@@ -82,7 +73,7 @@ options(scipen = 999)
 texDygraph <- vector()
 n1 <- 1
 bufDF <- expenditure[,c(1,2)]
-fun_fit(obj = bufDF)
+fittedDF <- fun_fit(obj = bufDF)
 fun_generateKnit(objDF = fittedDF, 
                  plotNum = n1, group = 0, colors = c('blue','red','green','orange'),
                  dygraphTitle = paste0(dataTitle,':',colnames(fittedDF)[2]))
@@ -101,7 +92,7 @@ fun_generateKnit(objDF = bufDF, barPlot = 1,
 texDygraph <- c(texDygraph, paste0('knit_expanded', n3))
 n4 <- 4
 bufDF <- expenditure[,c(1,3)]
-fun_fit(obj = bufDF)
+fittedDF <- fun_fit(obj = bufDF)
 fun_generateKnit(objDF = fittedDF[,c(1,2,3)], 
                  plotNum = n4, group = 0, colors = c('blue','red'),
                  dygraphTitle = paste0(dataTitle,':',colnames(bufDF)[2]))
@@ -111,28 +102,66 @@ texDygraph <- c(texDygraph, paste0('knit_expanded', n4))
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = expenditure, tailN = 8, dateFormat = '%Y年%m月'),
-             row.names = F,
-             align = 'r', format = 'markdown',
-             format.args = list(big.mark = ',', drop0trailing = T))
+tailN <- 5
+fun_markdownTable(obj = fun_transposeDataFrame(obj = expenditure, 
+                                               tailN = tailN, dateFormat = '%Y年%m月'))
 ```
 
 ***
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = realIncreaseDecreaseRate[,1:2], tailN = 8, dateFormat = '%Y年%m月'),
-             row.names = F,
-             align = 'r', format = 'markdown',
-             format.args = list(big.mark = ',', drop0trailing = T))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = realIncreaseDecreaseRate[,1:2], 
+                                               tailN = tailN, dateFormat = '%Y年%m月'))
 ```
 
 ***
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-knitr::kable(fun_transposeDataFrame(obj = nominalIncreaseDecreaseRate[,1:2], tailN = 8, dateFormat = '%Y年%m月'),
-             row.names = F,
-             align = 'r', format = 'markdown',
-             format.args = list(big.mark = ',', drop0trailing = T))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = nominalIncreaseDecreaseRate[,1:2], 
+                                               tailN = tailN, dateFormat = '%Y年%m月'))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- expenditure[,c(1,3,4)]
+fun_plotTimeSeries(obj = obj,chartType = 2,typeL = 'o',typeR = 'o',
+                   dateFormat = '%Y年%m月',dataSource = dataSource,
+                   needLefLab = 1,fitlwdL = 3,fitlwdR = 3,mar = c(4,5,5,5),
+                   dataTitle = dataTitle)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- expenditure[,c(1,3)]
+
+fun_outputMD(tags = '家計調査,家計収支編,消費支出,エンゲル係数,世帯人員',
+             objDF = fun_summaryByName(obj = obj,dateFormat = '%Y年%m月'),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
