@@ -104,8 +104,8 @@ objRow <- which(apply(buf1,1,function(x)(length(grep('単位',x))))!=0)
 objCol <- which(apply(buf1,2,function(x)(length(grep('単位',x))))!=0)
 
 keyWord <- ''
-objRow <- which(apply(buf1,1,function(x)(length(grep(keyWord,x))))!=0)
-objCol <- which(apply(buf1,2,function(x)(length(grep(keyWord,x))))!=0)
+objRow <- which(apply(buf1,1,function(x)(length(grep(keyWord,x,ignore.case = T))))!=0)
+objCol <- which(apply(buf1,2,function(x)(length(grep(keyWord,x,ignore.case = T))))!=0)
 
 # csv出力パート
 scriptFile <- 'R-writeCSVtoFolder.r'

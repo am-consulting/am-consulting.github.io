@@ -27,3 +27,14 @@ MonthlyProductiveCapacityAndOperatingRatio[,1] <- as.Date(MonthlyProductiveCapac
 class(MonthlyProductiveCapacityAndOperatingRatio[,1])
 colnames(MonthlyProductiveCapacityAndOperatingRatio)[-1] <-
   paste0(colnames(MonthlyProductiveCapacityAndOperatingRatio)[-1],':製造工業生産能力･稼働率指数･SA')
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = MonthlyProductiveCapacityAndOperatingRatio,dataType = 1,
+                     csvFileName = '製造工業生産能力_稼働率指数_SA')
+# csv出力パート
