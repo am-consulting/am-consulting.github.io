@@ -57,7 +57,6 @@ for(iii in seq(length(epuURL))){
       colCheck <-
         c(grep('^col[0-9]+$',colnames(buf1),ignore.case = T),which(is.na(colnames(buf1))))
       if(length(colCheck)!=0){buf1 <- buf1[,-colCheck]}
-      row.names(buf1) <- NULL
       yearCol <- grep('year',colnames(buf1),ignore.case = T)
       monthCol <- grep('month',colnames(buf1),ignore.case = T)
       Date <-
@@ -65,9 +64,6 @@ for(iii in seq(length(epuURL))){
       buf2 <-
         data.frame(Date,apply(buf1[,-c(yearCol,monthCol),drop=F],2,as.numeric),
                    stringsAsFactors = F,check.names = F,row.names = NULL)
-      colnames(buf2)[-1] <-
-        paste0(toupper(gsub('([^_]+)_.+','\\1',epuURL[iii])),':',colnames(buf2)[-1])
-      row.names(buf2) <- NULL
       dataSet <- buf2
       pattern <-'列名にyear,monthがあるパターン'
     }
@@ -96,6 +92,9 @@ for(iii in seq(length(epuURL))){
         }
       }
     }
+    colnames(dataSet)[-1] <-
+      paste0(toupper(gsub('([^_]+)_.+','\\1',epuURL[iii])),':',gsub('\\*','',colnames(dataSet)[-1]))
+    row.names(dataSet) <- NULL
     EconomicPolicyUncertaintyIndex[[cnt]] <- dataSet
     EPUList[cnt] <- paste0(iii,':',fileName[1])
     print(EPUList[cnt])
