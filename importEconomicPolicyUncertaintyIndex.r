@@ -38,6 +38,7 @@ for(iii in seq(length(epuURL))){
       buf1 <- buf0[!is.na(buf0[,1]),]
       buf1[,-objCol] <- apply(buf1[,-objCol,drop=F],2,as.numeric)
       dataSet <- buf1
+      pattern <- '列名に最初からdateがあるパターン'
     }
     # 列名が2行に分かれているパターン
     # 始めに列名を整理する
@@ -68,6 +69,7 @@ for(iii in seq(length(epuURL))){
         paste0(toupper(gsub('([^_]+)_.+','\\1',epuURL[iii])),':',colnames(buf2)[-1])
       row.names(buf2) <- NULL
       dataSet <- buf2
+      pattern <-'列名にyear,monthがあるパターン'
     }
     # 列名ではなくセルにdateがあるパターン
     keyWord <- 'date'
@@ -80,6 +82,7 @@ for(iii in seq(length(epuURL))){
         as.Date(gsub('([0-9]+)m([0-9]+)','\\1-\\2-1',gsub('\\s','',buf1[,objCol1])))
       buf2 <- buf1[!is.na(buf1[,1]),]
       dataSet <- buf2
+      pattern <- '列名ではなくセルにdateがあるパターン'
     }
     # date列はあるが列名がdateではないパターン
     if(length(grep('date',colnames(buf0),ignore.case = T))==0){
@@ -89,12 +92,14 @@ for(iii in seq(length(epuURL))){
           colnames(buf0)[1] <- 'Date'
           buf1 <- buf0[!is.na(buf0[,1]),]
           dataSet <- buf1
+          pattern <- 'date列はあるが列名がdateではないパターン'
         }
       }
     }
     EconomicPolicyUncertaintyIndex[[cnt]] <- dataSet
     EPUList[cnt] <- paste0(iii,':',fileName[1])
     print(EPUList[cnt])
+    print(pattern)
     print(tail(EconomicPolicyUncertaintyIndex[[cnt]],1))
     cnt <- cnt + 1
   }
