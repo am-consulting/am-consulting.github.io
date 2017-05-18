@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 8
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -83,7 +83,8 @@ fun_writeCSVtoFolder(objData = mergeData,dataType = 1,csvFileName = 'バフェ�
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-fun_latestResult(obj = na.omit(mergeData),objColumn = 4)
+dateFormat <- '%Y年%m月期'
+fun_latestResult(obj = na.omit(mergeData),objColumn = 4,dateFormat = dateFormat)
 dataTitle <- 
   paste0('Warren Buffett Indicator Of Japan/日本のバフェット指数:', latestResult)
 dataSource <- 
@@ -99,7 +100,46 @@ options(scipen = 999)
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='hide',fig.height=5}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+lineColor <- c('blue','red')
+par(family='Meiryo',mar=c(4,4,4,1),font.main=1,cex.main=1.1)
+ylim<-c(min(na.omit(mergeData[,c(2,3)])),max(na.omit(mergeData[,-1])))
+plot(x = mergeData[,1],y = mergeData[,2],type='h',
+     lwd=1,col=lineColor[1],ylim=ylim,xaxt='n',xlab='',ylab='',
+     panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
+     main=paste0(paste0(colnames(mergeData)[c(2,3)],collapse = '×'),'\nSource:',dataSource))
+lines(x = mergeData[,1],y = mergeData[,3],type='o',pch=20,
+      cex=0.9,col=lineColor[2],lwd=1,xaxt='n',yaxt='n',xlab='',ylab='')
+graphics::legend(x = 'topleft',
+                 col = lineColor,
+                 lty = 1,
+                 legend = colnames(mergeData)[c(2,3)],
+                 cex = 1,
+                 bty = 'n',
+                 lwd = 2)
+axis.Date(side = 1,
+          at = mergeData[,1],
+          format = dateFormat,
+          padj = 1,
+          cex.axis = 1)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- mergeData[,c(1,4)]
+n <- 1
+fun_generateKnit(objDF = obj,plotNum = n,barPlot = 0,dygraphTitle = colnames(obj)[2],quantiles = 2)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = mergeData,menuLength = 20)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 username <-
   Sys.info()['user']
 pathToFile <-
@@ -124,17 +164,20 @@ pngFile <-
 png(file = pngFile, width = 1000, height = 600)
 ##################
 par(family='Meiryo',mar=c(10,4,3,1),font.main=1)
+obj <- mergeData[,c(1,4)]
+fun_plotTimeSeries(obj = obj,dateFormat = dateFormat,chartType = 0,typeL = 'o',mar = c(4,4,5,1),dataSource = dataSource,needLefLab = 0,fitLcolor = 2,fitlwdL = 2)
+abline(h=1,lwd=2)
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_outputMD(tags = '',
-             objDF = ,
+fun_outputMD(tags = 'バフェット指数',
+             objDF = fun_transposeDataFrame(obj = na.omit(obj),dateFormat = dateFormat),
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
-             tableTitle = ,
-             tableName = )
+             tableTitle = '5期分',
+             tableName = 'バフェット指数')
 ```
 
 ***
@@ -149,67 +192,3 @@ fun_outputMD(tags = '',
   ga('send', 'pageview');
 
 </script>
-
-<!--
-
---- 
-tags : [財務省,証券売買契約] 
-published : true
----
-# 対外及び対内証券売買契約等の状況(週次・指定報告機関ベース):2017.4.2～4.8(億円):対外-株式･投資ファンド持分-ネット:829,対内-株式･投資ファンド持分-ネット:4410
-## 統計データ概要
-
-***
-
-#### 第2次安倍内閣発足(2012年12月26日)以降のネット合計(兆円)
-
-
-
-|                              Item| 第2次安倍内閣発足以降のネット合計(兆円)|
-|---------------------------------:|---------------------------------------:|
-|              対外-中長期債-ネット|                                 26.0443|
-| 対内-株式･投資ファンド持分-ネット|                                 11.4873|
-|              対内-中長期債-ネット|                                 18.3284|
-
-
-
-***
-
-#### 原数値(単位:億円)
-
-
-|                              対象| 2017.3.19～3.25| 2017.3.26～4.1| 2017.4.2～4.8|
-|---------------------------------:|---------------:|--------------:|-------------:|
-|   対外-株式･投資ファンド持分-取得|          10,334|         15,264|        11,356|
-|   対外-株式･投資ファンド持分-処分|          13,274|         11,910|        10,528|
-| 対外-株式･投資ファンド持分-ネット|          -2,940|          3,354|           829|
-|                対外-中長期債-取得|          69,545|         79,469|        81,184|
-|                対外-中長期債-処分|          71,013|         68,471|       102,952|
-|              対外-中長期債-ネット|          -1,468|         10,998|       -21,768|
-|                  対外-小計-ネット|          -4,408|         14,352|       -20,939|
-|                  対外-短期債-取得|           7,626|         11,908|         9,750|
-|                  対外-短期債-処分|           7,815|         11,992|         8,559|
-|                対外-短期債-ネット|            -188|            -84|         1,191|
-|                  対外-合計-ネット|          -4,596|         14,268|       -19,748|
-|   対内-株式･投資ファンド持分-取得|          77,419|        100,832|       121,668|
-|   対内-株式･投資ファンド持分-処分|          84,962|         94,988|       117,258|
-| 対内-株式･投資ファンド持分-ネット|          -7,543|          5,845|         4,410|
-|                対内-中長期債-取得|          11,287|         18,000|        21,136|
-|                対内-中長期債-処分|          30,524|          9,100|        15,268|
-|              対内-中長期債-ネット|         -19,237|          8,900|         5,868|
-|                  対内-小計-ネット|         -26,780|         14,745|        10,278|
-|                  対内-短期債-取得|          34,692|         12,124|        64,583|
-|                  対内-短期債-処分|          50,098|         42,283|        45,279|
-|                対内-短期債-ネット|         -15,407|        -30,159|        19,303|
-|                  対内-合計-ネット|         -42,186|        -15,415|        29,581|
-
-
-
-
-***
-	
-## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html" width="100%" height="800px"></iframe>
-
--->
