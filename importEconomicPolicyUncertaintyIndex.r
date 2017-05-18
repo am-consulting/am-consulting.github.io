@@ -1,3 +1,12 @@
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+# csv出力パート
 library(rvest);library(XLConnect)
 username <-
   Sys.info()['user']
@@ -100,6 +109,12 @@ for(iii in seq(length(epuURL))){
     print(EPUList[cnt])
     print(pattern)
     print(tail(EconomicPolicyUncertaintyIndex[[cnt]],1))
+    fun_writeCSVtoFolder(objData = EconomicPolicyUncertaintyIndex[[cnt]],
+                         dataType = 1,
+                         csvFileName = paste0('EPU_',gsub('(.+)\\.xlsx','\\1',fileName[1])))
+    pathOutput <-
+      paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+    setwd(pathOutput)
     cnt <- cnt + 1
   }
 }
