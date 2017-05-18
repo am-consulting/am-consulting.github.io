@@ -50,7 +50,6 @@ script <-
     ssl.verifypeer = FALSE
   )
 eval(parse(text = script))
-colnames(origData)[-1] <- namesJ
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -62,7 +61,7 @@ origData[,2] <- gsub('．','.',origData[,2])
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
-objColumn <- grep('持分-ネット',colnames(origData))
+objColumn <- grep('持分:ネット',colnames(origData))
 latestResult <- 
   paste0(tail(origData[,2],1),
          '(億円):',
@@ -118,8 +117,16 @@ fun_generateKnit(objDF = obj,plotNum = n,barPlot = 1,dygraphTitle = colnames(obj
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
 
+- 基本統計量
+
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-apply(specificDF[,c(2,3,4)],2,summary)
+cat('期間:',paste0(range(specificDF[,1]),collapse = '~'))
+cat('\n\n')
+apply(specificDF[,2,drop=F],2,summary)
+cat('\n\n')
+apply(specificDF[,3,drop=F],2,summary)
+cat('\n\n')
+apply(specificDF[,4,drop=F],2,summary)
 ```
 
 ***
@@ -193,17 +200,25 @@ fun_dataTable(obj = tableStat,
                              head(origData[,2],1), ' ~ ', tail(origData[,2],1)))
 ```
 
+***
 #### 株式･投資ファンド持分及び合計の基本統計量
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 statData <- origData[,c(1,2,5,8,13,16,19,24)]
-cat(paste0(head(statData[,2],1),' - ',tail(statData[,2],1),'\n'))
-apply(statData[,c(3,5,6,8)],2,summary)
+cat('期間:',paste0(range(statData[,2]),collapse = ' - '))
+cat('\n\n')
+apply(statData[,3,drop=F],2,summary)
+cat('\n\n')
+apply(statData[,5,drop=F],2,summary)
+cat('\n\n')
+apply(statData[,6,drop=F],2,summary)
+cat('\n\n')
+apply(statData[,8,drop=F],2,summary)
 ```
 
-
-#### 直近`r tailN <- 5;tailN`週分
-##### 原数値(億円)
+***
+#### 直近`r tailN <- 3;tailN`週分
+- 原数値(億円)
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 buf <- tail(origData, tailN)
@@ -218,7 +233,7 @@ fun_markdownTable(obj = buf)
 ```
 
 ***
-##### 前週差(億円)
+- 前週差(億円)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 WoW <- 
@@ -257,6 +272,38 @@ fun_markdownTable(obj = buf)
 # fun_updateURLcsv()
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide',fig.height=5}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+par(family='Meiryo',mar=c(10,4,3,1),font.main=1)
+obj <- tail(origData[,c(2,16)],4*6)
+obj$Col <- ifelse(0<=obj[,2],'blue','red')
+barplot(height = obj[,2],names.arg = obj[,1],las=2,
+        col=obj$Col,main = paste0(colnames(obj)[2],'(億円)'))
+dev.off()
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 pmABE <- 
   subset(specificDFall,as.Date('2012-12-26') <= specificDFall[,1])
@@ -273,6 +320,8 @@ colnames(pmABE)[2] <-
 fun_outputMD(tags = '財務省,証券売買契約',
              objDF = pmABE,
              htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
              tableTitle = paste0('第2次安倍内閣発足以降のネット合計(兆円)'),
              tableName = '第2次安倍内閣発足以降のネット合計(兆円)')
 ```
