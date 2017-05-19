@@ -31,3 +31,5 @@ R-outputMD.r
 R-plot4charts.r
 R-Ichimokukinkou.r
 R-tsDataByYear.r
+R-meanS.r
+R-calcCCF.r
