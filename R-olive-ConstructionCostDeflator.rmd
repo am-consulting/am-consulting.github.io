@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ConstructionCostDeflator.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ConstructionCostDeflator';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Construction Cost Deflator In Japan'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -55,10 +55,10 @@ eval(parse(text = script))
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
-fun_makeDiffRatioTable(obj = ConstructionCostDeflator,lag = 1)
-fun_latestResult(obj = diffRatioDF,dateFormat = dateFormat)
+fun_latestResult(obj = fun_makeDiffRatioTable(obj = ConstructionCostDeflator,lag = 1),
+                 dateFormat = dateFormat)
 dataTitle <- 
-  paste0("建設工事費デフレーター:住宅、倉庫、事務所、工場、学校:",latestResult)
+  paste0("建設工事費デフレーター:住宅、倉庫、事務所、工場、学校:前月比(%)",latestResult)
 dataSource <- "国土交通省"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -68,34 +68,63 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.mlit.go.jp/sogoseisaku/jouhouka/sosei_jouhouka_tk4_000112.html
 
 ***
 
-#### `r ccc <- 2;colnames(ConstructionCostDeflator)[ccc]`の時系列推移と基本統計量
-- `r paste0(format(range(ConstructionCostDeflator[,1]),dateFormat),collapse = '~')`
+#### 時系列推移と基本統計量
 
-```{r,warning=F,error=F,message=F,echo=F,results='hold'}
-summary(ConstructionCostDeflator[,2])
+```{r warning=F, error=F, message=F, echo=F,results='asis',fig.height=5}
+for(ccc in 2:ncol(ConstructionCostDeflator)){
+  obj <- na.omit(ConstructionCostDeflator[,c(1,ccc)])
+  fun_plotTimeSeries(obj = obj,dateFormat = dateFormat,chartType = 0,
+                     mar = c(4,4,5,1),typeL = 'o',dataSource = dataSource,
+                     needLefLab = 0,fitLcolor = 2,fitlwdL = 2)
+  fun_markdownTable(obj = cbind(apply(obj[,2,drop=F],2,summary)),rownames = T)
+  cat('<hr>')
+}
 ```
-
-```{r warning=F, error=F, message=F, echo=F}
-n1 <- 1
-bufDF <- ConstructionCostDeflator[,c(1,2)]
-fun_generateKnit(objDF = bufDF, 
-                 plotNum = n1, 
-                 group = 0, 
-                 colors = c('blue','red','green'),
-                 quantiles = 2,
-                 dygraphTitle = paste0(gsub('建設工事費デフレーター\\(2005年度基準\\)-', 
-                                            '', 
-                                            colnames(bufDF)[-1]), 
-                                       collapse = ' × '))
-```
-
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)))), collapse = '\n')`
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
 fun_dataTable(obj = ConstructionCostDeflator, dateFormat = dateFormat)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- na.omit(ConstructionCostDeflator[,c(1,2)])
+fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,12*5,12*3,12))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '建設工事費デフレーター',
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
 ```
 
 ***
