@@ -175,14 +175,54 @@ fun_dataTable(obj = tail(numberOfForeignVisitorsToJapan,12*3),
               filter = 'none')
 ```
 
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+par(mfrow=c(1,1))
+obj <- numberOfForeignVisitorsToJapan[,c(1,2)]
+colnames(obj)[2] <- paste0('訪日外客数(単位:万人):',colnames(obj)[2])
+mergeData <- 
+  merge(obj,USDJPYmonthly,by='Date')
+fun_plotTimeSeries(obj = mergeData,chartType = 2,mar = c(4,5,5,5),
+                   dateFormat = dateFormat,dataSource = dataSource)
+cat('<hr>')
+dammy <- fun_CCF(objDF = mergeData,dateFormat = dateFormat)
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-objColumn <- 2
-obj <-
-  numberOfForeignVisitorsToJapan[,c(1,objColumn)]
-fun_summaryByName(obj = obj)
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,12*5,12*3,12*1))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '日本政府観光局(JNTO),訪日外客数',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
              tableTitle = paste0('国籍/月別 訪日外客数(単位:万人):',colnames(obj)[2]))
 ```
 
