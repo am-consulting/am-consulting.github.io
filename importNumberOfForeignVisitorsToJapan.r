@@ -36,3 +36,14 @@ numberOfForeignVisitorsToJapan[,1] <- as.Date(numberOfForeignVisitorsToJapan[,1]
 numberOfForeignVisitorsToJapan[,-1] <- apply(numberOfForeignVisitorsToJapan[,-1],2,as.numeric)
 class(numberOfForeignVisitorsToJapan[,1])
 class(numberOfForeignVisitorsToJapan[,ncol(numberOfForeignVisitorsToJapan)])
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = numberOfForeignVisitorsToJapan,dataType = 1,
+                     csvFileName = '訪日外客数(単位_人)')
+# csv出力パート
