@@ -32,4 +32,14 @@ buf1[,1] <- as.Date(paste0(buf1[,1],'-',buf1[,2],'-1'))
 buf1 <- na.omit(buf1[,-2])
 colnames(buf1)[1] <- 'Date'
 buf1[,-1] <- apply(buf1[,-1],2,as.numeric)
-assign('ConstructionCostDeflator', buf1, envir = .GlobalEnv)
+assign('ConstructionCostDeflator', buf1)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = buf1,dataType = 1,csvFileName = '建設工事費デフレーター')
+# csv出力パート
