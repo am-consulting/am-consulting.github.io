@@ -16,4 +16,4 @@ colnames(tmp1)[-1] <-
   paste0('日経平均株価:',colnames(tmp1)[-1])
 colnames(tmp1)[1] <-
   'Date'
-assign('nikkeiMonthly', tmp1, envir = .GlobalEnv)
+assign('nikkeiMonthly', tmp1)
