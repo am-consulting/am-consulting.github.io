@@ -3,7 +3,7 @@ fun_CCF <-
     windowsFonts(Meiryo = windowsFont("Meiryo"))
     fun_plotCCF <-
       function(){
-        par(mar = c(5,5,6,1),family = 'Meiryo')
+        par(mar = c(5,5,6,1),family = 'Meiryo',cex.main = 1)
         ccfResult <-
           ccf(x = obj01,y = obj02,
               lag.max = lagmax,na.action = na.omit,
@@ -18,11 +18,13 @@ fun_CCF <-
     obj02 <- obj[,y2]
     mainTxt <- 'Level'
     resultLevel <- fun_plotCCF()
+    cat('<hr>')
     objDiff <- fun_makeDiffTable(obj = obj,lag = 1,diff = 1)
     obj01 <- objDiff[,y1]
     obj02 <- objDiff[,y2]
     mainTxt <- '1st Difference'
     result1stDiff <- fun_plotCCF()
+    cat('<hr>')
     obj01 <- rank(x = obj[,y1],ties.method = 'average')
     obj02 <- rank(x = obj[,y2],ties.method = 'average')
     mainTxt <- 'Spearman\'s rank correlation coefficient'
