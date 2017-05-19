@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-GDPGapInJapan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'GDPGapInJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'GDP Gap In Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -44,7 +44,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-fileName <- '1632gap.xls'
+fileName <- '1642gap.xls'
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -95,7 +95,20 @@ colnames(buf1)[1] <-
 buf2 <- buf1[,c(1,2)]
 buf2[,-1] <-
   as.vector(apply(buf2[,-1,drop=F],2,as.numeric))
-assign('gdpGAP',buf2,envir = .GlobalEnv)
+assign('gdpGAP',buf2)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = gdpGAP,dataType = 1,csvFileName = '四半期GDPギャップ')
+# csv出力パート
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -130,10 +143,12 @@ cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
+- 基本統計量
+
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 paste0(format(range(gdpGAP[,1]),dateFormat),collapse = ' ~ ')
-cat('\n\n')
-summary(gdpGAP[,2])
+cat('\n')
+apply(gdpGAP[,2,drop=F],2,summary)
 ```
 
 ***
@@ -149,7 +164,45 @@ fun_turningPoint(obj = gdpGAP,
                  dateFormat = dateFormat,
                  unit = '期',
                  judge=c('マイナスギャップ','プラスギャップ'))
-cat(paste0('<h5>',texInclude0,'</h5>'))
+cat(paste0('<h6>',texInclude0,'</h6>'))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plot4charts(obj = gdpGAP,dateFormat = dateFormat,tailN = c(10^10,4*10,4*5,4*3))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '建設工事費デフレーター',
+             objDF = fun_transposeDataFrame(obj = gdpGAP,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
+             tableTitle = '直近5期',
+             tableName = colnames(gdpGAP)[2])
 ```
 
 ***
