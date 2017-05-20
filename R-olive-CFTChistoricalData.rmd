@@ -82,16 +82,16 @@ for(iii in seq(length(cftc))){
     cat(paste0('- ID:',iii,'. ',obj[,2],'\n'))
     fun_markdownTable(obj = obj[,-2])
     cat('\n<hr>\n')
-    MarketName[cnt] <- iii
+    MarketName[cnt] <- obj[,2]
     cnt <- cnt + 1
   }
 }
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-fun_plot <- function(objCol){
+fun_plot <- function(obj0,objCol){
   lineColor <- c('blue','red')
-  par(mfrow=c(1,2),oma=c(0,0,3,0),family='Meiryo',font.main=1,mar=c(4,3,3,1),cex.main=1.1)
+  par(mfrow=c(1,2),oma=c(0,0,3,0),family='Meiryo',font.main=1,mar=c(4,3,3,2),cex.main=1.1)
   obj <- na.omit(obj0[,c(1,objCol)])
   ylim <- c(min(obj[,2:3]),max(obj[,2:3]))
   plot(x = obj[,1],y = obj[,2],type = 'o',pch = 20,cex=1.3,ylim = ylim,xaxt='n',xlab='',ylab = '',col=lineColor[1],panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
@@ -110,16 +110,30 @@ fun_plot <- function(objCol){
 #### Time Series Chart
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-objData <- c(20,100,229,230,239,240,241,256,257)
-for(iii in seq(length(objData))){
-  obj0 <- cftc[[objData[iii]]]
-  cat(paste0('- ',unique(obj0$Name),'. Unit:',unique(obj0$Unit)))
-  # Noncommercial
-  objCol <- c(2,3,7)
-  fun_plot(objCol = objCol)
-  # Commercial
-  objCol <- c(4,5,8)
-  fun_plot(objCol = objCol)
+objData <-
+  c('U.S. TREASURY BONDS',
+    '10-YEAR U.S. TREASURY NOTES',
+    'JAPANESE YEN',
+    'U.S. DOLLAR INDEX',
+    'VIX FUTURES',
+    'SOUTH AFRICAN RAND',
+    'DJIA Consolidated',
+    'NIKKEI STOCK AVERAGE',
+    'NIKKEI STOCK AVERAGE YEN DENOM')
+for(iii in seq(length(cftc))){
+  if((as.Date(Sys.Date())-14)<=tail(cftc[[iii]],1)[1,1]){
+    obj0 <- cftc[[iii]]
+    if(length(grep(paste0(objData,collapse = '|'),obj0$Name,ignore.case = T))!=0){
+      if(length(grep('japanese yen',unique(obj0$Name),ignore.case = T))){JPY <- iii}
+      cat(paste0('- ',unique(obj0$Name),'. Unit:',unique(obj0$Unit)))
+      # Noncommercial
+      objCol <- c(2,3,7)
+      fun_plot(obj0 = obj0,objCol = objCol)
+      # Commercial
+      objCol <- c(4,5,8)
+      fun_plot(obj0 = obj0,objCol = objCol)
+    }
+  }
 }
 ```
 
@@ -147,14 +161,14 @@ pngFile <-
   paste0(htmlName, ".png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
-obj <- na.omit(cftc[[229]])
+obj <- na.omit(cftc[[JPY]])
 colnames(obj) <- paste0(colnames(obj),':',unique(obj$Name))
 fun_plot4charts(obj = obj[,c(1,7)],tailN = c(10^10,5*12,5*6,5*3))
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-obj <- na.omit(cftc[[229]][,c(1,6,7,8,9)])
+obj <- na.omit(cftc[[JPY]][,c(1,6,7,8,9)])
 fun_outputMD(tags = 'CFTC,Futures',
              objDF = tail(obj[,c(1,3,4)],5),
              htmlName = htmlName,
