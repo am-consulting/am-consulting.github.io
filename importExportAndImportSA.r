@@ -26,4 +26,14 @@ if(length(grep('百万円',notes01))!=0){
 }else{
   buf2 <- 0
 }
-assign('ExportAndImportSA',buf2,envir = .GlobalEnv)
+assign('ExportAndImportSA',buf2)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = buf2,dataType = 1,csvFileName = '財務省貿易統計_輸出及び輸入_季節調整値_兆円')
+# csv出力パート
