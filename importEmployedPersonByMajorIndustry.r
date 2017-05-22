@@ -5,11 +5,9 @@ pathOutput <-
   paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 fileName <- 'lt01-c30.xls'
-if(!file.exists(paste0(pathOutput, fileName))) {
-  download.file(url = paste0('http://www.stat.go.jp/data/roudou/longtime/zuhyou/',fileName),
-                destfile = fileName,
-                mode = 'wb')
-}
+download.file(url = paste0('http://www.stat.go.jp/data/roudou/longtime/zuhyou/',fileName),
+              destfile = fileName,
+              mode = 'wb')
 sheetNo <- 1
 buf0 <-
   XLConnect::readWorksheetFromFile(file = paste0(pathOutput, fileName),
@@ -42,7 +40,18 @@ buf1 <-
              figureDF[,grep('総数',colnames(figureDF)):ncol(figureDF)],check.names = F,stringsAsFactors = F)
 buf1[,-1] <-
   apply(buf1[,-1],2,function(x)as.numeric(gsub('<|>|\\(|\\)','',x)))
-assign('EmployedPersonByMajorIndustry',buf1,envir = .GlobalEnv)
+assign('EmployedPersonByMajorIndustry',buf1)
 sheetTtile <- zen2han(buf0[1,5])
 figureType <- zen2han(buf0[4,5])
 figureUnit <- zen2han(gsub('[a-z]|\\s','',buf0[5,5],ignore.case = T))
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = EmployedPersonByMajorIndustry,dataType = 1,
+                     csvFileName = '第12回改定日本標準産業分類別就業者')
+# csv出力パート

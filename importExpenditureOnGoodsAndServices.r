@@ -46,4 +46,15 @@ buf4 <-
 objColumn <- c(1:7,52:ncol(buf4))
 colnames(buf4)[-objColumn] <-
   paste0(substring(colnames(buf4)[-objColumn],1,2),':',substring(colnames(buf4)[-objColumn],3))
-assign('ExpenditureOnGoodsAndServices', buf4, envir = .GlobalEnv)
+assign('ExpenditureOnGoodsAndServices', buf4)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = ExpenditureOnGoodsAndServices,dataType = 1,
+                     csvFileName = '家計消費状況調査_支出金額_2人以上の世帯のうち勤労者世帯')
+# csv出力パート
