@@ -2,24 +2,30 @@
 library(XLConnect)
 library(Nippon)
 library(lubridate)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+# csv出力パート
 username <- Sys.info()['user']
 pathOutput <-
   paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileName <- 'b2010_zsmj.xls'
-if (!file.exists(paste0(pathOutput, fileName))) {
-  download.file(
-    paste0(
-      'http://www.meti.go.jp/statistics/tyo/zenkatu/result-2/xls/',
-      fileName
-    ),
-    fileName,
-    mode = "wb"
-  )
-}
+fileName <- c('b2010_zsmj.xls','b2010_zomj.xls')
+for(fff in 1:2){
+download.file(
+  paste0(
+    'http://www.meti.go.jp/statistics/tyo/zenkatu/result-2/xls/',
+    fileName[fff]
+  ),
+  fileName[fff],mode = "wb")
 buf0 <-
   readWorksheetFromFile(
-    paste0(pathOutput, fileName),
+    paste0(pathOutput, fileName[fff]),
     sheet = 1,
     check.names = F,
     header = F
@@ -43,3 +49,11 @@ allIndustryActivity <- buf3
 allIndustryActivity[, 1] <- as.Date(allIndustryActivity[, 1])
 class(allIndustryActivity[, 1])
 colnames(allIndustryActivity)
+switch(fff,
+       assign('allIndustryActivity',allIndustryActivity),
+       assign('allIndustryActivityNSA',allIndustryActivity))
+}
+# csv出力パート
+fun_writeCSVtoFolder(objData = allIndustryActivity,dataType = 1,csvFileName = '全産業活動指数_季節調整値')
+fun_writeCSVtoFolder(objData = allIndustryActivityNSA,dataType = 1,csvFileName = '全産業活動指数_原数値')
+# csv出力パート
