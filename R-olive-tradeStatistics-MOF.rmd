@@ -63,7 +63,7 @@ library(knitr)
 <!-- 前月データ取得 -->
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 2
+targetMonth <- 3
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -86,7 +86,7 @@ lastMonthBuf <- buf0
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 3 
+targetMonth <- 4
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -130,7 +130,8 @@ fun_markdownTable(table01,rownames = T)
 ```
 
 ***
-###### (参考)
+- (参考)
+
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 cat(paste0('<h4>',lastMonthBuf$sogakutsuki$title),'</h4>\n')
 cat('<h5>総額(原値,兆円)</h5>\n')
@@ -230,14 +231,45 @@ fun_markdownTable(obj = bufTable)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <-
+  Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
+setwd(pathOutputTOcsv)
+getwd()
+par(family = 'Meiryo')
+pngFile <-
+  paste0(htmlName, ".png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+fun_plotTimeSeries(obj = ExportAndImportSA,typeL = 'o',typeR = 'o',chartType = 1,dateFormat = '%Y-%m',
+                   dataSource = dataSource,dataTitle = dataTitle,mar = c(4,4,5,1),needLefLab = 0,
+                   fitlwdL = 2,fitlwdR = 2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 dateFormat <- '%Y年%m月'
 objColumn <- 2
 obj <-
   ExportAndImportSA[,c(1,objColumn)]
-fun_summaryByName(obj = obj)
 fun_outputMD(tags = '財務省,貿易統計',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
+             image = 1,
+             dataTitle = dataTitle,
              tableTitle = paste0('輸出額(兆円):季節調整済値',colnames(obj)[2]))
 ```
 
