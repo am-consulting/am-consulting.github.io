@@ -1,8 +1,8 @@
 # ラポール･ジャパンデータパースコード
 library(Nippon)
-dataSet0 <-
-  read.table("clipboard", header = T,sep = "\t", stringsAsFactor = F,
-             na.strings = '',check.names = F,row.names = NULL)
+# dataSet0 <-
+#   read.table("clipboard", header = T,sep = "\t", stringsAsFactor = F,
+#              na.strings = '',check.names = F,row.names = NULL)
 dataSet <- dataSet0
 dataSet[,1] <- sapply(dataSet[,1],zen2han)
 dataSet[,2] <- sapply(dataSet[,2],zen2han)
