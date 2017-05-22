@@ -39,5 +39,6 @@ devtools::install_github("lionel-/gghorizon")
 devtools::install_github("animalito/rformat")
 devtools::install_github("am-consulting/performanceAsLeader")
 devtools::install_github("ellisp/ggseas/pkg")
-devtools::install_github("rstudio/addinexamples", type = "source")
+devtools::install_github("rstudio/addinexamples",type = "source")
+devtools::install_github("hrbrmstr/xmlview")
 ```
