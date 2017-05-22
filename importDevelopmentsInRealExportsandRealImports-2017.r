@@ -69,7 +69,18 @@ allData <-
         by = 'Date',
         all = T)
 write.table(allData, "clipboard-16384", sep = "\t", row.names = F, col.names = T, quote = F)
-assign('developmentsInRealExportsAndRealImports',allData,envir = .GlobalEnv)
+assign('developmentsInRealExportsAndRealImports',allData)
 }else{
-  assign('developmentsInRealExportsAndRealImports',RealExportsAndRealImports01,envir = .GlobalEnv)
+  assign('developmentsInRealExportsAndRealImports',RealExportsAndRealImports01)
 }
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = developmentsInRealExportsAndRealImports,dataType = 1,
+                     csvFileName = '実質輸出入の動向')
+# csv出力パート
