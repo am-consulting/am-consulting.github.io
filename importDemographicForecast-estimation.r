@@ -138,18 +138,30 @@ TotalMaleProvisional[,-1] <-
 TotalFemaleProvisional[,-1] <-
   apply(TotalFemaleProvisional[,-1],2,function(x)as.numeric(gsub('\\s','',x)))
 # csvへの書き出し
-fileName <-'defaultPath.csv'
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-buf000 <-
-  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf000[2,1],'csv/')
-setwd(pathOutputTOcsv)
-write.csv(x = TotalBothProvisional, file = paste0('TotalBothProvisional','.csv'),
-          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
-write.csv(x = TotalMaleProvisional, file = paste0('TotalMaleProvisional','.csv'),
-          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
-write.csv(x = TotalFemaleProvisional, file = paste0('TotalFemaleProvisional','.csv'),
-          quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+# fileName <-'defaultPath.csv'
+# pathToFile <-
+#   paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+# setwd(pathToFile)
+# buf000 <-
+#   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
+# pathOutputTOcsv <-
+#   paste0("C:/Users/", username, buf000[2,1],'csv/')
+# setwd(pathOutputTOcsv)
+# write.csv(x = TotalBothProvisional, file = paste0('TotalBothProvisional','.csv'),
+#           quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+# write.csv(x = TotalMaleProvisional, file = paste0('TotalMaleProvisional','.csv'),
+#           quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+# write.csv(x = TotalFemaleProvisional, file = paste0('TotalFemaleProvisional','.csv'),
+#           quote = F, row.names = F, append = F, fileEncoding = 'utf8')
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = TotalBothProvisional,dataType = 1,csvFileName = '人口推計_男女計_概算値_千人')
+fun_writeCSVtoFolder(objData = TotalMaleProvisional,dataType = 1,csvFileName = '人口推計_男_概算値_千人')
+fun_writeCSVtoFolder(objData = TotalFemaleProvisional,dataType = 1,csvFileName = '人口推計_女_概算値_千人')
+# csv出力パート
