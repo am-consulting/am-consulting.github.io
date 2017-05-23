@@ -46,13 +46,16 @@ for(iii in 1:nrow(functionList)){
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 importIndex <- 
   c('importMonetarybaseOfJapan-2017.r','importMoneyStock-2017.r',
-    'importExchangeRateUSDJPY.r',
-    'importAllIndustryActivity.r','importConstructionCostDeflator.r','importConsumerConfidenceSurvey.r',
-    'importConsumptionActivityIndex.r','importConsumptionSpending.r','importCurrentSurveyOfCommerce.r',
-    'importDevelopmentsInRealExportsandRealImports-2017.r','importEmployedPersonByMajorIndustry.r',
+    'importExchangeRateUSDJPY.r','importAllIndustryActivity.r',
+    'importProducerPriceIndex-2017.r','importConstructionCostDeflator.r',
+    'importConsumerConfidenceSurvey.r',
+    'importConsumptionActivityIndex.r','importConsumptionSpending.r',
+    'importCurrentSurveyOfCommerce.r',
+    'importDevelopmentsInRealExportsandRealImports-2017.r',
+    'importEmployedPersonByMajorIndustry.r',
     'importExpenditureOnGoodsAndServices.r',
     'importExportAndImportSA.r')
-for(iii in 1:3){ # seq(length(importIndex))
+for(iii in 1:5){ # seq(length(importIndex))
   script <-
     RCurl::getURL(
       paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',
@@ -64,7 +67,7 @@ for(iii in 1:3){ # seq(length(importIndex))
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 importIndex <-
-  c('consumerPriceIndexofJapan.r')
+  c('consumerPriceIndexofJapan.r','laborForceSurveyofJapan.r')
 for(iii in seq(length(importIndex))){
   script <-
     RCurl::getURL(
@@ -94,7 +97,6 @@ dateFormat <- '%Y-%m'
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 fun_compareWithMB <- function(obj,dateFormat = dateFormat){
-cat('対',colnames(obj)[3],'\n')
 par(mfrow = c(2,2),oma = c(0,0,5,0),family = 'Meiryo',
     font.main = 1,
     cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1)
@@ -139,6 +141,9 @@ qqline(Residuals,col='red',lwd=2)
 mtext(text = paste0('対 ',colnames(obj)[3],'\n期間:',
                    paste0(format(range(obj[,1]),dateFormat),collapse = '~')),
       side = 3,outer = T,cex = 1,line = 1)
+cat('対',colnames(obj)[3],'\n')
+cat('対象期間:',paste0(format(range(obj[,1]),dateFormat),collapse = ' ~ '),'\n')
+cat('(注意)残差の正規性如何にかかわらず統計検定結果を機械的に表示しています。\n')
 cat('*********************************************************************\n')
 cat('x:',colnames(obj)[2],'\n')
 cat('y:',colnames(obj)[3],'\n')
@@ -146,17 +151,17 @@ cat('*********************************************************************\n')
 cat('線形回帰の結果\n')
 print(summary(resultLM))
 cat('*********************************************************************\n')
-cat('Slopeの95%信頼区間\n(注意)残差の正規性如何にかかわらず95%信頼区間を機械的に表示しています。\n')
+cat('Slopeの95%信頼区間\n\n')
 print(confint(resultLM,'x',level = 0.95))
 cat('*********************************************************************\n')
-cat('残差の正規姓検定\nNull hypothesis:Sample came from a normally distributed population.\n')
+cat('残差の正規姓検定.Null hypothesis:Sample came from a normally distributed population.\n')
 print(shapiro.test(Residuals))
 cat('*********************************************************************\n')
-cat('共和分検定\nNull hypothesis:Not cointegrated.\n')
+cat('共和分検定.Null hypothesis:Not cointegrated.\n')
 `x ~ y` <- obj[,c(2,3)]
 print(tseries::po.test(x = `x ~ y`))
 cat('*********************************************************************\n')
-cat('単位根検定\nNull hypothesis:Has a unit root.\n\n')
+cat('単位根検定.Null hypothesis:Has a unit root.\n\n')
 print(apply(obj[,c(2,3)],2,adf.test))
 cat('*********************************************************************\n')
 cat('ダービン・ワトソン検定\n')
@@ -170,9 +175,9 @@ return(resultLM)
 n <- 1
 mergeData <- 
   merge(monetaryBase_Japan,MoneyStock,by='Date')
-objCol <- c(2,10)
+objCol <- 10
 obj <- 
-  tail(mergeData[,c(1,objCol)],tailN)
+  tail(mergeData[,c(1,2,objCol)],tailN)
 tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
 resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
@@ -182,13 +187,15 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 n <- 2
+bufCol <- 2
 buf <- fun_makeDiffRatioTable(obj = USDJPYmonthly,lag = 12)
+buf <- buf[,c(1,bufCol)]
 colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
 mergeData <- 
   merge(monetaryBase_Japan,buf,by='Date')
-objCol <- c(2,10)
+objCol <- 10
 obj <- 
-  tail(mergeData[,c(1,objCol)],tailN)
+  tail(mergeData[,c(1,2,objCol)],tailN)
 tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
 resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
@@ -198,13 +205,15 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 n <- 3
+bufCol <- 2
 buf <- fun_makeDiffRatioTable(obj = nikkeiMonthly,lag = 12)
+buf <- buf[,c(1,bufCol)]
 colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
 mergeData <- 
   merge(monetaryBase_Japan,buf,by='Date')
-objCol <- c(2,10)
+objCol <- 10
 obj <- 
-  tail(mergeData[,c(1,objCol)],tailN)
+  tail(mergeData[,c(1,2,objCol)],tailN)
 tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
 resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
@@ -216,9 +225,59 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 n <- 4
 mergeData <- 
   merge(monetaryBase_Japan,consumerPriceIndexofJapan,by='Date')
-objCol <- c(2,10)
+objCol <- 10
 obj <- 
-  tail(mergeData[,c(1,objCol)],tailN)
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- 5
+bufCol <- 2
+buf <- fun_makeDiffRatioTable(obj = allIndustryActivityNSA,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- 6
+bufCol <- 11
+buf <- fun_makeDiffRatioTable(obj = laborforcesurveyNSA,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- 7
+mergeData <- 
+  merge(monetaryBase_Japan,ProducerPriceIndex,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
 tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
 resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
