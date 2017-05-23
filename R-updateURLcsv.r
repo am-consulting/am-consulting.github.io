@@ -38,12 +38,12 @@ fun_updateURLcsv <- function(){
     as.POSIXct(sapply(fileList,function(x)file.info(path = x)$mtime),origin = "1970-01-01")
   buf$TimeStamp <-
     timeStamp
-  buf <-
-    buf[order(buf$TimeStamp,decreasing = T),]
-  buf$`No.` <- seq(nrow(buf))
   if(exists('htmlName')){
     buf[grep(paste0('am-consulting.co.jp-',htmlName,'.html'),buf[,2]),4] <- Sys.time()
   }
+  buf <-
+    buf[order(buf$TimeStamp,decreasing = T),]
+  buf$`No.` <- seq(nrow(buf))
   setwd(pathOutput)
   write.csv(x = buf[,c(1,2,4)],
             file = "urlList.csv",
