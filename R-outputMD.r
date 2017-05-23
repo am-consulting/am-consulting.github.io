@@ -36,12 +36,20 @@ published : true
 ---\n\n'),file = mdFile,append = T)
   cat(paste0('# ',dataTitle,'\n\n'),
       file = mdFile,append = T)
-  if(image!=0){
+  if(image1!=0){
     cat(paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                htmlName,
-               '.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+               '1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
                htmlName,
-               '.png" width="100%" /></a>\n\n'),
+               '1.png" width="100%" /></a>\n\n'),
+        file = mdFile,append = T)
+  }
+  if(image2!=0){
+    cat(paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
+               htmlName,
+               '2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+               htmlName,
+               '2.png" width="100%" /></a>\n\n'),
         file = mdFile,append = T)
   }
   # cat('\n\n<style>table#amcc td {text-align:right;} </style>\n\n',
