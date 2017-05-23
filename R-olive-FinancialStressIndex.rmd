@@ -41,7 +41,6 @@ for(iii in 1:nrow(functionList)){
            ssl.verifypeer = F)
   eval(parse(text = script))
 }
-fun_updateURLcsv()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -160,6 +159,7 @@ fun_outputMD(tags = 'Financial Stress Index',
              dataTitle = dataTitle,
              tableTitle = 'Latest 5 weeks',
              tableName = colnames(dataSet)[2])
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
