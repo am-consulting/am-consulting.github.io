@@ -47,7 +47,8 @@ for(iii in 1:nrow(functionList)){
 importIndex <- 
   c('importMonetarybaseOfJapan-2017.r','importMoneyStock-2017.r',
     'importExchangeRateUSDJPY.r','importAllIndustryActivity.r',
-    'importProducerPriceIndex-2017.r','importConstructionCostDeflator.r',
+    'importProducerPriceIndex-2017.r','importEmploymentReferralsForGeneralWorkers.r',
+    'importConstructionCostDeflator.r',
     'importConsumerConfidenceSurvey.r',
     'importConsumptionActivityIndex.r','importConsumptionSpending.r',
     'importCurrentSurveyOfCommerce.r',
@@ -55,7 +56,7 @@ importIndex <-
     'importEmployedPersonByMajorIndustry.r',
     'importExpenditureOnGoodsAndServices.r',
     'importExportAndImportSA.r')
-for(iii in 1:5){ # seq(length(importIndex))
+for(iii in 1:6){ # seq(length(importIndex))
   script <-
     RCurl::getURL(
       paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',
@@ -350,15 +351,34 @@ resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ```
 
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 17
+buf <- fun_makeDiffRatioTable(obj = jobOpenings[,-2],lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(resultDF) <- c('比較対象系列','Adjusted R-squared')
 fun_outputMD(tags = 'マネタリーベース',
              objDF = resultDF,
              htmlName = htmlName,
-             image = 0,
+             image1 = 0,
              dataTitle = dataTitle,
              tableTitle = paste0(resultDF[,1],collapse = ','),
              tableName = paste0(colnames(obj)[2],'との線形回帰.自由度調整済み決定係数'))
+fun_updateURLcsv()
 ```
 
 ***
