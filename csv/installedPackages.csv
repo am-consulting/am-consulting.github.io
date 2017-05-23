@@ -73,3 +73,5 @@ countrycode
 rsdmx
 plotly
 mFilter
+ggmap
+leaflet.minicharts
