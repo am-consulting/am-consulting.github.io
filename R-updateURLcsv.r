@@ -41,6 +41,9 @@ fun_updateURLcsv <- function(){
   buf <-
     buf[order(buf$TimeStamp,decreasing = T),]
   buf$`No.` <- seq(nrow(buf))
+  if(exists('htmlName')){
+    buf[grep(paste0('am-consulting.co.jp-',htmlName,'.html'),buf[,2]),4] <- Sys.time()
+  }
   setwd(pathOutput)
   write.csv(x = buf[,c(1,2,4)],
             file = "urlList.csv",
