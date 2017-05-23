@@ -1,7 +1,7 @@
 fun_meanS <-
   function(objDF,dateCol = 1,objCol = 2,roundN = 2,baseN = 10,powerN = 3,dateFormat = '%Y-%m'){
     windowsFonts(Meiryo = windowsFont("Meiryo"))
-    par(mfrow = c(2,1),oma = c(0,0,2,0),family = 'Meiryo')
+    par(mfrow = c(1,1),oma = c(0,0,2,0),family = 'Meiryo')
     obj <-
       na.omit(objDF[,c(dateCol,objCol)])
     x <- obj[,2]
@@ -55,11 +55,11 @@ fun_meanS <-
     colnames(resultDF) <- c('統計量','値','特記')
     resultDF <-
       resultDF[order(resultDF[,2],decreasing = T),]
-    par(mar=c(4,11,0,2))
-    obj0 <-
-      barplot(resultDF[,2],names.arg = resultDF[,1],
-              horiz = T,las = 1,plot = T,col = '#4682b4')
-    text(y = obj0,x = resultDF[,2],labels = resultDF[,2],cex = 1,pos = 2,offset = 1,col = 'white')
+    # par(mar=c(4,11,0,2))
+    # obj0 <-
+    #   barplot(resultDF[,2],names.arg = resultDF[,1],
+    #           horiz = T,las = 1,plot = T,col = '#4682b4')
+    # text(y = obj0,x = resultDF[,2],labels = resultDF[,2],cex = 1,pos = 2,offset = 1,col = 'white')
     mtext(text = paste0(colnames(obj)[2],'. ',dateRage,paste0('. Trim=',trim),'. 最頻値:',Mode),
           side = 3,outer = T,font = 2)
     return(resultDF)
