@@ -5,7 +5,8 @@ fun_outputMD <-
            htmlName = htmlName,
            tableTitle = tableTitle,
            dataTitle = dataTitle,
-           image = 0,
+           image1 = 0,
+           image2 = 0,
            tableName = '内閣総理大臣毎の基本統計量'){
     username <-
       Sys.info()['user']
