@@ -45,10 +45,10 @@ for(iii in 1:nrow(functionList)){
 
 ```{r warning=F, error=F, message=F, echo=F}
 # Reference http://stackoverflow.com/questions/32377291/insert-date-in-filename-while-knitting-document-using-rstudio-knit-button
-library(DT)
-library(lubridate)
+# library(DT)
+# library(lubridate)
 library(rvest)
-library(Nippon)
+# library(Nippon)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -56,7 +56,6 @@ options(scipen = 999)
 ```{r warning=F,error=F,message=F,echo=F}
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
-setwd(pathOutput)
 fileName <- 'SurveyofSelectedServiceIndustries.xls'
 baseURL <- 'http://www.e-stat.go.jp/SG1/estat/'
 keyword1 <- '特定サービス産業動態売上高指数'
@@ -64,7 +63,8 @@ keyword1 <- iconv(keyword1,'shift_jis','utf8')
 url <- paste0('http://www.e-stat.go.jp/SG1/estat/GL02010201.do?method=searchTop&andKeyword=', URLencode(keyword1))
 htmlMarkup <- read_html(url, encoding = "utf8")
 trList <- htmlMarkup %>% html_nodes(xpath = "//tr")
-funDownloadXLS <- function(objWord = keyword2,cnt = 1){
+funDownloadXLS <- function(objWord = keyword2,cnt = 1,sheet = 6){
+  setwd(pathOutput)
   objTr <- gsub('\n|\t','',trList[grep(objWord,trList)])
   pattern <- "<a\\shref=\".*?xlsDownload.*?\""
   objHref <- unlist(regmatches(objTr, gregexpr(pattern, objTr, fixed = F)))
@@ -77,12 +77,19 @@ funDownloadXLS <- function(objWord = keyword2,cnt = 1){
   fileURL <- paste0(baseURL,objDo,'?method=xlsDownload&',objID,'&',objCount)
   download.file(fileURL, fileName, mode = "wb")
   assign(paste0('SSI',cnt),
-         XLConnect::readWorksheetFromFile(paste0(pathOutput, fileName),sheet = 6,check.names = F,header = F),envir = .GlobalEnv)
+         XLConnect::readWorksheetFromFile(paste0(pathOutput, fileName),
+                                          sheet = sheet,
+                                          check.names = F,header = F),envir = .GlobalEnv)
 }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 keyword201 <- '対事業所サービス'
-funDownloadXLS(objWord = keyword201, cnt =1)
+funDownloadXLS(objWord = keyword201, cnt =1,sheet = 6)
+funDownloadXLS(objWord = keyword201, cnt =3,sheet = 4)
 keyword202 <- '対個人サービス業'
-funDownloadXLS(objWord = keyword202, cnt =2)
+funDownloadXLS(objWord = keyword202, cnt =2,sheet = 6)
+funDownloadXLS(objWord = keyword202, cnt =4,sheet = 4)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -121,10 +128,17 @@ funTimeSeries <- function(objDF){
          "dataSet" = obj)
   return(returnDF)
 }
+```
+
+```{r warning=F,error=F,message=F,echo=F}
 buf <- funTimeSeries(objDF = SSI1)
 dataSet1 <- buf$dataSet
 buf <- funTimeSeries(objDF = SSI2)
 dataSet2 <- buf$dataSet
+buf <- funTimeSeries(objDF = SSI3)
+dataSet3NSA <- buf$dataSet
+buf <- funTimeSeries(objDF = SSI4)
+dataSet4NSA <- buf$dataSet
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
@@ -138,9 +152,17 @@ script <-
 eval(parse(text = script))
 # csv出力パート
 fun_writeCSVtoFolder(objData = dataSet1,
-                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対事業所')
+                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対事業所_季節調整')
 fun_writeCSVtoFolder(objData = dataSet2,
-                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対個人')
+                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対個人_季節調整')
+fun_writeCSVtoFolder(objData = dataSet3NSA,
+                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対事業所_原数値')
+fun_writeCSVtoFolder(objData = dataSet4NSA,
+                     dataType = 1,csvFileName = '特定サービス産業動態統計調査_対個人_原数値')
+fun_writeCSVtoFolder(objData = dataSet3NSA,
+                     dataType = 1,csvFileName = 'SelectedServiceIndustriesSalesIndex_forCorporation_NSA')
+fun_writeCSVtoFolder(objData = dataSet4NSA,
+                     dataType = 1,csvFileName = 'SelectedServiceIndustriesSalesIndex_forIndividual_NSA')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
