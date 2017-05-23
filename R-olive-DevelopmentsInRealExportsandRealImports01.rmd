@@ -54,8 +54,9 @@ eval(parse(text = script))
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_makeDiffRatioTable(obj = developmentsInRealExportsAndRealImports,lag = 1)
-fun_latestResult(obj = diffRatioDF,dateFormat = dateFormat,objColumn = c(2,3))
+fun_latestResult(obj = fun_makeDiffRatioTable(obj = developmentsInRealExportsAndRealImports,
+                                              lag = 1),
+                 dateFormat = dateFormat,objColumn = c(2,3))
 dataTitle <- 
   paste0('実質輸出入の動向:実質輸出、実質輸入:前月比(%):', latestResult) 
 dataSource <- 
@@ -82,8 +83,8 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat
 #### 前月比(%)
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-fun_makeDiffRatioTable(obj = obj,lag = 1)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatioDF,dateFormat = dateFormat))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = obj,lag = 1),
+                                               dateFormat = dateFormat))
 ```
 <!--
 ***
@@ -106,6 +107,8 @@ fun_generateKnit(objDF = obj,
                  group = 0,
                  plotNum = n)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
 # cat('<hr>')
 # n <- 2
 # obj <- developmentsInRealExportsAndRealImports[,c(1,4)]
@@ -166,14 +169,13 @@ dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- developmentsInRealExportsAndRealImports[,c(1,2)]
-fun_makeDiffRatioTable(obj = obj,lag = 1)
-fun_summaryByName(obj = diffRatioDF)
 fun_outputMD(tags = '[実質輸出入,日本銀行]',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = fun_makeDiffRatioTable(obj = obj,lag = 1),
+                                       dateFormat = dateFormat),
              htmlName = htmlName,
              image = 1,
              dataTitle = dataTitle,
-             tableTitle = paste0('実質輸出:前月比(%)'))
+             tableTitle = paste0(colnames(obj)[2],':前月比(%)'))
 ```
 
 ***
