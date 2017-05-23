@@ -79,6 +79,19 @@ for(iii in seq(length(importIndex))){
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+csvURL <-
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/SelectedServiceIndustriesSalesIndex_forIndividual_NSA.csv'
+SSIforIndNSA <-
+  read.csv(file = csvURL,check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
+SSIforIndNSA[,1] <- as.Date(SSIforIndNSA[,1])
+csvURL <-
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/SelectedServiceIndustriesSalesIndex_forCorporation_NSA.csv'
+SSIforBizNSA <-
+  read.csv(file = csvURL,check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
+SSIforBizNSA[,1] <- as.Date(SSIforBizNSA[,1])
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- 
   paste0('マネタリーベースとの比較')
 dataSource <- '内閣府、財務省、日本銀行、厚生労働省、総務省、国土交通省他'
@@ -186,7 +199,7 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-n <- 2
+n <- n + 1
 bufCol <- 2
 buf <- fun_makeDiffRatioTable(obj = USDJPYmonthly,lag = 12)
 buf <- buf[,c(1,bufCol)]
@@ -204,7 +217,7 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-n <- 3
+n <- n + 1
 bufCol <- 2
 buf <- fun_makeDiffRatioTable(obj = nikkeiMonthly,lag = 12)
 buf <- buf[,c(1,bufCol)]
@@ -222,7 +235,7 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-n <- 4
+n <- n + 1
 mergeData <- 
   merge(monetaryBase_Japan,consumerPriceIndexofJapan,by='Date')
 objCol <- 10
@@ -236,7 +249,7 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-n <- 5
+n <- n + 1
 bufCol <- 2
 buf <- fun_makeDiffRatioTable(obj = allIndustryActivityNSA,lag = 12)
 buf <- buf[,c(1,bufCol)]
@@ -254,7 +267,7 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-n <- 6
+n <- n + 1
 bufCol <- 11
 buf <- fun_makeDiffRatioTable(obj = laborforcesurveyNSA,lag = 12)
 buf <- buf[,c(1,bufCol)]
@@ -272,9 +285,63 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-n <- 7
+n <- n + 1
 mergeData <- 
   merge(monetaryBase_Japan,ProducerPriceIndex,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 3
+buf <- fun_makeDiffRatioTable(obj = SSIforBizNSA,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 3
+buf <- fun_makeDiffRatioTable(obj = SSIforIndNSA,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 9
+buf <- fun_makeDiffRatioTable(obj = SSIforIndNSA,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
 objCol <- 10
 obj <- 
   tail(mergeData[,c(1,2,objCol)],tailN)
