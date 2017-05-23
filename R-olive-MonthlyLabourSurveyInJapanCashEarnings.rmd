@@ -133,7 +133,7 @@ script <-
     ssl.verifypeer = F)
 eval(parse(text = script))
 fun_writeCSVtoFolder(objData = get(paste0('CashEarnings',iii)),dataType = 1,
-                     csvFileName = paste0('CashEarnings',iii))
+                     csvFileName = '毎月勤労統計調査_月間現金給与額')
 # csv出力パート
 ```
 
@@ -193,7 +193,7 @@ png(file = pngFile, width = 1000, height = 600)
 ##################
 lineColor <- c('black','blue','red')
 par(family = 'Meiryo',font.main = 1, mar = c(5,10,3,1))
-barplot(height = obj[,2],names.arg = obj[,1],horiz = T,las=1,col=obj[,3],xlab = colnames(obj)[2],main = dataTitle)
+barplot(height = obj[,2],names.arg = obj[,1],horiz = T,las=1,col=obj[,3],xlab = colnames(obj)[2],main = dataTitle,cex.main = 1,cex.axis = 1,cex.names = 1)
 dev.off()
 ```
 
