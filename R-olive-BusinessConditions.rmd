@@ -102,12 +102,13 @@ fun_reshapeData <- function(iii){
   colnames(buf2)[1] <- 'Date'
   buf2[,-1] <- apply(buf2[,-1],2,as.numeric)
   colnames(buf2) <- gsub('\\.1',add,colnames(buf2))
-  dataSet <<- buf2
+  # dataSet <<- buf2
+  return(buf2)
 }
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_reshapeData(iii = 1)
+dataSet <- fun_reshapeData(iii = 1)
 dateFormat <- '%Y年%m月'
 obj <- 
   dataSet[,1:4]
@@ -380,44 +381,39 @@ buf <-
            stringsAsFactor = F,
            check.names = F,
            fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
+pathOutputTOchart <-
   paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
+setwd(pathOutputTOchart)
 getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
 ##################
-obj <- tail(na.omit(dataSet[,c(1,3,4)]),12*10)
-fun_plotTimeSeries(obj = obj,typeL = 'o',typeR = 'o',dateFormat = dateFormat,chartType = 1,
-                   dataTitle = '景気動向指数',mar = c(4,5,5,1),
-                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0)
-abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
-text(x = as.Date('2008-9-15'),
-     y = max(na.omit(obj[,2])),
-     labels = 'Bankruptcy of Lehman Brothers',
-     pos = 2,
-     srt = 90,col = 'blue')
-abline(v = as.Date('2012-12-26'),lwd = 1.2,lty = 2)
-text(x = as.Date('2012-12-26'),
-     y = max(na.omit(obj[,2])),
-     labels = '第2次安倍政権発足',
-     pos = 2,
-     srt = 90,col = 'blue')
+obj <- na.omit(dataSet[,c(1,3)])
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+par(mfrow = c(1,1),family = 'Meiryo')
+tmp0 <- fun_tsDataByYear(objDF = obj,dateCol = 1,dataCol = 2)
+tmp1 <- fun_strawBroomData(objDF = tmp0,varType = 1)
+fun_plotStrawBroomByYear(strawData = tmp1$strawData,
+                         lastDate = tmp1$lastDate,variation = tmp1$variation)
+dev.off()
+##################
+pngFile <-
+  paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+par(mfrow = c(1,1),family = 'Meiryo')
+fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,12*10,12*3,12*1))
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-obj <- na.omit(dataSet[,c(1,3)])
-summaryDF <- fun_summaryByName(obj = obj,omitFirst = 1)
-summaryDF[,-c(1,8)] <- apply(summaryDF[,-c(1,8)],2,function(x)round(x,2))
 fun_outputMD(tags = '景気動向指数',
-             objDF = summaryDF,
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,
+             image2 = 1,
              dataTitle = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
