@@ -93,6 +93,15 @@ SSIforBizNSA[,1] <- as.Date(SSIforBizNSA[,1])
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+csvURL <-
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/allCIdata.csv'
+allCI <-
+  read.csv(file = csvURL,check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
+allCINSA <- allCI[,c(1,grep('前年同月比',colnames(allCI)))]
+allCINSA[,1] <- as.Date(allCINSA[,1])
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- 
   paste0('マネタリーベースとの比較')
 dataSource <- '内閣府、財務省、日本銀行、厚生労働省、総務省、国土交通省他'
@@ -368,6 +377,57 @@ tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
 resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+mergeData <- 
+  merge(monetaryBase_Japan,allCINSA,by='Date')
+n <- n + 1
+objCol <- 11
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+objCol <- 12
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+objCol <- 13
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+objCol <- 14
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(resultDF) <- c('比較対象系列','Adjusted R-squared')
