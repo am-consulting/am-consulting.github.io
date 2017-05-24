@@ -1,0 +1,6 @@
+https://earthquake.usgs.gov/earthquakes/search/
+North 50
+Sourh 20
+East 160
+West 120
+Minimum 5.0
