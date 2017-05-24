@@ -85,6 +85,7 @@ script <-
     ssl.verifypeer = F)
 eval(parse(text = script))
 fun_writeCSVtoFolder(objData = allCI,dataType = 1,csvFileName = '景気動向指数個別系列')
+fun_writeCSVtoFolder(objData = allCI,dataType = 1,csvFileName = 'allCIdata')
 # csv出力パート
 ```
 
