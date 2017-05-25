@@ -29,57 +29,60 @@ fun_outputMD <-
   mdFile <-
     paste0(format(Sys.Date(),'%Y%m%d'),'-olive.md')
   # md作成パート
-  cat('',file = mdFile,append = F)
-  cat(paste0('
+  txt <- paste0('
 ---
 tags : [',tags,']
 published : true
----\n\n'),file = mdFile,append = T)
-  cat(paste0('# ',dataTitle,'\n\n'),
-      file = mdFile,append = T)
+---\n\n')
+  write.table(x = txt,file = mdFile,append = F,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('# ',dataTitle,'\n\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   if(image1!=0){
-    cat(paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
-               htmlName,
-               '1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
-               htmlName,
-               '1.png" width="100%" /></a>\n\n'),
-        file = mdFile,append = T)
+    txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
+                  htmlName,
+                  '1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+                  htmlName,
+                  '1.png" width="100%" /></a>\n\n')
   }
   if(image2!=0){
-    cat(paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
-               htmlName,
-               '2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
-               htmlName,
-               '2.png" width="100%" /></a>\n\n'),
-        file = mdFile,append = T)
+    txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
+                  htmlName,
+                  '2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+                  htmlName,
+                  '2.png" width="100%" /></a>\n\n')
   }
-  # cat('\n\n<style>table#amcc td {text-align:right;} </style>\n\n',
-  #     file = mdFile,append = T)
-  cat(paste0('***','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('#### ',tableName,'','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('- ',tableTitle,'','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0(knitr::kable(x = objDF,
-                          row.names = F,
-                          format = 'html',
-                          # align = 'r',
-                          table.attr = "id = 'amcc' width = '100%'",
-                          format.args = list(big.mark = ',',drop0trailing = T),
-                          escape = F),'\n'),
-      file = mdFile,append = T)
-  cat(paste0('\n\n***','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('## データテーブル･チャート','\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('Link : [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
-             htmlName,
-             '.html)\n\n'),
-      file = mdFile,append = T)
-  cat(paste0('<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
-             htmlName,
-             '.html" width="100%" height="800px"></iframe>'),
-      file = mdFile,append = T)
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('***','\n\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('#### ',tableName,'','\n\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('- ',tableTitle,'','\n\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0(knitr::kable(x = objDF,
+                             row.names = F,
+                             format = 'html',
+                             # align = 'r',
+                             table.attr = "id = 'amcc' width = '100%'",
+                             format.args = list(big.mark = ',',drop0trailing = T),
+                             escape = F),'\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('## データテーブル･チャート','\n\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('Link : [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',htmlName,'.html)\n\n')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  txt <- paste0('<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
+                htmlName,
+                '.html" width="100%" height="800px"></iframe>')
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   # md作成パート
   }
