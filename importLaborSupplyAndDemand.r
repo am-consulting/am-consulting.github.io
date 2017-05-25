@@ -12,9 +12,8 @@ xlsFile
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-if(!file.exists(paste0(pathOutput, xlsFile))) {
-  download.file(paste0('http://www.mlit.go.jp/toukeijouhou/chojou/ex/labor_xls_data/',xlsFile), xlsFile, mode = "wb")
-}
+download.file(paste0('http://www.mlit.go.jp/toukeijouhou/chojou/ex/labor_xls_data/',xlsFile),
+              xlsFile, mode = "wb")
 buf0 <- readWorksheetFromFile(paste0(pathOutput, xlsFile), sheet = 7, check.names = F, header = F)
 colnames(buf0) <- unlist(lapply(paste0(buf0[1,1],'-',buf0[2,]),zen2han))
 buf0[,-1] <- apply(buf0[,-1],2,as.numeric)
@@ -24,4 +23,14 @@ yyyy <- as.numeric(substring(buf0[rrr,1], 1, as.numeric(gregexpr('年', buf0[rrr
 mm <- as.numeric(substring(buf0[rrr,1], as.numeric(gregexpr('年', buf0[rrr,1])) + 1))
 buf0[,1] <- seq(as.Date(paste0(yyyy,'-',mm,'-1')), by = "1 month", length.out = nrow(buf0))
 colnames(buf0)[1] <- 'Date'
-assign('laborSupplyAndDemand', buf0, envir = .GlobalEnv)
+assign('laborSupplyAndDemand', buf0)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = laborSupplyAndDemand,dataType = 1,csvFileName = '建設労働需給調査結果')
+# csv出力パート
