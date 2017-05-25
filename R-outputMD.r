@@ -46,6 +46,8 @@ published : true
                   htmlName,
                   '1.png" width="100%" /></a>\n\n')
   }
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   if(image2!=0){
     txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                   htmlName,
