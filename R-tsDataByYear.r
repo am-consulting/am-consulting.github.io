@@ -53,7 +53,7 @@ fun_plotStrawBroomByYear <-
       obj <- strawData[,ccc,drop=F]
       if(ccc == startYearCol){
         plot(obj,
-             xlab = ifelse(12<nrow(obj),ifelse(55<nrow(obj),'Day','Week'),'Month'),
+             xlab = ifelse(12<nrow(obj),ifelse(55<nrow(obj),'Day','Week'),ifelse(4<nrow(obj),'Month','Quarter')),
              ylab = '',
              pch = pch,
              cex = cex,
