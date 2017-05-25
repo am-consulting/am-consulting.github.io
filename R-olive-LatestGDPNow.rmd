@@ -219,7 +219,7 @@ setwd(pathOutputTOcsv)
 getwd()
 par(family = 'Meiryo')
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- tail(RealGrossDomesticProduct,4*10)
@@ -271,10 +271,11 @@ obj <-
 fun_outputMD(tags = 'GDP,USA,GDPNow',
              objDF = obj,
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,
              dataTitle = dataTitle,
              tableTitle = 'Contributions',
              tableName = dataTitle)
+fun_updateURLcsv()
 ```
 
 ***
