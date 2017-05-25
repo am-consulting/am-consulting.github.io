@@ -334,6 +334,7 @@ fun_outputMD(tags = '財務省,証券売買契約',
              dataTitle = dataTitle,
              tableTitle = paste0('第2次安倍内閣発足以降のネット合計(兆円)'),
              tableName = '第2次安倍内閣発足以降のネット合計(兆円)')
+fun_updateURLcsv()
 ```
 
 ***
