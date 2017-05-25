@@ -54,8 +54,8 @@ eval(parse(text = script))
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 dateFormat <- '%Y年%m月'
-fun_makeDiffRatioTable(obj = RealExportsAndRealImports02,lag = 1)
-fun_latestResult(obj = diffRatioDF,dateFormat = dateFormat,objColumn = c(3,5))
+fun_latestResult(obj = fun_makeDiffRatioTable(obj = RealExportsAndRealImports02,lag = 1),
+                 dateFormat = dateFormat,objColumn = c(3,5))
 dataTitle <- 
   paste0('実質輸出入の動向:対アメリカ、EU、中国の実質輸出:',latestResult)
 dataSource <- 
@@ -82,21 +82,29 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = RealExportsAndRealImports02
 #### 前月比(%)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_makeDiffRatioTable(obj = RealExportsAndRealImports02[,-2],lag = 1)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatioDF,
-                                               dateFormat = dateFormat))
+fun_markdownTable(obj = 
+                    fun_transposeDataFrame(obj = 
+                                             fun_makeDiffRatioTable(obj = RealExportsAndRealImports02[,-2],
+                                                                    lag = 1),
+                                           dateFormat = dateFormat))
 ```
 
 ***
 
 #### 国･地域別時系列推移
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
 n <- 1
 obj <- RealExportsAndRealImports02[,c(1,3:7)]
 fun_generateKnit(objDF = obj,
                  group = 0,
                  plotNum = n)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>\n')
+cat('- Straw Broom Chart')
+fun_generateKnit(objDF = obj,
+                 group = 0,
+                 plotNum = n,strawBroom = 1)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
 
@@ -104,58 +112,35 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph
 
 #### 財別時系列推移
 
-```{r warning=F, error=F, message=F, echo=F}
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
 n <- 2
 obj <- RealExportsAndRealImports02[,c(1,8:12)]
 fun_generateKnit(objDF = obj,
                  group = 0,
                  plotNum = n)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <- 
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-obj <- tail(RealExportsAndRealImports02[,c(1,2)],12*2)
-par(family = 'Meiryo',mar = c(7,4,5,2),cex.main = 1.2,font.main = 1)
-barplot(height = obj[,2],horiz = F,las=2,main = colnames(obj)[2],names.arg = format(obj[,1],dateFormat))
-panel.first = grid(nx = NA,
-                   ny = NULL,
-                   lty = 3,
-                   equilogs = T)
-dev.off()
+cat('<hr>\n')
+cat('- Straw Broom Chart')
+fun_generateKnit(objDF = obj,
+                 group = 0,
+                 plotNum = n,strawBroom = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- na.omit(RealExportsAndRealImports02[,c(1,2)])
-fun_summaryByName(obj = obj)
+fun_PlotStrawAnd4charts(obj = obj,varType = 2)
+dev.off();dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '日本銀行, 実質輸出入',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 1,
              dataTitle = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
