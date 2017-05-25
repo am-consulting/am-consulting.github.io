@@ -12,7 +12,6 @@ fun_MovingAverage <-
     colnames(objMA)[3:4] <-
       paste0(colnames(objMA)[2], ':', colnames(objMA)[3:4], ':n=',n)
     assign('MovingAverageDF', objMA)
-    return(objMA)
     if(plot == 1){
       par(family = 'Meiryo',font.main = 1,mar = c(4,5,2,2))
       lineColor <- c('black','red','blue')
@@ -48,4 +47,5 @@ fun_MovingAverage <-
         lwd = c(1,2,2))
       abline(h = 0,col = 'red')
     }
-}
+    return(objMA)
+  }
