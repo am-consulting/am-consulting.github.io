@@ -11,7 +11,7 @@ fun_MovingAverage <-
                  row.names = NULL)
     colnames(objMA)[3:4] <-
       paste0(colnames(objMA)[2], ':', colnames(objMA)[3:4], ':n=',n)
-    # assign('MovingAverageDF', objMA, envir = .GlobalEnv)
+    assign('MovingAverageDF', objMA)
     return(objMA)
     if(plot == 1){
       par(family = 'Meiryo',font.main = 1,mar = c(4,5,2,2))
