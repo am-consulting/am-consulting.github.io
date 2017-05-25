@@ -29,7 +29,7 @@ fun_PlotStrawAnd4charts <-
     }
     par(mfrow = c(1,1),family = 'Meiryo')
     tmp0 <- fun_tsDataByYear(objDF = obj,dateCol = 1,dataCol = 2)
-    tmp1 <- fun_strawBroomData(objDF = tmp0,varType = 1)
+    tmp1 <- fun_strawBroomData(objDF = tmp0,varType = varType)
     fun_plotStrawBroomByYear(strawData = tmp1$strawData,
                              lastDate = tmp1$lastDate,
                              variation = tmp1$variation)
