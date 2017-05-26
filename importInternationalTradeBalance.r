@@ -13,11 +13,11 @@ username <-
   Sys.info()['user']
 pathOutput <-
   paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
-setwd(pathOutput)
 zipFiles <-
   c('bp_m_jp.zip','regbp_q_jp.zip','qiip_q_jp.zip','iip_cy_jp.zip')
 baseURL <- 'http://www.stat-search.boj.or.jp/info/'
 for(iii in seq(length(zipFiles))){
+  setwd(pathOutput)
   download.file(url = paste0(baseURL,zipFiles[iii]),zipFiles[iii],mode = 'wb')
   unzip(zipFiles[iii])
   buf0 <-
