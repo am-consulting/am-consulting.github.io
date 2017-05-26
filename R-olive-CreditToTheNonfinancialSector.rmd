@@ -70,41 +70,139 @@ options(scipen = 999)
 - `r paste0("データ出所 : ", dataSource)`
 - Source http://www.bis.org/statistics/totcredit.htm?m=6%7C326
 - 『They capture the outstanding amount of credit at the end of the reference quarter. 』(BIS)
-- Non financial sector =  General government + Households and NPISHs + Non-financial corporations 
+- Non financial sector =  General government + Households and NPISHs + Non-financial corporations
+- Private non-financial sector = Households and NPISHs + Non-financial corporations
 - NPISHs:対家計民間非営利団体/Non-profit institution serving households 
 
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-colnamesShort <- 
-  gsub('([^-]+)\\s-(.+)','\\1',colnames(dataSet)[-1])
-commonTxt <- 
-  unique(gsub('([^-]+)\\s-\\s(.+)','\\2',colnames(dataSet)[-1]))
-colnames(dataSet)[-1] <- colnamesShort
-obj0 <- 
-  fun_transposeDataFrame(obj = dataSet,tailN = 5,dateFormat = dateFormat)
-obj <-
-  obj0[order(obj0[,ncol(obj0)],decreasing = T),]
-cat('#### ',commonTxt,'\n')
-fun_markdownTable(obj = obj)
+titleN <-
+  c('Non financial sector',
+    'General government - All sectors - Market value',
+    'General government - All sectors - Nominal value',
+    'Households and NPISHs',
+    'Non-financial corporations',
+    'Private non-financial sector - All sectors',
+    'Private non-financial sector - Banks, total')
 ```
 
-***
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+for(iii in seq(length(titleN))){
+  objCol <- 
+    grep(titleN[iii],colnames(dataSet),ignore.case = T)
+  buf <- dataSet[,c(1,objCol)]
+  buf <- buf[,-grep('using PPP exchange rates',colnames(buf))]
+  colnamesShort <- 
+    gsub('([^-]+)\\s-(.+)','\\1',colnames(buf)[-1])
+  commonTxt <- 
+    unique(gsub('([^-]+)\\s-\\s(.+)','\\2',colnames(buf)[-1]))
+  colnames(buf)[-1] <- colnamesShort
+  obj0 <- 
+    fun_transposeDataFrame(obj = buf,tailN = 5,dateFormat = dateFormat)
+  obj <-
+    obj0[order(obj0[,ncol(obj0)],decreasing = T),]
+  cat('#### ',commonTxt,'\n')
+  fun_markdownTable(obj = obj)
+  cat('<hr>\n')
+}
+```
+
+#### Japan vs USA vs China
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 objCol <- 
-  grep('japan|greece|china|united states',colnames(dataSet),ignore.case = T)
-obj <- na.omit(dataSet[,c(1,objCol)])
+  grep('japan|china|united states',colnames(dataSet),ignore.case = T)
+buf <- na.omit(dataSet[,c(1,objCol)])
+lineColor <- c('blue','black','red')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_reshape <- function(iii = 1){
+  objCol <- 
+    grep(titleN[iii],colnames(buf),ignore.case = T)
+  obj <- buf[,c(1,objCol)]
+  colnamesShort <- 
+    gsub('([^-]+)\\s-(.+)','\\1',colnames(obj)[-1])
+  commonTxt <- 
+    unique(gsub('([^-]+)\\s-\\s(.+)','\\2',colnames(obj)[-1]))
+  colnames(obj)[-1] <- colnamesShort
+  returnDF <-
+    list("obj" = obj, "commonTxt" = commonTxt)
+  return(returnDF)
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 1
-fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = commonTxt,group = 0)
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 2
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 3
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 4
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 5
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 6
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 7
+returnData <- fun_reshape(iii = n)
+fun_generateKnit(objDF = returnData$obj,plotNum = n,
+                 dygraphTitle = returnData$commonTxt,group = 0,colors = lineColor)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 objCol <- 
   grep('japan',colnames(dataSet),ignore.case = T)
-obj <- na.omit(dataSet[,c(1,objCol)])
-fun_PlotStrawAnd4charts(obj = obj,varType = 2,tailN = c(10^10,4*10,4*5,4*3))
+obj <- na.omit(dataSet[,c(1,objCol)])[,c(1,7)]
+colnames(obj)[2] <- 
+  gsub('(.+gdp).+','\\1',colnames(obj)[2],ignore.case = T)
+fun_PlotStrawAnd4charts(obj = obj,varType = 2,tailN = c(10^10,4*10,4*5,4*3),dateFormat = dateFormat)
 dev.off();dev.off()
 ```
 
@@ -118,7 +216,6 @@ fun_outputMD(tags = '非金融部門債務残高対国内総生産比,BIS',
 fun_updateURLcsv()
 ```
 
-***
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
