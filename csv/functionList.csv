@@ -37,3 +37,4 @@ importUSDJPYmonthly.r
 importNikkeiMonthly.r
 importMonetarybaseOfJapan-2017.r
 R-chartsForMDfile.r
+R-downloadFromESTAT.r
