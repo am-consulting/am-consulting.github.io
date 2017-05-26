@@ -93,8 +93,12 @@ cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
+- 基本統計量:`r paste0(format(range(obj[,1]),dateFormat),collapse = '~')`
+
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-summary(obj[,-1])
+
+
+apply(obj[,-1,drop=F],2,summary)
 ```
 
 ***
@@ -118,15 +122,17 @@ cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', event_dygraph_point,' %>%  ',event_dygraph_range)))
 ```
 
+- 基本統計量:`r paste0(format(range(obj[,1]),dateFormat),collapse = '~')`
+
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-summary(obj[,-1])
+apply(obj[,-1,drop=F],2,summary)
 ```
 
 ***
 #### 自己相関係数
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-fun_acf(obj = na.omit(ServicesProducerPriceIndex),lag.max = 12*10,objColumn = 2)
+dammy <- fun_acf(obj = na.omit(ServicesProducerPriceIndex),lag.max = 12*10,objColumn = 2)
 ```
 
 ***
@@ -143,7 +149,7 @@ apply(dataSet[,-1],2,adf.test)
 - 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-fun_makeDiffTable(obj = dataSet)
+diffDF <- fun_makeDiffTable(obj = dataSet)
 apply(diffDF[,-1],2,adf.test)
 ```
 
@@ -193,7 +199,7 @@ cat(paste0('<h4>', tail(objPNinclude0[,1],1),'から',
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_arfima(obj = ServicesProducerPriceIndex,objColumn = 4)
+forecastResultDF <- fun_arfima(obj = ServicesProducerPriceIndex,objColumn = 4)
 Date <- 
   tail(seq(from = tail(ServicesProducerPriceIndex[,1],1),
            by = '+1 month',
@@ -205,53 +211,26 @@ fun_markdownTable(obj =
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_transposeDataFrame(obj = ServicesProducerPriceIndex,dateFormat = dateFormat,tailN = 3)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = 
+                    fun_transposeDataFrame(obj = 
+                                             ServicesProducerPriceIndex,dateFormat = dateFormat,
+                                           tailN = 3))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <- 
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-obj <- tail(ServicesProducerPriceIndex[,c(1,3)],12*2)
-par(family = 'Meiryo',mar = c(7,4,5,2),cex.main = 1.2,font.main = 1)
-barplot(height = obj[,2],horiz = F,las=2,main = colnames(obj)[2],names.arg = format(obj[,1],dateFormat))
-panel.first = grid(nx = NA,
-                   ny = NULL,
-                   lty = 3,
-                   equilogs = T)
-dev.off()
+obj <- ServicesProducerPriceIndex[,c(1,2)]
+fun_PlotStrawAnd4charts(obj = obj,varType = 2,dateFormat = dateFormat)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-obj <- na.omit(ServicesProducerPriceIndex[,c(1,3)])
-fun_summaryByName(obj = obj)
 fun_outputMD(tags = '日本銀行, 企業向けサービス価格指数',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 1,
              dataTitle = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
