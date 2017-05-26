@@ -15,7 +15,7 @@ buf0 <-
                   sheet = 3,stringsAsFactors = F,header = F,check.names = F,na.strings = '')
 buf1 <- buf0
 buf1 <- buf1[,c(1,grep('per cent',buf1[2,],ignore.case = T))]
-buf1 <- buf1[,-grep('nominal',buf1[1,],ignore.case = T)]
+# buf1 <- buf1[,-grep('nominal',buf1[1,],ignore.case = T)]
 objCol <-
   grep('Non financial sector|General government|Households and NPISHs|Non-financial corporations|Private non-financial sector',
        buf1[1,],ignore.case = T)
