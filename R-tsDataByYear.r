@@ -30,8 +30,12 @@ fun_strawBroomData <-
       Reduce(function(x,y){qpcR:::cbind.na(x, y)},obj)
     colnames(strawData) <-
       colnames(buf)
+    # lastDate <-
+    #   tail(na.omit(objDF$withDate[,grep(year(Sys.Date()),colnames(objDF$withDate))-1]),1)
+    # データ最終日の年(year)が現在日の年より古い場合に対応。
+    tmp000 <- objDF$withDate
     lastDate <-
-      tail(na.omit(objDF$withDate[,grep(year(Sys.Date()),colnames(objDF$withDate))-1]),1)
+      tail(na.omit(tmp000[,c(ncol(tmp000)-1,ncol(tmp000))]),1)[,1]
     returnDF <-
       list('variation' = variation,
            'strawData' = strawData,
@@ -40,20 +44,22 @@ fun_strawBroomData <-
   }
 
 fun_plotStrawBroomByYear <-
-  function(strawData,lastDate,variation,startYear = 2013,pch = 20,cex = 1){
+  function(strawData,lastDate,variation,startYear = 2013,pch = 20,cex = 1,dateFormat = dateFormat){
     startYearCol <-
       grep(startYear,colnames(strawData))
     ylim <-
       c(min(strawData[,startYearCol:ncol(strawData)],na.rm = T),
         max(strawData[,startYearCol:ncol(strawData)],na.rm = T))
-    dateFormat <-
-      ifelse(12 < nrow(strawData),'%Y-%m-%d','%Y-%m')
+    # dateFormat <-
+    #   ifelse(12 < nrow(strawData),'%Y-%m-%d','%Y-%m')
+    # 四半期ではあるが期ではなく最終日の場合があるため。
     par(family = 'Meiryo',font.main = 1,mar = c(5,3,3,1),cex.main = 1.1)
     for(ccc in startYearCol:ncol(strawData)){
       obj <- strawData[,ccc,drop=F]
       if(ccc == startYearCol){
         plot(obj,
-             xlab = ifelse(12<nrow(obj),ifelse(55<nrow(obj),'Day','Week'),ifelse(4<nrow(obj),'Month','Quarter')),
+             xlab = ifelse(12<nrow(obj),
+                           ifelse(55<nrow(obj),'Day','Week'),ifelse(4<nrow(obj),'Month','Quarter')),
              ylab = '',
              pch = pch,
              cex = cex,
