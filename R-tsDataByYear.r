@@ -53,7 +53,7 @@ fun_plotStrawBroomByYear <-
     # dateFormat <-
     #   ifelse(12 < nrow(strawData),'%Y-%m-%d','%Y-%m')
     # 四半期ではあるが期ではなく最終日の場合があるため。
-    par(family = 'Meiryo',font.main = 1,mar = c(5,3,3,1),cex.main = 1.1)
+    par(family = 'Meiryo',font.main = 1,mar = c(5,3,5,1),cex.main = 1.1)
     for(ccc in startYearCol:ncol(strawData)){
       obj <- strawData[,ccc,drop=F]
       if(ccc == startYearCol){
@@ -69,7 +69,7 @@ fun_plotStrawBroomByYear <-
              ylim = ylim,
              panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
              main = paste0(gsub('(.+):([0-9]+)','\\1',colnames(obj)),
-                           ':',variation,' Since the Beginning of the Year . Last:',
+                           '\n',variation,' Since the Beginning of the Year . Last:',
                            format(x = lastDate,dateFormat)))
       }else{
         lines(obj,
