@@ -32,7 +32,8 @@ fun_PlotStrawAnd4charts <-
     tmp1 <- fun_strawBroomData(objDF = tmp0,varType = varType)
     fun_plotStrawBroomByYear(strawData = tmp1$strawData,
                              lastDate = tmp1$lastDate,
-                             variation = tmp1$variation)
+                             variation = tmp1$variation,
+                             dateFormat = dateFormat)
     if(exists('htmlName')){
       pngFile <- paste0(htmlName, "2.png")
       png(file = pngFile, width = width, height = height)
