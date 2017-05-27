@@ -257,10 +257,11 @@ fun_plotTimeSeries(obj = obj,
                    typeR = 'o',
                    chartType = 1,
                    dataTitle = 'Traders in Financial Futures:Futures Only Reports',
-                   mar = c(4,4,5,1),
+                   mar = c(4,4,6,1),
                    dataSource = 'Commodity Futures Trading Commission',
                    needLefLab = 0,fitlwdL = 2,fitlwdR = 2)
 dev.off()
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
