@@ -269,6 +269,7 @@ png(file = pngFile, width = 1000, height = 600)
 obj <- dataSet[,c(1,2)]
 fun_plot4charts(obj = obj,tailN = c(10^10,5*12,5*6,5*3))
 dev.off()
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
