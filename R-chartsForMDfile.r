@@ -21,7 +21,7 @@ fun_preparePlot <- function(){
 
 fun_PlotStrawAnd4charts <-
   function(obj,varType=1,width=1000,height=600,
-           dateFormat='%Y-%m',tailN=c(10^10,12*5,12*3,12),chartType='o'){
+           dateFormat='%Y-%m',tailN=c(10^10,12*5,12*3,12),chartType='o',startYear = 2013){
     fun_preparePlot()
     if(exists('htmlName')){
       pngFile <- paste0(htmlName, "1.png")
@@ -33,7 +33,8 @@ fun_PlotStrawAnd4charts <-
     fun_plotStrawBroomByYear(strawData = tmp1$strawData,
                              lastDate = tmp1$lastDate,
                              variation = tmp1$variation,
-                             dateFormat = dateFormat)
+                             dateFormat = dateFormat,
+                             startYear = startYear)
     if(exists('htmlName')){
       pngFile <- paste0(htmlName, "2.png")
       png(file = pngFile, width = width, height = height)
