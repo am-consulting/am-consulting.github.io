@@ -136,6 +136,8 @@ if(durationInclude0 != 0){
              ifelse(tail(objPNinclude0[,2],1) < 0, '前週差マイナス値','前週差プラス値'), '\n'))
   cat('\n\n<hr>')
 }
+
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
