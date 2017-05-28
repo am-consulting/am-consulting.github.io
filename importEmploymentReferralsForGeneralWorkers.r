@@ -1,4 +1,4 @@
-library(rvest);library(XLConnect)
+library(rvest);library(XLConnect);library(Nippon)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
@@ -36,3 +36,14 @@ tmp <- buf[rowS:rowE,]
 tmp[,-1] <- as.numeric(gsub(',','',as.matrix(tmp[,-1])))
 jobOpenings <- data.frame(Date,tmp,check.names = F,stringsAsFactors = F)
 colnames(jobOpenings)[2] <- '元号'
+colnames(jobOpenings) <- gsub('\n','',unlist(lapply(colnames(jobOpenings),zen2han)))
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = jobOpenings,dataType = 1,csvFileName = '一般職業紹介状況')
+# csv出力パート

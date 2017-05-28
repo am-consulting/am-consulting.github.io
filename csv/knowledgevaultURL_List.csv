@@ -5,7 +5,7 @@ Title,Period,URL
 直近のGDPNow,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html
 日米国債金利差,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html
 ゴールド価格,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GoldPrice.html
-ビットコインの計量分析,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-QuantitativeAnalysisForBitcoin.html
+Quantitative analysis of Bitcoin/ビットコインの計量分析,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-QuantitativeAnalysisForBitcoin.html
 期待インフレ率(米国)、米国財務省証券利回り、日本国債利回りおよびドル円為替レート,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BreakevenInflationRate.html
 Global Markets Volatility Index,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IIMAGMVI.html
 Dow Jones Industrial Average,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DOW.html
@@ -51,7 +51,7 @@ IMF Primary Commodity Prices,Monthly,http://knowledgevault.saecanet.com/charts/a
 マネーストックと信用乗数:M2、M3、広義流動性:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-moneyStockInJapan.html
 企業物価指数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ProducerPriceIndexInJapan.html
 労働力調査:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LabourForceSurveyInJapan.html
-一般職業紹介状況:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html
+一般職業紹介状況:新規求人倍率、新規求人数、有効求人倍率、有効求人数:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-applicationRatioInJapan.html
 建設工事費デフレーター:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionCostDeflator.html
 毎月勤労統計調査:月間現金給与額:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-MonthlyLabourSurveyInJapanCashEarnings.html
 GDPギャップ(内閣府版):日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GDPGapInJapan.html
