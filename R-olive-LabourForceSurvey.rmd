@@ -217,9 +217,9 @@ obj <-
   dataSet0[,c(1,grep('就業者',colnames(dataSet0),ignore.case=T))]
 obj <- 
   obj[,c(1,grep('男女',colnames(obj)))]
-fun_makeDiffTable(obj = obj,lag = 1)
 n <- 100
-fun_generateKnit(objDF = diffDF,plotNum = n,barPlot = 1,group = 0,quantiles = 2)
+fun_generateKnit(objDF = fun_makeDiffTable(obj = obj,lag = 1),
+                 plotNum = n,barPlot = 1,group = 0,quantiles = 2)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 ```
 
@@ -250,55 +250,20 @@ cat(paste0('#### 完全失業率(男女計)',tail(obj0[,2],1),'%を記録した�
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-obj <- tail(dataSet0[,c(1,5)],12*10)
-fun_plotTimeSeries(obj = obj,
-                   chartType = 0,
-                   dateFormat = dateFormat,
-                   dataTitle = '労働力調査',
-                   dataSource = dataSource,
-                   mar = c(4,4,6,2),
-                   fitlwdL = 2,
-                   fitLcolor = 2,
-                   needLefLab = 0,
-                   typeL = 'o',
-                   cexL = 1.2)
-abline(h=0,col='red',lwd=2)
-dev.off()
+obj <- dataSet0[,c(1,5)]
+fun_PlotStrawAnd4charts(obj = obj)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- na.omit(dataSet0[,c(1,17)])
-fun_summaryByName(obj = obj)
-summaryByName$Mean <- round(summaryByName$Mean,2)
 fun_outputMD(tags = '総務省, 労働力調査, 失業率',
-             objDF = summaryByName,
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 1,
              dataTitle = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
