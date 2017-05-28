@@ -6,7 +6,7 @@ author: 'アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 8
+    fig_height: 12
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -124,7 +124,7 @@ dateFormat <- '%Y-%m'
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 fun_compareWithMB <- function(obj,dateFormat = dateFormat){
-par(mfrow = c(2,2),oma = c(0,0,5,0),family = 'Meiryo',
+par(mfrow = c(3,2),oma = c(0,0,5,0),family = 'Meiryo',
     font.main = 1,
     cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1)
 # plot1
@@ -170,6 +170,7 @@ mtext(text = paste0('対 ',colnames(obj)[3],'\n期間:',
       side = 3,outer = T,cex = 1,line = 1)
 cat('対',colnames(obj)[3],'\n')
 cat('対象期間:',paste0(format(range(obj[,1]),dateFormat),collapse = ' ~ '),'\n')
+cat('(注意)単位根検定の結果如何にかかわらず統計検定結果を機械的に表示しています。\n')
 cat('(注意)残差の正規性如何にかかわらず統計検定結果を機械的に表示しています。\n')
 cat('*********************************************************************\n')
 cat('x:',colnames(obj)[2],'\n')
@@ -193,6 +194,24 @@ print(apply(obj[,c(2,3)],2,adf.test))
 cat('*********************************************************************\n')
 cat('ダービン・ワトソン検定\n')
 print(lmtest::dwtest(y~x))
+cat('*********************************************************************\n')
+cat('相互相関関数\n\n')
+resultTmp <- ccf(x = x,y = y,lag.max = 12*3)
+resultTmp <- cbind(resultTmp$lag,resultTmp$acf,(resultTmp$acf)^2)
+resultTmp <- resultTmp[order(resultTmp[,2],decreasing = T),]
+resultTmp <- rbind(head(resultTmp,1),tail(resultTmp,1),resultTmp[resultTmp[,1]==0,])
+colnames(resultTmp) <- c('lag','CCF','CCF^2')
+row.names(resultTmp) <- NULL
+print(data.frame(resultTmp,check.names = F))
+cat('*********************************************************************\n')
+cat('自己相関関数\n\n')
+resultTmp <- acf(x = y,lag.max = 12*3,drop.lag.0 = T)
+resultTmp <- cbind(resultTmp$lag,resultTmp$acf,(resultTmp$acf)^2)
+resultTmp <- resultTmp[order(resultTmp[,2],decreasing = T),]
+resultTmp <- rbind(head(resultTmp,1),tail(resultTmp,1))
+colnames(resultTmp) <- c('lag','ACF','ACF^2')
+row.names(resultTmp) <- NULL
+print(data.frame(resultTmp,check.names = F))
 cat('*********************************************************************\n')
 return(resultLM)
 }
@@ -446,7 +465,6 @@ resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ```
 
-
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(resultDF) <- c('比較対象系列','Adjusted R-squared')
 fun_outputMD(tags = 'マネタリーベース',
@@ -457,6 +475,25 @@ fun_outputMD(tags = 'マネタリーベース',
              tableTitle = paste0(resultDF[,1],collapse = ','),
              tableName = paste0(colnames(obj)[2],'との線形回帰.自由度調整済み決定係数'))
 fun_updateURLcsv()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+### For check
+# par(mfrow=c(2,2))
+# ts.plot(mdeaths,fdeaths)
+# pattern1 <- ccf(mdeaths,fdeaths)
+# cbind(pattern1$lag,pattern1$acf,(pattern1$acf)^2)[pattern1$lag==0,]
+# ###
+# x <- as.vector(mdeaths)
+# y <- as.vector(fdeaths)
+# plot(x,y,type='p',pch=20)
+# pattern2 <- lm(y~x)
+# abline(pattern2,col='red')
+# summary(pattern2)$r.squared
+# ###
+# pattern3 <- ccf(x,y)
+# cbind(pattern3$lag,pattern3$acf,(pattern3$acf)^2)[pattern3$lag==0,]
+### For check
 ```
 
 ***
