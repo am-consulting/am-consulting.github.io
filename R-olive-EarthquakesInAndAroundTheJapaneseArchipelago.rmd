@@ -78,6 +78,8 @@ rangeN <- 10
 yearRange <- seq(1900,year(Sys.Date()),by = rangeN)
 pal <- 
   leaflet::colorNumeric(palette = "Spectral",domain = earthquakeSelect$mag)
+pal <- 
+  leaflet::colorNumeric(palette = c("#7fff00","#ffff00","#ff007f"),domain = earthquakeSelect$mag)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
@@ -96,6 +98,12 @@ options(scipen = 999)
 - Source https://earthquake.usgs.gov/earthquakes/search/
 - 発生地震毎のマグニチュードタイプ(マップ中、"MagType")には違いがありますことに注意して下さい。
 - MagType:`r paste0(unique(earthquakeSelect$magType),collapse = ' , ')`
+- 年代毎の観測網整備状況に留意が必要です。
+- 以下の緯度経度内を対象としています。
+    - North 50°
+    - Sourh 20°
+    - East 160°
+    - West 120°
 
 ***
 
@@ -105,7 +113,6 @@ fun_leaflet <- function(iii = 1){
                 yearRange[iii] <= earthquakeSelect$Year & 
                   earthquakeSelect$Year <= yearRange[iii]+rangeN)
   leaflet(data = obj,width = "100%",height = "500px")  %>% 
-  addTiles() %>%
   setView(lng = 135,lat = 35,zoom = 4) %>% 
   addCircleMarkers(lng = ~longitude,
              lat = ~latitude,
@@ -124,63 +131,84 @@ fun_leaflet <- function(iii = 1){
                                   yearRange[iii]+rangeN),
                            '<br>n=',
                            nrow(obj),
-                           '<br>Magnitude'))
+                           '<br>Magnitude')) %>% 
+    addProviderTiles(providers$OpenStreetMap.BlackAndWhite) %>% 
+    addCircleMarkers(lng = ~longitude,
+                     lat = ~latitude,
+                     color = 'black',
+                     radius = 1)
   # %>% addMiniMap(position = "bottomright")
+  #  addTiles() %>%
 }
+# http://leaflet-extras.github.io/leaflet-providers/preview/index.html
+# https://rstudio.github.io/leaflet/basemaps.html
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 iii <- 0
 dammy <- seq(length(yearRange))
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',yearRange[iii]+rangeN,'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',yearRange[iii]+rangeN,'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
 iii <- iii + 1
-cat('<div style="text-align:center"><h4>',yearRange[iii],'-',
-    min(yearRange[iii]+rangeN,year(Sys.Date())-1),'</h4></div>')
+cat('<div style="text-align:center"><h4>',yearRange[iii],'年 -',
+    min(yearRange[iii]+rangeN,year(Sys.Date())-1),'年</h4></div>')
 fun_leaflet(iii = iii)
 cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+earthquakeSelect <-
+  earthquake[8 <= earthquake$mag,c(9,2:7)]
+fun_outputMD(tags = '日本列島,地震',
+             objDF = earthquakeSelect,
+             htmlName = htmlName,
+             image1 = 0,
+             dataTitle = dataTitle,
+             tableTitle = 'マグニチュード8.0以上(マグニチュードタイプ混在)',
+             tableName = '日本列島周辺発生地震')
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative()</script>
