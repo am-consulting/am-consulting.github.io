@@ -1,12 +1,12 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MovementOfFinancialIndicesBeforeJudgment Day';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MovementOfFinancialIndicesBeforeJudgmentDay';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Movement of Financial Indices before Judgment Day/Bankruptcy of Lehman Brothers'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 4
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -74,17 +74,17 @@ c(
   'NIKKEI225','Nikkei Stock Average, Nikkei 225',
   'STLFSI','St. Louis Fed Financial Stress Index'
 )
-fredData <- list()
-cnt <- 0
+tsData <- list()
+cnt <- 1
 for(iii in seq(1,length(fredSymbolsDaily),by=2)){
   tmp0 <- 
     getSymbols(Symbols = fredSymbolsDaily[iii],src = 'FRED',auto.assign = F)
   tmp1 <-
     data.frame(Date = index(tmp0),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
   colnames(tmp1)[2] <- fredSymbolsDaily[iii+1]
+  tsData[[cnt]] <- tmp1
+  print(tail(tsData[[cnt]],3))
   cnt <- cnt + 1
-  fredData[[cnt]] <- tmp1
-  print(tail(fredData[[cnt]],3))
 }
 importIndex <- 
   c('importPutCallRatios.r','importSkew.r','importGMVI.r')
@@ -95,6 +95,24 @@ for(jjj in seq(length(importIndex))){
                   ssl.verifypeer = F)
   eval(parse(text = script))
 }
+tsData[[cnt]] <- putCallRatio[[1]][,c(1,5)]
+cnt <- cnt + 1
+tsData[[cnt]] <- putCallRatio[[2]][,c(1,5)]
+cnt <- cnt + 1
+tsData[[cnt]] <- putCallRatio[[3]][,c(1,5)]
+cnt <- cnt + 1
+tsData[[cnt]] <- putCallRatio[[4]][,c(1,5)]
+cnt <- cnt + 1
+tsData[[cnt]] <- putCallRatio[[5]][,c(1,2)]
+cnt <- cnt + 1
+tsData[[cnt]] <- skewCBOE
+cnt <- cnt + 1
+tsData[[cnt]] <- GMVI1[,c(1,2)]
+cnt <- cnt + 1
+tsData[[cnt]] <- GMVI2[,c(1,2)]
+cnt <- cnt + 1
+tsData[[cnt]] <- GMVI2[,c(1,6)]
+cnt <- cnt + 1
 importIndex <- 
   c('Rscript_JGBInterestRate.r')
 for(jjj in seq(length(importIndex))){
@@ -104,12 +122,15 @@ for(jjj in seq(length(importIndex))){
                   ssl.verifypeer = F)
   eval(parse(text = script))
 }
+obj <- na.omit(jgbData[,c(1,11)])
+colnames(obj)[2] <- paste0('Japanese Government Bond:',colnames(obj)[2])
+tsData[[cnt]] <- obj
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- 
-  paste0("審判の日/リーマンショック前における金融指標の動き")
-dataSource <- "FRED"
+  paste0("審判の日/リーマンショック前後における金融指標の動き")
+dataSource <- "Federal Reserve Bank of St. Louis、財務省、国際通貨研究所、Chicago Board Options Exchange"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
@@ -121,46 +142,59 @@ options(scipen = 999)
 
 ***
 
-```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
 JudgmentDay <- as.Date('2008-9-15')
 pastDays <- 365*1
 startDate <- JudgmentDay - pastDays
 dataSource <- 'Federal Reserve Bank of St. Louis'
-for(iii in seq(length(fredData))){
-  obj <- 
-    na.omit(subset(fredData[[iii]],startDate<=fredData[[iii]][,1] & fredData[[iii]][,1]<=JudgmentDay))
-  fun_plotTimeSeries(obj = obj,chartType = 0,
-                     dataSource = dataSource,mar = c(4,4,5,2),needLefLab = 0,fitLcolor = 2,
-                     typeL = 'o',cexL = 1.2,fitlwdL = 2,
-                     dataTitle = paste0('Movement from ',pastDays,' days before Judgment Day'))
+resultDF <- data.frame()
+cat('#### Movement from ',pastDays,' days before Judgment Day\n')
+for(iii in seq(length(tsData))){
+  obj0 <- 
+    na.omit(subset(tsData[[iii]],startDate<=tsData[[iii]][,1] & tsData[[iii]][,1]<=(JudgmentDay+pastDays)))
+  cat('#### ',colnames(obj0)[2],'\n')
+  fun_plotTimeSeries(obj = obj0,chartType = 0,
+                     dataSource = dataSource,mar = c(4,4,4,2),needLefLab = 0,fitLcolor = 2,
+                     typeL = 'o',cexL = 0.6,fitlwdL = 2)
   abline(v = as.numeric(JudgmentDay),col='red',lty=1)
-  text(x = as.numeric(JudgmentDay),y = max(obj[,2]),
-       labels = 'Judgment Day/Bankruptcy of Lehman Brothers',pos = 2,col='red')
-  
+  text(x = as.numeric(JudgmentDay),y = max(obj0[,2]),
+       labels = '\n\n\n\n\nJudgment Day\nBankruptcy of Lehman Brothers',pos = 4,col='red')
+  obj <- 
+    na.omit(subset(obj0,obj0[,1]<=JudgmentDay))
+  abline(h=as.numeric(tail(obj,1)[,2]),lty=2)
   peakDate <- tail(obj[which.max(obj[,2]),],1)
   abline(v=as.numeric(peakDate[,1]),lty=2)
   abline(h=as.numeric(peakDate[,2]),lty=2)
-  text(x = as.numeric(peakDate[,1]),y = as.numeric(peakDate[,2]),
-       labels = paste0('Peak. ',JudgmentDay-peakDate[,1],'days before'),pos=2,srt=90,cex=1.2,offset = 1)
+  bottomDate <- tail(obj[which.min(obj[,2]),],1)
+  abline(v=as.numeric(bottomDate[,1]),lty=2)
+  abline(h=as.numeric(bottomDate[,2]),lty=2)
+  text(x = as.numeric(peakDate[,1]),y = as.numeric(peakDate[,2]),labels = paste0('\n\nPeak'),pos = 2)
+  text(x = as.numeric(bottomDate[,1]),y = as.numeric(bottomDate[,2]),labels = paste0('Bottom\n\n'),adj = 5,pos = 2)
+  cat('<hr>')
+  resultDF[iii,1] <- iii
+  resultDF[iii,2] <- colnames(obj)[2]
+  resultDF[iii,3] <- peakDate[,1]
+  resultDF[iii,4] <- JudgmentDay - peakDate[,1]
+  resultDF[iii,5] <- bottomDate[,1]
+  resultDF[iii,6] <- JudgmentDay - bottomDate[,1]
 }
+resultDF[,3] <- as.Date(resultDF[,3])
+resultDF[,5] <- as.Date(resultDF[,5])
+colnames(resultDF) <- 
+  c('No.','Index','Peak','Before(days)','Bottom','Before(days)')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_PlotStrawAnd4charts(obj = obj)
-dev.off();dev.off()
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_outputMD(tags = '',
-             objDF = ,
+fun_outputMD(tags = 'リーマンショック',
+             objDF = resultDF,
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
+             image1 = 0,image2 = 0,
              dataTitle = dataTitle,
-             tableTitle = colnames(obj)[2])
+             tableTitle = paste0('リーマンショック前後',pastDays,'日'),
+             tableName = '金融指標の動き')
 fun_updateURLcsv()
 ```
 
-***
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
