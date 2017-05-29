@@ -186,7 +186,7 @@ colnames(resultDF) <-
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = 'リーマンショック',
-             objDF = resultDF,
+             objDF = resultDF[,c(2,3,5)],
              htmlName = htmlName,
              image1 = 0,image2 = 0,
              dataTitle = dataTitle,
