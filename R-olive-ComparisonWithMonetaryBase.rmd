@@ -52,6 +52,7 @@ importIndex <-
     'importProducerPriceIndex-2017.r',
     'importEmploymentReferralsForGeneralWorkers.r',
     'importServicesProducerPriceIndex-2017.r',
+    'importConsumptionSpending.r',
     'importConstructionCostDeflator.r',
     'importConsumerConfidenceSurvey.r',
     'importConsumptionActivityIndex.r','importConsumptionSpending.r',
@@ -60,7 +61,7 @@ importIndex <-
     'importEmployedPersonByMajorIndustry.r',
     'importExpenditureOnGoodsAndServices.r',
     'importExportAndImportSA.r')
-for(iii in 1:7){ # seq(length(importIndex))
+for(iii in 1:8){ # seq(length(importIndex))
   script <-
     RCurl::getURL(
       paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',
@@ -457,6 +458,24 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 n <- n + 1
 mergeData <- 
   merge(monetaryBase_Japan,ServicesProducerPriceIndex,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 2
+buf <- fun_makeDiffRatioTable(obj = expenditure,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
 objCol <- 10
 obj <- 
   tail(mergeData[,c(1,2,objCol)],tailN)
