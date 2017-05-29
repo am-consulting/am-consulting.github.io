@@ -1,0 +1,174 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MovementOfFinancialIndicesBeforeJudgment Day';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Movement of Financial Indices before Judgment Day/Bankruptcy of Lehman Brothers'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
+library(quantmod)
+fredSymbolsDaily <- 
+c(
+  'DGS10','10-Year Treasury Constant Maturity Rate',
+  'BAMLH0A0HYM2','BofA Merrill Lynch US High Yield Option-Adjusted Spread',
+  'DTB3','3-Month Treasury Bill: Secondary Market Rate',
+  'T10Y2Y','10-Year Treasury Constant Maturity Minus 2-Year Treasury Constant Maturity',
+  'USD1MTD156N','1-Month London Interbank Offered Rate (LIBOR), based on U.S. Dollar',
+  'USD3MTD156N','3-Month London Interbank Offered Rate (LIBOR), based on U.S. Dollar',
+  'DCOILWTICO','Crude Oil Prices: West Texas Intermediate (WTI) - Cushing, Oklahoma',
+  'T10YIE','10-Year Breakeven Inflation Rate',
+  'SP500','S&P 500',
+  'T5YIFR','5-Year, 5-Year Forward Inflation Expectation Rate',
+  'DAAA','Moody\'s Seasoned Aaa Corporate Bond Yield',
+  'DBAA','Moody\'s Seasoned Baa Corporate Bond Yield',
+  'DEXUSEU','U.S. / Euro Foreign Exchange Rate',
+  'DGS1','1-Year Treasury Constant Maturity Rate',
+  'BAMLH0A0HYM2EY','BofA Merrill Lynch US High Yield Effective Yield',
+  'TEDRATE','TED Spread',
+  'DEXJPUS','Japan / U.S. Foreign Exchange Rate',
+  'DJIA','Dow Jones Industrial Average',
+  'VIXCLS','CBOE Volatility Index: VIX',
+  'GOLDAMGBD228NLBM','Gold Fixing Price 10:30 A.M. (London time) in London Bullion Market, based in U.S. Dollars',
+  'DEXCAUS','Canada / U.S. Foreign Exchange Rate',
+  'T5YIE','5-Year Breakeven Inflation Rate',
+  'T10YFF','10-Year Treasury Constant Maturity Minus Federal Funds Rate',
+  'NASDAQCOM','NASDAQ Composite Index',
+  'NIKKEI225','Nikkei Stock Average, Nikkei 225',
+  'STLFSI','St. Louis Fed Financial Stress Index'
+)
+fredData <- list()
+cnt <- 0
+for(iii in seq(1,length(fredSymbolsDaily),by=2)){
+  tmp0 <- 
+    getSymbols(Symbols = fredSymbolsDaily[iii],src = 'FRED',auto.assign = F)
+  tmp1 <-
+    data.frame(Date = index(tmp0),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL)
+  colnames(tmp1)[2] <- fredSymbolsDaily[iii+1]
+  cnt <- cnt + 1
+  fredData[[cnt]] <- tmp1
+  print(tail(fredData[[cnt]],3))
+}
+importIndex <- 
+  c('importPutCallRatios.r','importSkew.r','importGMVI.r')
+for(jjj in seq(length(importIndex))){
+  script <- 
+    RCurl::getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                         importIndex[jjj]),
+                  ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+importIndex <- 
+  c('Rscript_JGBInterestRate.r')
+for(jjj in seq(length(importIndex))){
+  script <- 
+    RCurl::getURL(paste0("https://raw.githubusercontent.com/am-consulting/Rscript/master/", 
+                         importIndex[jjj]),
+                  ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- 
+  paste0("審判の日/リーマンショック前における金融指標の動き")
+dataSource <- "FRED"
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
+```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
+JudgmentDay <- as.Date('2008-9-15')
+pastDays <- 365*1
+startDate <- JudgmentDay - pastDays
+dataSource <- 'Federal Reserve Bank of St. Louis'
+for(iii in seq(length(fredData))){
+  obj <- 
+    na.omit(subset(fredData[[iii]],startDate<=fredData[[iii]][,1] & fredData[[iii]][,1]<=JudgmentDay))
+  fun_plotTimeSeries(obj = obj,chartType = 0,
+                     dataSource = dataSource,mar = c(4,4,5,2),needLefLab = 0,fitLcolor = 2,
+                     typeL = 'o',cexL = 1.2,fitlwdL = 2,
+                     dataTitle = paste0('Movement from ',pastDays,' days before Judgment Day'))
+  abline(v = as.numeric(JudgmentDay),col='red',lty=1)
+  text(x = as.numeric(JudgmentDay),y = max(obj[,2]),
+       labels = 'Judgment Day/Bankruptcy of Lehman Brothers',pos = 2,col='red')
+  
+  peakDate <- tail(obj[which.max(obj[,2]),],1)
+  abline(v=as.numeric(peakDate[,1]),lty=2)
+  abline(h=as.numeric(peakDate[,2]),lty=2)
+  text(x = as.numeric(peakDate[,1]),y = as.numeric(peakDate[,2]),
+       labels = paste0('Peak. ',JudgmentDay-peakDate[,1],'days before'),pos=2,srt=90,cex=1.2,offset = 1)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_PlotStrawAnd4charts(obj = obj)
+dev.off();dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '',
+             objDF = ,
+             htmlName = htmlName,
+             image1 = 1,image2 = 1,
+             dataTitle = dataTitle,
+             tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
