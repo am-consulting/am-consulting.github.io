@@ -57,7 +57,7 @@ objColumn <-
   grep('russia|saudi',colnames(CrudeOilProduction),ignore.case = T)
 fun_latestResult(obj = CrudeOilProduction,dateFormat = dateFormat,objColumn = objColumn)
 dataTitle <- 
-  paste0("世界各国の産油量:日量(1000バレル/日):",latestResult)
+  paste0("Crude Oil Production/世界各国の産油量:日量(1000バレル/日):",latestResult)
 dataSource <- "Joint Organisations Data Initiative (JODI)"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -94,6 +94,15 @@ n <- 1
 fun_generateKnit(objDF = CrudeOilProduction[,c(1,objColumn)],plotNum = n,group = 0,
                  dygraphTitle = paste0(colnames(CrudeOilProduction)[objColumn],collapse = '×'))
 eval(parse(text = paste0('dygraphPlot', n)))
+```
+
+- 基本統計量
+
+```{r,warning=F,error=F,message=F,echo=F,results='hold'}
+obj <-
+  na.omit(CrudeOilProduction[c(1,objColumn)])
+paste0(format(range(obj[,1]),dateFormat),collapse = '~')
+apply(obj[,-1,drop=F],2,summary)
 ```
 
 ***
@@ -133,7 +142,8 @@ fun_outputMD(tags = '',
              image1 = 1,image2 = 1,
              dataTitle = dataTitle,
              tableTitle = sheetTitle,
-             tableName = 'サウジアラビアの石油生産量')
+             tableName = 'サウジアラビアの産油量')
+fun_updateURLcsv()
 ```
 
 ***
