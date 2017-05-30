@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-measuresOfUnderlyingInflation.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'measuresOfUnderlyingInflation';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : '基調的なインフレ率を捕捉するための指標'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -27,7 +27,6 @@ options(width = 1000)
 
 ```{r warning=F, error=F, message=F, echo=F}
 library(RCurl)
-library(DT)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -43,7 +42,6 @@ eval(parse(text = script))
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-library(RCurl)
 functionList <-
   read.csv(
     file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/functionList.csv',
@@ -77,8 +75,8 @@ options(scipen = 999)
 ***
 
 ```{r warning=F, error=F, message=F, echo=F}
-fun_plotTimeSeries <- function(obj,objColumn){
-  par(mar=c(3,3,3,2),family='Meiryo',font.main = 1,cex.main = 1.1)
+fun_plotTimeSeries0 <- function(obj,objColumn){
+  par(mar=c(3,3,3,2),family='Meiryo',font.main = 1,cex.main = 1)
   yMax <- max(obj[,objColumn],na.rm = T)
   yMin <- min(obj[,objColumn],na.rm = T)
   titleText <- 
@@ -108,22 +106,15 @@ fun_plotTimeSeries <- function(obj,objColumn){
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
-objColumn <- grep('総合除く',colnames(measuresOfUnderlyingInflation))
-fun_plotTimeSeries(obj = measuresOfUnderlyingInflation, objColumn = objColumn)
-```
-
-***
-
-```{r warning=F, error=F, message=F, echo=F}
 objColumn <- grep('刈込平均',colnames(measuresOfUnderlyingInflation))
-fun_plotTimeSeries(obj = measuresOfUnderlyingInflation, objColumn = objColumn)
+fun_plotTimeSeries0(obj = measuresOfUnderlyingInflation, objColumn = objColumn)
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F}
 objColumn <- grep('ポイント',colnames(measuresOfUnderlyingInflation))
-fun_plotTimeSeries(obj = measuresOfUnderlyingInflation, objColumn = objColumn)
+fun_plotTimeSeries0(obj = measuresOfUnderlyingInflation, objColumn = objColumn)
 ```
 
 ***
@@ -141,51 +132,86 @@ fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = measuresOfUnderlyin
 allData <- 
   merge(measuresOfUnderlyingInflation,monetaryBase_Japan,by='Date')
 colnames(allData)
-scatterData <- na.omit(allData[,c(1,22,2)])
+cexText <- 0.8
+srtText <- 0
+posText <- 3 
+offsetText <- 0.2
+dateFormat <- '%Y-%m'
+cexPlot <- 1.5
+cexLab <- 0.9
+cexMain <- 0.9
+```
+
+```{r warning=F, error=F, message=F, echo=F, fig.height=6, results='hide'}
+scatterData <- na.omit(allData[,c(1,29,2)])
 fun_scatterPlot(obj = scatterData, 
-                cexText = 1, 
-                srtText = 0, 
-                posText = 1, 
-                offsetText = 0,
+                cexText = cexText, 
+                srtText = srtText, 
+                posText = posText, 
+                offsetText = offsetText,
                 dataSource = dataSource,
-                dateFormat = '%Y%m',
-                cexPlot = 1.5)
+                dateFormat = dateFormat,
+                cexPlot = cexPlot,
+                cexLab = cexLab,
+                cexMain = cexMain)
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, fig.height=6, results='hide'}
-scatterData <- na.omit(allData[,c(1,23,2)])
+scatterData <- na.omit(allData[,c(1,30,2)])
 fun_scatterPlot(obj = scatterData, 
-                cexText = 1, 
-                srtText = 0, 
-                posText = 1, 
-                offsetText = 0,
+                cexText = cexText, 
+                srtText = srtText, 
+                posText = posText, 
+                offsetText = offsetText,
                 dataSource = dataSource,
-                dateFormat = '%Y%m',
-                cexPlot = 1.5)
+                dateFormat = dateFormat,
+                cexPlot = cexPlot,
+                cexLab = cexLab,
+                cexMain = cexMain)
 ```
 
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, fig.height=6, results='hide'}
-allData <- 
-  merge(measuresOfUnderlyingInflation,monetaryBase_Japan,by='Date')
-colnames(allData)
-scatterData <- na.omit(allData[,c(1,25,2)])
+scatterData <- na.omit(allData[,c(1,32,2)])
 fun_scatterPlot(obj = scatterData, 
-                cexText = 1, 
-                srtText = 0, 
-                posText = 1, 
-                offsetText = 0,
+                cexText = cexText, 
+                srtText = srtText, 
+                posText = posText, 
+                offsetText = offsetText,
                 dataSource = dataSource,
-                dateFormat = '%Y%m',
-                cexPlot = 1.5)
+                dateFormat = dateFormat,
+                cexPlot = cexPlot,
+                cexLab = cexLab,
+                cexMain = cexMain)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = measuresOfUnderlyingInflation,
-                                                       dateFormat = dateFormat)))
+                                                       dateFormat = '%Y年%m月')))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <- paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+######  
+obj <- na.omit(allData[,c(1,14,15)])
+fun_plotTimeSeries(obj = obj,chartType = 1,typeL = 'o',typeR = 'o',dataTitle = dataTitle,dataSource = dataSource,mar = c(4,4,5,1),needLefLab = 0,cexL = 2,cexR = 2,cex.main = 1,dateFormat = '%Y年%m月')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '基調的なインフレ率を捕捉するための指標',
+             objDF = fun_transposeDataFrame(obj = obj,tailN = 5,dateFormat = '%Y年%m月'),
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,
+             dataTitle = dataTitle,
+             tableTitle = '直近5ヶ月',
+             tableName = paste0(colnames(obj)[2:3],collapse = '×'))
+fun_updateURLcsv()
 ```
 
 ***
