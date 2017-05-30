@@ -189,38 +189,10 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-obj1 <- departmentStore[,c(1,2)]
-colnames(obj1)[2] <- paste0('百貨店:',colnames(obj1)[2],'(億円)')
-obj2 <- superMarket[,c(1,2)]
-colnames(obj2)[2] <- paste0('スーパー:',colnames(obj2)[2],'(億円)')
-mergeData <- merge(obj1,obj2,by='Date')
-fun_plotTimeSeries(obj = mergeData,chartType = 1,
-                   dateFormat = dateFormat,dataSource = dataSource,
-                   needLefLab = 0,fitlwdL = 3,fitlwdR = 3,mar = c(4,4,5,1),dataTitle = '商業動態統計調査')
-dev.off()
+obj <- totalSales[,c(1,2)]
+colnames(obj)[2] <- paste0('百貨店･スーパー:',colnames(obj)[2],'(億円)')
+fun_PlotStrawAnd4charts(obj = obj,dateFormat = dateFormat)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -230,7 +202,7 @@ obj <-
 fun_outputMD(tags = '商業動態統計調査,:百貨店,スーパー,商品別販売額,経済産業省',
              objDF = obj,
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 1,
              dataTitle = dataTitle,
              tableTitle = '直近5ヶ月',
              tableName = '百貨店+スーパー(億円)')
@@ -248,44 +220,3 @@ fun_outputMD(tags = '商業動態統計調査,:百貨店,スーパー,商品別�
   ga('send', 'pageview');
 
 </script>
-
-<!--
-
---- 
-tags : [商業動態統計調査,:百貨店,スーパー,商品別販売額,経済産業省] 
-published : true
----
-# 商業動態統計調査:百貨店・スーパー商品別販売額(単位:億円):百貨店+スーパー:2017年02月:合計:14493.28
-## 統計データ概要
-
-***
-
-
-|     百貨店+スーパー(億円)| 2016年10月| 2016年11月| 2016年12月| 2017年01月| 2017年02月|
-|-------------------------:|----------:|----------:|----------:|----------:|----------:|
-|                      合計|  15,970.24|  16,479.27|  20,675.83|  16,742.95|  14,493.28|
-|                  飲食料品|    9,198.9|   9,529.71|   12,190.7|    9,451.4|   8,858.28|
-|                    その他|   3,184.65|   3,298.63|   4,371.27|    3,306.3|   2,926.58|
-|                    衣料品|   3,586.69|   3,650.92|   4,113.85|   3,985.26|   2,708.42|
-|       その他:その他の商品|   2,405.73|   2,487.38|    3,349.7|   2,456.75|   2,238.85|
-|  衣料品:婦人･子供服・洋品|   1,855.69|   1,861.35|   1,936.79|   2,044.75|   1,378.14|
-|         衣料品:身の回り品|     844.84|     845.25|   1,145.43|     990.81|     719.35|
-|       衣料品:紳士服・洋品|     660.66|     716.29|     778.64|     728.69|     446.26|
-|           その他:家庭用品|     387.53|     393.95|     516.99|     423.36|     349.48|
-|     衣料品:その他の衣料品|      225.5|     228.03|     252.99|        221|     164.67|
-| その他:家庭用電気機械器具|     142.19|     167.46|     210.83|     180.87|     129.88|
-|          その他:食堂･喫茶|     147.39|     146.09|     173.51|        155|     129.23|
-|               その他:家具|     101.81|     103.75|     120.25|      90.31|      79.14|
-
-
-
-
-
-
-***
-
-## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CurrentSurveyOfCommerce.html)
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CurrentSurveyOfCommerce.html" width="100%" height="800px"></iframe>
-
--->
