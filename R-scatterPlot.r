@@ -1,7 +1,7 @@
 fun_scatterPlot <-
   function(obj, mar = c(5,5,6,2), objDate = 1, objX = 2, objY = 3, dateFormat = '%Y-%m',
            dataSource = '', asp = 0, needLim = 0, cexText = 1, srtText = 90, posText = 1, offsetText = 1,
-           cexAxis =1, cexLab = 1, cexMain = 1, cexLegend = 1, cexPlot = 1, pch = 20, plotType = 'o'){
+           cexAxis =1, cexLab = 1, cexMain = 1, cexLegend = 1, cexPlot = 1, cexSub = 1, pch = 20, plotType = 'o'){
     par(mar = mar, family = 'Meiryo')
     windowsFonts(Meiryo = windowsFont("Meiryo"))
     minValue <- min(obj[,objX:objY])
@@ -18,7 +18,7 @@ fun_scatterPlot <-
                   '\n',
                   '対象期間:', paste0(format(range(obj[,objDate]), dateFormat), collapse = '~'),
                   '\nSource:', dataSource),
-         cex.axis = 1, cex.lab = 1, cex.main = 1, cex.sub = 1,
+         cex.axis = cexAxis, cex.lab = cexLab, cex.main = cexMain, cex.sub = cexSub,
          xlab = colnames(obj)[objX],
          ylab = colnames(obj)[objY],
          xlim = if(needLim == 1){c(minValue, maxValue)},
