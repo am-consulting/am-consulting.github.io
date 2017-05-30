@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 4
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -42,7 +42,7 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
-```{r warning=F, error=F, message=F, echo=F,results='asis'}
+```{r warning=F, error=F, message=F, echo=F,results='hide'}
 library(countrycode)
 username <- 
   Sys.info()['user']
@@ -65,13 +65,18 @@ indicator <- unique(tmp1$INDICATOR)
 measure <- unique(tmp1$MEASURE)
 location <- unique(tmp1$LOCATION)
 unique(tmp1$SUBJECT)
+dataSet <- tmp1
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 options(scipen = 999)
+JapanData <- 
+  dataSet[grep('japan',dataSet$Country,ignore.case = T),]
+JapanData <- JapanData[max(JapanData$Date)==JapanData$Date,]
+JapanData <- JapanData[JapanData$SUBJECT=="15_29",]
 dataTitle <- 
-  paste0('NEET率',latestResult)
-dataSource <- 'OECD'
+  paste0('NEET率:日本:',JapanData$TIME,'年:',JapanData$SUBJECT,'歳:',round(JapanData$Value,2),'%')
+dataSource <- 'Organisation for Economic Co-operation and Development'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
@@ -83,14 +88,16 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ***
 
+#### 各国のニート率:15歳から29歳
+
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-objSubject <- '20_24'
-par(mfrow=c(1,2),font.maon=1,cex.main=1)
+objSubject <- '15_29'
+par(mfrow = c(1,1),font.main = 1,cex.main = 1,family = 'Meiryo')
 for(iii in seq(length(location))){
-  tmp2 <- subset(tmp1,location[iii]==tmp1$LOCATION)
-  obj <- subset(tmp2,objSubject==tmp2$SUBJECT)
+  obj <- subset(dataSet,location[iii]==dataSet$LOCATION)
+  obj <- subset(obj,objSubject==obj$SUBJECT)
   if(5 <= nrow(obj)){
-    country <- 
+    cat('#### ',unique(obj$Country),'\n')
     plot(x = obj$Date,
          y = obj$Value,
          type = 'o',
@@ -101,11 +108,11 @@ for(iii in seq(length(location))){
          xaxt = 'n',
          panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
          main = paste0(indicator,'\n',
-                       paste0(format(range(obj$Date),'%Y'),
-                              collapse = '~'),'\n',
+                       paste0(format(range(obj$Date),'%Y'),collapse = '~'),'\n',
                        unique(obj$Country),':',measure,':',objSubject))
     axis.Date(side = 1,at = obj$Date,format = '%Y',padj = 0.5,cex.axis = 1,las=2)
     abline(lm(obj$Value~obj$Date),col='red',lwd=2)
+    cat('\n<hr>\n')
   }
 }
 ```
@@ -114,21 +121,39 @@ for(iii in seq(length(location))){
 fun_preparePlot()
 pngFile <- paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
+obj <- 
+  dataSet[grep('japan',dataSet$Country,ignore.case = T),]
+obj <- obj[obj$SUBJECT=="20_24",]
+obj <- obj[,c(10,7,3,9)]
+colnames(obj)[2] <- 'NEET率(%)'
+fun_plotTimeSeries(obj = obj[,c(1,2)],dateFormat = '%Y年',
+                   chartType = 0,typeL = 'o',
+                   dataTitle = paste0(unique(obj$Country),':',unique(obj$SUBJECT),'歳'),
+                   dataSource = dataSource,mar = c(4,5,6,2),fitLcolor = 2,cexL = 2)
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_outputMD(tags = '',
-             objDF = ,
+objSubject <- '15_29'
+for(iii in seq(length(location))){
+  obj <- subset(dataSet,location[iii]==dataSet$LOCATION)
+  obj <- subset(obj,objSubject==obj$SUBJECT)
+  obj <- obj[which.max(obj$TIME),]
+  if(iii==1){objDF <- obj}else{objDF <- rbind(objDF,obj)}
+}
+obj <- objDF[,c(9,6,7,3)]
+obj[,3] <- round(obj[,3],2)
+obj <- obj[order(obj$Value,decreasing = T),]
+obj[,2] <- paste0(obj[,2],'年')
+fun_outputMD(tags = 'OECD,NEET',
+             objDF = obj[,-4],
              htmlName = htmlName,
              image1 = 1,
              dataTitle = dataTitle,
-             tableTitle = '',
-             tableName = colnames(obj)[2])
+             tableTitle = paste0(unique(obj$SUBJECT),'歳'),
+             tableName = 'Youth not in employment, education or training(NEET)')
 fun_updateURLcsv()
 ```
-
-***
 
 <script>MakeNegative()</script>
 <script>
