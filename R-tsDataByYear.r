@@ -54,6 +54,8 @@ fun_plotStrawBroomByYear <-
     #   ifelse(12 < nrow(strawData),'%Y-%m-%d','%Y-%m')
     # 四半期ではあるが期ではなく最終日の場合があるため。
     par(family = 'Meiryo',font.main = 1,mar = c(5,3,5,1),cex.main = 1.1)
+    lineColors <-
+      RColorBrewer::brewer.pal(ncol(strawData)- startYearCol + 1, 'Dark2')
     for(ccc in startYearCol:ncol(strawData)){
       obj <- strawData[,ccc,drop=F]
       if(ccc == startYearCol){
@@ -63,21 +65,22 @@ fun_plotStrawBroomByYear <-
              ylab = '',
              pch = pch,
              cex = cex,
-             col = ifelse(ccc%%2 == 1,'blue','black'),
+             col = lineColors[ccc- startYearCol + 1],
              lwd = 1,
              type = ifelse(12 < nrow(obj),'l','o'),
              ylim = ylim,
              panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
              main = paste0(gsub('(.+):([0-9]+)','\\1',colnames(obj)),
                            '\n',variation,' Since the Beginning of the Year . Last:',
-                           format(x = lastDate,dateFormat)))
+                           format(x = lastDate,dateFormat),
+                           '\nSource:',dataSource))
       }else{
         lines(obj,
               xlab = '',
               ylab = '',
               pch = pch,
               cex = cex,
-              col = ifelse(ccc==ncol(strawData),'red',ifelse(ccc%%2 == 1,'blue','black')),
+              col = lineColors[ccc- startYearCol + 1],
               lwd = ifelse(ccc==ncol(strawData),2,1),
               type = ifelse(12 < nrow(obj),'l','o'),
               xaxt = 'n',
@@ -86,7 +89,7 @@ fun_plotStrawBroomByYear <-
       text(x = tail(index(na.omit(obj)),1),
            y = tail(na.omit(obj),1),
            labels = gsub('.+:([0-9]+)','\\1',colnames(obj)),
-           col = ifelse(ccc == ncol(strawData),'red',ifelse(ccc%%2 == 1,'blue','black')),
+           col = lineColors[ccc- startYearCol + 1],
            cex = ifelse(ccc == ncol(strawData),1.5,1.0),
            adj = 1,
            font = 4)
