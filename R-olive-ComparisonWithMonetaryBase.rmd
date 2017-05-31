@@ -53,18 +53,31 @@ importIndex <-
     'importEmploymentReferralsForGeneralWorkers.r',
     'importServicesProducerPriceIndex-2017.r',
     'importConsumptionSpending.r',
+    'importCurrentSurveyOfCommerce.r',
     'importConstructionCostDeflator.r',
     'importConsumerConfidenceSurvey.r',
     'importConsumptionActivityIndex.r','importConsumptionSpending.r',
-    'importCurrentSurveyOfCommerce.r',
     'importDevelopmentsInRealExportsandRealImports-2017.r',
     'importEmployedPersonByMajorIndustry.r',
     'importExpenditureOnGoodsAndServices.r',
     'importExportAndImportSA.r')
-for(iii in 1:8){ # seq(length(importIndex))
+for(iii in 1:9){ # seq(length(importIndex))
   script <-
     RCurl::getURL(
       paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',
+             importIndex[iii]),
+      ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+importIndex <- 
+  c('importConstructionStatistics.r')
+for(iii in 1:1){
+  script <-
+    RCurl::getURL(
+      paste0('https://raw.githubusercontent.com/am-consulting/Rscript/master/',
              importIndex[iii]),
       ssl.verifypeer = F)
   eval(parse(text = script))
@@ -104,6 +117,19 @@ allCI <-
   read.csv(file = csvURL,check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
 allCINSA <- allCI[,c(1,grep('前年同月比',colnames(allCI)))]
 allCINSA[,1] <- as.Date(allCINSA[,1])
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+returnList <- fun_CurrentSurveyOfCommerce(sheet = '百貨店　販売額　月次')
+tmp <- returnList$CurrentSurveyOfCommerce
+colnames(tmp)[-1] <- paste0('百貨店販売額前年同月比:',colnames(tmp)[-1])
+departmentStoreYoY <-
+  fun_makeDiffRatioTable(obj = tmp,lag = 12)
+returnList <- fun_CurrentSurveyOfCommerce(sheet = 'スーパー　販売額　月次')
+tmp <- returnList$CurrentSurveyOfCommerce
+colnames(tmp)[-1] <- paste0('スーパー販売額前年同月比:',colnames(tmp)[-1])
+superMarketYoY <-
+  fun_makeDiffRatioTable(obj = tmp,lag = 12)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
@@ -470,12 +496,64 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 n <- n + 1
-bufCol <- 2
-buf <- fun_makeDiffRatioTable(obj = expenditure,lag = 12)
-buf <- buf[,c(1,bufCol)]
-colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
 mergeData <- 
-  merge(monetaryBase_Japan,buf,by='Date')
+  merge(monetaryBase_Japan,realIncreaseDecreaseRate,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+mergeData <- 
+  merge(monetaryBase_Japan,nominalIncreaseDecreaseRate,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+mergeData <- 
+  merge(monetaryBase_Japan,NSAData,by='Date')
+objCol <- 11
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+mergeData <- 
+  merge(monetaryBase_Japan,departmentStoreYoY,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = na.omit(obj),dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+mergeData <- 
+  merge(monetaryBase_Japan,superMarketYoY,by='Date')
 objCol <- 10
 obj <- 
   tail(mergeData[,c(1,2,objCol)],tailN)
@@ -486,6 +564,8 @@ resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(resultDF) <- c('比較対象系列','Adjusted R-squared')
+resultDF <-
+  resultDF[order(resultDF[,2],decreasing = T),]
 fun_outputMD(tags = 'マネタリーベース',
              objDF = resultDF,
              htmlName = htmlName,
