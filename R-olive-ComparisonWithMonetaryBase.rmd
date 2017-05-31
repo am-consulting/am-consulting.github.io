@@ -133,8 +133,15 @@ superMarketYoY <-
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+SalesByIndustryOfBusinessActivity <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/SalesByIndustryOfBusinessActivity.csv',
+           header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
+SalesByIndustryOfBusinessActivity[,1] <- as.Date(SalesByIndustryOfBusinessActivity[,1])
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dataTitle <- 
-  paste0('マネタリーベースとの比較')
+  paste0('マネタリーベースとの比較:',Sys.time())
 dataSource <- '内閣府、財務省、日本銀行、厚生労働省、総務省、国土交通省他'
 windowsFonts(Meiryo=windowsFont('Meiryo'))
 tailN <- 12*10
@@ -562,17 +569,35 @@ resultDF[n,1] <- colnames(obj)[3]
 resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
 ```
 
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 3
+buf <- fun_makeDiffRatioTable(obj = SalesByIndustryOfBusinessActivity,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(resultDF) <- c('比較対象系列','Adjusted R-squared')
 resultDF <-
   resultDF[order(resultDF[,2],decreasing = T),]
-fun_outputMD(tags = 'マネタリーベース',
+fun_outputMD(tags = paste0(resultDF[,1],collapse = ','),
              objDF = resultDF,
              htmlName = htmlName,
              image1 = 0,
              dataTitle = dataTitle,
-             tableTitle = paste0(resultDF[,1],collapse = ','),
-             tableName = paste0(colnames(obj)[2],'との線形回帰.自由度調整済み決定係数'))
+             tableTitle = '自由度調整済み決定係数',
+             tableName = paste0(colnames(obj)[2],'との線形回帰'))
 fun_updateURLcsv()
 ```
 
