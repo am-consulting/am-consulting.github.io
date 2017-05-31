@@ -98,6 +98,7 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- http://www.e-stat.go.jp/SG1/estat/GL08020102.do?_toGL08020102_&tclassID=000001047452&cycleCode=1&requestSender=estat
 
 ***
 
@@ -122,7 +123,7 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet,dateFormat = dateFo
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 dataSet <- 
