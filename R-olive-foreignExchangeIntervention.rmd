@@ -160,27 +160,9 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 fun_plotTimeSeries(obj = obj,
@@ -194,10 +176,11 @@ dev.off()
 fun_outputMD(tags = '財務省,外国為替平衡操作,為替介入',
              objDF = dataSetIV[,-1],
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 0,
              dataTitle = dataTitle,
              tableTitle = '外国為替平衡操作実施月とその操作額(億円)',
              tableName = '外国為替平衡操作実施月とその操作額(億円)')
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative()</script>
