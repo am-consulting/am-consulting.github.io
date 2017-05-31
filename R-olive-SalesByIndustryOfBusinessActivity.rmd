@@ -63,6 +63,17 @@ script <-
     ssl.verifypeer = FALSE)
 eval(parse(text = script))
 fun_SalesByIndustryOfBusinessActivity(fileName = fileNameFromESTAT)
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = SalesByIndustryOfBusinessActivity,dataType = 1,
+                     csvFileName = 'SalesByIndustryOfBusinessActivity')
+# csv出力パート
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
@@ -94,12 +105,13 @@ options(scipen = 999)
 dataSet <- 
   obj[,which(regexpr(':',gsub(':実数','',colnames(obj))) == -1)]
 for(ccc in 2:ncol(dataSet)){
+  cat('#### ',colnames(dataSet)[ccc],'\n')
   fun_plotTimeSeries(obj = dataSet[,c(1,ccc)],
                      typeL = 'o',dateFormat = dateFormat,
                      chartType = 0,dataTitle = '事業活動の産業(中分類)別売上高',
                      dataSource = dataSource,fitLcolor = 2,fitlwdL = 3,
-                     mar = c(5,5,6,2),cexL = 1.5)
-  cat('<hr>')
+                     mar = c(4,4,5,1),cexL = 1.5,needLefLab = 0,cex.main = 0.9)
+  cat('<hr>\n')
 }
 ```
 
@@ -108,25 +120,7 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet,dateFormat = dateFo
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
   paste0(htmlName, ".png")
 png(file = pngFile, width = 1000, height = 600)
@@ -156,10 +150,11 @@ dev.off()
 fun_outputMD(tags = '総務省,サービス産業動向調査,産業(中分類)別売上高',
              objDF = latestDF,
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 0,
              dataTitle = dataTitle,
              tableTitle = 'サービス産業動向調査:産業(中分類)別売上高',
              tableName = 'サービス産業動向調査:産業(中分類)別売上高')
+fun_updateURLcsv()
 ```
 
 ***
