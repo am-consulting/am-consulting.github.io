@@ -67,7 +67,14 @@ options(scipen = 999)
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
-- Source : http://www.boj.or.jp/statistics/dl/depo/pref/index.htm/
+- Source http://www.boj.or.jp/statistics/dl/depo/pref/index.htm/
+- Source http://www.boj.or.jp/statistics/outline/exp/exyo.htm/
+- 国内銀行銀行勘定は以下を除く(上記URLより引用)
+    - 整理回収機構(1999年3月以前は整理回収銀行)
+    - 紀伊預金管理銀行(2002年3月31日付けで解散)
+    - 日本承継銀行(2004年3月8日付けで解散)
+    - 第二日本承継銀行(2011年12月26日付で事業譲渡)
+    - ゆうちょ銀行
 
 ***
 
@@ -104,35 +111,26 @@ for(iii in seq(length(DepositsByPrefecture))){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
+fun_preparePlot()
+pngFile <- paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
-##################
 tsData <- timeSeriesData[timeSeriesData[,1]=='東京',]
 fun_plotTimeSeries(obj = tsData,objX = 4,objYL = 2,objYR = 3,
                    typeL = 'o',typeR = 'o',dateFormat = dateFormat,
                    chartType = 2,dataTitle = paste0(dataTitle,':東京'),
-                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0,cexL = 2.5,cexR = 2.5,mar = c(5,5,6,5))
-dev.off()
+                   dataSource = dataSource,fitLcolor = 0,fitRcolor = 0,
+                   cexL = 2.5,cexR = 2.5,mar = c(5,5,6,5))
+##################
+pngFile <- paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+obj <- DepositsByPrefecture[[1]][,c(1,7)]
+obj[,2] <- round(obj[,2]/obj[grep('^全国計$',obj[,1]),2]*100,2)
+colnames(obj)[2] <- paste0(colnames(obj)[2],':対全国計構成比(%)')
+obj <- obj[-grep('計$',obj[,1]),]
+obj <- obj[order(obj[,2],decreasing = T),]
+par(family='Meiryo',font.main=1,mar=c(5,3,3,1))
+barplot(height = obj[,2],names.arg = obj[,1],las=2,main = colnames(obj)[2],col='#4169e1')
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -141,7 +139,7 @@ obj <- DepositsByPrefecture[[objList]][,c(1,2,11,12,15)]
 fun_outputMD(tags = '日本銀行,都道府県別預金・現金・貸出金(国内銀行)',
              objDF = obj,
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,image2 = 1,
              dataTitle = gsub('<|>','',dataTitle),
              tableTitle = sheetTitle[objList],
              tableName = sheetTitle[objList])
