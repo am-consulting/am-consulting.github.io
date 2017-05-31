@@ -24,7 +24,7 @@ getwd()
 mdFile <-
   paste0('olive-当面の長期国債等の買入れの運営について.md')
 tags <- '日本銀行,国債買入'
-dataTitle <- paste0('当面の長期国債等の買入れの運営について:',colnames(latestDF)[3],'分')
+dataTitle <- paste0('日本銀行:当面の長期国債等の買入れの運営について:',colnames(latestDF)[3],'分')
 # md作成パート
 txt <- paste0('
 ---
@@ -34,6 +34,9 @@ published : true
 write.table(x = txt,file = mdFile,append = F,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 txt <- paste0('# ',dataTitle,'\n\n')
+write.table(x = txt,file = mdFile,append = T,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+txt <- paste0('- Source:日本銀行\n\n')
 write.table(x = txt,file = mdFile,append = T,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 txt <- paste0(knitr::kable(x = latestDF,
