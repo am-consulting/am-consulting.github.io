@@ -1,0 +1,265 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'SuicidePreventionH29';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Suicide Prevention:H29'
+author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+library(lubridate)
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/'
+csvFile <- c('NumberOfSuicideRate01.csv')
+```
+
+```{r warning=F,error=F,message=F,results='hold',echo=F}
+dateFormat <- '%Y年'
+dataTitle <- paste0("自殺対策白書:平成29年版")
+dataSource <- "厚生労働省"
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.mhlw.go.jp/wp/hakusyo/jisatsu/17/index.html
+- 年次データの日付は各年の1月1日としています。
+- 以下は上記URLからの引用
+    - 自殺死亡率:人口10万人当たりの自殺者数
+    - 人口動態統計 厚生労働省、対象:日本における日本人
+    - 自殺統計 警察庁、対象:総人口(日本における外国人も含む)
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicide01.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+cat('#### ',paste0(colnames(dataSet)[-1],collapse = '×'),'\n')
+n <- 1
+fun_generateKnit(objDF = dataSet,plotNum = n,group = 0)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n<hr>\n\n')
+cat('- Straw Broom Chart\n')
+n <- 2
+fun_generateKnit(objDF = dataSet,plotNum = n,group = 0,strawBroom = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicideRate01.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+cat('#### ',paste0(colnames(dataSet)[-1],collapse = '×'),'\n')
+n <- 1
+fun_generateKnit(objDF = dataSet,plotNum = n,group = 0)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n<hr>\n\n')
+cat('- Straw Broom Chart\n')
+n <- 2
+fun_generateKnit(objDF = dataSet,plotNum = n,group = 0,strawBroom = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n\n<hr>\n')
+```
+
+#### 年齢階級別死亡率
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=12}
+csvFile <- 'NumberOfSuicideRateByAgeGroup.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+dataSet <- dataSet[,c(1:6,8:11)]
+par(mfrow=c(3,3))
+for(iii in 2:ncol(dataSet)){
+  obj <- na.omit(dataSet[,c(1,iii)])
+  fun_plotTimeSeries(obj = obj,chartType = 0,cexL = 1.5,needLefLab = 0,
+                     typeL = 'o',dateFormat = '%Y',dataSource = dataSource,fitLcolor = 2,
+                     mar = c(4,3,5,1),cex.main = 1.2)
+}
+cat('<hr>')
+```
+
+#### 発見曜日別1日平均自殺者数
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicideByDay.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+par(mfrow = c(1,2),family = 'Meiryo',font.main = 1,cex.main=1,mar=c(4,8,2,1))
+barplot(height = dataSet[,2],names.arg = dataSet[,1],
+        horiz = T,las = 1,col = '#4169e1',main = colnames(dataSet)[2])
+barplot(height = dataSet[,3],names.arg = dataSet[,1],
+        horiz = T,las = 1,col = '#dc143c',main = colnames(dataSet)[3])
+```
+
+***
+#### 月別自殺者数
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicideByMonth.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+obj <- tail(dataSet,2)
+par(mfrow = c(1,2),family = 'Meiryo',font.main = 1,cex.main=1,mar=c(4,4,2,1))
+barplot(height = unlist(obj[1,-1]),names.arg = colnames(obj)[-1],
+        horiz = T,las = 1,col = '#b0c4de',main = format(obj[1,1],'%Y年'))
+barplot(height = unlist(obj[2,-1]),names.arg = colnames(obj)[-1],
+        horiz = T,las = 1,col = '#e6e6fa',main = format(obj[2,1],'%Y年'))
+```
+
+***
+#### 原因・動機別の自殺者数
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicideByReason.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+obj <- tail(dataSet,2)
+par(mfrow = c(1,2),family = 'Meiryo',font.main = 1,cex.main=1,mar=c(4,8,2,1))
+barplot(height = unlist(obj[1,-1]),names.arg = colnames(obj)[-1],
+        horiz = T,las = 1,col = '#b0c4de',main = format(obj[1,1],'%Y年'))
+barplot(height = unlist(obj[2,-1]),names.arg = colnames(obj)[-1],
+        horiz = T,las = 1,col = '#e6e6fa',main = format(obj[2,1],'%Y年'))
+```
+
+***
+#### 自殺者男女別構成比(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicideBySex.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+obj <- dataSet[,1:3]
+obj[,2:3] <- apply(obj[,2:3],2,function(x)as.numeric(gsub('%','',x)))
+n <- 1
+fun_generateKnit(objDF = obj,plotNum = n,group = 0)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('<hr>')
+```
+
+#### 都道府県別自殺死亡率
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+csvFile <- 'NumberOfSuicideRateByPrefecture.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+fun_dataTable(obj = dataSet,orderDirection = 'asc',needID = 1,dateFormat = 0)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <- paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+###################
+csvFile <- 'NumberOfSuicideRate01.csv'
+dataSet <- 
+  read.csv(file = paste0(baseURL,csvFile),header = T,check.names = F,
+           stringsAsFactors = F,fileEncoding = 'utf8')
+dataSet[,1] <-
+  as.Date(dataSet[,1])
+fun_plotTimeSeries(obj = dataSet,objYL = 3,objYR = 4,chartType = 1,
+                   typeL = 'o',typeR = 'o',dateFormat = '%Y',dataSource = dataSource,
+                   needLefLab = 0,mar = c(4,3,6,1),dataTitle = dataTitle,cex.main = 1.1)
+abline(v=as.numeric(as.Date('1989-4-1')),lty = 2)
+text(x = as.numeric(as.Date('1989-4-1')),y = 15,labels = '消費税3%導入',
+     srt = 90,pos=3,cex=1.2)
+abline(v=as.numeric(as.Date('1997-4-1')),lty = 2)
+text(x = as.numeric(as.Date('1997-4-1')),y = 15,labels = '消費税増税(5%)',
+     srt = 90,pos=3,cex=1.2)
+abline(v=as.numeric(as.Date('2008-9-15')),lty = 2)
+text(x = as.numeric(as.Date('2008-9-15')),y = 15,labels = 'リーマンショック',
+     srt = 90,pos=3,cex=1.2)
+abline(v=as.numeric(as.Date('2012-12-26')),lty = 2)
+text(x = as.numeric(as.Date('2012-12-26')),y = 15,labels = '第二次安倍政権発足',
+     srt = 90,pos=3,cex=1.2)
+abline(v=as.numeric(as.Date('2014-4-1')),lty = 2)
+text(x = as.numeric(as.Date('2014-4-1')),y = 15,labels = '消費税増税(8%)',
+     srt = 90,pos=3,cex=1.2)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+dataSet[,1] <- format(dataSet[,1],'%Y年')
+fun_outputMD(tags = '厚生労働省,自殺対策白書',
+             objDF = dataSet,
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,
+             dataTitle = dataTitle,
+             tableTitle = '自殺死亡率:人口10万人当たりの自殺者数',
+             tableName = '自殺死亡率推移')
+fun_updateURLcsv()
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
