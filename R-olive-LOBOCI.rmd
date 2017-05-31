@@ -172,7 +172,7 @@ dev.off();dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '日本商工会議所,商工会議所LOBO調査(早期景気観測)',
-             objDF = fun_summaryByName(obj = obj),
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              dataTitle = dataTitle,
              htmlName = htmlName,
              image1 = 1,image2 = 1,
