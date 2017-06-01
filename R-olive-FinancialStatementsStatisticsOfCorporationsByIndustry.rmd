@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-FinancialStatementsStatisticsOfCorporationsByIndustry.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'FinancialStatementsStatisticsOfCorporationsByIndustry';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Financial Statements Statistics Of Corporations By Industry In Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -12,201 +12,230 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-.main-container {max-width: 1000px;	margin-left: auto; margin-right: auto;}
-table { white-space: nowrap; }
-td.negative { color : red; }
-</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
 
-<script>
-function MakeNegative() {
-  TDs = document.getElementsByTagName('td');
-  for (var i=0; i<TDs.length; i++) {
-    var temp = TDs[i];
-    if (temp.firstChild.nodeValue.indexOf('-') == 0) temp.className = "negative";
-  }
-}
-</script>
-
- - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
- - SaECaNet http://saecanet.com/
- - Olive http://olive.saecanet.com/
- - twitter https://twitter.com/AMC2_Japan
-
-本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
-library(RCurl);library(knitr)
-script <-
-  getURL(
-    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/R-dygraphsFunction.r",
-    ssl.verifypeer = F
-  )
-eval(parse(text = script))
+```{r warning = F,error = F,message = F,echo = F,results='hide'}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
 ```
 
-```{r warning=F,error=F,message=F,echo=F}
-# FinancialStatementsStatisticsOfCorporationsByIndustry
-# Reference http://www.hanselman.com/blog/MakingNegativeNumbersTurnRedUsingCSSAndJavascript.aspx
-tmp0 <-
-  read.table("clipboard", header = F, sep = "\t", stringsAsFactor = F, na.strings = c("na", "", "-", '* '), check.names = F, fill = T)
+```{r warning = F,error = F,message = F,echo = F,results='hide'}
+csvFile2017Q1 <- 
+  c('FEH_00350600_170601103933',
+    'FEH_00350600_170601104046',
+    'FEH_00350600_170601104143',
+    'FEH_00350600_170601104230')
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(lubridate);library(Nippon)
-tmp <- tmp0
-dateRow <- which(!is.na(as.numeric(substring(tmp[,1],1,5))))
-yyyy <- substring(tmp[dateRow,1],1,4)
-mm <- as.numeric(substring(tmp[dateRow,1],5))*3
-tmp[dateRow,2] <- as.character(as.Date(paste0(yyyy,'-',mm,'-1')) %m+% months(1) - 1)
-title <- gsub('\\s','',zen2han(tmp[3,2]))
-type <- gsub('\\s','',zen2han(tmp[5,3]))
-scale <- gsub('\\s','',zen2han(tmp[6,3]))
-colnames(tmp) <- tmp[dateRow[1]-1,]
-tmp <- tmp[dateRow[1]:nrow(tmp),-c(1,3)]
-colnames(tmp)[1] <- 'Date'
-tmp[,-1] <- apply(tmp[,-1],2,function(x){as.numeric(gsub(',','',x))}) 
-priceCCC <- grep('百万円',colnames(tmp))
-tmp[,priceCCC] <- apply(tmp[,priceCCC],2,function(x){x*10^-6})
-colnames(tmp)[priceCCC] <- gsub('百万円','兆円',colnames(tmp)[priceCCC])
-tmp[,1] <- as.Date(tmp[,1])
-notSHIFTJIS <- which(!is.na(iconv(colnames(tmp), from = 'shift_jis', to = 'utf8')))
-colnames(tmp)[notSHIFTJIS] <- iconv(colnames(tmp)[notSHIFTJIS], from = 'shift_jis', to = 'utf8')
-FinancialStatementsStatisticsOfCorporationsByIndustry <- tmp
+```{r warning = F,error = F,message = F,echo = F,results='hide'}
+FEH <- list()
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/'
+for(iii in seq(length(csvFile2017Q1))){
+  FEH[[iii]] <- 
+    read.csv(file = paste0(baseURL,csvFile2017Q1[iii],'.csv'),
+             header = F,stringsAsFactors = F,fileEncoding = 'utf8')
+}
+```
+
+```{r warning = F,error = F,message = F,echo = F,results='hide'}
+library(Nippon)
+sheetTitle <- vector()
+FEHdf <- list()
+for(iii in seq(length(FEH))){
+  tmp0 <- FEH[[iii]]
+  sheetTitle[iii] <- zen2han(paste0(tmp0[4,2],tmp0[4,3],':',tmp0[5,3],':',tmp0[6,3]))
+  tmp1 <- tmp0[9:nrow(tmp0),]
+  colnames(tmp1) <- tmp1[1,]
+  tmp2 <- tmp1[-1,]
+  tmp2[,1] <-
+    as.Date(paste0(substring(tmp2[,1],1,4),'-',as.numeric(substring(tmp2[,1],5))*3,'-1'))
+  tmp3 <- tmp2[,-c(2:3)]
+  colnames(tmp3)[1] <- 'Date'
+  row.names(tmp3) <- NULL
+  tmp3[,-1] <- apply(tmp3[,-1],2,as.numeric)
+  objCol <- grep('百万円',colnames(tmp3))
+  tmp3[,objCol] <- apply(tmp3[,objCol],2,function(x)x*10^-6)
+  colnames(tmp3)[objCol] <- gsub('百万円','兆円',colnames(tmp3)[objCol])
+  colnames(tmp3) <- sapply(colnames(tmp3),zen2han)
+  FEHdf[[iii]] <- tmp3
+  print(sheetTitle[iii])
+  print(tail(FEHdf[[iii]],1))
+  print('******************************************************************')
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-dataTitle <- paste0('法人企業統計 - ',
-                    format(tail(FinancialStatementsStatisticsOfCorporationsByIndustry[,1],1),'%Y年%m月期分'))
+dateFormat <- '%Y年%m月期'
+fun_latestResult(obj = FEHdf[[1]],dateFormat = dateFormat,objColumn = 6)
+dataTitle <- 
+  paste0('法人企業統計:',sheetTitle[1],':',latestResult)
 dataSource <- '財務省'
-Author <- 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
-notes <- '複数のワードで検索する際は半角スペースで区切ってください'
-notes0 <- '表中、-9999はNAを意味します'
-cat(paste('Title       : ',dataTitle,'\n'))
-cat(paste('Data Source : ',dataSource,'\n'))
-cat(paste('Author      : ',Author,'\n'))
-cat(paste('特    記    : ',notes,'\n'))
-cat(paste('特    記    : ',notes0,'\n'))
-windowsFonts(Meiryo=windowsFont("Meiryo"))
+windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-funReshape <- function(obj = dataSet){
-  obj <- t(obj)
-  obj <- data.frame(row.names(obj), obj, check.names = F, stringsAsFactors = F, row.names = NULL)
-  colnames(obj) <- obj[1,]
-  obj <- obj[-1,]
-  obj <- data.frame(ID = seq(1,nrow(obj)), obj, check.names = F, stringsAsFactors = F)
-  obj[,-c(1:2)] <- apply(obj[,-c(1:2)], 2, as.numeric)
-  return(obj)
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- 各期の日付は各期末月の1日としています(例 2017年1-3月期 → 2017-03-01)
+
+***
+
+#### 原数値
+
+```{r warning = F,error = F,message = F,echo = F,results='asis'}
+for(iii in seq(length(FEHdf))){
+  obj <- FEHdf[[iii]]
+  cat('#### ',sheetTitle[iii],'\n\n')
+  fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,tailN = 5,dateFormat = dateFormat))
+  cat('\n<hr>\n')
 }
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-funDataTable <- function(obj, orderColumn = 0, orderDirection = 'asc', width01 = '2%', caption = '') {
-  DT::datatable(
-    obj,
-    extensions = c("Buttons", "ColReorder" , "FixedColumns", "FixedHeader"),
-    options = list(paging = T, autoWidth = F, info = T, lengthChange = T, ordering = T,
-      searching = T, scrollX = T, lengthMenu = list(c(10, 50, -1, 1), c(10, 50, 'All', 1)),
-      orderClasses = T, order = list(list(orderColumn, orderDirection)), 
-      search = list(regex = T, caseInsensitive = T), searchHighlight = T,
-      columnDefs = list(list(width = width01, targets = 0)),
-      dom = 'BRlfrtip', buttons = I('colvis'), colReorder = T, fixedColumns = list(leftColumns = 2), fixedHeader = T),
-    rownames = F, caption = caption, class = 'display compact', escape = F, filter = 'top'
-  )  
+#### 前年同期比(%)
+
+```{r warning = F,error = F,message = F,echo = F,results='asis'}
+for(iii in seq(length(FEHdf))){
+  obj <- FEHdf[[iii]]
+  cat('#### ',sheetTitle[iii],'\n\n')
+  buf <- fun_makeDiffRatioTable(obj = obj,lag = 4)
+  buf <- buf[,-grep('【%】',colnames(buf))]
+  colnames(buf) <- gsub('【.+】','',colnames(buf))
+  fun_markdownTable(obj = fun_transposeDataFrame(obj = buf,tailN = 5,dateFormat = dateFormat))
+  cat('\n<hr>\n')
 }
 ```
 
-#### `r paste0(title,'-',type,'-',scale)`
+#### 前年同期比(%)時系列推移
+
+```{r warning = F,error = F,message = F,echo = F,results='asis'}
+tailN <- 4*20
+for(iii in seq(length(FEHdf))){
+  cat('\n\n#### ',sheetTitle[iii],'\n\n')
+  tmp <- tail(FEHdf[[iii]],tailN)
+  buf <- fun_makeDiffRatioTable(obj = tmp,lag = 4)
+  buf <- buf[,-grep('【%】',colnames(buf))]
+  colnames(buf) <- gsub('【.+】','',colnames(buf))
+  obj0 <- buf
+  for(ccc in seq(2,ncol(obj0),by = 2)){
+    par(mfrow=c(1,2))
+    for(sss in ccc:(ccc+1)){
+      if(ncol(obj0)<sss){break;}
+      obj <- na.omit(obj0[,c(1,sss)])
+      par(mar=c(3,3,3,1),family='Meiryo',font.main=1,cex.main=1)
+      plot(x = obj[,1],y = obj[,2],type = 'h',
+           main = paste0(colnames(obj)[2],'\n',
+                         paste0(format(range(obj[,1]),dateFormat),collapse = '~')),
+           pch = 20,cex = 0.9,xlab='',ylab='',
+           panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),col = 'blue')
+      lo <- 
+        loess(formula = obj[,2] ~ as.numeric(obj[,1]),degree = 2)
+      lines(x = obj[,1],y = predict(lo),col = 'red',lwd = 2,lty = 2)
+    }
+  }
+}
+```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-dataSet <- funReshape(obj = tail(FinancialStatementsStatisticsOfCorporationsByIndustry,6))
-funDataTable(obj = dataSet)
+fun_addTxtToChart <- 
+  function(objCol = 2){
+    abline(v=as.numeric(as.Date('1989-4-1')),lty = 2)
+    text(x = as.numeric(as.Date('1989-4-1')),y = mean(obj[,objCol]),labels = '消費税3%導入',
+         srt = 90,pos=3,cex=1.0)
+    abline(v=as.numeric(as.Date('1997-4-1')),lty = 2)
+    text(x = as.numeric(as.Date('1997-4-1')),y = mean(obj[,objCol]),labels = '消費税増税(5%)',
+         srt = 90,pos=3,cex=1.0)
+    abline(v=as.numeric(as.Date('2008-9-15')),lty = 2)
+    text(x = as.numeric(as.Date('2008-9-15')),y = mean(obj[,objCol]),labels = 'リーマンショック',
+         srt = 90,pos=3,cex=1.0)
+    abline(v=as.numeric(as.Date('2012-12-26')),lty = 2)
+    text(x = as.numeric(as.Date('2012-12-26')),y = mean(obj[,objCol]),labels = '第二次安倍政権発足',
+         srt = 90,pos=3,cex=1.0)
+    abline(v=as.numeric(as.Date('2014-4-1')),lty = 2)
+    text(x = as.numeric(as.Date('2014-4-1')),y = mean(obj[,objCol]),labels = '消費税増税(8%)',
+         srt = 90,pos=3,cex=1.0)
+  }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- FEHdf[[1]]
+objCol <- grep('従業員',colnames(obj))
 ```
 
 ***
+#### 従業員1人当り従業員給与
+- `r colnames(obj)[objCol[2]]` ÷ `r colnames(obj)[objCol[1]]`
 
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-dataSet[,1:2]
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+iii <- 1
+for(iii in seq(length(FEHdf))){
+  cat('\n\n')
+  cat('#### ',sheetTitle[iii],'\n\n')
+  obj <- FEHdf[[iii]]
+  obj <- obj[,c(1,grep('従業員',colnames(obj)))]
+  obj$`従業員1人当り従業員給与(円、当期末)` <- obj[,3]/obj[,2]*10^12
+  objCol <- 4
+  dateCol <- 1
+  par(mar=c(3,3,3,1),family='Meiryo',font.main=1,cex.main=1)
+  plot(x = obj[,dateCol],y = obj[,objCol],type = 'l',
+       main = paste0(colnames(obj)[objCol],'\n',
+                     paste0(format(range(obj[,dateCol]),dateFormat),collapse = '~')),
+       pch = 20,cex = 0.9,xlab='',ylab='',
+       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),col = 'blue')
+  lo <- 
+    loess(formula = obj[,objCol] ~ as.numeric(obj[,dateCol]),degree = 2)
+  lines(x = obj[,dateCol],y = predict(lo),col = 'red',lwd = 2,lty = 2)
+  fun_addTxtToChart(objCol = 4)
+  cat('\n\n<hr>\n\n')
+}
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-fun_generateKnit <- function(objDF = dataSet, n1 = 1, barPlot = 0){
-  fun_plot_dygraph(obj = objDF, n0 = n1, 
-                   dygraphTitle = paste0(colnames(objDF)[-1], collapse = ' × '), legendWidth = 300, barPlot = barPlot)
-  fun_dygraph_shade(n = n1)
-}  
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+obj <- FEHdf[[1]][,c(1,grep('利益剰余金',colnames(FEHdf[[1]])))]
+fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,4*10,4*5,4*3))
+dev.off()
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-n1 <- 1
-ccc <- 3
-fun_generateKnit(objDF = FinancialStatementsStatisticsOfCorporationsByIndustry[,c(1,ccc)], n1 = n1, barPlot = 0)
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '法人企業統計,財務省',
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
+             dataTitle = dataTitle,
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,
+             tableTitle = paste0(colnames(obj)[2],'(いわゆる内部留保)'))
+fun_updateURLcsv()
 ```
 
-```{r warning=F, error=F, message=F, echo=F}
-n2 <- 2
-ccc <- 21
-fun_generateKnit(objDF = FinancialStatementsStatisticsOfCorporationsByIndustry[,c(1,ccc)], n1 = n2, barPlot = 0)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-n3 <- 3
-ccc <- 28
-fun_generateKnit(objDF = FinancialStatementsStatisticsOfCorporationsByIndustry[,c(1,ccc)], n1 = n3, barPlot = 0)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-n4 <- 4
-ccc <- 45
-fun_generateKnit(objDF = FinancialStatementsStatisticsOfCorporationsByIndustry[,c(1,ccc)], n1 = n4, barPlot = 0)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-n5 <- 5
-ccc <- 84
-fun_generateKnit(objDF = FinancialStatementsStatisticsOfCorporationsByIndustry[,c(1,ccc)], n1 = n5, barPlot = 0)
-```
-
-```{r warning=F, error=F, message=F, echo=F}
-n6 <- 6
-ccc <- 98
-fun_generateKnit(objDF = FinancialStatementsStatisticsOfCorporationsByIndustry[,c(1,ccc)], n1 = n6, barPlot = 0)
-```
-
-`r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)),get(paste0('knit_expanded',n3)),get(paste0('knit_expanded',n4)),get(paste0('knit_expanded',n5)),get(paste0('knit_expanded',n6)))), collapse = '\n')`
-
-#### `r paste0(title,'-',type,'-',scale)` -前年同期差
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-buf <- FinancialStatementsStatisticsOfCorporationsByIndustry
-buf <- 
-  data.frame(tail(buf[,1,drop=F],-4), diff(as.matrix(buf[,-1,drop=F]),lag = 4), check.names = F, stringsAsFactors = F)
-dataSet <- funReshape(obj = tail(buf,6))
-funDataTable(obj = dataSet)
-```
-
-***
-
-#### 法人企業統計中、"利益"、"給与"、"賞与"に関連する項目の前年同期差
-- 利益剰余金はいわゆる"内部留保"
-
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-dataSet0 <- dataSet[grep('利益|給与|賞与',dataSet[,2]),]
-knitr::kable(dataSet0,row.names = F)
-```
-
-***
-
-<script>
-  MakeNegative();
-</script>
 
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
