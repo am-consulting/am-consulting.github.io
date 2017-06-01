@@ -50,7 +50,7 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
-fun_jobOffer(dataID = '000031570244', sheetNo = 14)
+fun_jobOffer(dataID = '000031583064', sheetNo = 14)
 colnames(jobOffer) <- gsub('\n','',colnames(jobOffer))
 jobOffer[,-1] <- apply(jobOffer[,-1],2,as.numeric)
 ```
@@ -153,27 +153,9 @@ fun_dataTable(obj = topJobDF,
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 objColumn <- 
@@ -181,10 +163,10 @@ objColumn <-
 obj <- jobOffer[,c(1,objColumn)]
 fun_plotTimeSeries(obj = obj,
                    chartType = 0,
+                   dataTitle = zen2han(sheetTitle2),
                    dateFormat = dateFormat,
-                   dataTitle = dataTitle,
                    dataSource = dataSource,
-                   mar = c(4,4,6,2),
+                   mar = c(4,4,5,2),
                    fitlwdL = 2,
                    fitLcolor = 2,
                    fitlwdR = 2,
@@ -201,18 +183,26 @@ dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objColumn <- 
+  grep('管理的職業|技術的職業$|事務的職業$|^[^:]+の職業$|介護関係',colnames(jobOffer))
+obj <- jobOffer[,c(1,objColumn)]
+fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,colName = '職種')
+#########################
 outputDF <- 
   fun_transposeDataFrame(obj = jobOffer,
                          tailN = 1,
                          dateFormat = dateFormat,
                          colName = sheetTitle2)
+outputDF <- 
+  outputDF[order(outputDF[,2],decreasing = T),]
 fun_outputMD(tags = '厚生労働省,有効求人倍率',
              objDF = outputDF,
              htmlName = htmlName,
-             image = 1,
+             image1 = 1,
              dataTitle = dataTitle,
-             tableTitle = colnames(obj)[2],
-             tableName = '職業別有効求人倍率(パートタイムを除く常用)')
+             tableTitle = colnames(outputDF)[2],
+             tableName = colnames(outputDF)[1])
+fun_updateURLcsv()
 ```
 
 ***
