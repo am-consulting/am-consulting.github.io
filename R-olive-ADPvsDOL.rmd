@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-ADPvsDOL.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ADPvsDOL';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Comparison between U.S. ADP Nonfarm Employment Change and U.S. Nonfarm Payrolls'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -63,7 +63,7 @@ tmp <-
   )
 colnames(tmp)[2] <-
   'All Employees: Total Nonfarm Payrolls:Change, Thousands of Persons,Seasonally Adjusted'
-fun_makeDiffTable(obj = tmp,lag = 1)
+diffDF <- fun_makeDiffTable(obj = tmp,lag = 1)
 DOLreport <- diffDF
 ```
 
@@ -71,7 +71,8 @@ DOLreport <- diffDF
 objColumn <- tail(grep('total',colnames(ADPreport),ignore.case = T),1)
 fun_latestResult(obj = ADPreport,objColumn = objColumn)
 dataTitle <- 
-  paste0('ADP雇用統計と米国労働省雇用統計の比較:最新のADP雇用統計',latestResult)
+  paste0('ADP vs Bureau of Labor Statistics/ADP雇用統計と米国労働省雇用統計の比較:最新のADP雇用統計',
+         latestResult)
 dataSource <- 'Automatic Data Processing, Inc.'
 ```
 
@@ -102,8 +103,7 @@ fun_generateKnit(objDF = ADPreport[,c(1,objColumn)],
                  dygraphTitle = colnames(ADPreport)[objColumn])
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
-fun_transposeDataFrame(obj = ADPreport[,c(1,objColumn)],dateFormat = '%Y-%m')
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = ADPreport[,c(1,objColumn)],dateFormat = '%Y-%m'))
 ```
 
 ***
@@ -137,7 +137,7 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 ```
 
 ***
-#### Whether the sign is the same or not
+#### Change:Whether the sign is the same or not
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 table01 <- data.frame()
@@ -183,13 +183,34 @@ fun_markdownTable(obj = table02)
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_transposeDataFrame(obj = mergeData,dateFormat = '%Y-%m',tailN = 3)
-fun_markdownTable(obj = na.omit(tDF))
+fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = mergeData,dateFormat = '%Y-%m',tailN = 3)))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_transposeDataFrame(obj = ADPreport,dateFormat = '%Y-%m',tailN = 5)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = ADPreport,dateFormat = '%Y-%m',tailN = 5))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- ADPreport[,c(1,2)]
+fun_PlotStrawAnd4charts(obj = obj,dateFormat = '%Y-%m',startYear = 2013)
+dev.off();dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <-
+  fun_transposeDataFrame(obj = ADPreport,dateFormat = '%Y-%m',tailN = 5)
+obj <- 
+  obj[grep('% change',obj[,1],ignore.case = T),]
+obj <-
+  obj[order(obj[,ncol(obj)],decreasing = T),]
+fun_outputMD(tags = 'ADP',
+             objDF = obj,
+             htmlName = htmlName,
+             image1 = 1,image2 = 1,
+             dataTitle = dataTitle,
+             tableTitle = 'Latest 5 months',
+             tableName = 'ADP Nonfarm Employment Change')
+fun_updateURLcsv()
 ```
 
 ***
