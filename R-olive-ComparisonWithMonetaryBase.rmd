@@ -73,8 +73,9 @@ for(iii in 1:9){ # seq(length(importIndex))
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 importIndex <- 
-  c('importConstructionStatistics.r')
-for(iii in 1:1){
+  c('importConstructionStatistics.r',
+    'importMarketCapitalization.r')
+for(iii in 1:2){
   script <-
     RCurl::getURL(
       paste0('https://raw.githubusercontent.com/am-consulting/Rscript/master/',
@@ -577,6 +578,25 @@ bufCol <- 3
 buf <- fun_makeDiffRatioTable(obj = SalesByIndustryOfBusinessActivity,lag = 12)
 buf <- buf[,c(1,bufCol)]
 colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+mergeData <- 
+  merge(monetaryBase_Japan,buf,by='Date')
+objCol <- 10
+obj <- 
+  tail(mergeData[,c(1,2,objCol)],tailN)
+tmp <- fun_compareWithMB(obj = obj,dateFormat = dateFormat)
+resultDF[n,1] <- colnames(obj)[3]
+resultDF[n,2] <- round(summary(tmp)$adj.r.squared,3)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+n <- n + 1
+bufCol <- 2
+buf <- fun_makeDiffRatioTable(obj = marketCapitalization,lag = 12)
+buf <- buf[,c(1,bufCol)]
+colnames(buf)[2] <- paste0(colnames(buf)[2],':前年同月比(%)')
+buf[,1] <- as.Date(paste0(year(buf[,1]),'-',month(buf[,1]),'-1'))
 mergeData <- 
   merge(monetaryBase_Japan,buf,by='Date')
 objCol <- 10
