@@ -1,0 +1,165 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CO2Emissions';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'CO2 Emissions From Fuel Combustion Highlights 2016(Source:IEA)'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 500)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+tmp0 <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/IEA_CO2_FC.csv',header = F,stringsAsFactors = F,fileEncoding = 'utf8')
+sheetTitle <- tmp0[1,1]
+sheetUnit <- tmp0[1,2]
+tmp1 <- tmp0[-1,]
+tmp2 <- t(tmp1)
+colnames(tmp2) <- tmp2[1,]
+tmp3 <- tmp2[-1,]
+colnames(tmp3)[grep('Ivoire',colnames(tmp3))] <- 'Côte d\'Ivoire'
+colnames(tmp3)[grep('Cura',colnames(tmp3))] <- 'Curaçao'
+dataSet <- 
+  data.frame(Date = as.Date(paste0(tmp3[,1],'-1-1')),
+             apply(tmp3[,-1],2,as.numeric),check.names = F,row.names = NULL,stringsAsFactors = F)
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- 
+  paste0('-パリ協定離脱-燃料燃焼による二酸化炭素排出/-Withdraw from the Paris Agreement-CO2 Emissions From Fuel Combustion Highlights(Source:IEA):2016')
+dataSource <- 'International Energy Agency'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source https://www.iea.org/publications/freepublications/publication/co2-emissions-from-fuel-combustion-highlights-2016.html
+- The Paris Agreement http://unfccc.int/paris_agreement/items/9485.php
+- 2017-06-01:『U.S. President Donald Trump announced that the United States would withdraw from the agreement.』(quotation from [Wikipedia](https://en.wikipedia.org/wiki/Paris_Agreement))
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+cat('#### ',sheetTitle,':',sheetUnit,'\n\n')
+obj <- 
+  fun_transposeDataFrame(obj = dataSet,dateFormat = '%Y',colName = 'Region/Country/Economy')
+obj <-
+  obj[-which(apply(obj,1,function(x)sum(is.na(x)))==(ncol(obj)-1)),]
+obj <- obj[order(obj[,ncol(obj)],decreasing = T),]
+fun_markdownTable(obj = obj)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6}
+objCol <-
+  grep('of china$|States$|india$|russian|japan',colnames(dataSet),ignore.case = T)
+obj <- na.omit(dataSet[,c(1,objCol)])
+lineColors <-
+      RColorBrewer::brewer.pal(ncol(obj), 'Dark2')
+ylim <-
+  c(min(obj[,-1]),max(obj[,-1]))
+par(mar=c(4,6,4,1),font.main=1,cex.main=1,family='Meiryo')
+for(ccc in 2:ncol(obj)){
+  if(ccc == 2){
+    plot(x = obj[,1],y = obj[,ccc],type='o',pch=20,col=lineColors[ccc],
+         xaxt='n',xlab='',ylim=ylim,log='y',ylab=paste0(sheetUnit,'\nlogarithmic axis'),
+         panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = F),
+         main = paste0(sheetTitle,'\n',
+                       paste0(format(range(obj[,1]),'%Y'),collapse = '~'),
+                       '\nSourece:',dataSource))
+  }else{
+    lines(x = obj[,1],y = obj[,ccc],type='o',pch=20,col=lineColors[ccc],xaxt='n',yaxt='n',xlab='',ylab='')
+  }
+}
+axis.Date(side = 1,at = obj[,1],format = '%Y',padj = 1,cex.axis = 1)
+graphics::legend(x = 'topleft',col = lineColors[-1],lty = 1,legend = colnames(obj)[-1],
+                 cex = 1,bty = 'n',lwd = 4)
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_barPlot <- function(objCol){
+obj <- na.omit(dataSet[,c(1,objCol)])
+diffDF <- fun_makeDiffRatioTable(obj = obj,lag = 1)
+diffDF$Col <- ifelse(0<=diffDF[,2],'#4169e1','#dc143c')
+par(mar=c(4,3,4,1),font.main=1,cex.main=1,family='Meiryo')
+barplot(height = diffDF[,2],names.arg = format(diffDF[,1],'%Y'),las=2,
+        col = diffDF$Col,main = paste0(colnames(diffDF)[2],'\n',sheetTitle,'\nYear over Year(%)'))
+}
+fun_barPlot(objCol = objCol[1])
+cat('<hr>')
+fun_barPlot(objCol = objCol[2])
+cat('<hr>')
+fun_barPlot(objCol = objCol[3])
+cat('<hr>')
+fun_barPlot(objCol = objCol[4])
+cat('<hr>')
+fun_barPlot(objCol = objCol[5])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <-
+  fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = dataSet,lag = 1),dateFormat = '%Y')
+obj <-
+  obj[-which(apply(obj,1,function(x)sum(is.na(x)))==(ncol(obj)-1)),]
+obj <- obj[order(obj[,ncol(obj)],decreasing = T),]
+fun_outputMD(tags = 'IEA,CO2',
+             objDF = obj,
+             htmlName = htmlName,
+             image1 = 0,image2 = 0,
+             dataTitle = dataTitle,
+             tableTitle = 'Year over Year(%)/前年比(%)',
+             tableName = sheetTitle)
+fun_updateURLcsv()
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
