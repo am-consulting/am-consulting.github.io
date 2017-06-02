@@ -278,7 +278,8 @@ dev.off()
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- monetaryBase_Japan[,c(1,2)]
 fun_outputMD(tags = '日本銀行,マネタリーベース',
-             objDF = fun_summaryByName(obj = obj),
+             title = dataTitle,
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
              image1 = 1,
              dataTitle = dataTitle,
