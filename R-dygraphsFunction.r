@@ -53,7 +53,7 @@ fun_dygraph <-
     dyLegend(width = legendWidth, show = "follow") %>%
     dyRangeSelector() %>%
     dyUnzoom() %>% dyCrosshair(direction = hairDirection) %>%
-    dyOptions(colors = colors)
+    dyOptions(colors = colors,maxNumberWidth = 100)
   if(quantiles != 0){
     summaryResult <-
       summary(obj[,quantiles])
