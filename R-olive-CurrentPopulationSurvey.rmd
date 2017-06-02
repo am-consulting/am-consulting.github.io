@@ -44,6 +44,12 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r warning = F, error = F, message = F, echo = F,results='hide'}
+library(Nippon)
+target <- 2016
+```
+
+```{r warning = F, error = F, message = F, echo = F,results='hide'}
+if(target == 2015){
 csvFile <-
   c('table2-1.csv','table2-2.csv','table3-2.csv','table7.csv')
 baseURL <- 
@@ -70,12 +76,45 @@ for(iii in seq(length(csvFile))){
   CPS[[iii]] <- buf0
   print(head(CPS[[iii]]))
 }
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+if(target == 2016){
+  csvFile <-
+    c('table1_2.csv','table1_4.csv','table2_4.csv','table3.csv','table6.csv')
+  baseURL <- 
+    'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/CurrentPopulationSurvey/H28/'
+  CPS <- list()
+  for(iii in seq(length(csvFile))){
+    tmp0 <-
+      read.csv(file = paste0(baseURL,csvFile[iii]),
+               header = T,
+               quote = "\"",
+               check.names = F,stringsAsFactors = F,fileEncoding = 'utf8')
+    buf0 <- tmp0
+    if(iii != 5){
+      buf0[,1] <-
+        as.Date(paste0(buf0[,1],'-1-1'))
+      buf0[,-1] <- 
+        apply(buf0[,-1],2,as.numeric)
+    }else{
+      buf0[,3] <- 
+        apply(buf0[,3,drop=F],2,as.numeric)
+      buf0[,1] <-
+        formatC(buf0[,1], width=5, flag="0")
+    }
+    CPS[[iii]] <- buf0
+    print(head(CPS[[iii]]))
+  }
+}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dateFormat <- '%Y年'
+fun_latestResult(obj = CPS[[1]],dateFormat = '%Y年')
 dataTitle <- 
-  paste0('平成27年(2015)人口動態統計(確定数)')
+  paste0('人口動態統計:2016年:概数:',latestResult)
 dataSource <- 
   '厚生労働省'
 windowsFonts(Meiryo = windowsFont('Meiryo'))
@@ -89,7 +128,7 @@ windowsFonts(Meiryo = windowsFont('Meiryo'))
 
 ***
 
-#### 第2表-1 人口動態総覧の年次推移
+#### 第1表② 出生数、死亡数、乳児死亡数、新生児死亡数、自然増減数の年次推移
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 1
@@ -98,7 +137,7 @@ obj <- obj0[,c(1,2,3,6)]
 fun_generateKnit(objDF = obj,
                  plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
                  colors = c('blue','red','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+eval(parse(text = paste0('dygraphPlot', n)))
 cat('<hr>')
 obj <- obj0[,c(1,4,5)]
 fun_generateKnit(objDF = obj,
@@ -106,103 +145,121 @@ fun_generateKnit(objDF = obj,
                  colors = c('blue','red','green'))
 eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
 cat('<hr>')
-obj <- obj0[,c(1,7,8,9)]
-fun_generateKnit(objDF = obj,
-                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
-                 colors = c('blue','red','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
-cat('<hr>')
-obj <- obj0[,c(1,11,12)]
-fun_generateKnit(objDF = obj,
-                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
-                 colors = c('brown','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
 ```
 
-***
-
-#### 第2表-2 人口動態総覧(率)の年次推移
+#### 第1表④ 死産数、婚姻件数、離婚件数
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 2
 obj0 <- CPS[[n]]
-obj <- obj0[,c(1,2,3,6)]
+obj <- obj0[,c(1,2)]
 fun_generateKnit(objDF = obj,
                  plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
                  colors = c('blue','red','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+eval(parse(text = paste0('dygraphPlot', n)))
 cat('<hr>')
-obj <- obj0[,c(1,4,5)]
+obj <- obj0[,c(1,3,4)]
 fun_generateKnit(objDF = obj,
                  plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
                  colors = c('blue','red','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+eval(parse(text = paste0('dygraphPlot', n)))
 cat('<hr>')
-obj <- obj0[,c(1,7,8,9)]
+obj <- obj0[,c(1,5,8)]
 fun_generateKnit(objDF = obj,
                  plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
                  colors = c('blue','red','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+eval(parse(text = paste0('dygraphPlot', n)))
 cat('<hr>')
-obj <- obj0[,c(1,11,12)]
+obj <- obj0[,c(1,6,7)]
 fun_generateKnit(objDF = obj,
                  plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
                  colors = c('brown','green'))
-eval(parse(text = paste0('dygraphPlot', n, ' %>% dyLimit(0, color = "red")')))
+eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ***
 
-#### 第3表-2 人口動態総覧(率),都道府県(21大都市再掲)別
-- 降順上位5
+#### 第2表④ 周産期死亡率、婚姻率、離婚率、合計特殊出生率
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
 n <- 3
 obj0 <- CPS[[n]]
-obj0 <-
-  obj0[-grep('全国',obj0[,1]),]
-obj0$ID <- 
-  seq(nrow(obj0))
-buf0 <-
-  subset(obj0,obj0$ID<=47)
-for(ccc in 2:(ncol(buf0)-1)){
-  fun_markdownTable(obj = head(buf0[order(buf0[,ccc],decreasing = T),c(1,ccc)],5))
-  cat('<hr>')
-}
+obj <- obj0[,c(1,2)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','red','green'))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+obj <- obj0[,c(1,3,4)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('brown','green'))
+eval(parse(text = paste0('dygraphPlot', n)))
+cat('<hr>')
+obj <- obj0[,c(1,5)]
+fun_generateKnit(objDF = obj,
+                 plotNum = n,group = 0,dygraphTitle = paste0(colnames(obj)[-1],collapse = '×'),
+                 colors = c('blue','green'))
+eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
-- 昇順上位5
+***
+#### 第3表 母の年齢階級別出生数
+- 母の年齢不詳は除く
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-for(ccc in 2:(ncol(buf0)-1)){
-  fun_markdownTable(obj = head(buf0[order(buf0[,ccc],decreasing = F),c(1,ccc)],5))
-  cat('<hr>')
-}
-```
-
-#### 第7表 死因簡単分類別にみた性別死亡数･死亡率(人口10万対)
-
-```{r warning=F, error=F, message=F, echo=F, results='asis'}
-library(Nippon)
 n <- 4
 obj0 <- CPS[[n]]
-obj0[,2] <- 
-  sapply(obj0[,2],zen2han)
-fun_dataTable(obj = obj0,dateFormat = 0,orderDirection = 'asc',menuLength = 20)
+obj <-
+  fun_transposeDataFrame(obj = obj0,tailN = 30,
+                         dateFormat = '%Y年',colName = '母の年齢階級')
+fun_markdownTable(obj = obj)
+cat('\n\n<hr>\n\n')
+cat('- 構成比(%)')
+obj[,-1] <- 
+  apply(obj[,-1],2,function(x)round(x/sum(x)*100,2))
+fun_markdownTable(obj = obj)
 ```
 
 ***
 
+#### 第6表 死因簡単分類コード別死亡数構成比
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+n <- 5
+obj0 <- na.omit(CPS[[n]])
+obj0[,2] <-
+  sapply(gsub('\\s','',obj0[,2]),zen2han)
+fun_dataTable(obj = obj0,orderDirection = 'asc',dateFormat = 0,menuLength = 20)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <- 
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+obj0 <- merge(CPS[[2]],CPS[[3]],by='Date')
+obj0$`離婚件数/婚姻件数` <- obj0$`離婚件数(組)`/obj0$`婚姻件数(組)`
+fun_plotTimeSeries(obj = obj0,objYL = 12,objYR = 13,chartType = 2,
+                   typeL = 'o',typeR = 'o',dateFormat = '%Y',
+                   dataTitle = dataTitle,dataSource = dataSource,mar = c(4,5,5,5))
+dev.off()
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 n <- 2
-obj0 <- CPS[[n]]
-obj <- obj0[,c(1,2,3,6)]
+obj0 <- merge(merge(CPS[[1]],CPS[[2]],by='Date'),CPS[[3]],by='Date')
+colnames(obj0)
+obj <- obj0[,c(1,6,15,16,17)]
 obj[,1] <- format(obj[,1],'%Y年')
 fun_outputMD(tags = '厚生労働省,人口動態統計',
              objDF = tail(obj,20),
              htmlName = htmlName,
+             dataTitle = dataTitle,
+             image1 = 1,
              tableTitle = paste0('出生率、死亡率および自然増減率'),
              tableName = '人口動態総覧(率)の年次推移')
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
