@@ -1,10 +1,11 @@
 # https://github.com/benweet/stackedit/issues/137
 fun_outputMD <-
   function(tags = '貸出約定平均金利,日本銀行',
+           title = title,
            objDF = summaryByName,
            htmlName = htmlName,
            tableTitle = tableTitle,
-           dataTitle = dataTitle,
+           dataTitle = '',
            image1 = 0,
            image2 = 0,
            tableName = '内閣総理大臣毎の基本統計量'){
@@ -32,13 +33,14 @@ fun_outputMD <-
   txt <- paste0('
 ---
 tags : [',tags,']
+title : ',title,'
 published : true
 ---\n\n')
   write.table(x = txt,file = mdFile,append = F,
               fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-  txt <- paste0('# ',dataTitle,'\n\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  # txt <- paste0('# ',dataTitle,'\n\n')
+  # write.table(x = txt,file = mdFile,append = T,
+  #             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   if(image1!=0){
     txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                   htmlName,
