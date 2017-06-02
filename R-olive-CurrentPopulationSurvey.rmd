@@ -215,14 +215,13 @@ obj <-
                          dateFormat = '%Y年',colName = '母の年齢階級')
 fun_markdownTable(obj = obj)
 cat('\n\n<hr>\n\n')
-cat('- 構成比(%)')
+cat('- 構成比(%)\n\n')
 obj[,-1] <- 
   apply(obj[,-1],2,function(x)round(x/sum(x)*100,2))
 fun_markdownTable(obj = obj)
 ```
 
 ***
-
 #### 第6表 死因簡単分類コード別死亡数構成比
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
