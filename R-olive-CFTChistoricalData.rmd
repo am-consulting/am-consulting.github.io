@@ -160,7 +160,7 @@ fun_outputMD(tags = 'CFTC,Futures',
              objDF = tail(obj[,c(1,3,4)],5),
              htmlName = htmlName,
              image1 = 1,image2 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = 'Latest 5days',
              tableName = paste0(unique(obj$Name),unique(obj$Unit)))
 fun_updateURLcsv()
