@@ -1,0 +1,151 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'SubsidiesForPrivateUniversities';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'The ordinary expense subsidies for private universities'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 500)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+library(rvest)
+library(Nippon)
+username <- 
+  Sys.info()['user']
+pathOutput <- 
+  paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+getwd()
+targetURL <- 
+  'bcl_1514325201.htm'
+htmlMarkup <- 
+  read_html(x = targetURL,encoding = 'utf8')
+tableS <- htmlMarkup %>% html_table()
+sheetUnit <- vector()
+for(iii in seq(length(tableS))){
+  buf1 <- tableS[[iii]]
+  keyWord <- '単位'
+  objRow <- which(apply(buf1,1,function(x)(length(grep(keyWord,x,ignore.case = T))))!=0)
+  objCol <- which(apply(buf1,2,function(x)(length(grep(keyWord,x,ignore.case = T))))!=0)[1]
+  sheetUnit[iii] <- zen2han(buf1[objRow,objCol])
+  keyWord <- '順位'
+  objRow <- which(apply(buf1,1,function(x)(length(grep(keyWord,x,ignore.case = T))))!=0)
+  objCol <- which(apply(buf1,2,function(x)(length(grep(keyWord,x,ignore.case = T))))!=0)
+  colnames(buf1) <- sapply(gsub('\\s','',buf1[objRow,]),zen2han)
+  buf2 <- buf1[(objRow+1):nrow(buf1),objCol:ncol(buf1)]
+  buf2[buf2==''] <- NA
+  buf3 <- buf2[!is.na(buf2[,1]),]
+  keyWord <- '一般補助'
+  objCol01 <- grep(keyWord,colnames(buf3))
+  keyWord <- '特別補助'
+  objCol02 <- grep(keyWord,colnames(buf3))
+  buf4 <- buf3[,c(1,2,objCol01,objCol02,ncol(buf3))]
+  buf4[,-2] <- apply(buf4[,-2],2,function(x)as.numeric(gsub(',','',x)))
+  colnames(buf4)[c(2,5)] <- c('学校名','合計')
+  tmpN <- length(which(buf4[,5]!=(buf4[,3]+buf4[,4])))
+  print(paste0(iii,'-',tmpN))
+  if(tmpN!=0){print('Error!');break}
+  buf4[,2] <- sapply(buf4[,2],zen2han) 
+  if(iii==1){allSubsidy <- buf4}else{allSubsidy <- rbind(allSubsidy,buf4)}
+}
+row.names(allSubsidy) <- NULL
+allSubsidy$`特別/一般(%)` <- round(allSubsidy$`特別補助`/allSubsidy$`一般補助`*100,2)
+allSubsidy$`構成比(%)` <- round(allSubsidy$`合計`/sum(allSubsidy$`合計`)*100,2)
+sheetUnit <- unique(sheetUnit)
+# http://www.pdfonline.com/convert-pdf-to-html/
+```
+
+```{r,warning=F,error=F,message=F,results='hold',echo=F}
+dataTitle <- 
+  paste0('私立大学等経常費補助金 学校別交付額一覧:','平成28年度')
+dataSource <- '日本私立学校振興･共済事業団'
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.shigaku.go.jp/s_kouhujoukyou.htm
+
+***
+
+#### `r dataTitle`
+- `r sheetUnit`
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_dataTable(obj = allSubsidy,dateFormat = 0,orderDirection = 'asc',menuLength = 30,
+              bigmarkColumn = c(1,2))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+par(mar=c(4,9,3,2),family='Meiryo',font.main=1,cex.main=1)
+obj <- head(allSubsidy,10)
+barplot(height = obj[,5],names.arg = paste0(obj[,1],'位:',obj[,2]),horiz = T,las = 1,col = '#4169e1', 
+        main = paste0('私立大学等経常費補助金交付額',colnames(obj)[5],sheetUnit))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '私立大学,補助金',
+             objDF = obj,
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,
+             title = dataTitle,
+             tableTitle = paste0('構成比:補助金',nrow(allSubsidy),'校分合計に対する割合'),
+             tableName = '補助金交付額Top10')
+fun_updateURLcsv()
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
