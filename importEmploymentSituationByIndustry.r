@@ -13,6 +13,10 @@ fun_getTable <- function(){
   tmp1[,-1] <- apply(tmp1[,-1],2,function(x)as.numeric(gsub(',|\\$','',x)))
   tmp1 <- tmp1[apply(tmp1,1,function(x)sum(is.na(x)))!=(ncol(tmp1)-1),]
   tmp1[,1] <- gsub('\\(.+\\)','',tmp1[,1])
+  colnames(tmp1) <- gsub('ofunemployedpersons','of unemployed persons',colnames(tmp1))
+  colnames(tmp1) <- gsub('Unemploymentrates','Unemployment rates',colnames(tmp1))
+  colnames(tmp1) <- gsub(':Change from:',':Change from',colnames(tmp1))
+  print(colnames(tmp1))
   return(tmp1)
 }
 ################################################
