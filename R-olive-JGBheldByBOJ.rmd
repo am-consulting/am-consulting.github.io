@@ -202,27 +202,9 @@ fun_markdownTable(obj = bufMD)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <- 
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 attach(formdfile)
@@ -243,8 +225,8 @@ dev.off()
 fun_outputMD(tags = '日本銀行, 日本国債, 変動利付債, 物価連動債',
              objDF = obj,
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = '日本銀行が保有する国債残高合計(兆円)',
              tableName = '日本銀行が保有する国債残高合計(兆円)')
 ```
