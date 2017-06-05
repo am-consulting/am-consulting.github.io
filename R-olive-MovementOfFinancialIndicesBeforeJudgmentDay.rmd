@@ -72,7 +72,8 @@ c(
   'T10YFF','10-Year Treasury Constant Maturity Minus Federal Funds Rate',
   'NASDAQCOM','NASDAQ Composite Index',
   'NIKKEI225','Nikkei Stock Average, Nikkei 225',
-  'STLFSI','St. Louis Fed Financial Stress Index'
+  'STLFSI','St. Louis Fed Financial Stress Index',
+  'DCOILBRENTEU','Crude Oil Prices: Brent - Europe'
 )
 tsData <- list()
 cnt <- 1
@@ -189,7 +190,7 @@ fun_outputMD(tags = 'リーマンショック',
              objDF = resultDF[,c(2,3,5)],
              htmlName = htmlName,
              image1 = 0,image2 = 0,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = paste0('リーマンショック前後',pastDays,'日'),
              tableName = '金融指標の動き')
 fun_updateURLcsv()
