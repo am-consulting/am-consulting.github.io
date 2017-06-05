@@ -121,34 +121,35 @@ fun_generateKnit(objDF = obj,
 eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
+***
+#### Month Over Month(%)
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+obj <-
+  fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = allOECDData),dateFormat = dateFormat)
+obj <- obj[order(obj[,ncol(obj)],decreasing = T),]
+fun_markdownTable(obj = obj)
+```
+
+***
+#### Year Over Year(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <-
+  fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = allOECDData,lag = 12),dateFormat = dateFormat)
+obj <- obj[order(obj[,ncol(obj)],decreasing = T),]
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 objCol <- grep(':jpn',colnames(allOECDData),ignore.case = T)
 obj <- allOECDData[,c(1,objCol)]
 n <- 12
-fun_MovingAverage(obj = obj,n = n)
+MovingAverageDF <- fun_MovingAverage(obj = obj,n = n)
 obj <- na.omit(MovingAverageDF[,c(1,2,3)])
 fun_plotTimeSeries(obj = obj,
                    typeL = 'o',typeR = 'l',
@@ -171,14 +172,12 @@ dev.off()
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 objCol <- grep(':jpn',colnames(allOECDData),ignore.case = T)
 obj <- na.omit(allOECDData[,c(1,objCol)])
-summaryData <- fun_summaryByName(obj = obj)
-summaryData[,2:7] <- 
-  data.frame(apply(summaryData[,2:7],2,function(x)round(x,2)),stringsAsFactors = F,check.names = F)
+summaryData <- fun_summaryByName(obj = obj,dateFormat = dateFormat)
 fun_outputMD(tags = 'OECD,Share Prices Index,株価指数',
              objDF = summaryData,
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = '日本の株価指数')
 ```
 
