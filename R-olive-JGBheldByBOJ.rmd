@@ -229,6 +229,7 @@ fun_outputMD(tags = '日本銀行, 日本国債, 変動利付債, 物価連動�
              title = dataTitle,
              tableTitle = '日本銀行が保有する国債残高合計(兆円)',
              tableName = '日本銀行が保有する国債残高合計(兆円)')
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
