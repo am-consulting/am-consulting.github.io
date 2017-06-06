@@ -423,7 +423,7 @@ fun_outputMD(tags = 'ビットコイン,バブル経済',
              objDF = fun_transposeDataFrame(obj = bitCoin),
              htmlName = htmlName,
              image1 = 1,image2 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = '直近5日分',
              tableName = 'ビットコイン価格')
 fun_updateURLcsv()
