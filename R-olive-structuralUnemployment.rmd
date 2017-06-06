@@ -27,11 +27,11 @@ options(width = 1000)
 
 ```{r warning=F, error=F, message=F, echo=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-library(ggplot2)
+# library(ggplot2)
 library(RCurl)
-library(XLConnect)
-library(knitr)
-library(Nippon)
+# library(XLConnect)
+# library(knitr)
+# library(Nippon)
 options(download.file.method='libcurl')
 ```
 
@@ -115,6 +115,7 @@ options(scipen = 999)
 ```{r warning=F, error=F, message=F, echo=F}
 n1 <- 1
 obj <- suRate0[,-c(2)]
+obj <- merge(obj,laborforcesurvey[,c(1,17)])
 fun_generateKnit(objDF = obj, 
                  plotNum = n1, 
                  group = 0,
@@ -125,7 +126,7 @@ eval(parse(text = paste0('dygraphPlot', n1, ' %>% ', primeMinisterOfJapan_dygrap
 ***
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = tail(suRate0[,-2],5*12), leftcolumns = 1,dateFormat = dateFormat)
+fun_dataTable(obj = tail(obj,5*12), leftcolumns = 1,dateFormat = dateFormat)
 ```
 
 ***
@@ -146,60 +147,53 @@ colnames(beforeORafter)[ncol(beforeORafter)] <-
 fun_markdownTable(obj = beforeORafter)
 ```
 
+***
+#### 直近5ヶ月の労働力関連指数
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = objDF,dateFormat = dateFormat,colName = '項目'))
+cat('\n- 前月差\n')
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = objDF),
+                                               dateFormat = dateFormat,colName = '項目'))
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- suRate0[,c(1,3,4)]
-fun_plotTimeSeries(obj = obj,
-                   chartType = 1,
-                   dateFormat = dateFormat,
-                   dataTitle = '雇用失業率、欠員率、構造的失業率',
-                   dataSource = dataSource,
-                   mar = c(4,4,6,2),
-                   fitlwdL = 2,
-                   fitLcolor = 1,
-                   fitlwdR = 2,
-                   fitRcolor = 2,
-                   needLefLab = 0,
-                   typeL = 'o',
-                   typeR = 'o',
-                   cexL = 1.0, 
-                   cexR = 1.0,  
-                   cex.legend = 2,
-                   cex.main = 1.2)
-abline(h=0,col='red',lwd=2)
+obj <- merge(obj,laborforcesurvey[,c(1,17)])
+colnames(obj) <- sapply(colnames(obj),zen2han)
+par(mar=c(4,4,4,2),family='Meiryo',font.main=1,cex.main=1)
+ylim <- c(min(obj[,-1]),max(obj[,-1]))
+lineCol <- c('blue','red','#708090')
+plot(x = obj[,1],y = obj[,2],type = 'o',pch = 20,ylim = ylim,
+     col=lineCol[1],xlab='',ylab='',xaxt = 'n',cex = 0.9,
+     main = paste0(paste0(colnames(obj)[-1],collapse = '×'),'\nSource:',dataSource),
+     panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
+lines(x = obj[,1],y = obj[,3],type='o',pch=20,col=lineCol[2],cex=0.9)
+lines(x = obj[,1],y = obj[,4],type='o',pch=20,col=lineCol[3],cex=0.9)
+graphics::legend(x = 'topright',col = lineCol,lty = 1,legend = colnames(obj)[-1],cex = 1.0,
+                 bty = 'n',lwd = 3)
+axis.Date(side = 1,at = obj[,1],format = '%Y%m',padj = 1,cex.axis = 1.0,las = 1)
+tmp <- obj[which.min(abs(obj[,2]-obj[,3])),]
+abline(v=tmp[,1],lty=2)
+abline(h=tmp[,2],lty=2)
+abline(h=tmp[,4],lty=2)
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- na.omit(suRate0[,c(1,3)])
 fun_outputMD(tags = '厚生労働省,雇用失業率,欠員率,構造的失業率',
-             objDF = fun_summaryByName(obj = obj),
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
