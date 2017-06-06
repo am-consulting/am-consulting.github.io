@@ -4,8 +4,8 @@ fun_getTable <- function(){
   tmp0 <-
     data.frame(buf %>% html_table(header = F,fill = T))
   tmp1 <- tmp0
-  tmp1[,1] <- gsub('\\(.+\\)','',tmp1[,1])
-  tmp1[1,] <- gsub('\\(.+\\)','',tmp1[1,])
+  tmp1[,1] <- gsub('\\([0-9]+\\)','',tmp1[,1])
+  tmp1[1,] <- gsub('\\([0-9]+\\)','',tmp1[1,])
   colnames(tmp1) <-
     paste0(tmp1[1,],':',tmp1[2,])
   colnames(tmp1)[1] <- tmp1[1,1]
