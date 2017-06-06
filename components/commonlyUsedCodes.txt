@@ -117,3 +117,9 @@ script <-
 eval(parse(text = script))
 fun_writeCSVtoFolder(objData = obj,dataType = 1,csvFileName = '')
 # csv出力パート
+
+returnList <-
+      list('' = ,
+           '' = ,
+  	       '' = )
+return(returnList)
