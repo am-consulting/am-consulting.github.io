@@ -1,5 +1,5 @@
 fun_addTxtToChart <-
-  function(objCol = 2){
+  function(obj,objCol = 2){
     abline(v=as.numeric(as.Date('1989-4-1')),lty = 2)
     text(x = as.numeric(as.Date('1989-4-1')),y = mean(obj[,objCol]),labels = '消費税3%導入',
          srt = 90,pos=3,cex=1.0)
