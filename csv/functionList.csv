@@ -38,3 +38,4 @@ importNikkeiMonthly.r
 importMonetarybaseOfJapan-2017.r
 R-chartsForMDfile.r
 R-downloadFromESTAT.r
+R-addTxtToChart.r
