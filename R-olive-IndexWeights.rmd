@@ -84,14 +84,16 @@ fun_common <-
   }
 ```
 
+#### 消費活動指数
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-cat('#### ',colnames(TypeWeights)[1],'\n\n')
+cat('##### ',colnames(TypeWeights)[1],'\n\n')
 fun_dataTable(obj = TypeWeights,dateFormat = 0,needID = 1,orderDirection = 'asc',
               menuLength = nrow(TypeWeights))
 cat('\n\n<hr>\n\n')
 ```
 
-#### 品目
+##### 品目
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 iii <- 1
