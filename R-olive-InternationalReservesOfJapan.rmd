@@ -176,34 +176,17 @@ cat(paste0(tail(origData4[,2],1),
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 buf0 <- origData1[,c(1,2)]
 buf0 <- merge(buf0, origData5,by = 'Date')
 fun_plotTimeSeries(obj = buf0,typeL = 'o',typeR = 'o',dateFormat = dateFormat,chartType = 2,
-                   mar = c(4,5,5,5),dataSource = dataSource,cex.main = 1.2,cex.lab = 1.1,
+                   mar = c(4,5,5,5),dataSource = dataSource,cex.main = 1.1,cex.lab = 1.1,
                    dataTitle = '日本の外貨準備高(兆ドル)')
+fun_addTxtToChart(obj = buf0,objCol = 3,cexTxt = 1.3)
 dev.off()
 ```
 
@@ -211,10 +194,11 @@ dev.off()
 fun_outputMD(tags = '外貨準備高',
              objDF = fun_transposeDataFrame(obj = origData1,tailN = 2,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = '直近2ヶ月分',
              tableName = '日本の外貨準備高(兆ドル)')
+fun_updateURLcsv()
 ```
 
 ***
