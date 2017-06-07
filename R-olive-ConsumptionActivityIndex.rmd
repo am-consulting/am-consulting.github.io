@@ -70,6 +70,7 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
 - http://www.boj.or.jp/research/research_data/cai/index.htm/
+- 指数個別ウエイト http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IndexWeights.html
 
 ***
 
@@ -116,43 +117,19 @@ fun_markdownTable(obj =
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
 obj <- na.omit(ConsumptionActivityIndex[,c(1,5)])
-fun_plot4charts(obj = obj,tailN = c(10^10,12*5,12*3,12),dateFormat = dateFormat)
-dev.off()
+fun_PlotStrawAnd4charts(obj = obj)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-summaryDF <- fun_summaryByName(obj = obj,omitFirst = 1)
-summaryDF[,-c(1,8)] <- apply(summaryDF[,-c(1,8)],2,function(x)round(x,2))
 fun_outputMD(tags = '消費活動指数',
-             objDF = summaryDF,
+             objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
