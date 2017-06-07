@@ -146,6 +146,7 @@ dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj[,1] <- format(obj[,1],dateFormat)
 fun_outputMD(tags = 'Job openings',
              title = dataTitle,
              objDF = obj,
