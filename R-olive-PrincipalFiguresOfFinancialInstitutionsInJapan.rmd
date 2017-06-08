@@ -258,7 +258,7 @@ obj <- na.omit(dataSet0[,c(1,4)])
 fun_outputMD(tags = '貸出, 預金, 銀行, 都銀, 地銀, 日本銀行',
              objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image1 = 1,
+             image1 = 1,image2 = 1,
              title = dataTitle,
              tableTitle = colnames(obj)[2])
 fun_updateURLcsv()
