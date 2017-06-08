@@ -248,42 +248,20 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatioDF,
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-obj <- na.omit(dataSet0[,c(1,4)])
-fun_plot4charts(obj = obj,tailN = c(10^10,12*5,12*3,12),dateFormat = dateFormat)
-dev.off()
+obj <- na.omit(dataSet0[,c(1,2)])
+fun_PlotStrawAnd4charts(obj = obj,dateFormat = dateFormat,startYear = 2011)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-summaryDF <- fun_summaryByName(obj = obj,omitFirst = 1)
+obj <- na.omit(dataSet0[,c(1,4)])
 fun_outputMD(tags = '貸出, 預金, 銀行, 都銀, 地銀, 日本銀行',
-             objDF = summaryDF,
+             objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
