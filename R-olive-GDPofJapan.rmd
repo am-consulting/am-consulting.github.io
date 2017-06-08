@@ -6,7 +6,7 @@ author: 'アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 4
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -408,44 +408,29 @@ for(iii in 1:15){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide',fig.height=5}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- merge(gdp3[,c(1,2)],gdp4[,c(1,2)],by='Date')
 fun_plotTimeSeries(obj = obj,chartType = 1,typeL = 'o',typeR = 'o',
-                   dateFormat = dateFormat,dataSource = dataSource,needLefLab = 0,fitLcolor = 0,fitRcolor = 0,mar = c(4,4,5,1))
+                   dateFormat = dateFormat,dataSource = dataSource,needLefLab = 0,
+                   fitLcolor = 0,fitRcolor = 0,mar = c(4,4,5,1))
 abline(h=0,lwd=2)
+fun_addTxtToChart(obj = obj,funType = 'min')
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '国内総生産',
-             objDF = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,tailN = 4),
+             objDF = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,tailN = 5),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
-             tableTitle = '直近4期',
+             image1 = 1,
+             title = dataTitle,
+             tableTitle = '直近5期',
              tableName = '国内総生産年率')
+fun_updateURLcsv()
 ```
 
 ***
