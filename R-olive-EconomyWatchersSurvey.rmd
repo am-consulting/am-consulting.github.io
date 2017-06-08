@@ -6,7 +6,7 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 3
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -169,42 +169,26 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dat
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
-obj <- na.omit(dataSet[,c(1,3)])
-fun_plot4charts(obj = obj,tailN = c(10^10,12*5,12*3,12),dateFormat = dateFormat)
+obj <- na.omit(dataSet[,c(1,3,23)])
+fun_plotTimeSeries(obj = obj,chartType = 1,dateFormat = dateFormat,
+                   dataSource = dataSource,mar = c(4,4,5,1),needLefLab = 0,dataTitle = '景気ウォッチャー調査')
+fun_addTxtToChart(obj = obj,funType = 'min',col = '#a0522d')
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-summaryDF <- fun_summaryByName(obj = obj,omitFirst = 1)
 fun_outputMD(tags = '景気ウォッチャー調査',
-             objDF = summaryDF,
+             objDF = fun_summaryByName(obj = obj[,c(1,3)],omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
