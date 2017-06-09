@@ -28,6 +28,7 @@ for(iii in seq(length(tableList))){
   buf2 <- buf1[!is.na(buf1[,ncol(buf1)]),]
   row.names(buf2) <- NULL
   buf2[is.na(buf2)] <- ''
+  buf2[,1] <- gsub('\\([0-9]+\\)','',buf2[,1])
   print(head(buf2,1))
   PPIUSA[[iii]] <- buf2
 }
