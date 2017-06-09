@@ -31,4 +31,4 @@ for(iii in seq(length(tableList))){
   print(head(buf2,1))
   PPIUSA[[iii]] <- buf2
 }
-remove('buf0','buf1','buf2','captionS','charaCol')
+remove('buf0','buf1','buf2','charaCol')
