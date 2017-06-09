@@ -198,6 +198,7 @@ fun_generateKnit(objDF = creditMultiplier,
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('<hr>')
 mdDF <- creditMultiplier
+colnames(mdDF)[1] <- 'Date'
 ```
 
 - `r objX <- 11;colnames(mergeData0)[objX]`
@@ -365,7 +366,7 @@ text(ccfResult$lag,
 ```
 
 ***
-#### 直近`r tailN <- 2;tailN`ヶ月分
+#### 直近`r tailN <- 3;tailN`ヶ月分
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 objColumn <- 
@@ -394,42 +395,41 @@ maxmin[,1] <- format(maxmin[,1],dateFormat)
 fun_markdownTable(obj = maxmin[,c(1:4)])
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-fun_plot4charts(obj = mdDF,tailN = c(10^10,12*5,12*3,12),dateFormat = dateFormat)
-dev.off()
+***
+
+#### マネーストック(M2)と日経平均株価の相互相関係数
+
+- 共に一次差分
+
+```{r warning=F,error=F,message=F,echo=F,results='hold',fig.height=5}
+obj <- na.omit(merge(mergeData0[,c(1,10)],nikkeiMonthly[,c(1,2)],by='Date'))
+obj <- fun_makeDiffTable(obj = obj,lag = 1)
+apply(obj[,-1],2,adf.test)
+par(mfrow = c(1,1), family = 'Meiryo', mar = c(5,5,6,4), cex.main = 1.1, font.main = 1)
+ccfResult <- 
+  ccf(obj[,2], 
+      obj[,3], 
+      main = paste0(colnames(obj)[c(2,3)], collapse = '\n×\n'))
+panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+text(ccfResult$lag, 
+     ccfResult$acf, 
+     round(ccfResult$acf,2))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-summaryDF <- fun_summaryByName(obj = mdDF,omitFirst = 1)
+colnames(mdDF)[2] <- '信用乗数:M2/MB'
+fun_PlotStrawAnd4charts(obj = mdDF,varType = 2,dateFormat = dateFormat,startYear = 2011)
+dev.off();dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = 'マネーストック, 日本銀行, 広義流動性, M2, M3, 信用乗数',
-             objDF = summaryDF,
+             objDF = fun_summaryByName(obj = mdDF,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
              tableTitle = paste0('信用乗数:',colnames(obj)[2]))
+fun_updateURLcsv()
 ```
 
 ***
