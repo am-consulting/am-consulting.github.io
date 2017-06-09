@@ -1,0 +1,189 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'PPIUSA';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Producer Price Index In USA'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000,scipen = 999)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+library(RCurl)
+fileName <- 'functionList.csv'
+functionList <-
+  read.csv(
+    file = paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/',
+                  fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                  functionList[iii,1]),
+           ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+importAMCC <-c('importPPIUSA.r')
+for(iii in 1:length(importAMCC)){
+  script <-
+    getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+                  importAMCC[iii]),
+           ssl.verifypeer = F
+  )
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dateFormat <- '%Y-%m'
+objDate <-
+  gsub('.+:(.+)','\\1',colnames(PPIUSA[[1]])[tail(grep('unadjusted index',colnames(PPIUSA[[1]]),
+                                                       ignore.case = T),1)])
+dataTitle <- 
+  paste0('Producer Price Index In USA:',objDate)
+dataSource <- 'U.S. Bureau of Labor Statistics'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source https://www.bls.gov/bls/newsrels.htm
+
+***
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_PPI <- function(iii = 1){
+  cat('#### ',captionS[iii],'\n\n')
+  obj0 <- PPIUSA[[iii]]
+  objCol1 <- head(grep('unadjusted percentchange',colnames(obj0),ignore.case = T),1)
+  objCol2 <- tail(grep('adjustedpercent change',colnames(obj0),ignore.case = T),1)
+  if(7<=iii){objCol1 <- ncol(obj0)-1;objCol2 <- ncol(obj0)}
+  obj1 <- obj0[,c(1,objCol1,objCol2)]
+  return(obj1)
+}
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 1),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 2),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 3),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 4),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 5),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 6),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 7),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = fun_PPI(iii = 8),orderDirection = 'asc',dateFormat = 0,
+              menuLength = 15,needID = 1)
+cat('\n\n<hr>\n\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+objItem <-
+  c('Final demand foods',
+    'Final demand energy',
+    'Final demand goods less foods and energy',
+    'Final demand trade services',
+    'Final demand transportation and warehousing services',
+    'Final demand services less trade, transportation, and warehousing',
+    'Construction for private capital investment',
+    'Construction for government')
+obj0 <- PPIUSA[[1]]
+objRaw <- grep(paste0(objItem,collapse = '|'),obj0[,1])
+obj1 <- obj0[objRaw,c(1,ncol(obj0))]
+obj1$Col <- ifelse(0<=obj1[,2],'#4169e1','#dc143c')
+par(mar=c(4,29,5,1),family='Meiryo',font.main=1,cex.main=1)
+barplot(height = obj1[,2],names.arg = obj1[,1],horiz = T,las=1,
+        col=obj1$Col,main = gsub('from','\nfrom',colnames(obj1)[2]))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objItem <-
+  c('Final demand goods$',
+    'Final demand services$',
+    'Final demand construction$')
+obj0 <- PPIUSA[[1]]
+objRaw <- grep(paste0(objItem,collapse = '|'),obj0[,1])
+obj1 <- obj0[objRaw,c(1,ncol(obj0))]
+fun_outputMD(tags = 'PPI',
+             objDF = obj1,
+             htmlName = htmlName,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
+             tableTitle = paste0('',colnames(obj)[2]))
+fun_updateURLcsv()
+```
+
+***
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
