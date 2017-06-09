@@ -13,7 +13,7 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+<style>.main-container {max-width : 1300px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -43,7 +43,7 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
-```{r,warning=F,error=F,message=F,echo=F}
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
 importAMCC <-c('importPPIUSA.r')
 for(iii in 1:length(importAMCC)){
   script <-
@@ -88,49 +88,49 @@ fun_PPI <- function(iii = 1){
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 1),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 2),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 3),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 4),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 5),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 6),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 7),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_dataTable(obj = fun_PPI(iii = 8),orderDirection = 'asc',dateFormat = 0,
-              menuLength = 15,needID = 1)
+              menuLength = 15,needID = 1,leftcolumns = 2)
 cat('\n\n<hr>\n\n')
 ```
 
@@ -148,13 +148,15 @@ objItem <-
     'Final demand services less trade, transportation, and warehousing',
     'Construction for private capital investment',
     'Construction for government')
-obj0 <- PPIUSA[[1]]
+ddd <- 1
+obj0 <- PPIUSA[[ddd]]
 objRaw <- grep(paste0(objItem,collapse = '|'),obj0[,1])
 obj1 <- obj0[objRaw,c(1,ncol(obj0))]
 obj1$Col <- ifelse(0<=obj1[,2],'#4169e1','#dc143c')
-par(mar=c(4,29,5,1),family='Meiryo',font.main=1,cex.main=1)
+par(mar=c(4,29,5,1),family='Meiryo',font.main=1,cex.main=1,oma=c(2,0,0,0))
 barplot(height = obj1[,2],names.arg = obj1[,1],horiz = T,las=1,
         col=obj1$Col,main = gsub('from','\nfrom',colnames(obj1)[2]))
+mtext(text = paste0(captionS[ddd],'\nSource:',dataSource),side = 1,outer = T)
 dev.off()
 ```
 
@@ -163,19 +165,18 @@ objItem <-
   c('Final demand goods$',
     'Final demand services$',
     'Final demand construction$')
-obj0 <- PPIUSA[[1]]
 objRaw <- grep(paste0(objItem,collapse = '|'),obj0[,1])
 obj1 <- obj0[objRaw,c(1,ncol(obj0))]
 fun_outputMD(tags = 'PPI',
              objDF = obj1,
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
+             image1 = 1,image2 = 0,
              title = dataTitle,
-             tableTitle = paste0('',colnames(obj)[2]))
+             tableTitle = colnames(obj1)[2],
+             tableName = captionS[ddd])
 fun_updateURLcsv()
 ```
 
-***
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
