@@ -138,10 +138,47 @@ for(iii in 1:length(cabinet)){
   cabinetDT[iii,4] <- tail(buf[,2],1)
   cabinetDT[iii,5] <- tail(buf[,2],1)-head(buf[,2],1)
   cabinetDT[iii,6] <- tail(head(buf[,2],-1),1)
+  cabinetDT[iii,7] <- min(buf[,2])
+  cabinetDT[iii,8] <- max(buf[,2])
+  difference <-
+    length(seq(from = range(buf[,1])[1],to = range(buf[,1])[2],by = 'month')) - 1
+  cabinetDT[iii,9] <- difference
+  cabinetDT[iii,10] <- round(cabinetDT[iii,5]/difference,1)
 }
 colnames(cabinetDT) <- 
-  c('内閣','政権期間(または現職)','初回(%)','最終(%)','最終 - 初回','最終の1回前(%)')
+  c('内閣','政権期間(または現職)','初回(%)','最終(%)','最終 - 初回','最終の1回前(%)',
+    '最低(%)','最高(%)','nヶ月','変化率')
 fun_markdownTable(obj = cabinetDT)
+```
+
+- 上記表中「変化率」は(最終-初回)/nヶ月、単位は%/月。
+
+***
+
+#### 内閣総理大臣毎の在任期間(日、現職含む、降順)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+timeInOffice <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/ListOfPresidents/primeMinisterOfJapan.csv',fileEncoding = 'UTF8')
+timeInOffice$Period <-
+  as.Date(timeInOffice[,2])-as.Date(timeInOffice[,1])
+colnames(timeInOffice) <- c('就任','退任(又は現職)','氏名','期間(日)')
+timeInOffice <- timeInOffice[order(timeInOffice$`期間(日)`,decreasing = T),]
+fun_markdownTable(obj = timeInOffice)
+cat('\n\n<hr>\n\n')
+cat('#### 安倍晋三内閣総理大臣について\n\n')
+shinzoAbe <- timeInOffice[grep('安倍晋三',timeInOffice$`氏名`),]
+fun_markdownTable(obj = shinzoAbe)
+cat('\n- 合計(日):',sum(shinzoAbe[,4]),'\n\n')
+cat('\n\n<hr>\n\n')
+cat('#### 安倍晋三内閣総理大臣の在任期間を2021年9月の自由民主党総裁選迄とした場合\n\n')
+shinzoAbeFuture <- shinzoAbe
+shinzoAbeFuture[,1] <- as.character(shinzoAbeFuture[,1])
+shinzoAbeFuture[,2] <- as.character(shinzoAbeFuture[,2])
+shinzoAbeFuture[1,2] <- as.character(as.Date('2021-9-26'))
+shinzoAbeFuture[1,4] <- as.Date('2021-9-26')-as.Date('2012-12-26')
+fun_markdownTable(obj = shinzoAbeFuture)
+cat('\n- 合計(日):',sum(shinzoAbeFuture[,4]),'\n\n')
 ```
 
 ***
@@ -361,27 +398,9 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = obj
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 par(family = 'Meiryo',mfrow = c(1,2),oma=c(0,0,3,0),font.main=1,cex.main=1.1,mar=c(4,4,3,1))
@@ -424,10 +443,11 @@ tDF <- fun_transposeDataFrame(obj = fun_makeDiffTable(obj = obj,lag = 1),
 fun_outputMD(tags = '内閣支持率',
              objDF = tDF,
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = '直近5ヶ月',
              tableName = '内閣支持率･不支持率前月比(パーセントポイント)')
+fun_updateURLcsv()
 ```
 
 ***
