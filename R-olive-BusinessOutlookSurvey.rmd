@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-BusinessOutlookSurvey.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'BusinessOutlookSurvey';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Business Outlook Survey In Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -100,6 +100,24 @@ for(iii in 1:length(origbsiData)){
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(
+    paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
+           scriptFile),
+    ssl.verifypeer = F)
+eval(parse(text = script))
+for(iii in seq(length(bsiData))){
+  obj <- bsiData[[iii]]
+  csvFileName <- gsub('[0-9]+\\.(.+)\\(.+\\)','\\1',bsiTitle[iii])
+  fun_writeCSVtoFolder(objData = obj,dataType = 1,
+                       csvFileName = paste0('法人企業景気予測調査_',csvFileName))
+}
+# csv出力パート
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
 dateFormat <- '%Y年%m月期'
 dataTitle <- 
   paste0('法人企業景気予測調査:景況判断、売上高判断、経常利益判断他:BSI項目',
@@ -145,6 +163,51 @@ for(iii in 1:length(bsiData)){
 ```
 
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+fun_plot <- function(){
+  par(mar=c(4,3,4,1),family='Meiryo',font.main=1,cex.main=1)
+  plot(x = obj[,1],y = obj[,2],type='o',pch=20,cex=1.5,ylim=ylim,xlab='',ylab='',
+       main=paste0(bsiTitle[iii],'\nSource:',dataSource),
+       col=lineCol[1],panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
+  lines(x = obj[,1],y = obj[,3],type='o',pch=20,cex=1.5,col=lineCol[2])
+  lines(x = obj[,1],y = obj[,4],type='o',pch=20,cex=1.5,col=lineCol[3])
+  graphics::legend(x = 'topleft',col = lineCol,lty = 1,legend = colnames(obj)[-1],
+                   cex = 1.2,bty = 'n',lwd = 3)
+  fun_addTxtToChart(obj = obj,funType = 'min',objCol = 2)
+  abline(h=0)
+}
+iii <- 14
+lineCol <- c('blue','red','#708090')
+obj0 <- bsiData[[iii]]
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+obj <- obj0[,c(1,grep('-非製造業-翌々期',colnames(obj0)))]
+ylim <- c(min(obj[,-1]),max(obj[,-1]))
+fun_plot()
+dev.off()
+pngFile <-
+  paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+obj <- obj0[,c(1,grep('-製造業-翌々期',colnames(obj0)))]
+ylim <- c(min(obj[,-1]),max(obj[,-1]))
+fun_plot()
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- obj0[,c(1,grep('製造業-翌々期',colnames(obj0)))]
+fun_outputMD(tags = '法人企業景気予測調査,内閣府',
+             objDF = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
+             tableTitle = '翌々期',
+             tableName = bsiTitle[iii])
+fun_updateURLcsv()
+```
 
 <script>MakeNegative();</script>
 <script>
