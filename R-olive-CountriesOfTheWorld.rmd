@@ -1,0 +1,46 @@
+```{r}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+library(quantmod)
+library(lubridate)
+#### FRED part
+SouthAfrica <- 
+  c(
+    'DEXSFUS',
+    'South Africa / U.S. Foreign Exchange Rate',
+    'South African Rand to One U.S. Dollar,Not Seasonally Adjusted',
+    'IRLTLT01ZAM156N',
+    'Long-Term Government Bond Yields: 10-year: Main (Including Benchmark) for South Africa',
+    'Percent,Not Seasonally Adjusted',
+    'NAEXKP01ZAQ657S',
+    'Gross Domestic Product by Expenditure in Constant Prices: Total Gross Domestic Product for South Africa',
+    'Growth Rate Previous Period,Seasonally Adjusted',
+    'LQASRTZAM163N',
+    'Liquid Assets to Total Assets (Liquid Asset Ratio) for South Africa',
+    'Ratio,Not Seasonally Adjusted'
+    )
+
+fredSymbols <- SouthAfrica
+for(iii in seq(1,length(fredSymbols),by = 3)){
+  tmp0 <- 
+      getSymbols(Symbols = fredSymbols[iii],src = 'FRED',auto.assign = F)
+  obj0 <-
+    na.omit(data.frame(Date=index(tmp0),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL))
+  colnames(obj0)[2] <- fredSymbols[iii+1]
+  buf <- length(unique(day(obj0[,1])))
+  if(3 < buf){
+    dateFormat <- '%Y-%m-%d'
+  }else{
+    buf <- length(unique(month(obj0[,1])))
+    if(buf == 1){dateFormat <- '%Y'}else{dateFormat <- '%Y-%m'}
+  }
+  fun_latestResult(obj = obj0,dateFormat = dateFormat)
+  obj <- fun_fit(obj = obj0)[,c(1,2,3)]
+  if(nrow(obj[0<=obj[,2],]) != nrow(obj)){type <- 'h'}else{type <- 'o'}
+  par(mar = c(4,3,3,1),family = 'Meiryo',cex.main = 1,cex.axis = 1)
+  plot(x = obj[,1],y = obj[,2],type = type,pch = 20,cex = 0.5,
+       xlab = '',ylab = '',main = paste0(colnames(obj)[2],'\n',fredSymbols[iii+2]),col = 'blue',
+       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
+  lines(x = obj[,1],y = obj[,3],type = 'l',lty = 2,col = 'red')
+  mtext(text = latestResult,side = 1,outer = F,line = 2.5)
+}
+```
