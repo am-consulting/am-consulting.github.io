@@ -107,7 +107,8 @@ for(iii in 2:ncol(timeSeriesDF)){
 ```{r warning=F,error=F,message=F,echo=F,results='hold',fig.height=6}
 tmp0 <- fun_tsDataByYear(objDF = ProducerPriceIndex,dateCol = 1,dataCol = 2)
 tmp1 <- fun_strawBroomData(objDF = tmp0,varType = 2)
-fun_plotStrawBroomByYear(strawData = tmp1$strawData,lastDate = tmp1$lastDate,variation = tmp1$variation)
+fun_plotStrawBroomByYear(strawData = tmp1$strawData,lastDate = tmp1$lastDate,variation = tmp1$variation,
+                         dateFormat = dateFormat,startYear = 2011)
 ```
 
 ***
@@ -145,33 +146,21 @@ text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
-##################
 obj <- mergeData[,c(1,2,10)]
-obj <- subset(obj,as.Date('2013-4-1')<=obj[,1])
+obj <- subset(obj,as.Date('2008-4-1')<=obj[,1])
 fun_plotTimeSeries(obj = obj,typeL = 'o',typeR = 'o',
                    dateFormat = '%Y-%m',chartType = 2,dataSource = dataSource,mar = c(4,5,6,5))
+fun_addTxtToChart(obj = obj,funType = 'min',objCol = 3)
+dev.off()
+pngFile <-
+  paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+obj <- mergeData[,c(1,2,10)]
+fun_plotQuadrant(obj = obj,main = '国内企業物価指数内閣毎前年比平均値')
 dev.off()
 ```
 
@@ -179,9 +168,10 @@ dev.off()
 fun_outputMD(tags = '国内企業物価指数,輸出物価指数,輸入物価指数,日本銀行',
              objDF = fun_summaryByName(obj = ProducerPriceIndex[,c(1,2)],dateFormat = '%Y-%m',objColumn = 2),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
              tableTitle = colnames(ProducerPriceIndex)[2])
+fun_updateURLcsv()
 ```
 
 ***
