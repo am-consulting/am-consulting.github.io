@@ -14,8 +14,10 @@ fun_plotQuadrant <-
     }
     objCol <-
       grep('shortname',colnames(dfWithList),ignore.case = T)
-    x <- dfWithList[,c(xCol,objCol)]
-    y <- dfWithList[,c(yCol,objCol)]
+    x <- na.omit(dfWithList[,c(xCol,objCol)])
+    x <- subset(x,unique(x[,2])[1]!=x[,2])
+    y <- na.omit(dfWithList[,c(yCol,objCol)])
+    y <- subset(y,unique(y[,2])[1]!=y[,2])
     aggX <- aggregate(x[,1,drop=F],list(x[,2]),aggFun)
     aggY <- aggregate(y[,1,drop=F],list(y[,2]),aggFun)
     obj <- merge(aggX,aggY,by='Group.1')
