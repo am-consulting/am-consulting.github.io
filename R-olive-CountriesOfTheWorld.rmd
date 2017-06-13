@@ -116,22 +116,62 @@ yearRange <-
   paste0(range(colnames(buf0)[objColumnYear]),collapse = '~')
 buf0[,objColumnYear] <- 
   apply(buf0[,objColumnYear],2,function(x)as.numeric(gsub(',','',x)))
+buf0 <- buf0[!is.na(buf0$ISO),]
 WEO <- buf0
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
-unique(WEO$ISO)
-unique(WEO$`Subject Descriptor`)
-unique(WEO$Country)
+ISO <- unique(WEO$ISO)
+WEO$`DesAndUnit` <- paste0(WEO$`Subject Descriptor`,'.Unit:',WEO$Units)
+Subject <- unique(WEO$DesAndUnit)
+isoN <- 155
+forcastYear <- 2016
+cex1 <- 1.1
+cex2 <- 2.9
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
-objCountry <- 'ZAF'
-subject <- 
-  'Gross domestic product based on purchasing-power-parity (PPP) per capita GDP'
-objWEO <- WEO[WEO$ISO==objCountry,]
-objWEO <-
-  subset(objWEO,objWEO$`Subject Descriptor`==subject)
+fun_extractWEO <- function(objCountry,Subject){
+  buf0 <- WEO[WEO$ISO==objCountry,]
+  buf1 <-
+    subset(buf0,buf0$DesAndUnit==Subject)
+  objColYear <-
+    grep('^[0-9]{4}$',colnames(buf1))
+  buf2 <- t(buf1[,objColYear])
+  buf3 <-
+    data.frame(Date=as.Date(paste0(row.names(buf2),'-1-1')),
+               buf2[,1],stringsAsFactors = F,row.names = NULL)
+  colnames(buf3)[2] <-
+    buf1$`Subject Descriptor`
+  buf3$cex <- ifelse(year(buf3$Date)<=forcastYear,cex1,cex2)
+  buf3$col <- ifelse(year(buf3$Date)<=forcastYear,'blue','red')
+  returnList <-
+        list('tsUnit' = buf1$Units,
+             'tsData' = buf3,
+             'tsNote' = buf1$`Subject Notes`,
+             'tsScale' = buf1$Scale)
+  return(returnList)
+}
+fun_plot <- function(obj){
+  par(mar=c(4,4,5,1),family='Meiryo',font.main=1,cex.main=1)
+  dateRange <- paste0(format(range(obj[,1]),'%Y'),collapse = '~')
+  plot(obj[,c(1,2)],xlab='',ylab='',
+       main = paste0(colnames(obj)[2],'\n',
+                     returnOJB$tsUnit,'\n',
+                     if(!is.na(returnOJB$tsScale)){paste0(returnOJB$tsScale,'\n')},
+                     dateRange),
+       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
+       type = 'o',pch = 20,col = obj$col,cex = obj$cex)
+}
+```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+subjectN <- c(11,5,17,25,27)
+for(iii in seq(length(subjectN))){
+  returnOJB <- fun_extractWEO(objCountry = ISO[isoN],Subject = Subject[subjectN[iii]])
+  fun_plot(obj = returnOJB$tsData)
+  cat('\n\n<hr>\n\n')
+}
 ```
 
 Source http://www.imf.org/external/ns/cs.aspx?id=28
