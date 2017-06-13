@@ -98,3 +98,40 @@ for(iii in seq(1,length(fredSymbols),by = 3)){
 }
 ```
 
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+aspxFile <-
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/WorldEconomicOutlook/201704/weoreptc.aspx'
+tmp0 <-
+  read.table(file = aspxFile,header = T,sep = '\t',stringsAsFactor = F,
+             na.strings = c('','n/a'),
+             check.names = F,fill = T,quote = "\"")
+buf0 <- tmp0
+objColumn0 <- 
+  grep('^country$',colnames(buf0),ignore.case = T)
+buf0[grep('stp',buf0$ISO,ignore.case = T),objColumn0] <- "São Tomé and Príncipe"
+buf0[grep('civ',buf0$ISO,ignore.case = T),objColumn0] <- "Côte d'Ivoire"
+objColumnYear <-
+  grep('^[0-9]{4}$',colnames(buf0))
+yearRange <-
+  paste0(range(colnames(buf0)[objColumnYear]),collapse = '~')
+buf0[,objColumnYear] <- 
+  apply(buf0[,objColumnYear],2,function(x)as.numeric(gsub(',','',x)))
+WEO <- buf0
+```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
+unique(WEO$ISO)
+unique(WEO$`Subject Descriptor`)
+unique(WEO$Country)
+```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+objCountry <- 'ZAF'
+subject <- 
+  'Gross domestic product based on purchasing-power-parity (PPP) per capita GDP'
+objWEO <- WEO[WEO$ISO==objCountry,]
+objWEO <-
+  subset(objWEO,objWEO$`Subject Descriptor`==subject)
+```
+
+Source http://www.imf.org/external/ns/cs.aspx?id=28
