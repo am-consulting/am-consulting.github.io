@@ -19,6 +19,7 @@ for(iii in seq(length(tableList))){
     gsub('(.+):(.+)','\\1',colnames(buf0))==gsub('(.+):(.+)','\\2',colnames(buf0))
   colnames(buf0)[objCol] <- buf0[1,objCol]
   colnames(buf0) <- gsub('\\([0-9]+\\)','',colnames(buf0))
+  colnames(buf0) <- gsub('::',' ',colnames(buf0))
   buf1 <- buf0[-c(1,2),]
   if(iii==4){charaCol <- c(1,2)}else if(iii==6|iii==7){charaCol <- c(1,6)}else{charaCol <- 1}
   buf1[,-charaCol] <- apply(buf1[,-charaCol],2,function(x)as.numeric(gsub(',','',x)))
