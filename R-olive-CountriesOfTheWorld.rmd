@@ -123,8 +123,8 @@ WEO <- buf0
 ```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
 ISO <- unique(WEO$ISO)
 WEO$`DesAndUnit` <- paste0(WEO$`Subject Descriptor`,'.Unit:',WEO$Units)
-Subject <- unique(WEO$DesAndUnit)
-isoN <- 155
+SubjectList <- unique(WEO$DesAndUnit)
+isoN <- 184
 forcastYear <- 2016
 cex1 <- 1.1
 cex2 <- 2.9
@@ -147,29 +147,35 @@ fun_extractWEO <- function(objCountry,Subject){
   buf3$col <- ifelse(year(buf3$Date)<=forcastYear,'blue','red')
   returnList <-
         list('tsUnit' = buf1$Units,
-             'tsData' = buf3,
+             'tsData' = na.omit(buf3),
              'tsNote' = buf1$`Subject Notes`,
-             'tsScale' = buf1$Scale)
+             'tsScale' = buf1$Scale,
+             'tsCountry' = buf1$Country)
   return(returnList)
 }
 fun_plot <- function(obj){
+  
   par(mar=c(4,4,5,1),family='Meiryo',font.main=1,cex.main=1)
   dateRange <- paste0(format(range(obj[,1]),'%Y'),collapse = '~')
   plot(obj[,c(1,2)],xlab='',ylab='',
-       main = paste0(colnames(obj)[2],'\n',
+       main = paste0(returnOJB$tsCountry,'\n',
+                     colnames(obj)[2],'\n',
                      returnOJB$tsUnit,'\n',
                      if(!is.na(returnOJB$tsScale)){paste0(returnOJB$tsScale,'\n')},
                      dateRange),
        panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
        type = 'o',pch = 20,col = obj$col,cex = obj$cex)
+  abline(h = 0,lwd = 2)
 }
 ```
 
+### Economic Data From World Economic Outlook Databases(IMF)
+
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
-subjectN <- c(11,5,17,25,27)
+subjectN <- c(1,3,4,8,9,17,22,24,25,27)
 for(iii in seq(length(subjectN))){
-  returnOJB <- fun_extractWEO(objCountry = ISO[isoN],Subject = Subject[subjectN[iii]])
-  fun_plot(obj = returnOJB$tsData)
+  returnOJB <- fun_extractWEO(objCountry = ISO[isoN],Subject = SubjectList[subjectN[iii]])
+  if(nrow(returnOJB$tsData)!=0){fun_plot(obj = returnOJB$tsData)}
   cat('\n\n<hr>\n\n')
 }
 ```
