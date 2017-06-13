@@ -123,3 +123,10 @@ returnList <-
            '' = ,
   	       '' = )
 return(returnList)
+
+
+####  {.row}
+
+#####  {.col-md-6}
+
+#####  {.col-md-6}

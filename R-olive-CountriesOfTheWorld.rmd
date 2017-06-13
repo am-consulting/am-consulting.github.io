@@ -1,4 +1,52 @@
-```{r}
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CountriesOfTheWorld';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Countries Of The World'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 5
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+### Google Map
+
+<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7187362.308715542!2d20.18143093148129!3d-28.405547131550506!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1c34a689d9ee1251%3A0xe85d630c1fa4e8a0!2z5Y2X44Ki44OV44Oq44Kr!5e0!3m2!1sja!2sjp!4v1497322786457" width="1000" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
+
+***
+
+### Economic Data From FRED
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 library(quantmod)
 library(lubridate)
@@ -36,11 +84,17 @@ for(iii in seq(1,length(fredSymbols),by = 3)){
   fun_latestResult(obj = obj0,dateFormat = dateFormat)
   obj <- fun_fit(obj = obj0)[,c(1,2,3)]
   if(nrow(obj[0<=obj[,2],]) != nrow(obj)){type <- 'h'}else{type <- 'o'}
-  par(mar = c(4,3,3,1),family = 'Meiryo',cex.main = 1,cex.axis = 1)
+  par(mar = c(5,3,4,1),family = 'Meiryo',cex.main = 1,cex.axis = 1,font.main = 1)
+  dateRange <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
   plot(x = obj[,1],y = obj[,2],type = type,pch = 20,cex = 0.5,
-       xlab = '',ylab = '',main = paste0(colnames(obj)[2],'\n',fredSymbols[iii+2]),col = 'blue',
+       xlab = '',ylab = '',
+       main = paste0(colnames(obj)[2],'\n',fredSymbols[iii+2],'\n',dateRange),
+       col = 'blue',
        panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
   lines(x = obj[,1],y = obj[,3],type = 'l',lty = 2,col = 'red')
-  mtext(text = latestResult,side = 1,outer = F,line = 2.5)
+  latestResult <- gsub('(.+[0-9]):','\\1\n',latestResult)
+  mtext(text = latestResult,side = 1,outer = F,line = 3)
+  cat('\n\n<hr>\n\n')
 }
 ```
+
