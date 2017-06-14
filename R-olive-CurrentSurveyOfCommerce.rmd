@@ -203,9 +203,10 @@ fun_outputMD(tags = '商業動態統計調査,:百貨店,スーパー,商品別�
              objDF = obj,
              htmlName = htmlName,
              image1 = 1,image2 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = '直近5ヶ月',
              tableName = '百貨店+スーパー(億円)')
+fun_updateURLcsv()
 ```
 
 ***
