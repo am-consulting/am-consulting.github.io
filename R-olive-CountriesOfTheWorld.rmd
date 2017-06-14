@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CountriesOfTheWorld';titleCountry<-'Japan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'_',titleCountry,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CountriesOfTheWorld';ISOcode<-'JPN';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'_',ISOcode,'.html')) })
 
-title : "`r paste0('Countries Of The World:',titleCountry)`"
+title : "`r paste0('Countries Of The World:',ISOcode)`"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -38,82 +38,6 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
-### Google Map
-
-<iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7187362.308715542!2d20.18143093148129!3d-28.405547131550506!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1c34a689d9ee1251%3A0xe85d630c1fa4e8a0!2z5Y2X44Ki44OV44Oq44Kr!5e0!3m2!1sja!2sjp!4v1497322786457" width="1000" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
-
-***
-
-```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
-fun_plot <- function(obj,Country,Unit,Scale=NA){
-  par(mar=c(4,4,5,1),family='Meiryo',font.main=1,cex.main=1)
-  dateRange <- paste0(format(range(obj[,1]),'%Y'),collapse = '~')
-  plot(obj[,c(1,2)],xlab='',ylab='',
-       main = paste0(Country,'\n',
-                     colnames(obj)[2],'\n',
-                     Unit,'\n',
-                     if(!is.na(Scale)){paste0(Scale,'\n')},
-                     dateRange),
-       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
-       type = 'o',pch = 20,col = obj$col,cex = obj$cex)
-  abline(h = 0,lwd = 2)
-}
-```
-
-### Economic Data From FRED
-
-```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
-windowsFonts(Meiryo = windowsFont("Meiryo"))
-library(quantmod)
-library(lubridate)
-#### FRED part
-SouthAfrica <- 
-  c(
-    'DEXSFUS',
-    'South Africa / U.S. Foreign Exchange Rate',
-    'South African Rand to One U.S. Dollar,Not Seasonally Adjusted',
-    'IRLTLT01ZAM156N',
-    'Long-Term Government Bond Yields: 10-year: Main (Including Benchmark) for South Africa',
-    'Percent,Not Seasonally Adjusted',
-    'NAEXKP01ZAQ657S',
-    'Gross Domestic Product by Expenditure in Constant Prices: Total Gross Domestic Product for South Africa',
-    'Growth Rate Previous Period,Seasonally Adjusted',
-    'LQASRTZAM163N',
-    'Liquid Assets to Total Assets (Liquid Asset Ratio) for South Africa',
-    'Ratio,Not Seasonally Adjusted'
-    )
-
-fredSymbols <- SouthAfrica
-for(iii in seq(1,length(fredSymbols),by = 3)){
-  tmp0 <- 
-      getSymbols(Symbols = fredSymbols[iii],src = 'FRED',auto.assign = F)
-  obj0 <-
-    na.omit(data.frame(Date=index(tmp0),tmp0,check.names = F,stringsAsFactors = F,row.names = NULL))
-  colnames(obj0)[2] <- fredSymbols[iii+1]
-  buf <- length(unique(day(obj0[,1])))
-  if(3 < buf){
-    dateFormat <- '%Y-%m-%d'
-  }else{
-    buf <- length(unique(month(obj0[,1])))
-    if(buf == 1){dateFormat <- '%Y'}else{dateFormat <- '%Y-%m'}
-  }
-  fun_latestResult(obj = obj0,dateFormat = dateFormat)
-  obj <- fun_fit(obj = obj0)[,c(1,2,3)]
-  if(nrow(obj[0<=obj[,2],]) != nrow(obj)){type <- 'h'}else{type <- 'o'}
-  par(mar = c(5,3,4,1),family = 'Meiryo',cex.main = 1,cex.axis = 1,font.main = 1)
-  dateRange <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
-  plot(x = obj[,1],y = obj[,2],type = type,pch = 20,cex = 0.5,
-       xlab = '',ylab = '',
-       main = paste0(colnames(obj)[2],'\n',fredSymbols[iii+2],'\n',dateRange),
-       col = 'blue',
-       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
-  lines(x = obj[,1],y = obj[,3],type = 'l',lty = 2,col = 'red')
-  latestResult <- gsub('(.+[0-9]):','\\1\n',latestResult)
-  mtext(text = latestResult,side = 1,outer = F,line = 3)
-  cat('\n\n<hr>\n\n')
-}
-```
-
 ### Economic Data From World Economic Outlook Databases(IMF)
 - Source http://www.imf.org/external/ns/cs.aspx?id=28
 
@@ -143,10 +67,8 @@ WEO <- buf0
 ISO <- unique(WEO$ISO)
 WEO$`DesAndUnit` <- paste0(WEO$`Subject Descriptor`,'.Unit:',WEO$Units)
 SubjectList <- unique(WEO$DesAndUnit)
-isoN <- grep(titleCountry,unique(WEO$Country),ignore.case = T)
-forcastYear <- 2016
-cex1 <- 1.1
-cex2 <- 2.9
+isoN <- grep(ISOcode,unique(WEO$ISO),ignore.case = T)
+forcastYear <- c(2018,2022)
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
@@ -163,11 +85,11 @@ fun_extractWEO <- function(objCountry,Subject){
                  buf2[,1],stringsAsFactors = F,row.names = NULL)
     colnames(buf3)[2] <-
       buf1$`Subject Descriptor`
-    buf3$cex <- ifelse(year(buf3$Date)<=forcastYear,cex1,cex2)
-    buf3$col <- ifelse(year(buf3$Date)<=forcastYear,'blue','red')
+    buf4 <-
+      buf3[forcastYear[1]<=year(buf3[,1]) & year(buf3[,1])<=forcastYear[2],]
     returnList <-
           list('tsUnit' = buf1$Units,
-               'tsData' = na.omit(buf3),
+               'tsData' = na.omit(buf4),
                'tsNote' = buf1$`Subject Notes`,
                'tsScale' = buf1$Scale,
                'tsCountry' = buf1$Country)
@@ -184,17 +106,20 @@ cnt <- 1
 for(iii in seq(length(SubjectList))){
   returnOBJ <- fun_extractWEO(objCountry = ISO[isoN],Subject = SubjectList[iii])
   if(!is.na(returnOBJ)){
-    if(10<=nrow(returnOBJ$tsData)){
-      cat(paste0('\n- ',cnt,'. ',colnames(returnOBJ$tsData)[2],'\n'))
-      fun_plot(obj = returnOBJ$tsData,
-               Country = returnOBJ$tsCountry,
-               Unit = returnOBJ$tsUnit,
-               Scale = returnOBJ$tsScale)
-      cat('\n\n<hr>\n\n')
+    obj <- returnOBJ$tsData
+    if(nrow(obj)==(diff(forcastYear)+1)){
+      buf <-
+        fun_transposeDataFrame(obj = obj,dateFormat = '%Y',
+                               colName = paste0(returnOBJ$tsCountry,':Subject'))
+      buf$Unit <- returnOBJ$tsUnit
+      buf$Scale <- returnOBJ$tsScale
+      if(cnt==1){IMFData <- buf}else{IMFData <- rbind(IMFData,buf)}
       cnt <- cnt + 1
     }
   }
 }
+IMFData[is.na(IMFData)] <- ''
+fun_markdownTable(obj = IMFData)
 ```
 
 ### Economic Data From OECD
@@ -231,7 +156,7 @@ OECD <- buf0
 ISO <- unique(OECD$LOCATION)
 OECD$`DesAndUnit` <- paste0(OECD$Subject,'.Unit:',OECD$Unit)
 SubjectList <- unique(OECD$DesAndUnit)
-isoN <- grep(titleCountry,unique(OECD$Country),ignore.case = T)
+isoN <- grep(ISOcode,unique(OECD$Country),ignore.case = T)
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
@@ -290,7 +215,7 @@ cia <- data.frame()
 cnt <- 1
 for(iii in seq(length(tableTitle))){
   obj <- get(paste0('comparisonTable',iii))
-  objRaw <- grep(titleCountry,obj$Country,ignore.case = T)
+  objRaw <- grep(ISOcode,obj$Country,ignore.case = T)
   if(length(objRaw)!=0){
     cia[cnt,1] <- tableTitle[iii]
     cia[cnt,2] <- obj[objRaw,3]
