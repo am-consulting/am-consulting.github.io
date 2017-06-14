@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CountriesOfTheWorld';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'CountriesOfTheWorld';titleCountry<-'Japan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'_',titleCountry,'.html')) })
 
-title : 'Countries Of The World'
+title : "`r paste0('Countries Of The World:',titleCountry)`"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -43,6 +43,22 @@ for(iii in 1:nrow(functionList)){
 <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d7187362.308715542!2d20.18143093148129!3d-28.405547131550506!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1c34a689d9ee1251%3A0xe85d630c1fa4e8a0!2z5Y2X44Ki44OV44Oq44Kr!5e0!3m2!1sja!2sjp!4v1497322786457" width="1000" height="400" frameborder="0" style="border:0" allowfullscreen></iframe>
 
 ***
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+fun_plot <- function(obj,Country,Unit,Scale=NA){
+  par(mar=c(4,4,5,1),family='Meiryo',font.main=1,cex.main=1)
+  dateRange <- paste0(format(range(obj[,1]),'%Y'),collapse = '~')
+  plot(obj[,c(1,2)],xlab='',ylab='',
+       main = paste0(Country,'\n',
+                     colnames(obj)[2],'\n',
+                     Unit,'\n',
+                     if(!is.na(Scale)){paste0(Scale,'\n')},
+                     dateRange),
+       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
+       type = 'o',pch = 20,col = obj$col,cex = obj$cex)
+  abline(h = 0,lwd = 2)
+}
+```
 
 ### Economic Data From FRED
 
@@ -127,7 +143,7 @@ WEO <- buf0
 ISO <- unique(WEO$ISO)
 WEO$`DesAndUnit` <- paste0(WEO$`Subject Descriptor`,'.Unit:',WEO$Units)
 SubjectList <- unique(WEO$DesAndUnit)
-isoN <- 184
+isoN <- grep(titleCountry,unique(WEO$Country),ignore.case = T)
 forcastYear <- 2016
 cex1 <- 1.1
 cex2 <- 2.9
@@ -138,55 +154,53 @@ fun_extractWEO <- function(objCountry,Subject){
   buf0 <- WEO[WEO$ISO==objCountry,]
   buf1 <-
     subset(buf0,buf0$DesAndUnit==Subject)
-  objColYear <-
-    grep('^[0-9]{4}$',colnames(buf1))
-  buf2 <- t(buf1[,objColYear])
-  buf3 <-
-    data.frame(Date=as.Date(paste0(row.names(buf2),'-1-1')),
-               buf2[,1],stringsAsFactors = F,row.names = NULL)
-  colnames(buf3)[2] <-
-    buf1$`Subject Descriptor`
-  buf3$cex <- ifelse(year(buf3$Date)<=forcastYear,cex1,cex2)
-  buf3$col <- ifelse(year(buf3$Date)<=forcastYear,'blue','red')
-  returnList <-
-        list('tsUnit' = buf1$Units,
-             'tsData' = na.omit(buf3),
-             'tsNote' = buf1$`Subject Notes`,
-             'tsScale' = buf1$Scale,
-             'tsCountry' = buf1$Country)
-  return(returnList)
-}
-fun_plot <- function(obj,Country,Unit,Scale=NA){
-  par(mar=c(4,4,5,1),family='Meiryo',font.main=1,cex.main=1)
-  dateRange <- paste0(format(range(obj[,1]),'%Y'),collapse = '~')
-  plot(obj[,c(1,2)],xlab='',ylab='',
-       main = paste0(Country,'\n',
-                     colnames(obj)[2],'\n',
-                     Unit,'\n',
-                     if(!is.na(Scale)){paste0(Scale,'\n')},
-                     dateRange),
-       panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T),
-       type = 'o',pch = 20,col = obj$col,cex = obj$cex)
-  abline(h = 0,lwd = 2)
+  if(nrow(buf1)!=0){
+    objColYear <-
+      grep('^[0-9]{4}$',colnames(buf1))
+    buf2 <- t(buf1[,objColYear])
+    buf3 <-
+      data.frame(Date=as.Date(paste0(row.names(buf2),'-1-1')),
+                 buf2[,1],stringsAsFactors = F,row.names = NULL)
+    colnames(buf3)[2] <-
+      buf1$`Subject Descriptor`
+    buf3$cex <- ifelse(year(buf3$Date)<=forcastYear,cex1,cex2)
+    buf3$col <- ifelse(year(buf3$Date)<=forcastYear,'blue','red')
+    returnList <-
+          list('tsUnit' = buf1$Units,
+               'tsData' = na.omit(buf3),
+               'tsNote' = buf1$`Subject Notes`,
+               'tsScale' = buf1$Scale,
+               'tsCountry' = buf1$Country)
+    return(returnList)
+  }else{
+    returnList <- NA
+    return(returnList)
+  }
 }
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
-subjectN <- c(1,3,4,8,9,17,22,24,25,27)
-for(iii in seq(length(subjectN))){
-  returnOBJ <- fun_extractWEO(objCountry = ISO[isoN],Subject = SubjectList[subjectN[iii]])
-  if(nrow(returnOBJ$tsData)!=0){fun_plot(obj = returnOBJ$tsData,
-                                         Country = returnOBJ$tsCountry,
-                                         Unit = returnOBJ$tsUnit,
-                                         Scale = returnOBJ$tsScale)}
-  cat('\n\n<hr>\n\n')
+cnt <- 1
+for(iii in seq(length(SubjectList))){
+  returnOBJ <- fun_extractWEO(objCountry = ISO[isoN],Subject = SubjectList[iii])
+  if(!is.na(returnOBJ)){
+    if(10<=nrow(returnOBJ$tsData)){
+      cat(paste0('\n- ',cnt,'. ',colnames(returnOBJ$tsData)[2],'\n'))
+      fun_plot(obj = returnOBJ$tsData,
+               Country = returnOBJ$tsCountry,
+               Unit = returnOBJ$tsUnit,
+               Scale = returnOBJ$tsScale)
+      cat('\n\n<hr>\n\n')
+      cnt <- cnt + 1
+    }
+  }
 }
 ```
 
 ### Economic Data From OECD
 - Source https://stats.oecd.org/
 
-```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
 userName <-
   Sys.info()['user']
 pathToFile <-
@@ -217,7 +231,7 @@ OECD <- buf0
 ISO <- unique(OECD$LOCATION)
 OECD$`DesAndUnit` <- paste0(OECD$Subject,'.Unit:',OECD$Unit)
 SubjectList <- unique(OECD$DesAndUnit)
-isoN <- 15
+isoN <- grep(titleCountry,unique(OECD$Country),ignore.case = T)
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
@@ -225,25 +239,40 @@ fun_extractOECD <- function(objCountry,Subject){
   buf0 <- OECD[OECD$LOCATION==objCountry,]
   buf1 <-
     buf0[buf0$DesAndUnit==Subject,]
-  buf2 <-
-    data.frame(Date=as.Date(paste0(buf1$Year,'-1-1')),buf1$Value,stringsAsFactors = F)
-  colnames(buf2)[2] <- unique(buf1$Subject)
-  buf2$col <- 'blue'
-  buf2$cex <- 1.1
-  returnList <-
-        list('tsUnit' = unique(buf1$Unit),
-             'tsData' = na.omit(buf2),
-             'tsCountry' = unique(buf1$Country))
-  return(returnList)
+  if(nrow(buf1)!=0){
+    buf2 <-
+      data.frame(Date=as.Date(paste0(buf1$Year,'-1-1')),buf1$Value,stringsAsFactors = F)
+    colnames(buf2)[2] <- unique(buf1$Subject)
+    buf2$col <- 'blue'
+    buf2$cex <- 1.1
+    returnList <-
+          list('tsUnit' = unique(buf1$Unit),
+               'tsData' = na.omit(buf2),
+               'tsCountry' = unique(buf1$Country))
+    return(returnList)
+  }else{
+    returnList <- NA
+    return(returnList)
+  }
 }
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
-returnOBJ <- fun_extractOECD(objCountry = ISO[isoN],Subject = SubjectList[262])
-fun_plot(obj = returnOBJ$tsData,Unit = returnOBJ$tsUnit,Country = returnOBJ$tsCountry)
+cnt <- 1
+for(iii in seq(length(SubjectList))){
+  returnOBJ <- fun_extractOECD(objCountry = ISO[isoN],Subject = SubjectList[iii])
+  if(!is.na(returnOBJ)){
+    if(10<=nrow(returnOBJ$tsData)){
+      cat(paste0('\n- ',cnt,'. ',colnames(returnOBJ$tsData)[2],'\n'))
+      fun_plot(obj = returnOBJ$tsData,
+               Unit = returnOBJ$tsUnit,
+               Country = returnOBJ$tsCountry)
+      cat('\n\n<hr>\n\n')
+      cnt <- cnt + 1
+    }
+  }
+}
 ```
-
-***
 
 ### CIA Factbook
 - Source https://www.cia.gov/index.html
@@ -255,3 +284,21 @@ script <-
     ssl.verifypeer = F)
 eval(parse(text = script))
 ```
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+cia <- data.frame()
+cnt <- 1
+for(iii in seq(length(tableTitle))){
+  obj <- get(paste0('comparisonTable',iii))
+  objRaw <- grep(titleCountry,obj$Country,ignore.case = T)
+  if(length(objRaw)!=0){
+    cia[cnt,1] <- tableTitle[iii]
+    cia[cnt,2] <- obj[objRaw,3]
+    cia[cnt,3] <- obj[objRaw,4]
+    cnt<-cnt+1
+  }
+}
+colnames(cia) <- c('Subject','Value','Date')
+fun_markdownTable(obj = cia)
+```
+
