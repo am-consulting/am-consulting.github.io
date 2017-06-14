@@ -242,3 +242,16 @@ fun_extractOECD <- function(objCountry,Subject){
 returnOBJ <- fun_extractOECD(objCountry = ISO[isoN],Subject = SubjectList[262])
 fun_plot(obj = returnOBJ$tsData,Unit = returnOBJ$tsUnit,Country = returnOBJ$tsCountry)
 ```
+
+***
+
+### CIA Factbook
+- Source https://www.cia.gov/index.html
+
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+script <-
+  RCurl::getURL(
+    "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importCIA-the-world-factbook.r",
+    ssl.verifypeer = F)
+eval(parse(text = script))
+```
