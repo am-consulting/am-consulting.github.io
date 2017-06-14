@@ -13,7 +13,7 @@ output:
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+<style>.main-container {max-width : 1400px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -38,7 +38,26 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
-### Economic Data From World Economic Outlook Databases(IMF)
+```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
+library(countrycode)
+countryName <- 
+  countrycode(sourcevar = ISOcode,origin = 'iso3c',destination = 'country.name')
+dataTitle <- 
+  paste0('Database Of ',countryName)
+dataSource <- 
+  'IMF,OECD,CIA'
+options(scipen = 999)
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
+### Data From World Economic Outlook Databases(IMF)
+
 - Source http://www.imf.org/external/ns/cs.aspx?id=28
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
@@ -85,11 +104,9 @@ fun_extractWEO <- function(objCountry,Subject){
                  buf2[,1],stringsAsFactors = F,row.names = NULL)
     colnames(buf3)[2] <-
       buf1$`Subject Descriptor`
-    buf4 <-
-      buf3[forcastYear[1]<=year(buf3[,1]) & year(buf3[,1])<=forcastYear[2],]
     returnList <-
           list('tsUnit' = buf1$Units,
-               'tsData' = na.omit(buf4),
+               'tsData' = na.omit(buf3),
                'tsNote' = buf1$`Subject Notes`,
                'tsScale' = buf1$Scale,
                'tsCountry' = buf1$Country)
@@ -103,26 +120,30 @@ fun_extractWEO <- function(objCountry,Subject){
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
 cnt <- 1
+countryList <- vector()
 for(iii in seq(length(SubjectList))){
   returnOBJ <- fun_extractWEO(objCountry = ISO[isoN],Subject = SubjectList[iii])
   if(!is.na(returnOBJ)){
-    obj <- returnOBJ$tsData
-    if(nrow(obj)==(diff(forcastYear)+1)){
-      buf <-
-        fun_transposeDataFrame(obj = obj,dateFormat = '%Y',
-                               colName = paste0(returnOBJ$tsCountry,':Subject'))
-      buf$Unit <- returnOBJ$tsUnit
-      buf$Scale <- returnOBJ$tsScale
-      if(cnt==1){IMFData <- buf}else{IMFData <- rbind(IMFData,buf)}
-      cnt <- cnt + 1
-    }
+    countryList[cnt] <- returnOBJ$tsCountry
+    buf <- returnOBJ$tsData
+    colnames(buf)[2] <- 
+      paste0(colnames(buf)[2],'.Unit:',returnOBJ$tsUnit,'.Scale:',returnOBJ$tsScale)
+    colnames(buf) <- gsub('na','-',colnames(buf),ignore.case = T)
+    if(cnt==1){obj <- buf}else{obj <- merge(obj,buf,by='Date',all=T)}
+    cnt <- cnt + 1
   }
 }
+IMFData <-
+  fun_transposeDataFrame(obj = obj,dateFormat = '%Y',
+                         colName = paste0(unique(countryList),':Subject'),tailN = 5)
 IMFData[is.na(IMFData)] <- ''
 fun_markdownTable(obj = IMFData)
 ```
 
-### Economic Data From OECD
+***
+
+### Data From OECD
+
 - Source https://stats.oecd.org/
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'hide'}
@@ -149,6 +170,8 @@ tmp0 <-
   read.csv(file = csvFile,header = T,check.names = F,stringsAsFactors = F)
 buf0 <- tmp0
 colnames(buf0) <- iconv(colnames(buf0),from = 'utf8',to = 'utf8')
+buf0$Subject <- iconv(x = buf0$Subject,from = 'utf8',to = 'utf8')
+buf0$Subject <- gsub('CO\\?','CO2',buf0$Subject)
 OECD <- buf0
 ```
 
@@ -156,7 +179,7 @@ OECD <- buf0
 ISO <- unique(OECD$LOCATION)
 OECD$`DesAndUnit` <- paste0(OECD$Subject,'.Unit:',OECD$Unit)
 SubjectList <- unique(OECD$DesAndUnit)
-isoN <- grep(ISOcode,unique(OECD$Country),ignore.case = T)
+isoN <- grep(ISOcode,unique(OECD$LOCATION),ignore.case = T)
 ```
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
@@ -168,8 +191,6 @@ fun_extractOECD <- function(objCountry,Subject){
     buf2 <-
       data.frame(Date=as.Date(paste0(buf1$Year,'-1-1')),buf1$Value,stringsAsFactors = F)
     colnames(buf2)[2] <- unique(buf1$Subject)
-    buf2$col <- 'blue'
-    buf2$cex <- 1.1
     returnList <-
           list('tsUnit' = unique(buf1$Unit),
                'tsData' = na.omit(buf2),
@@ -187,19 +208,27 @@ cnt <- 1
 for(iii in seq(length(SubjectList))){
   returnOBJ <- fun_extractOECD(objCountry = ISO[isoN],Subject = SubjectList[iii])
   if(!is.na(returnOBJ)){
-    if(10<=nrow(returnOBJ$tsData)){
-      cat(paste0('\n- ',cnt,'. ',colnames(returnOBJ$tsData)[2],'\n'))
-      fun_plot(obj = returnOBJ$tsData,
-               Unit = returnOBJ$tsUnit,
-               Country = returnOBJ$tsCountry)
-      cat('\n\n<hr>\n\n')
-      cnt <- cnt + 1
+    buf <-
+      fun_transposeDataFrame(returnOBJ$tsData,tailN = 1,dateFormat = '%Y')
+    buf$Year <- colnames(buf)[2]
+    colnames(buf)[2] <- 'Value'
+    buf$Unit <- returnOBJ$tsUnit
+    if(cnt==1){
+      OECDdata <- buf
+    }else{
+      OECDdata <- rbind(OECDdata,buf)
     }
+    cnt <- cnt + 1
   }
 }
+OECDdata[,1] <- iconv(OECDdata[,1],from = 'utf8',to = 'utf8')
+fun_markdownTable(obj = OECDdata)
 ```
 
+***
+
 ### CIA Factbook
+
 - Source https://www.cia.gov/index.html
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
@@ -215,7 +244,9 @@ cia <- data.frame()
 cnt <- 1
 for(iii in seq(length(tableTitle))){
   obj <- get(paste0('comparisonTable',iii))
-  objRaw <- grep(ISOcode,obj$Country,ignore.case = T)
+  
+  
+  objRaw <- grep(countryName,obj$Country,ignore.case = T)
   if(length(objRaw)!=0){
     cia[cnt,1] <- tableTitle[iii]
     cia[cnt,2] <- obj[objRaw,3]
@@ -224,6 +255,6 @@ for(iii in seq(length(tableTitle))){
   }
 }
 colnames(cia) <- c('Subject','Value','Date')
+cia[is.na(cia)] <- '-'
 fun_markdownTable(obj = cia)
 ```
-
