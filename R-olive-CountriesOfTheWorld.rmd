@@ -195,7 +195,8 @@ fun_extractOECD <- function(objCountry,Subject){
           list('tsUnit' = unique(buf1$Unit),
                'tsData' = na.omit(buf2),
                'tsCountry' = unique(buf1$Country),
-               'tsRef' = unique(buf1$`Reference Period`))
+               'tsRef' = unique(buf1$`Reference Period`),
+               'tsPower' = unique(buf1$PowerCode))
     return(returnList)
   }else{
     returnList <- NA
@@ -206,6 +207,7 @@ fun_extractOECD <- function(objCountry,Subject){
 
 ```{r warning = F,error = F,message = F,echo = F,results = 'asis'}
 cnt <- 1
+countryList <- vector()
 for(iii in seq(length(SubjectList))){
   returnOBJ <- fun_extractOECD(objCountry = ISO[isoN],Subject = SubjectList[iii])
   if(!is.na(returnOBJ)){
@@ -215,6 +217,8 @@ for(iii in seq(length(SubjectList))){
     colnames(buf)[2] <- 'Value'
     buf$Unit <- returnOBJ$tsUnit
     buf$Reference <- returnOBJ$tsRef
+    buf$Power <- returnOBJ$tsPower
+    countryList[cnt] <- returnOBJ$tsCountry
     if(cnt==1){
       OECDdata <- buf
     }else{
@@ -223,6 +227,7 @@ for(iii in seq(length(SubjectList))){
     cnt <- cnt + 1
   }
 }
+colnames(OECDdata)[1] <- paste0(unique(countryList),':Subject')
 # fun_markdownTable(obj = OECDdata)
 fun_dataTable(obj = OECDdata,orderDirection = 'asc',dateFormat = 0,needID = 1)
 ```
@@ -255,7 +260,7 @@ for(iii in seq(length(tableTitle))){
     cnt<-cnt+1
   }
 }
-colnames(cia) <- c('Subject','Unit','Value','Date')
+colnames(cia) <- c(paste0(countryName,':Subject'),'Unit','Value','Date')
 cia[is.na(cia)] <- '-'
 # fun_markdownTable(obj = cia)
 fun_dataTable(obj = cia,orderDirection = 'asc',dateFormat = 0,needID = 1)
