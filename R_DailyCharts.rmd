@@ -76,7 +76,7 @@ grid.table(tableDF,row=NULL, theme = amccTheme)
 dailyChart <- list()
 cnt <- 1
 dateFormat <- '%Y%m%d'
-fromOANDA <- c('USD/JPY','EUR/USD','BTC/USD','XAU/USD','XAU/XAG','XAU/XPT','BTC/XAU')
+fromOANDA <- c('USD/JPY','EUR/USD','BTC/USD','XAU/USD','XAU/XAG','XAU/XPT','BTC/XAU','ZAR/USD')
 for(iii in seq(length(fromOANDA))){
   obj <- getSymbols(Symbols = fromOANDA[iii],auto.assign = F,src = 'oanda')
   colnames(obj) <- gsub('\\.','/',colnames(obj))
@@ -98,6 +98,13 @@ colnames(obj)[2] <-
   paste0('JGB Interest Rate(%):',colnames(obj)[2])
 dailyChart[[cnt]] <- obj
 print(tail(dailyChart[[cnt]]))
+cnt <- cnt + 1
+obj <-
+  na.omit(jgbData[,c(1,grep('30y',colnames(jgbData),ignore.case = T))])
+colnames(obj)[2] <- 
+  paste0('JGB Interest Rate(%):',colnames(obj)[2])
+print(tail(obj))
+dailyChart[[cnt]] <- obj
 cnt <- cnt + 1
 fromYahoo <- c('DGS10','10-Year Treasury Constant Maturity Rate')
 for(iii in seq(1,length(fromYahoo),by = 2)){
@@ -160,7 +167,7 @@ for(jjj in seq(length(importIndex))){
 }
 cnt <- cnt + 1
 obj <- 
-  na.omit(putCallRatio[[2]][,c(1,5)])
+  na.omit(putCallRatio[[5]][,c(1,2)])
 obj[,1] <- 
   as.Date(obj[,1])
 dailyChart[[cnt]] <- obj
