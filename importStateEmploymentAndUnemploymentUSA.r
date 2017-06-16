@@ -23,11 +23,31 @@ for(iii in seq(length(tableList))){
   buf0 <-
     data.frame(tableList[[iii]],stringsAsFactors = F)
   buf1 <- buf0
-  buf1[3,buf1[2,]==buf1[3,]] <- NA
-  buf1[2,buf1[1,]==buf1[2,]] <- NA
-  colnames(buf1) <- paste0(buf1[1,],':',buf1[2,],':',buf1[3,])
-  colnames(buf1) <- gsub(':na','',colnames(buf1),ignore.case = T)
-  buf2 <- buf1[-c(1:3),]
+  if(iii==1|iii==6|iii==7|iii==8|iii==9){
+    buf1[3,buf1[2,]==buf1[3,]] <- NA
+    buf1[2,buf1[1,]==buf1[2,]] <- NA
+    colnames(buf1) <- paste0(buf1[1,],':',buf1[2,],':',buf1[3,])
+    colnames(buf1) <- gsub(':na','',colnames(buf1),ignore.case = T)
+    buf2 <- buf1[-c(1:3),]
+  }
+  if(iii==3|iii==4|iii==5){
+    buf1[2,buf1[1,]==buf1[2,]] <- NA
+    colnames(buf1) <- paste0(buf1[1,],':',buf1[2,])
+    colnames(buf1) <- gsub(':na','',colnames(buf1),ignore.case = T)
+    buf2 <- buf1[-c(1:2),]
+  }
+  if(iii==2){
+    buf1[4,buf1[3,]==buf1[4,]] <- NA
+    buf1[3,buf1[2,]==buf1[3,]] <- NA
+    buf1[2,buf1[1,]==buf1[2,]] <- NA
+    colnames(buf1) <- paste0(buf1[1,],':',buf1[2,],':',buf1[3,],':',buf1[4,])
+    colnames(buf1) <- gsub(':na','',colnames(buf1),ignore.case = T)
+    buf2 <- buf1[-c(1:4),]
+  }
+  colnames(buf2) <-
+    gsub('\\([0-9]+\\)','',colnames(buf2))
+  colnames(buf2) <-
+    gsub(':([0-9]{4})','.\\1',colnames(buf2))
   buf2[,-1] <-
     apply(buf2[,-1],2,function(x)as.numeric(gsub(',','',x)))
   buf3 <- buf2[!is.na(buf2[,2]),]
