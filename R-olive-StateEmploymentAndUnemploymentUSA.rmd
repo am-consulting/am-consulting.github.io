@@ -189,7 +189,7 @@ pngFile <-
 png(file = pngFile, width = 1000, height = 600)
 obj <- tail(obj0,-topN)
 colnames(obj) <- gsub('<br>',' ',colnames(obj))
-par(mar=c(4,12,3,1),family='Meiryo',font.main=1,cex.main=1,oma=c(2,0,0,0))
+par(mar=c(4,17,3,1),family='Meiryo',font.main=1,cex.main=1,oma=c(2,0,0,0))
 barplot(height = obj[,2],names.arg = obj[,1],horiz = T,las = 1,
         col = '#4169e1',xlim = xlim,
         main = paste0(colnames(obj)[2]))
