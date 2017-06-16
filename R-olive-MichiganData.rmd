@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-Michigan.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'Michigan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Surveys of Consumers By University of Michigan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -74,22 +74,22 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 lineColor <- c('blue','green','red')
-fun_fit(obj = IndexOfConsumerSentiment)
-fun_MovingAverage(obj = IndexOfConsumerSentiment,n = monthS,dateFormat = dateFormat)
 mergeData <- 
-  merge(x = fittedDF,y = MovingAverageDF[,-2],by = 'Date')
+  merge(x = fun_fit(obj = IndexOfConsumerSentiment),
+        y = fun_MovingAverage(obj = IndexOfConsumerSentiment,n = monthS,dateFormat = dateFormat)[,-2],
+        by = 'Date')
 n <- 1
 fun_generateKnit(objDF = mergeData[,c(1,2,3,6)],plotNum = n,group = 0,quantiles = 2,colors = lineColor)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
 fun_markdownTable(obj = fun_transposeDataFrame(obj = IndexOfConsumerSentiment,dateFormat = dateFormat,tailN = 8))
 cat('<hr>')
-fun_acf(obj = IndexOfConsumerSentiment,lag.max = 12*10)
+dammy <- fun_acf(obj = IndexOfConsumerSentiment,lag.max = 12*10)
 fun_timeSeriesDataFundamentalStatistics(obj = IndexOfConsumerSentiment)
 fun_markdownTable(obj = statisticsTable,rownames = T)
 cat('<hr>')
 cat('<h5>Month Over Month(point)</h5>')
-fun_makeDiffTable(obj = IndexOfConsumerSentiment,lag = 1)
+diffDF <- fun_makeDiffTable(obj = IndexOfConsumerSentiment,lag = 1)
 fun_generateKnit(objDF = diffDF,plotNum = n,group = 0,quantiles = 2,barPlot = 1)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
@@ -113,12 +113,34 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = ComponentsOfTheIndexOfConsu
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 n <- 3
-fun_generateKnit(objDF = ExpectedChangesInInflationRates,plotNum = n,group = 0)
+obj0 <- na.omit(ExpectedChangesInInflationRates)
+row.names(obj0) <- NULL
+obj <- obj0[-c(1:tail(which(31<diff(obj0[,1])),1)),]
+fun_generateKnit(objDF = obj,plotNum = n,group = 0)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', potus_dygraph)))
 cat('<hr>')
-fun_markdownTable(obj = fun_transposeDataFrame(obj = ExpectedChangesInInflationRates,
+fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,
                                                dateFormat = dateFormat,tailN = 8))
+```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_PlotStrawAnd4charts(obj = IndexOfConsumerSentiment,varType = 2)
+dev.off();dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+buf <-
+  merge(IndexOfConsumerSentiment,ComponentsOfTheIndexOfConsumerSentiment,by='Date',all=T)
+obj <-
+  merge(buf,ExpectedChangesInInflationRates,by='Date',all=T)
+fun_outputMD(tags = 'State,Employment,Unemployment',
+             objDF = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat),
+             htmlName = htmlName,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
+             tableTitle = 'Latest 5 months',
+             tableName = 'University of Michigan Consumer Sentiment Index')
+fun_updateURLcsv()
 ```
 
 ***
