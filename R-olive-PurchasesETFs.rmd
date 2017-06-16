@@ -179,7 +179,7 @@ fun_outputMD(tags = 'ETF,金融緩和',
              objDF = fun_transposeDataFrame(obj = obj),
              htmlName = htmlName,
              image1 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = '直近5日分',
              tableName = colnames(obj)[2])
 fun_updateURLcsv()
