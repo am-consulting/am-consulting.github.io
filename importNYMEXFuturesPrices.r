@@ -9,6 +9,7 @@ download.file(url = targetURL,fileName,mode = 'wb')
 sheetName <-
   getSheets(loadWorkbook(fileName))
 NYMEXFuturesPrices <- list()
+cnt <- 1
 for(sss in seq(length(sheetName))){
   if(length(grep('data',sheetName[sss],ignore.case = T))!=0){
     buf0 <-
@@ -20,7 +21,8 @@ for(sss in seq(length(sheetName))){
     buf2[,1] <- as.Date(buf2[,1])
     buf2[,-1] <- apply(buf2[,-1,drop=F],2,function(x)as.numeric(gsub(',','',x)))
     print(tail(buf2,2))
-    NYMEXFuturesPrices[[sss]] <- buf2
+    NYMEXFuturesPrices[[cnt]] <- buf2
+    cnt <- cnt + 1
   }
 }
 sheetTitle <- 'NYMEX Futures Prices'
