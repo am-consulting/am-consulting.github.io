@@ -63,7 +63,7 @@ library(knitr)
 <!-- 前月データ取得 -->
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 3
+targetMonth <- 4
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -86,7 +86,7 @@ lastMonthBuf <- buf0
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 4
+targetMonth <- 5
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -120,6 +120,7 @@ windowsFonts(Meiryo=windowsFont('Meiryo'))
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
 - Source http://www.customs.go.jp/toukei/latest/index.htm
+- Source http://www.customs.go.jp/toukei/shinbun/trade-st/sadj.htm
 
 ***
 
@@ -231,32 +232,16 @@ fun_markdownTable(obj = bufTable)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 fun_plotTimeSeries(obj = ExportAndImportSA,typeL = 'o',typeR = 'o',chartType = 1,dateFormat = '%Y-%m',
-                   dataSource = dataSource,dataTitle = dataTitle,mar = c(4,4,5,1),needLefLab = 0,
+                   dataSource = paste0(dataSource,'   (注)季節調整値'),
+                   dataTitle = dataTitle,mar = c(4,4,5,1),needLefLab = 0,
                    fitlwdL = 2,fitlwdR = 2)
+fun_addTxtToChart(obj = ExportAndImportSA,funType = 'min',col = 'black')
 dev.off()
 ```
 
@@ -266,11 +251,12 @@ objColumn <- 2
 obj <-
   ExportAndImportSA[,c(1,objColumn)]
 fun_outputMD(tags = '財務省,貿易統計',
-             objDF = fun_summaryByName(obj = obj),
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = paste0('輸出額(兆円):季節調整済値',colnames(obj)[2]))
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
