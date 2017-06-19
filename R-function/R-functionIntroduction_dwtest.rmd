@@ -1,0 +1,72 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/',username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'dwtest';rmarkdown::render(inputFile,encoding = encoding,output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'dwtest{lmtest}'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(),'%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width:1000px;}</style>
+<style type="text/css">
+  code.r {font-family:consolas;}
+  code {font-family:consolas;}
+</style>
+
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- <a href="http://olive.saecanet.com/p/r.html" target="_blank">R関数の紹介/R function Introduction</a>
+
+***
+## dwtest{lmtest}
+- https://cran.r-project.org/web/packages/lmtest/lmtest.pdf
+- ダービン・ワトソン検定:誤差項間の相関関係(自己相関、系列相関)を検定
+
+```{r warning=F,error=F,message=F}
+library(lmtest)
+```
+
+***
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=F,error=F,message=F}
+## generate two AR(1) error terms with parameter
+## rho = 0 (white noise) and rho = 0.9 respectively
+err1 <- rnorm(100)
+## generate regressor and dependent variable
+x <- rep(c(-1,1), 50)
+y1 <- 1 + x + err1
+## perform Durbin-Watson test
+dwtest(y1 ~ x)
+err2 <- filter(err1, 0.9, method="recursive")
+y2 <- 1 + x + err2
+dwtest(y2 ~ x)
+```
+
+***
+### Supplement/補足
+
+```{r warning=F,error=F,message=F}
+acf(lm(y1~x)$residuals)
+plot(x,y1,type='o')
+plot(lm(y1~x)$residuals,type='h')
+acf(lm(y2~x)$residuals)
+plot(x,y2,type='o')
+plot(lm(y2~x)$residuals,type='h')
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
