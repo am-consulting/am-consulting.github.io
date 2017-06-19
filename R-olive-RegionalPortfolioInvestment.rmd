@@ -1,0 +1,174 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'RegionalPortfolioInvestment';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'Amount Of JGB In The Possession Of Overseas Investors'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(Nippon)
+csvFile <-
+  c('Long-term_Total.csv','Short.csv','Total.csv')
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/RegionalPortfolioInvestmentAndFinancialDerivativesPosition_Liabilities_PortfolioInvestment_DebtSecurities_'
+liability <- list()
+for(iii in seq(length(csvFile))){
+  buf0 <-
+    read.csv(file = paste0(baseURL,csvFile[iii]),
+             stringsAsFactors = F,
+             fill = T,
+             na.strings = '',
+             header = F,check.names = F,fileEncoding = 'UTF8')
+  buf1 <- buf0
+  colnames(buf1) <- 
+    sapply(paste0(buf1[grep('系列名称$',buf1[,1]),],
+                  paste0('(',buf1[grep('単位$',buf1[,1]),],')')),
+           zen2han)
+  buf2 <- buf1[head(which(!is.na(as.numeric(buf1[,1]))),1):nrow(buf1),]
+  buf2[,-1] <- apply(buf2[,-1],2,as.numeric)
+  buf2[,1] <- as.Date(paste0(buf2[,1],'-1-1'))
+  colnames(buf2)[1] <- 'Date'
+  buf3 <-
+    buf2[apply(buf2,1,function(x)sum(is.na(x)))!=(ncol(buf2)-1),]
+  liability[[iii]] <- buf3
+}
+```
+
+```{r warning=F,error=F,message=F,results='hold',echo=F}
+dateFormat <- '%Y年'
+obj <- liability[[3]]
+fun_latestResult(obj,dateFormat = dateFormat)
+dataTitle <- 
+  paste0('海外投資家の日本国債保有額:',latestResult)
+dataSource <- '日本銀行、財務省'
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
+```{r warning=F,error=F,message=F,results='asis',echo=F}
+iii <- 3
+obj <- liability[[iii]]
+buf <- fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
+buf$ratio <- round(buf[,ncol(buf)]/buf[1,ncol(buf)]*100,2)
+colnames(buf)[ncol(buf)] <- paste0(colnames(buf)[ncol(buf)-1],'構成比(%)')
+fileTitle <- gsub('(.+)/[^/]+','\\1',buf[1,1])
+buf[,1] <- gsub('.+/([^/]+)','\\1',buf[,1])
+cat('#### ',fileTitle,'\n\n')
+fun_dataTable(obj = buf,dateFormat = 0,needID = 1,orderDirection = 'asc')
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,results='asis',echo=F}
+iii <- 1
+obj <- liability[[iii]]
+buf <- fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
+buf$ratio <- round(buf[,ncol(buf)]/buf[1,ncol(buf)]*100,2)
+colnames(buf)[ncol(buf)] <- paste0(colnames(buf)[ncol(buf)-1],'構成比(%)')
+fileTitle <- gsub('(.+)/[^/]+','\\1',buf[1,1])
+buf[,1] <- gsub('.+/([^/]+)','\\1',buf[,1])
+cat('#### ',fileTitle,'\n\n')
+fun_dataTable(obj = buf,dateFormat = 0,needID = 1,orderDirection = 'asc')
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,results='asis',echo=F}
+iii <- 2
+obj <- liability[[iii]]
+buf <- fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
+buf$ratio <- round(buf[,ncol(buf)]/buf[1,ncol(buf)]*100,2)
+colnames(buf)[ncol(buf)] <- paste0(colnames(buf)[ncol(buf)-1],'構成比(%)')
+fileTitle <- gsub('(.+)/[^/]+','\\1',buf[1,1])
+buf[,1] <- gsub('.+/([^/]+)','\\1',buf[,1])
+cat('#### ',fileTitle,'\n\n')
+fun_dataTable(obj = buf,dateFormat = 0,needID = 1,orderDirection = 'asc')
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+iii <- 3
+obj <- 
+  liability[[iii]]
+fileTitle <- 
+  gsub('(.+)/[^/]+','\\1',colnames(obj)[2])
+colnames(obj)[-1] <- 
+  gsub('.+/([^/]+)','\\1',colnames(obj)[-1])
+buf <- 
+  obj[,c(1,grep('アメリカ|中華人民共和国',colnames(obj)))]
+fun_plotTimeSeries(obj = buf,chartType = 1,
+                   typeL = 'o',typeR = 'o',pchL = 20,pchR = 20,mar = c(4,3,5,1),
+                   cexL = 5,cexR = 5,dateFormat = dateFormat,dataSource = dataSource,
+                   dataTitle = fileTitle)
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '日本国債',
+             objDF = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = buf,lag = 1),
+                                            dateFormat = dateFormat,
+                                            colName = 'Region/Country'),
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,
+             title = dataTitle,
+             tableTitle = '前年比(%)',
+             tableName = fileTitle)
+fun_updateURLcsv()
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
