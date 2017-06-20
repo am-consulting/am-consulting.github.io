@@ -148,3 +148,7 @@ button.code-folding-btn:focus {
   outline: none;
 }
 */
+
+code.r {font-family:consolas;}
+
+code {font-family:consolas;}
