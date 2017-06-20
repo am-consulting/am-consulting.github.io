@@ -1,0 +1,85 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/',username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'sciplot';rmarkdown::render(inputFile,encoding = encoding,output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'bargraph.CI{sciplot},lineplot.CI{sciplot},se{sciplot}'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(),'%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width:1000px;}</style>
+
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- <a href="http://olive.saecanet.com/p/r.html" target="_blank">R関数の紹介/R function Introduction</a>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000,scipen = 999)
+```
+
+***
+## bargraph.CI{sciplot},lineplot.CI{sciplot},se{sciplot}
+- https://cran.r-project.org/web/packages/sciplot/sciplot.pdf
+- Factorial Designs(要因デザイン)向けグラフ作成関数
+- 平均値と信頼区間を表示
+
+***
+
+```{r warning=T,error=T,message=T}
+library(sciplot)
+```
+
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+data(ToothGrowth)
+# One way design
+bargraph.CI(x.factor = dose, response = len, data = ToothGrowth)
+# Two-way design with options
+bargraph.CI(dose, len, group = supp, data = ToothGrowth,
+xlab = "Dose", ylab = "Growth", cex.lab = 1.5, x.leg = 1,
+col = "black", angle = 45, cex.names = 1.25,
+density = c(0,20), legend = TRUE)
+```
+
+***
+### Supplement/補足
+
+```{r warning=T,error=T,message=T}
+ToothGrowth
+```
+
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+data(ToothGrowth)
+# One way design
+lineplot.CI(x.factor = dose, response = len, data = ToothGrowth)
+# Two-way design with options
+lineplot.CI(dose, len, group = supp, data = ToothGrowth, cex = 2,
+xlab = "Dose", ylab = "Growth", cex.lab = 1.5, x.leg = 1,
+col = c("blue","red"), pch = c(16,16))
+
+```
+
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+se(1:10) ^ 2
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
