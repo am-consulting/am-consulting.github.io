@@ -130,3 +130,19 @@ return(returnList)
 #####  {.col-md-6}
 
 #####  {.col-md-6}
+
+***
+
+### Examples cited from Reference manual
+
+```{r warning=T,error=T,message=T}
+
+```
+
+### Supplement
+
+```{r warning=T,error=T,message=T}
+
+```
+
+***
