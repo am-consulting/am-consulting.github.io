@@ -284,27 +284,9 @@ text(x = 1,y = 50,labels = '50%',pos = 3)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- ProvisionalEstimates[[1]][,1:2]
@@ -314,15 +296,21 @@ dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '人口推計,総務省',
-             objDF = na.omit(fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = ProvisionalEstimates[[1]],
-                                                                                 lag = 1,
-                                                                                 roundDigits = 3),
-                                                    dateFormat = dateFormat,colName = '年齢階級')),
+             objDF = 
+               na.omit(fun_transposeDataFrame(obj =
+                                                fun_makeDiffRatioTable(obj = 
+                                                                         ProvisionalEstimates[[1]],
+                                                                       lag = 1,
+                                                                       roundDigits = 3),
+                                              dateFormat = dateFormat,
+                                              colName = '年齢階級')
+                       ),
              htmlName = htmlName,
-             dataTitle = dataTitle,
-             image = 1,
+             title = dataTitle,
+             image1 = 1,
              tableTitle = '男女計:人口推計前月比(%)',
              tableName = '男女計:人口推計前月比(%)')
+fun_updateURLcsv()
 ```
 
 ***
