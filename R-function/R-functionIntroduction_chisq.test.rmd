@@ -1,0 +1,123 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/',username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'chisq.test';rmarkdown::render(inputFile,encoding = encoding,output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : 'chisq.test {stats}'
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(),'%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width:1000px;}</style>
+
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+- <a href="http://olive.saecanet.com/p/r.html" target="_blank">R関数の紹介/R function Introduction</a>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000,scipen = 999)
+```
+
+***
+## chisq.test {stats}
+- カイ二乗検定
+- ノンパラメトリック検定
+- 適合度検定と独立性検定
+- https://ja.wikipedia.org/wiki/%E3%82%AB%E3%82%A4%E4%BA%8C%E4%B9%97%E6%A4%9C%E5%AE%9A
+
+***
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+## From Agresti(2007) p.39
+M <- as.table(rbind(c(762, 327, 468), c(484, 239, 477)))
+dimnames(M) <- list(gender = c("F", "M"),
+                    party = c("Democrat","Independent", "Republican"))
+(Xsq <- chisq.test(M))  # Prints test summary
+Xsq$observed   # observed counts (same as M)
+Xsq$expected   # expected counts under the null
+Xsq$residuals  # Pearson residuals
+Xsq$stdres     # standardized residuals
+```
+
+***
+### Supplement/補足
+
+```{r warning=T,error=T,message=T}
+M
+dimnames(M)
+```
+
+***
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+## Effect of simulating p-values
+x <- matrix(c(12, 5, 7, 7), ncol = 2)
+chisq.test(x)$p.value           # 0.4233
+chisq.test(x, simulate.p.value = TRUE, B = 10000)$p.value # around 0.29!
+```
+
+***
+### Supplement/補足
+
+```{r warning=T,error=T,message=T}
+x
+chisq.test(x)
+chisq.test(x, simulate.p.value = TRUE, B = 10000)
+```
+
+***
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+## Testing for population probabilities
+## Case A. Tabulated data
+x <- c(A = 20, B = 15, C = 25)
+chisq.test(x)
+chisq.test(as.table(x))             # the same
+x <- c(89,37,30,28,2)
+p <- c(40,20,20,15,5)
+try(
+chisq.test(x, p = p)                # gives an error
+)
+chisq.test(x, p = p, rescale.p = TRUE)
+                                # works
+p <- c(0.40,0.20,0.20,0.19,0.01)
+                                # Expected count in category 5
+                                # is 1.86 < 5 ==> chi square approx.
+chisq.test(x, p = p)            #               maybe doubtful, but is ok!
+chisq.test(x, p = p, simulate.p.value = TRUE)
+```
+
+***
+### Examples cited from Reference manual/リファレンスマニュアルからの引用サンプル
+
+```{r warning=T,error=T,message=T}
+## Case B. Raw data
+x <- trunc(5 * runif(100))
+chisq.test(table(x))            # NOT 'chisq.test(x)'!
+```
+
+***
+### Supplement/補足
+
+```{r warning=T,error=T,message=T}
+x
+table(x)
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
