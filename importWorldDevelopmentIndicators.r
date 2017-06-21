@@ -25,3 +25,8 @@ colnames(buf1)[objCol] <- as.numeric(substring(colnames(buf1)[objCol],1,4))
 buf2 <-
   buf1[buf1$`Country Code`!='',]
 WorldDevelopmentIndicators <- buf2
+buf0 <-
+  read.csv(file = dir(pathOutput)[-grep('data.csv',dir(pathOutput),ignore.case = T)],
+           header = T,check.names = F,stringsAsFactors = F,fileEncoding = 'UTF-8-BOM')
+WDI_Definition <- buf0
+remove(buf0,buf1,buf2)
