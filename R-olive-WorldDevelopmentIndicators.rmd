@@ -56,7 +56,8 @@ objDF <- WorldDevelopmentIndicators
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y'
 dataTitle <- 
-  paste0('World Development Indicators')
+  paste0('World Development Indicators:',
+         colnames(WorldDevelopmentIndicators)[ncol(WorldDevelopmentIndicators)])
 dataSource <- 
   'The World Bank Group'
 windowsFonts(Meiryo = windowsFont("Meiryo"))
@@ -75,33 +76,41 @@ obj0 <-
   objDF[!is.na(objDF[,ncol(objDF)]),]
 seriesName <- 
   unique(obj0[,3])
-countryCode <- 
-  unique(obj0[,2])
-objSeries <- 
-  c(2,3,4)
-iii <- 1
-obj1 <- 
-  obj0[obj0$`Series Name`==seriesName[objSeries[iii]],c(1,2,ncol(obj0))]
-cat('#### ',seriesName[objSeries[iii]],'\n\n')
+for(iii in seq(length(seriesName))){
+  tableTxt <- seriesName[iii]
+  obj1 <- 
+    obj0[obj0$`Series Name`==tableTxt,]
+  seriesCode <- 
+    unique(obj1$`Series Code`)
+  defTxt <- 
+    WDI_Definition[seriesCode==WDI_Definition$Code,3]
+  if(length(defTxt)==0){defTxt <- '*****'}
+  obj2 <- 
+    obj1[,c(1,2,ncol(obj1))]
+  obj3 <- 
+    obj2[order(obj2[,3],decreasing = T),]
+  row.names(obj3) <- NULL
+  cat(paste0('##### ',tableTxt,':',seriesCode,'\n\n'))
+  fun_markdownTable(obj = head(obj3,10),rownames = 1)
+  cat('\n\n- ',defTxt,'\n\n<hr>\n\n')
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_PlotStrawAnd4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,250,125,25))
-dev.off();dev.off()
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <-
+  objDF[objDF$`Country Code`=='JPN',]
+obj1 <- obj[!is.na(obj[,ncol(obj)]),]
+obj2 <- obj1[grep('threatened|credit information|Quality of port infrastructure|Secure Internet servers',
+                  obj1$`Series Name`),c(3,9)]
 fun_outputMD(tags = '',
-             objDF = fun_transposeDataFrame(obj = obj),
+             objDF = obj2,
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
+             image1 = 0,image2 = 0,
              title = dataTitle,
-             tableTitle = 'Latest 5 days',
-             tableName = colnames(obj)[2])
+             tableTitle = unique(obj1$`Country Name`),
+             tableName = dataTitle)
 fun_updateURLcsv()
 ```
-
-***
 
 <script>MakeNegative();</script>
 <script>
