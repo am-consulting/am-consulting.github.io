@@ -147,27 +147,19 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <- 
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- tail(fun_makeDiffRatioTable(obj = allIndustryActivity[,c(1,2)]),12*2)
+obj$col <- ifelse(0<=obj[,2],'#4169e1','#dc143c')
+par(mar=c(6,4,3,1),font.main=1,cex.main=1,family='Meiryo')
+barplot(height = obj[,2],names.arg = format(obj[,1],'%Y-%m'),col = obj$col,
+        las = 2,main = paste0(colnames(obj)[2],':季節調整値:前月比(%)'))
+dev.off()
+pngFile <- 
+  paste0(htmlName, "2.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- allIndustryActivity[,c(1,14,15)]
@@ -180,11 +172,11 @@ dev.off()
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- na.omit(allIndustryActivity[,c(1,2)])
 fun_outputMD(tags = '経済産業省, 全産業活動指数',
-             objDF = fun_summaryByName(obj = obj),
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
-             tableTitle = colnames(obj)[2])
+             image1 = 1,image2 = 1,
+             title = dataTitle,
+             tableTitle = paste0(colnames(obj)[2],':季節調整値'))
 fun_updateURLcsv()
 ```
 
