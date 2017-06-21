@@ -1,0 +1,110 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ShareholderMeeting';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
+title : "Shareholder Meeting in Japan"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- SaECaNet http://saecanet.com/
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+amccData <- 
+  c('importShareholderMeeting.r')
+for(iii in 1:length(amccData)){
+  script <-
+    RCurl::getURL(paste0(baseURL,amccData[iii]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+dataTitle <- 
+  paste0('決算発表･株主総会予定日:',shareholderMeetingTitle)
+dataSource <- 
+  '株式会社日本取引所グループ'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+- Source http://www.jpx.co.jp/listing/event-schedules/index.html
+
+***
+
+```{r warning=F, error=F, message=F, echo=F,results='asis'}
+fun_dataTable(obj = shareholderMeeting,orderColumn = 1,orderDirection = 'asc',
+              dateFormat = 0,title = dataTitle,menuLength = 20)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objCol <- 3
+buf <-
+  cbind(table(shareholderMeeting[,objCol]))
+buf1 <-
+  data.frame(row.names(buf),buf,stringsAsFactors = F,row.names = NULL)
+buf1$ratio <-
+  round(buf1[,2]/sum(buf1[,2])*100,2)
+buf2 <-
+  buf1[order(buf1[,2],decreasing = T),]
+colnames(buf2) <- 
+  c(colnames(shareholderMeeting)[objCol],'会社数','構成比(%)')
+fun_outputMD(tags = '株主総会,日本取引所グループ',
+             objDF = buf2,
+             htmlName = htmlName,
+             image1 = 0,image2 = 0,
+             title = dataTitle,
+             tableTitle = paste0('Source:',dataSource),
+             tableName = colnames(shareholderMeeting)[objCol])
+fun_updateURLcsv()
+```
+
+***
+<script>MakeNegative()</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
