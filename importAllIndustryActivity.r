@@ -45,13 +45,12 @@ colnames(buf2)[1] <- 'Date'
 buf3 <- as.data.frame(buf2, stringsAsFactors = F)
 buf3[, -1] <- apply(buf3[, -1], 2, function(x)
   as.numeric(x))
-allIndustryActivity <- buf3
-allIndustryActivity[, 1] <- as.Date(allIndustryActivity[, 1])
-class(allIndustryActivity[, 1])
-colnames(allIndustryActivity)
+buf3[, 1] <- as.Date(buf3[, 1])
+class(buf3[, 1])
+colnames(buf3)
 switch(fff,
-       assign('allIndustryActivity',allIndustryActivity),
-       assign('allIndustryActivityNSA',allIndustryActivity))
+       assign('allIndustryActivity',buf3),
+       assign('allIndustryActivityNSA',buf3))
 }
 # csv出力パート
 fun_writeCSVtoFolder(objData = allIndustryActivity,dataType = 1,csvFileName = '全産業活動指数_季節調整値')
