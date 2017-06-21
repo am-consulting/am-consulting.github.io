@@ -48,6 +48,8 @@ buf3[, -1] <- apply(buf3[, -1], 2, function(x)
 buf3[, 1] <- as.Date(buf3[, 1])
 class(buf3[, 1])
 colnames(buf3)
+if(fff==1){colnames(buf3)[-1] <- paste0(colnames(buf3)[-1],':季節調整値')}
+if(fff==2){colnames(buf3)[-1] <- paste0(colnames(buf3)[-1],':原数値')}
 switch(fff,
        assign('allIndustryActivity',buf3),
        assign('allIndustryActivityNSA',buf3))
