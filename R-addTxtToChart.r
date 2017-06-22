@@ -19,4 +19,7 @@ fun_addTxtToChart <-
     abline(v=as.numeric(as.Date('2014-04-01')),lty = 2)
     text(x = as.numeric(as.Date('2014-04-01')),y = y,labels = '消費税増税(8%)',
          srt = 90,pos=4,cex=cexTxt,col=col)
+    abline(v=as.numeric(as.Date('2016-01-29')),lty = 2)
+    text(x = as.numeric(as.Date('2016-01-29')),y = y,labels = 'マイナス金利付き量的質的金融緩和の導入',
+         srt = 90,pos=4,cex=cexTxt,col=col)
   }
