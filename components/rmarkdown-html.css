@@ -3,7 +3,7 @@ body {
 	max-width: 1900px;
 	margin: auto;
 */	
-font-family:consolas,'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
+font-family:'Meiryo UI','Hiragino Kaku Gothic Pro',Verdana,sans-serif;
 }
 .main-container {
 	max-width: 1600px;
@@ -24,8 +24,8 @@ td.negative {
 	color: red;
 }
 
-tt, code, pre {
-   font-family:consolas, 'MS Gothic', 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+tt, code, pre, code.r  {
+   font-family:Consolas, 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Monaco, monospace, 'MS Gothic';
 }
 /* 参照 : http://qiita.com/quattro_4/items/d56dc21adb7c5f2873ef */
 
@@ -38,7 +38,7 @@ blockquote {
   position: relative;
 	  
   /*Font*/
-  font-family: consolas,'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
+  font-family: 'Meiryo UI','Hiragino Kaku Gothic Pro',Verdana,sans-serif;
   font-size: 14px;
   line-height: 1.2;
   color: #666;
@@ -148,7 +148,3 @@ button.code-folding-btn:focus {
   outline: none;
 }
 */
-
-code.r {font-family:consolas;}
-
-code {font-family:consolas;}
