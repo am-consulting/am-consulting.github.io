@@ -62,5 +62,9 @@ buf4[grep('S. Carolina',buf4$State),5] <- 'south carolina'
 buf4[grep('S. Dakota',buf4$State),5] <- 'south dakota'
 buf4[grep('W. Virgina',buf4$State),5] <- 'west virginia'
 buf4[grep('Wash.',buf4$State),5] <- 'washington'
-northAmericaRotaryRigCount_BakerHughes_ByDates <- buf4
+buf4[grep('Tennesee',buf4$State),5] <- 'tennessee'
+if(length(grep('connecticut',buf4$State,ignore.case = T))==0){
+  buf4[nrow(buf4)+1,] <- c('Connecticut',0,0,0,'connecticut')
+}
+ByStateData <- buf4
 remove(buf0,buf1,buf2,buf3,buf4)
