@@ -66,5 +66,6 @@ buf4[grep('Tennesee',buf4$State),5] <- 'tennessee'
 if(length(grep('connecticut',buf4$State,ignore.case = T))==0){
   buf4[nrow(buf4)+1,] <- c('Connecticut',0,0,0,'connecticut')
 }
+buf4[,2:4] <- apply(buf4[,2:4],2,as.numeric)
 ByStateData <- buf4
 remove(buf0,buf1,buf2,buf3,buf4)
