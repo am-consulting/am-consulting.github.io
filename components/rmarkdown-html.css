@@ -3,7 +3,7 @@ body {
 	max-width: 1900px;
 	margin: auto;
 */	
-font-family:'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
+font-family:consolas,'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
 }
 .main-container {
 	max-width: 1600px;
@@ -25,7 +25,7 @@ td.negative {
 }
 
 tt, code, pre {
-   font-family: 'MS Gothic', 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+   font-family:consolas, 'MS Gothic', 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
 }
 /* 参照 : http://qiita.com/quattro_4/items/d56dc21adb7c5f2873ef */
 
@@ -38,7 +38,7 @@ blockquote {
   position: relative;
 	  
   /*Font*/
-  font-family: 'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
+  font-family: consolas,'Hiragino Kaku Gothic Pro','Meiryo UI',Verdana,sans-serif;
   font-size: 14px;
   line-height: 1.2;
   color: #666;
