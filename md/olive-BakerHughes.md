@@ -5,10 +5,11 @@ title : Baker Hughes:North America Rig Count-Week over Week:2017-06-23:Total US 
 ---
 
 
-<a href="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount1.png" width="100%" /></a>
+<a href="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount1.png" width="100%" /></a>
 
-<a href="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount2.png" width="100%" /></a>
+<a href="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount2.png" width="100%" /></a>
 
+<a href="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount3.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount3.png" width="100%" /></a>
 
 ## 統計データ概要
 1. オイルとガスの北米リグカウントはそれぞれ758と183。

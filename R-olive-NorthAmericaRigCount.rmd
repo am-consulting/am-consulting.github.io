@@ -247,6 +247,41 @@ obj <- dataSet[,c(1,2)]
 fun_PlotStrawAnd4charts(obj = obj,varType = 2,dateFormat = dateFormat,
                         startYear = 2013,tailN = c(10^10,5*12,5*6,5*3))
 dev.off();dev.off()
+# plot map part
+fun_preparePlot()
+pngFile <- 
+  paste0(htmlName, "3.png")
+png(file = pngFile, width = 1000, height = 600)
+library(ggplot2)
+library(fiftystater)
+data("fifty_states")
+# 数値をcharacterとするとかnumericとするかで使い分けること
+buf <- ByStateData[,c(5,4)]
+colnames(buf) <-c('id','RigCounts')
+obj <- 
+  merge(buf,fifty_states,by = 'id')
+obj <- 
+  obj[order(obj$order),]
+centerPosition <- 
+  aggregate(cbind(long,lat,RigCounts) ~ id,data = obj,FUN = function(x)mean(range(x)))
+p <- 
+  ggplot(obj) + 
+  geom_map(aes(fill = RigCounts,map_id = id),map = obj) +
+  expand_limits(x = obj$long,y = obj$lat)+
+  geom_polygon(aes(long,lat,group=group), fill = NA, colour = 'grey50') +
+  coord_map() +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  labs(x = "", y = "") +
+  theme(legend.position = "bottom",panel.background = element_blank(),panel.border =  element_blank()) +  
+  fifty_states_inset_boxes() +
+  scale_fill_gradient(low = "white",high = "#4169e1",guide = "colourbar") +
+  ggtitle(colnames(ByStateData)[4]) +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_text(data=centerPosition, aes(long, lat, label = paste0(id,':',RigCounts)),size=4)
+print(p)
+# plot map part
+dev.off()
 fun_updateURLcsv()
 ```
 
