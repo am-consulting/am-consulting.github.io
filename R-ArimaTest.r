@@ -48,8 +48,13 @@ fun_ArimaTest <-
         tail(obj,tailN[iii])
       TimeSeriesData <-
         tsData[,valueColumn]
-      resultArima <-
-        auto.arima(y = TimeSeriesData,ic = ic,trace = F,stepwise = T)
+      if(arfima==0){
+        resultArima <-
+          auto.arima(y = TimeSeriesData,ic = ic,trace = F,stepwise = T)
+      }else{
+        resultArima <-
+          arfima(y = TimeSeriesData,drange = c(0,1),estim = 'mle',lambda = NULL)
+      }
       resultForecast <-
         forecast(object = resultArima,level = level,h = h)
       plot(resultForecast)
