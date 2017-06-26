@@ -15,7 +15,7 @@ fun_changesInSlope <- function(obj,objCol = 2,h = 12){
     merge(obj[,c(1,objCol)],slopeDF,by = 'Date',all = 'T')
   par(mar=c(4,5,4,5),family='Meiryo',font.main=1,cex.main=1)
   plot(changesInConditions[,c(1,2)],type='l',col = '#4169e1',
-       xlab='',ylab=colnames(changesInConditions)[2],
+       xlab='',ylab='Value',
        main=paste0(colnames(changesInConditions)[2],'\n',
                    paste0(format(range(changesInConditions[,1]),'%Y-%m'),collapse = '~'),'\nRange(months):',h),
        panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
