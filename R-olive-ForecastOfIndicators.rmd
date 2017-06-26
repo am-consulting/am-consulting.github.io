@@ -157,6 +157,27 @@ resultDF <- fun_validation(obj = obj,arfima = 1,plotV = 0,plotF = 1)
 fun_markdownTable(obj = resultDF)
 ```
 
+***
+
+#### ローリング線形回帰
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+resultDF <- 
+  fun_changesInSlope(obj = obj)
+changeDate <- 
+  resultDF$changesInSlope[,1]
+changeDateDF <-
+  data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
+             stringsAsFactors = F)
+colnames(changeDateDF) <-
+  c('Point of Change','Month Difference')
+changeDateDF
+cat('\n\n')
+summary(changeDateDF[,2])
+```
+
+***
+
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
