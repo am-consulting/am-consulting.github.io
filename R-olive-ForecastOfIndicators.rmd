@@ -72,11 +72,11 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_validation <- function(obj,arfima = 0){
+fun_validation <- function(obj,arfima = 0,plotV = 1,plotF = 1){
   tailN <- 
     c(nrow(obj),120,60,36)
   buf <-
-    fun_ArimaTest(obj = obj,tailN = tailN,arfima = arfima)
+    fun_ArimaTest(obj = obj,tailN = tailN,arfima = arfima,plotV = plotV,plotF = plotF)
   forecastResult <-
     buf$forecastByArima
   for(iii in seq(length(forecastResult))){
@@ -95,12 +95,65 @@ fun_validation <- function(obj,arfima = 0){
 }
 ```
 
+#### 最新結果の検証
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 obj <- 
   na.omit(ServicesProducerPriceIndex[,c(1,2)])
 fun_latestResult(obj = obj,dateFormat = dateFormat)
-cat(latestResult)
-resultDF <- fun_validation(obj = head(obj,-1),arfima = 1)
+cat('<div style="text-align:center"><h5>',latestResult,'</h5></div>\n\n')
+```
+
+- ARIMA
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+resultDF <- fun_validation(obj = head(obj,-1),arfima = 0,plotV = 1,plotF = 0)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_markdownTable(obj = resultDF)
+```
+
+***
+
+- ARFIMA
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+resultDF <- fun_validation(obj = head(obj,-1),arfima = 1,plotV = 1,plotF = 0)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_markdownTable(obj = resultDF)
+```
+
+***
+
+#### 将来予測
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+obj <- 
+  na.omit(ServicesProducerPriceIndex[,c(1,2)])
+```
+
+- ARIMA
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+resultDF <- fun_validation(obj = obj,arfima = 0,plotV = 0,plotF = 1)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_markdownTable(obj = resultDF)
+```
+
+***
+
+- ARFIMA
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+resultDF <- fun_validation(obj = obj,arfima = 1,plotV = 0,plotF = 1)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = resultDF)
 ```
 
