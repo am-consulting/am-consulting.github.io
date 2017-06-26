@@ -1,6 +1,6 @@
 fun_ArimaTest <-
   function(obj,tailN = c(10^10,12*10,12*5,12*3),dateColumn = 1,valueColumn = 2,
-           h = 12,ic = 'aic',level = c(0.6,0.8,0.95),arfima = 0){
+           h = 12,ic = 'aic',level = c(0.6,0.8,0.95),arfima = 0,plotV = 1,plotF = 1){
     forecastByArima <- list()
     accuracyList <- list()
     Date <-
@@ -22,9 +22,11 @@ fun_ArimaTest <-
       }
       resultForecast <-
         forecast(object = resultArima,level = level,h = h)
+      if(plotV==1){
       plot(resultForecast)
       mtext(text = paste0('Tail=',tailN[iii],'months'),side = 1,outer = F,padj = 2.6,font = 3)
       lines(tsData[,2])
+      }
       buf0 <-
         accuracy(resultForecast,tail(tsData[,2],h))
       accuracyList[[iii]] <-
@@ -34,9 +36,11 @@ fun_ArimaTest <-
                    stringsAsFactors = F,check.names = F,row.names = NULL)
       if(iii==1){accuracyResult <- buf1}else{accuracyResult <- rbind(accuracyResult,buf1)}
     }
+    if(plotV==1){
     mtext(text = paste0(colnames(tsData)[valueColumn],'\nLevel:',paste0(level,collapse = ', '),
                         '\nNumber of periods for forecasting=',h),
           side = 1,outer = T,padj = 0.5,font = 4)
+    }
     accTraining <-
       accuracyResult[grep('training',accuracyResult$Set,ignore.case = T),]
     accTest <-
@@ -57,15 +61,19 @@ fun_ArimaTest <-
       }
       resultForecast <-
         forecast(object = resultArima,level = level,h = h)
+      if(plotF==1){
       plot(resultForecast)
       mtext(text = paste0('Tail=',tailN[iii],'months'),side = 1,outer = F,padj = 2.6,font = 3)
+      }
       buf0 <- summary(resultForecast)
       buf0$Date <- Date
       forecastByArima[[iii]] <- buf0
     }
+    if(plotF==1){
     mtext(text = paste0(colnames(tsData)[valueColumn],'\nLevel:',paste0(level,collapse = ', '),
                         '\nNumber of periods for forecasting=',h),
           side = 1,outer = T,padj = 0.5,font = 4)
+    }
     returnList <-
       list('forecastByArima' = forecastByArima,
            'accuracyList' = accuracyList,
