@@ -40,3 +40,5 @@ R-chartsForMDfile.r
 R-downloadFromESTAT.r
 R-addTxtToChart.r
 R-QuadrantPlot.r
+R-ArimaTest.r
+R-ChangesInSlope.r
