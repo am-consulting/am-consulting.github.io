@@ -145,7 +145,7 @@ fun_outputMD(tags = '国土交通省, 建設労働需給調査',
              objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
              image1 = 1,image2 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
 fun_updateURLcsv()
 ```
