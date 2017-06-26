@@ -1,0 +1,73 @@
+---
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'egov-xml-structure';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+title : "egov-xml-structure"
+author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
+date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
+output: 
+  html_document:
+    fig_height: 4
+    fig_width: 10
+    keep_md: no
+    md_extensions: -ascii_identifiers 
+---
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+<style>.main-container {max-width : 1000px;}</style>
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(XML)
+pathOutput <- 
+  paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
+setwd(pathOutput)
+xmlFile <-
+  dir(pathOutput)[grep('\\.xml',dir(pathOutput))]
+xmlData <- xmlToList(xmlFile)
+```
+
+```{r}
+names(xmlData)
+xmlData$LawNum
+names(xmlData$LawBody)
+xmlData$LawBody$LawTitle
+names(xmlData$LawBody$MainProvision)
+names(xmlData$LawBody$MainProvision$Article)
+xmlData$LawBody$MainProvision$Article$ArticleCaption
+xmlData$LawBody$MainProvision$Article$ArticleTitle
+names(xmlData$LawBody$MainProvision$Article$Paragraph)
+xmlData$LawBody$MainProvision$Article$Paragraph$ParagraphNum
+names(xmlData$LawBody$MainProvision$Article$Paragraph$ParagraphSentence)
+names(xmlData$LawBody$MainProvision$Article$Paragraph$ParagraphSentence$Sentence)
+xmlData$LawBody$MainProvision$Article$Paragraph$ParagraphSentence$Sentence$text
+names(xmlData$LawBody$MainProvision$Article$Paragraph$AmendProvision)
+names(xmlData$LawBody$MainProvision$Article$Paragraph$AmendProvision$AmendProvisionSentence)
+names(xmlData$LawBody$MainProvision$Article$Paragraph$AmendProvision$AmendProvisionSentence$Sentence)
+xmlData$LawBody$MainProvision$Article$Paragraph$AmendProvision$AmendProvisionSentence$Sentence$text
+names(xmlData$LawBody$SupplProvision)
+xmlData$LawBody$SupplProvision$SupplProvisionLabel
+names(xmlData$LawBody$SupplProvision$Article)
+xmlData$LawBody$SupplProvision$Article$ArticleCaption
+xmlData$LawBody$SupplProvision$Article$ArticleTitle
+names(xmlData$LawBody$SupplProvision$Article$Paragraph)
+xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphNum
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphSentence)
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphSentence$Sentence)
+xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphSentence$Sentence$text
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item)
+xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemTitle
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence)
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence$Column)
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence$Column$Sentence)
+xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence$Column$Sentence$text
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
