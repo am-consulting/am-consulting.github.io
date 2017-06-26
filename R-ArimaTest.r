@@ -1,6 +1,6 @@
 fun_ArimaTest <-
   function(obj,tailN = c(10^10,12*10,12*5,12*3),dateColumn = 1,valueColumn = 2,
-           h = 12,ic = 'aic',level = c(0.6,0.8,0.95)){
+           h = 12,ic = 'aic',level = c(0.6,0.8,0.95),arfima = 0){
     forecastByArima <- list()
     accuracyList <- list()
     Date <-
@@ -13,8 +13,13 @@ fun_ArimaTest <-
         NULL
       TimeSeriesData <-
         head(tsData[,valueColumn],-h)
-      resultArima <-
-        auto.arima(y = TimeSeriesData,ic = ic,trace = F,stepwise = T)
+      if(arfima==0){
+        resultArima <-
+          auto.arima(y = TimeSeriesData,ic = ic,trace = F,stepwise = T)
+      }else{
+        resultArima <-
+          arfima(y = TimeSeriesData,drange = c(0,1),estim = 'mle',lambda = NULL)
+      }
       resultForecast <-
         forecast(object = resultArima,level = level,h = h)
       plot(resultForecast)
