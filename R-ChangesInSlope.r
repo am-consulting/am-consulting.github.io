@@ -26,7 +26,7 @@ fun_changesInSlope <- function(obj,objCol = 2,h = 12){
   axis(side = 4,cex.axis = 1)
   mtext(text = colnames(changesInConditions)[3],side = 4,line = 2.2,cex = 1)
   changesInSlope <-
-    na.omit(data.frame(head(changesInConditions,-1),
+    na.omit(data.frame(tail(changesInConditions,-1),
                        Product=head(changesInConditions$Slope,-1)*tail(changesInConditions$Slope,-1)))
   changesInSlope <-
     changesInSlope[changesInSlope$Product<0,]
