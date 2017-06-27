@@ -1,6 +1,6 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'egov-xml-structure';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
-title : "egov-xml-structure"
+title : "e-Gov xml Structure"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
@@ -15,21 +15,41 @@ output:
 <style>.main-container {max-width : 1000px;}</style>
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 library(XML)
 pathOutput <- 
   paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
 setwd(pathOutput)
 xmlFile <-
   dir(pathOutput)[grep('\\.xml',dir(pathOutput))]
-xmlData <- xmlToList(xmlFile)
+iii <- 2
+xmlData <- xmlToList(xmlFile[iii])
 ```
+
+#### Sample: `r xmlData$LawBody$LawTitle`
+- `r xmlFile[iii]`
 
 ```{r}
 names(xmlData)
 xmlData$LawNum
 names(xmlData$LawBody)
 xmlData$LawBody$LawTitle
-names(xmlData$LawBody$MainProvision)
 names(xmlData$LawBody$MainProvision$Article)
 xmlData$LawBody$MainProvision$Article$ArticleCaption
 xmlData$LawBody$MainProvision$Article$ArticleTitle
@@ -58,6 +78,59 @@ names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence)
 names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence$Column)
 names(xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence$Column$Sentence)
 xmlData$LawBody$SupplProvision$Article$Paragraph$Item$ItemSentence$Column$Sentence$text
+```
+
+***
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+pathOutput <- 
+  paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
+setwd(pathOutput)
+xmlFile <-
+  dir(pathOutput)[grep('\\.xml',dir(pathOutput))]
+iii <- 1
+xmlData <- xmlToList(xmlFile[iii])
+```
+
+#### Sample: `r xmlData$LawBody$LawTitle`
+- `r xmlFile[iii]`
+
+```{r}
+names(xmlData)
+xmlData$LawNum
+names(xmlData$LawBody)
+xmlData$LawBody$LawTitle
+names(xmlData$LawBody$TOC)
+xmlData$LawBody$TOC$TOCLabel
+names(xmlData$LawBody$TOC$TOCChapter)
+xmlData$LawBody$TOC$TOCChapter$ChapterTitle
+xmlData$LawBody$TOC$TOCChapter$ArticleRange
+names(xmlData$LawBody$TOC$TOCSupplProvision)
+xmlData$LawBody$TOC$TOCSupplProvision$SupplProvisionLabel
+names(xmlData$LawBody$MainProvision)
+names(xmlData$LawBody$MainProvision$Chapter)
+xmlData$LawBody$MainProvision$Chapter$ChapterTitle
+names(xmlData$LawBody$MainProvision$Chapter$Article)
+xmlData$LawBody$MainProvision$Chapter$Article$ArticleCaption
+xmlData$LawBody$MainProvision$Chapter$Article$ArticleTitle
+names(xmlData$LawBody$MainProvision$Chapter$Article$Paragraph)
+xmlData$LawBody$MainProvision$Chapter$Article$Paragraph$ParagraphNum
+names(xmlData$LawBody$MainProvision$Chapter$Article$Paragraph$ParagraphSentence)
+names(xmlData$LawBody$MainProvision$Chapter$Article$Paragraph$ParagraphSentence$Sentence)
+xmlData$LawBody$MainProvision$Chapter$Article$Paragraph$ParagraphSentence$Sentence$text
+names(xmlData$LawBody$SupplProvision)
+xmlData$LawBody$SupplProvision$SupplProvisionLabel
+names(xmlData$LawBody$SupplProvision$Article)
+xmlData$LawBody$SupplProvision$Article$ArticleTitle
+names(xmlData$LawBody$SupplProvision$Article$Paragraph)
+xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphNum
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphSentence)
+names(xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphSentence$Sentence)
+xmlData$LawBody$SupplProvision$Article$Paragraph$ParagraphSentence$Sentence$text
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative();</script>
