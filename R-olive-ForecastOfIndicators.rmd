@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ForecastOfIndicators';indicator <-'UNRATE';rmarkdown::render(inputFile,encoding = encoding,output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'_',indicator,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ForecastOfIndicators';indicator <-'ServicesProducerPriceIndex';rmarkdown::render(inputFile,encoding = encoding,output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'_',indicator,'.html')) })
 
 title : "Forecast of Financial and Economic Indicators"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -162,7 +162,7 @@ fun_markdownTable(obj = resultDF)
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 resultDF <- 
-  fun_changesInSlope(obj = obj)
+  fun_changesInSlope(obj = obj,h = 24)
 changeDate <- 
   resultDF$changesInSlope[,1]
 changeDateDF <-
@@ -172,7 +172,7 @@ colnames(changeDateDF) <-
   c('Point of Change','Month Difference')
 changeDateDF
 cat('\n\n')
-summary(changeDateDF[,2])
+summary(tail(changeDateDF[,2],-1))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
