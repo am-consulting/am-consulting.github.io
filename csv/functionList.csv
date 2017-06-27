@@ -33,12 +33,10 @@ R-Ichimokukinkou.r
 R-tsDataByYear.r
 R-meanS.r
 R-calcCCF.r
-importUSDJPYmonthly.r
-importNikkeiMonthly.r
-importMonetarybaseOfJapan-2017.r
 R-chartsForMDfile.r
 R-downloadFromESTAT.r
 R-addTxtToChart.r
 R-QuadrantPlot.r
 R-ArimaTest.r
 R-ChangesInSlope.r
+R-WaterMark.r
