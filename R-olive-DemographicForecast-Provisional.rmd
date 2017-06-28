@@ -48,43 +48,44 @@ if(needImportNewData == 1){
       ssl.verifypeer = F
       )
   eval(parse(text = script))
-}else{
-  username <-
-      Sys.info()['user']
-  pathToFile <-
-    paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-  setwd(pathToFile)
-  fileName <-
-    'defaultPath.csv'
-  buf <-
-    read.csv(file = fileName,
-             header = F,
-             skip = 0,
-             stringsAsFactor = F,
-             check.names = F,
-             fileEncoding = 'utf-8',quote = "\"")
-  pathToFolder <- 'TSdata'
-  pathOutputTOcsv <-
-    paste0("C:/Users/", username, buf[2,1],'csv/csvData/',pathToFolder,'/')
-  setwd(pathOutputTOcsv)
-  csvList <- 
-    c('人口推計_男女計_概算値_千人','人口推計_男_概算値_千人','人口推計_女_概算値_千人')
-  ProvisionalEstimates <- list()
-  for(iii in 1:length(csvList)){
-    tmp <-
-      read.csv(file = paste0(csvList[iii],'.csv'),
-               header = T,
-               skip = 0, 
-               stringsAsFactor = F, 
-               na.strings = c('NA'), 
-               check.names = F, 
-               fileEncoding = 'utf-8')
-    tmp[,1] <- as.Date(tmp[,1])
-    colnames(tmp)[2] <- paste0(colnames(tmp)[2],':',csvList[iii])
-    ProvisionalEstimates[[iii]] <- tmp
-  }
 }
-windowsFonts(Meiryo=windowsFont("Meiryo"))
+```
+
+```{r warning=F,error=F,message=F,echo=F}
+username <-
+    Sys.info()['user']
+pathToFile <-
+  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <-
+  'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,
+           header = F,
+           skip = 0,
+           stringsAsFactor = F,
+           check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathToFolder <- 'TSdata'
+pathOutputTOcsv <-
+  paste0("C:/Users/", username, buf[2,1],'csv/csvData/',pathToFolder,'/')
+setwd(pathOutputTOcsv)
+csvList <- 
+  c('人口推計_男女計_概算値_千人','人口推計_男_概算値_千人','人口推計_女_概算値_千人')
+ProvisionalEstimates <- list()
+for(iii in 1:length(csvList)){
+  tmp <-
+    read.csv(file = paste0(csvList[iii],'.csv'),
+             header = T,
+             skip = 0, 
+             stringsAsFactor = F, 
+             na.strings = c('NA'), 
+             check.names = F, 
+             fileEncoding = 'utf-8')
+  tmp[,1] <- as.Date(tmp[,1])
+  colnames(tmp)[2] <- paste0(colnames(tmp)[2],':',csvList[iii])
+  ProvisionalEstimates[[iii]] <- tmp
+}
 options(scipen=100)
 ```
 
@@ -105,6 +106,12 @@ windowsFonts(Meiryo = windowsFont("Meiryo"))
 - `r paste0("データ出所 : ", dataSource)`
 - 単位が「万人」のオリジナルデータは10倍して単位を「千人」に統一しています。
 - Source http://www.e-stat.go.jp/SG1/estat/OtherList.do?bid=000001007603&cycode=1
+- 概算値の人口基準
+    - 2000年01月-2000年11月:H07年国勢調査
+    - 2000年12月-2005年11月:H12年国勢調査
+    - 2005年12月-2011年02月:H17年国勢調査
+    - 2011年03月-2016年02月:H22年国勢調査
+    - 2016年03月以降:H27年国勢調査
 
 ***
 
@@ -250,7 +257,12 @@ femalePortion <- buf0[,c(1,4)]
 
 ***
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=6}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+#####################
 lineColor <- c('','black','blue','red')
 totalPortion$ID <- 
   seq(nrow(totalPortion))
@@ -264,7 +276,7 @@ n1 <- 2
 par(family='Meiryo',font.main=1,cex.main=1,mar=c(6,4,3,2))
 plot(allData[,n1],type = 'o',pch = 20,cex = 2,
      xaxt = 'n',xlab = '',
-     main = paste0('累積構成比(%):',format(tail(ProvisionalEstimates[[1]],1)[1,1],dateFormat)),
+     main = paste0('人口推計:概算値:累積構成比(%):',format(tail(ProvisionalEstimates[[1]],1)[1,1],dateFormat)),
      ylab = '',col = lineColor[n1])
 n2 <- 3
 lines(allData[,n2],type = 'o',pch = 20,cex = 2,col = lineColor[n2])
@@ -281,16 +293,6 @@ graphics::legend(x = 'topleft',
                  lwd = 2)
 abline(h = 50,lty = 2)
 text(x = 1,y = 50,labels = '50%',pos = 3)
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_preparePlot()
-pngFile <-
-  paste0(htmlName, "1.png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-obj <- ProvisionalEstimates[[1]][,1:2]
-fun_plot4charts(obj = obj,tailN = c(10^10,12*5,12*3,12),dateFormat = dateFormat)
 dev.off()
 ```
 
@@ -300,20 +302,16 @@ fun_outputMD(tags = '人口推計,総務省',
                na.omit(fun_transposeDataFrame(obj =
                                                 fun_makeDiffRatioTable(obj = 
                                                                          ProvisionalEstimates[[1]],
-                                                                       lag = 1,
-                                                                       roundDigits = 3),
-                                              dateFormat = dateFormat,
-                                              colName = '年齢階級')
-                       ),
+                                                                       lag = 1,roundDigits = 3),
+                                              dateFormat = dateFormat,colName = '年齢階級')),
              htmlName = htmlName,
              title = dataTitle,
-             image1 = 1,
-             tableTitle = '男女計:人口推計前月比(%)',
-             tableName = '男女計:人口推計前月比(%)')
+             image1 = 1,image2 = 0,
+             tableTitle = '男女計:人口推計概算値前月比(%)',
+             tableName = '男女計:人口推計概算値前月比(%)')
 fun_updateURLcsv()
 ```
 
-***
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
