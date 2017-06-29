@@ -110,7 +110,8 @@ plot(x = obj[,1],y = obj[,2],type = 'o',xaxt = 'n',xlab = '',ylab = colnames(obj
      panel.first = grid(nx = NA,ny = NULL,lty = 2,equilogs = T),lwd = 1,
      main = paste0(imageTitle,'\nSource:',dataSource))
 axis(side = 1,at = obj[,1],labels = format(obj[,1],'%Y'),las=2)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = '%Y',colName = 'Country/Region'))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = '%Y',
+                                               colName = 'Country/Region',tailN = 6))
 cat('<hr>')
 YoY <-
   fun_makeDiffRatioTable(obj = obj,lag = 1)
@@ -122,8 +123,8 @@ plot(x = YoY[,1],y = YoY[,2],type = 'h',xaxt = 'n',xlab = '',ylab = colnames(YoY
      main = paste0(imageTitle,'\nSource:',dataSource))
 axis(side = 1,at = YoY[,1],labels = format(YoY[,1],'%Y'),las=2)
 abline(h=0,col='red',lwd=2)
-cat('<hr>')
-fun_markdownTable(obj = fun_transposeDataFrame(obj = YoY,dateFormat = '%Y',colName = 'Country/Region'))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = YoY,dateFormat = '%Y',colName = 'Country/Region',
+                                               tailN = 6))
 ```
 
 ***
@@ -160,7 +161,9 @@ lines(x = obj[,1],y = obj[,7],type = 'o',col = lineColors[colN+5],pch = 20,cex =
 axis(side = 1,at = obj[,1],labels = format(obj[,1],'%Y'),las=2)
 graphics::legend(x = 'top',col = lineColors[colN:(colN+5)],lty = 1,
                  legend = colnames(obj)[-1],cex = 1.2,bty = 'n',lwd = 4)
-fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = '%Y',colName = 'Country/Region'))
+tDF <-
+  fun_transposeDataFrame(obj = obj,dateFormat = '%Y',colName = 'Country/Region',tailN = 6)
+fun_markdownTable(obj = tDF[order(tDF[,ncol(tDF)],decreasing = T),])
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -172,17 +175,33 @@ objCol <-
   grep('japan',colnames(totalData),ignore.case = T)
 obj <-
   totalData[,c(1,objCol)]
+mergeData <- 
+  merge(obj,fun_makeDiffRatioTable(obj = obj,lag = 1),by = 'Date')
+colnames(mergeData)[-1] <- 
+  c('Total(Cars and Commercial vehicles)','Year Over Year(%)')
+fun_plotTimeSeries(obj = mergeData,chartType = 2,typeL = 'o',typeR = 'h',
+                   dateFormat = '%Y',lwdR = 3,dataTitle = 'Japan',dataSource = dataSource,cexL = 2,
+                   mar = c(4,5,5,5))
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_outputMD(tags = '中小企業景況調査',
-             objDF = fun_transposeDataFrame(obj = obj,dateFormat = '%Y-%m',colName = '項目',tailN=8),
+obj <- 
+  data.frame(na.omit(t(tail(totalData,1))),stringsAsFactors = F)
+obj <- 
+  data.frame(row.names(obj),obj,stringsAsFactors = F,row.names = NULL)
+colnames(obj) <- obj[1,]
+obj <- obj[-1,]
+colnames(obj)[2] <- format(as.Date(colnames(obj)[2]),'%Y年')
+obj[,2] <- sapply(obj[,2],as.numeric)
+obj <- obj[order(obj[,2],decreasing = T),]
+fun_outputMD(tags = 'International Organization of Motor Vehicle Manufacturers',
+             objDF = obj,
              htmlName = htmlName,
              image1 = 1,
              image2 = 0,
              title = dataTitle,
-             tableTitle = '直近8期',
+             tableTitle = colnames(obj)[2],
              tableName = imageTitle)
 fun_updateURLcsv()
 ```
