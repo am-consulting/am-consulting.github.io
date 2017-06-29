@@ -3,9 +3,9 @@ OICA <- list()
 objYear <- seq(1999,2016)
 cnt <- 1
 for(yyyy in objYear){
+  targetURL <-
+    'http://www.oica.net/category/production-statistics/'
   if(yyyy==tail(objYear,1)){
-    targetURL <-
-      'http://www.oica.net/category/production-statistics/'
     htmlMarkup <-
       read_html(x = targetURL,encoding = 'utf8')
   }else{
