@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-MainAccountForDomesticBank.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'MainAccountForDomesticBank';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "Main Account For Domestic Bank"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -92,9 +92,30 @@ fun_markdownTable(obj = statisticsTable,rownames = 1)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_transposeDataFrame(obj = mainAccountDomesticBank2,dateFormat = dateFormat,tailN = 5)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = mainAccountDomesticBank2,
+                                               dateFormat = dateFormat,tailN = 5))
+```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <- 
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+fun_plotTimeSeries(obj = mainAccountDomesticBank2,chartType = 1,
+                   dateFormat = dateFormat,dataSource = dataSource,mar = c(4,4,5,1),needLefLab = 0)
+fun_addTxtToChart(obj = mainAccountDomesticBank2,cexTxt = 1,funType = 'min',col = 'black')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '貸出金,実質預金',
+             objDF = fun_summaryByName(obj = mainAccountDomesticBank2[,c(1,2)],dateFormat = dateFormat),
+             htmlName = htmlName,
+             image1 = 1,
+             image2 = 0,
+             title = dataTitle,
+             tableTitle = colnames(mainAccountDomesticBank2)[2])
+fun_updateURLcsv()
 ```
 
 ***
