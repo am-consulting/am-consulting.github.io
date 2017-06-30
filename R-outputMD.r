@@ -8,6 +8,7 @@ fun_outputMD <-
            dataTitle = '',
            image1 = 0,
            image2 = 0,
+           image3 = 0,
            tableName = '内閣総理大臣毎の基本統計量'){
     username <-
       Sys.info()['user']
@@ -56,6 +57,15 @@ published : true
                   '2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
                   htmlName,
                   '2.png" width="100%" /></a>\n\n')
+    write.table(x = txt,file = mdFile,append = T,
+                fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  }
+  if(image3!=0){
+    txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
+                  htmlName,
+                  '3.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+                  htmlName,
+                  '3.png" width="100%" /></a>\n\n')
     write.table(x = txt,file = mdFile,append = T,
                 fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   }
