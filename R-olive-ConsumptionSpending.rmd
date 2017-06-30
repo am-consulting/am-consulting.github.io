@@ -124,16 +124,23 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = nominalIncreaseDecreaseRate
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj <- expenditure[,c(1,3)]
-fun_PlotStrawAnd4charts(obj = obj)
+fun_PlotStrawAnd4charts(obj = obj,varType = 2)
 dev.off();dev.off()
+##########################
+fun_preparePlot()
+pngFile <- 
+  paste0(htmlName, "3.png")
+png(file = pngFile, width = 1000, height = 600)
+dummy <- fun_ggboxplot(obj = na.omit(obj),dataSource = dataSource)
+dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '家計調査,家計収支編,消費支出,エンゲル係数,世帯人員,消費支出',
              objDF = fun_summaryByName(obj = obj,dateFormat = '%Y年%m月'),
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,image3 = 1, 
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
 fun_updateURLcsv()
 ```
