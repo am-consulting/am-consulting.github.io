@@ -215,7 +215,7 @@ fun_outputMD(tags = '総務省, 消費者物価指数',
              htmlName = htmlName,
              image1 = 1,
              image2 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
 fun_updateURLcsv()
 ```
