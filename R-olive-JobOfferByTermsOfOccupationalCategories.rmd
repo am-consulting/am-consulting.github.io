@@ -50,7 +50,7 @@ script <-
     ssl.verifypeer = F
   )
 eval(parse(text = script))
-fun_jobOffer(dataID = '000031583064', sheetNo = 14)
+fun_jobOffer(dataID = '000031592164', sheetNo = 14)
 colnames(jobOffer) <- gsub('\n','',colnames(jobOffer))
 jobOffer[,-1] <- apply(jobOffer[,-1],2,as.numeric)
 ```
@@ -199,7 +199,7 @@ fun_outputMD(tags = '厚生労働省,有効求人倍率',
              objDF = outputDF,
              htmlName = htmlName,
              image1 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = colnames(outputDF)[2],
              tableName = colnames(outputDF)[1])
 fun_updateURLcsv()
