@@ -82,6 +82,8 @@ obj[,-1] <-
   data.frame(apply(obj[,-1],2,function(x)x*10^-6),check.names = F,stringsAsFactors = F)
 colnames(obj) <- 
   gsub('百万','兆',colnames(obj))
+colnames(obj) <- 
+  gsub('※$','',colnames(obj))
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
@@ -116,8 +118,19 @@ for(ccc in 2:ncol(dataSet)){
 }
 ```
 
+#### 事業活動の産業別売上高
+- 実数値(兆円)
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_markdownTable(obj = fun_transposeDataFrame(obj = dataSet,dateFormat = dateFormat,tailN = 4))
+fun_markdownTable(obj = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,tailN = 3))
+```
+
+***
+- 前年同月比(%)
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+diffRatio <- fun_makeDiffRatioTable(obj = obj,lag = 12)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = diffRatio,dateFormat = dateFormat,tailN = 3))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -145,14 +158,22 @@ fun_plotTimeSeries(obj = buf,
 
 abline(h = 0,col = 'red',lwd = 2)
 dev.off()
+pngFile <-
+  paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+objCol <- grep('サービス産業計',colnames(obj))
+boxData <- obj[,c(1,objCol)]
+fun_ggboxplot(obj = boxData,dataSource = dataSource)
+dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '総務省,サービス産業動向調査,産業(中分類)別売上高',
              objDF = latestDF,
              htmlName = htmlName,
-             image1 = 1,image2 = 0,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
              tableTitle = 'サービス産業動向調査:産業(中分類)別売上高',
              tableName = 'サービス産業動向調査:産業(中分類)別売上高')
 fun_updateURLcsv()
