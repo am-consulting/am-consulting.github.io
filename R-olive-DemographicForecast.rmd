@@ -208,8 +208,8 @@ fun_plotTimeSeries(obj = mergeData,
                    chartType = 2,
                    lwdR = 1,
                    lwdL = 1,
-                   typeL = 'o',
-                   typeR = 'o',
+                   typeL = 'l',
+                   typeR = 'l',
                    fitlwdL = 2,
                    fitlwdR = 2,
                    dataSource = dataSource)
@@ -221,8 +221,8 @@ fun_plotTimeSeries(obj = mergeData,
                    chartType = 2,
                    lwdR = 1,
                    lwdL = 1,
-                   typeL = 'o',
-                   typeR = 'o',
+                   typeL = 'l',
+                   typeR = 'l',
                    fitlwdL = 2,
                    fitlwdR = 2,
                    dataSource = dataSource)
@@ -234,15 +234,15 @@ fun_plotTimeSeries(obj = mergeData,
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
 attach(mergeData)
 adf.test(`生産年齢人口比率(%)`)
-cat('\n\n')
+cat('\n')
 adf.test(`生産年齢人口`)
-cat('\n\n')
+cat('\n')
 adf.test(`完全失業率（％）-男女計:季節調整値`)
-cat('\n\n')
+cat('\n')
 adf.test(diff(`生産年齢人口比率(%)`, lag = 1))
-cat('\n\n')
+cat('\n')
 adf.test(diff(`生産年齢人口`, lag = 1))
-cat('\n\n')
+cat('\n')
 adf.test(diff(`完全失業率（％）-男女計:季節調整値`, lag = 1))
 ```
 
@@ -258,48 +258,26 @@ ccf(x = diff(mergeData[,2], lag = 1),
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- mergeData[,c(1,3)]
 fun_plotTimeSeries(obj = obj,
                    chartType = 0,
                    dateFormat = dateFormat,
-                   dataTitle = dataTitle,
+                   dataTitle = '生産年齢人口比率 = 15-64歳人口 / 人口総数 × 100',
                    dataSource = dataSource,
                    mar = c(4,4,6,2),
-                   fitlwdL = 2,
+                   fitlwdL = 1,
                    fitLcolor = 2,
-                   fitlwdR = 2,
-                   fitRcolor = 2,
                    needLefLab = 0,
-                   typeL = 'o',
-                   typeR = 'o',
+                   typeL = 'l',
                    cexL = 1.0, 
-                   cexR = 1.0,  
                    cex.legend = 2,
                    cex.main = 1.1)
-abline(h=0,col='red',lwd=2)
+fun_addTxtToChart(obj = obj,cexTxt = 1,funType = 'min',col = 'black')
 dev.off()
 ```
 
@@ -307,9 +285,10 @@ dev.off()
 fun_outputMD(tags = '総務省,生産年齢人口',
              objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
