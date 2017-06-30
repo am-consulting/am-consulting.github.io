@@ -29,12 +29,10 @@ dataTitle <- paste0('日本銀行:当面の長期国債等の買入れの運営�
 txt <- paste0('
 ---
 tags : [',tags,']
+title : ',dataTitle,'
 published : true
 ---\n\n')
 write.table(x = txt,file = mdFile,append = F,
-            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-txt <- paste0('# ',dataTitle,'\n\n')
-write.table(x = txt,file = mdFile,append = T,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 txt <- paste0('- Source:日本銀行\n\n')
 write.table(x = txt,file = mdFile,append = T,

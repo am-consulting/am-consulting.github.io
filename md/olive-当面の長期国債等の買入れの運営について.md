@@ -1,11 +1,9 @@
 
 ---
 tags : [日本銀行,国債買入]
+title : 日本銀行:当面の長期国債等の買入れの運営について:2017年7月適用分
 published : true
 ---
-
-
-# 日本銀行:当面の長期国債等の買入れの運営について:2016年6月適用分
 
 
 - Source:日本銀行
@@ -15,14 +13,14 @@ published : true
  <thead>
   <tr>
    <th style="text-align:right;"> 残存期間 </th>
-   <th style="text-align:right;"> 2016年5月適用 </th>
-   <th style="text-align:right;"> 2016年6月適用 </th>
+   <th style="text-align:right;"> 2017年6月適用 </th>
+   <th style="text-align:right;"> 2017年7月適用 </th>
   </tr>
  </thead>
 <tbody>
   <tr>
    <td style="text-align:right;"> 1年以下 </td>
-   <td style="text-align:right;"> 500-1000 </td>
+   <td style="text-align:right;"> 500-1500 </td>
    <td style="text-align:right;"> 500-1500 </td>
   </tr>
   <tr>
@@ -56,7 +54,7 @@ published : true
    <td style="text-align:right;"> 250 </td>
   </tr>
   <tr>
-   <td style="text-align:right;"> 変動利付債 </td>
+   <td style="text-align:right;"> 変動利付債(偶数月) </td>
    <td style="text-align:right;"> 1000 </td>
    <td style="text-align:right;"> 1000 </td>
   </tr>
@@ -69,20 +67,4 @@ published : true
 #### 前月からの変更点
 
 
-<table id = 'amcc' width = '100%'>
- <thead>
-  <tr>
-   <th style="text-align:right;"> 残存期間 </th>
-   <th style="text-align:right;"> 2016年5月適用 </th>
-   <th style="text-align:right;"> 2016年6月適用 </th>
-  </tr>
- </thead>
-<tbody>
-  <tr>
-   <td style="text-align:right;"> 1年以下 </td>
-   <td style="text-align:right;"> 500-1000 </td>
-   <td style="text-align:right;"> 500-1500 </td>
-  </tr>
-</tbody>
-</table>
-
+<div style="text-align:center">なし</div>
