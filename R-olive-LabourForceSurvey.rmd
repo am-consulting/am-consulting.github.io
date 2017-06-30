@@ -246,7 +246,7 @@ fun_markdownTable(obj = tDF)
 cat('\n\n<hr>\n\n')
 tDF <- fun_transposeDataFrame(obj = subset(obj0,obj0[,2]==tail(obj0[,2],1)),tailN = 2,dateFormat = dateFormat)
 fun_markdownTable(obj = tDF)
-cat(paste0('#### 完全失業率(男女計)',tail(obj0[,2],1),'%を記録したのは',colnames(tDF)[2],'以来'))
+cat(paste0('- 完全失業率(男女計)',tail(obj0[,2],1),'%を記録したのは',colnames(tDF)[2],'以来'))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -261,7 +261,7 @@ fun_outputMD(tags = '総務省, 労働力調査, 失業率',
              objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
              image1 = 1,image2 = 1,
-             dataTitle = dataTitle,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
 fun_updateURLcsv()
 ```
