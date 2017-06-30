@@ -307,7 +307,7 @@ setwd(pathOutputTOcsv)
 getwd()
 par(family = 'Meiryo')
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 par(family = 'Meiryo', mar =c(5,5,4,2), font.main = 1)
@@ -338,8 +338,8 @@ outputDF <-
 fun_outputMD(tags = '総務省,完全失業率,消費者物価指数',
              objDF = outputDF,
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = '完全失業率と消費者物価指数',
              tableName = '完全失業率と消費者物価指数')
 ```
