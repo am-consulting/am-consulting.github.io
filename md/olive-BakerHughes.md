@@ -1,7 +1,7 @@
 --- 
 tags : [Baker Hughes, ガス, 石油, 北米リグカウント] 
 published : true
-title : Baker Hughes:North America Rig Count-Week over Week:2017-06-23:Total US RigCount-Oil:11 , Total US RigCount-Gas:-3
+title : Baker Hughes:North America Rig Count-Week over Week:2017-06-30:Total US RigCount-Oil:-2 , Total US RigCount-Gas:1
 ---
 
 
@@ -12,8 +12,8 @@ title : Baker Hughes:North America Rig Count-Week over Week:2017-06-23:Total US 
 <a href="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount3.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/NorthAmericaRigCount3.png" width="100%" /></a>
 
 ## 統計データ概要
-1. オイルとガスの北米リグカウントはそれぞれ758と183。
-1. それぞれの前週差はオイルが+11、ガスが-3。
+1. オイルとガスの北米リグカウントはそれぞれ756と184.
+1. それぞれの前週差はオイルが-2、ガスが+1。
 1. 2011年2月4日分以降のピークはオイルが2014年10月10日の1609(直近はその約47%)、ガスが2011年10月14日の936(直近はその約20%)。
 1. オイル、ガスいずれも上記ピーク以降リグカウント長期傾向は減少トレンドにあり。
 1. 但しオイルは2016年5月27日分の316以降、増加傾向にあり。
