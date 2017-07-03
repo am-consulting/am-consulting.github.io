@@ -1,3 +1,8 @@
-# 20170701 更新
+# 20170703 更新
 *officeData*.*
 AutoDefaultIndex*.*
+auto-default*.*
+consumer-credit-default-composite*.*
+first-mortgage-default*.*
+second-mortgage-default*.*
+bankcard-default*.*

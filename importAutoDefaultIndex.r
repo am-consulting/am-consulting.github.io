@@ -2,11 +2,16 @@ library(rvest)
 library(XLConnect)
 pathOutput <-
   paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
-setwd(pathOutput)
 targetURL <-
-  'http://us.spindices.com/indices/specialty/sp-experian-auto-default-index'
+  c('http://us.spindices.com/indices/specialty/sp-experian-auto-default-index',
+    'http://us.spindices.com/indices/specialty/sp-experian-consumer-credit-default-composite-index',
+    'http://us.spindices.com/indices/specialty/sp-experian-first-mortgage-default-index',
+    'http://us.spindices.com/indices/specialty/sp-experian-second-mortgage-default-index',
+    'http://us.spindices.com/indices/specialty/sp-experian-bankcard-default-index')
+for(iii in seq(length(targetURL))){
+setwd(pathOutput)
 htmlMarkup <-
-  read_html(x = targetURL,encoding = 'utf8')
+  read_html(x = targetURL[iii],encoding = 'utf8')
 script <-
   htmlMarkup %>% html_nodes('script')
 buf <-
@@ -19,15 +24,18 @@ indexIdForReference <-
   gsub('.+var indexIdForReference\\W+(\\w+);.+','\\1',buf)
 xlsURL <-
   paste0('http://us.spindices.com/idsexport/file.xls?hostIdentifier=',hostIdentifier,'&selectedModule=PerformanceGraphView&selectedSubModule=Graph&yearFlag=tenYearFlag&indexId=',indexIdForReference)
-xlsFile <-
-  'AutoDefaultIndex.xls'
+switch(iii,
+       xlsFile <- 'auto-default.xls',
+       xlsFile <- 'consumer-credit-default-composite.xls',
+       xlsFile <- 'first-mortgage-default.xls',
+       xlsFile <- 'second-mortgage-default.xls',
+       xlsFile <- 'bankcard-default.xls')
 download.file(url = xlsURL,xlsFile,mode = 'wb')
 sheetName <-
   getSheets(loadWorkbook(xlsFile))
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput,xlsFile),sheet = 1,check.names = F,header = F)
 objRaw <- grep('Effective date',buf0[,1],ignore.case = T)
-
 colnames(buf0) <- buf0[objRaw,]
 buf1 <- buf0[(objRaw+1):nrow(buf0),]
 buf1[,2] <- as.numeric(gsub('%','',buf1[,2]))
@@ -36,7 +44,8 @@ buf2 <- buf1[!is.na(buf1[,2]),]
 buf2[,1] <-
   as.Date(paste0(substring(buf2[,1],5),'-',match(tolower(substring(buf2[,1],1,3)),tolower(month.abb)),'-1'))
 row.names(buf2) <- NULL
-AutoDefaultIndex <- buf2
+dataName <- gsub('(.+)\\.xls','\\1',xlsFile)
+assign(dataName,buf2)
 # csv出力パート
 scriptFile <- 'R-writeCSVtoFolder.r'
 script <-
@@ -45,6 +54,7 @@ script <-
            scriptFile),
     ssl.verifypeer = F)
 eval(parse(text = script))
-fun_writeCSVtoFolder(objData = AutoDefaultIndex,dataType = 1,
-                     csvFileName = paste0('AutoDefaultIndex-',format(Sys.Date(),'%Y%m%d')))
+fun_writeCSVtoFolder(objData = get(dataName),dataType = 1,
+                     csvFileName = paste0(dataName,'-',format(Sys.Date(),'%Y%m%d')))
 # csv出力パート
+}
