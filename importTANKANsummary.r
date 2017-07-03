@@ -3,8 +3,6 @@ library(rvest)
 library(Nippon)
 Sys.setlocale("LC_ALL","English")
 Sys.getlocale()
-targetURL <-
-  'http://www.boj.or.jp/statistics/tk/yoshi/tk1706.htm/'
 htmlMarkup <-
   read_html(x = targetURL,encoding = 'utf8')
 tableList <-
