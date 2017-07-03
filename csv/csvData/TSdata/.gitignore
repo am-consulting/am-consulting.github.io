@@ -6,3 +6,6 @@ consumer-credit-default-composite*.*
 first-mortgage-default*.*
 second-mortgage-default*.*
 bankcard-default*.*
+sp-global-reit-us-dollar*.*
+sp-united-states-reit-us-dollar*.*
+sp-developed-reit-us-dollar*.*
