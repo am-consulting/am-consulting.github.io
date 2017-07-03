@@ -176,30 +176,11 @@ fun_plotTimeSeries(obj = mergeData,chartType = 2,
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
 obj <- consumerConfidenceIndex[,c(1,5)]
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
 fun_plotTimeSeries(obj = obj,
                    typeL = 'o',typeR = 'l',
                    dateFormat = dateFormat,
@@ -208,31 +189,28 @@ fun_plotTimeSeries(obj = obj,
                    fitLcolor = 2,fitlwdL = 3,cexL = 1.1,
                    fitRcolor = 0,fitlwdR = 3,cexR = 1.5,
                    mar = c(5,4,6,2),needLefLab = 0,lwdL = 1,cex.main=1.1)
-abline(v = as.Date('2008-9-15'),lwd = 1.2,lty = 2)
-text(x = as.Date('2008-9-15'),
-     y = max(na.omit(obj[,2])),
-     labels = 'Bankruptcy of Lehman Brothers',
-     pos = 2,
-     srt = 90,col = 'blue')
-abline(v = as.Date('2012-12-26'),lwd = 1.2,lty = 2)
-text(x = as.Date('2012-12-26'),
-     y = max(na.omit(obj[,2])),
-     labels = '第2次安倍政権発足',
-     pos = 2,
-     srt = 90,col = 'blue')
+fun_addTxtToChart(obj = obj,cexTxt = 1,funType = 'min',col = 'black')
+dev.off()
+pngFile <-
+  paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+fun_ggboxplot(obj = obj,dataSource = dataSource)
+dev.off()
+pngFile <-
+  paste0(htmlName, "3.png")
+png(file = pngFile, width = 1000, height = 600)
+fun_changesInSlope(obj = obj)
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-summaryData <- fun_summaryByName(obj = obj,omitFirst = 1)
-summaryData[,2:7] <- 
-  data.frame(apply(summaryData[,2:7],2,function(x)round(x,2)),stringsAsFactors = F,check.names = F)
 fun_outputMD(tags = '消費者態度指数,消費動向調査',
-             objDF = summaryData,
+             objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,image3 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
