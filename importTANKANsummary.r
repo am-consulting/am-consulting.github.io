@@ -10,16 +10,16 @@ htmlMarkup <-
 tableList <-
   htmlMarkup %>% html_nodes('table')
 captionList <- vector()
-tableData <- list()
+TANKANsummary <- list()
 for(iii in seq(length(tableList))){
   captionList[iii] <-
     gsub('\n','',zen2han(tableList[[iii]] %>%  html_nodes('caption') %>% html_text()))
-  tableData[[iii]] <-
+  TANKANsummary[[iii]] <-
     data.frame(tableList[[iii]] %>% html_table(fill=T),stringsAsFactors = F,check.names = F)
-  colnames(tableData[[iii]])[1] <- ''
+  colnames(TANKANsummary[[iii]])[1] <- ''
 }
 Sys.setlocale("LC_ALL","Japanese")
-for(iii in seq(length(tableData))){
+for(iii in seq(length(TANKANsummary))){
   print(captionList[iii])
-  print(tableData[[iii]])
+  print(TANKANsummary[[iii]])
 }
