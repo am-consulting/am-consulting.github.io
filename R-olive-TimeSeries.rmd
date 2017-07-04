@@ -4,12 +4,13 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 title : 'Monetary Base:Japan'
 output: 
   html_document:
-    fig_height: 5
+    fig_height: 4
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
     toc: true
     toc_depth: 6
+    number_section: true
     toc_float:
       collapsed: false
       smooth_scroll: false
@@ -79,32 +80,14 @@ dataSource <- "日本銀行"
 cat('\n***\n')
 cat(paste0("- Title : ", dataTitle,'\n'))
 cat(paste0("- Source : ", dataSource,'\n'))
-cat('- SNA,NAの区別なくXヶ月前との比を表示しています\n')
+cat('- SNA,NAの区別なくxヶ月前との比を表示しています\n')
 cat('\n***\n')
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-library(scales)
-fun_ggplot <- function(obj=obj,size = 10){
-  p <- ggplot(obj,aes(x=obj[,1],y=obj[,2]))
-  p <- p + geom_line()
-  p <- p + geom_smooth(method = loess,color = "red")
-  p <- p + ggtitle(colnames(obj)[2])
-  p <- p + theme(plot.title = element_text(hjust = 0.5))
-  p <- p + xlab('') + ylab('')
-  p <- p + scale_x_date(labels = date_format(dateFormat))
-  p <- p + scale_y_continuous(labels = comma)
-  p <- p + theme(axis.text = element_text(size=size,face='plain',family='Meiryo'))
-  p <- p + theme(axis.title = element_text(size=size,face='plain',family='Meiryo'))
-  p <- p + theme(title = element_text(size=size,face='plain',family='Meiryo'))
-  print(p)
-}
-```
-
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('#### 対象時系列データ\n\n')
-cat('- ',colnames(obj)[2],'\n\n')
-cat('\n\n')
+cat('# 対象時系列データ\n\n')
+cat('<div id="htmlTitle" style="text-align:center">',colnames(obj)[2],'</div>\n\n')
+cat('\n<hr>\n')
 n <- 1
 fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[2],group = 0,quantiles = 1)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
@@ -118,8 +101,9 @@ cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+cat('# xヶ月前との比較(%)\n\n')
 for(iii in seq(length(lag))){
-  cat('##### ',lag[iii],'ヶ月前との比(%)\n\n')
+  cat('## x=',lag[iii],'\n\n')
   tmp <- ratioDF[[iii]]
   tsData <- fun_convertToTS(tsData = subset(tmp,objYear<=year(tmp[,1])))
   fun_markdownTable(obj = tsData$returnDF,rownames = T)
@@ -128,7 +112,7 @@ for(iii in seq(length(lag))){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('##### 移動平均\n\n')
+cat('# 移動平均\n\n')
 ma <- fun_MovingAverage(obj = obj,dateFormat = dateFormat)
 cat('\n\n')
 n <- 2
@@ -138,32 +122,58 @@ cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('###### ローリング回帰\n\n')
-resultDF <- 
-  fun_changesInSlope(obj = ma,h = 12,objCol = 3,plot = 0)
-tmp <- 
-  resultDF$changesInConditions
-xtsData <- 
-  xts(tmp[,-1],order.by=tmp[,1])
-dygraph(xtsData) %>%
-  dyAxis("y",label = colnames(xtsData)[1]) %>%
-  dyAxis("y2",label = colnames(xtsData)[2],independentTicks = T) %>%
-  dySeries(colnames(xtsData)[1], axis = 'y',fillGraph = F) %>%
-  dySeries(colnames(xtsData)[2], axis = 'y2',fillGraph = T) %>%
-  dyLegend(show = "follow")
+fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0,plotNum = 1){
+  resultDF <- 
+    fun_changesInSlope(obj = obj,h = h,objCol = objCol,plot = plot)
+  tmp <- 
+    resultDF$changesInConditions
+  xtsData <- 
+    xts(tmp[,-1],order.by=tmp[,1])
+  p <- 
+    dygraph(xtsData) %>%
+    dyAxis("y",label = colnames(xtsData)[1]) %>%
+    dyAxis("y2",label = colnames(xtsData)[2],independentTicks = T) %>%
+    dySeries(colnames(xtsData)[1], axis = 'y',fillGraph = F) %>%
+    dySeries(colnames(xtsData)[2], axis = 'y2',fillGraph = T) %>%
+    dyLegend(show = "follow") %>%
+    dyRangeSelector() %>%
+    dyUnzoom() %>%
+    dyOptions(maxNumberWidth = 100)
+  assign(paste0('dygraphPlot',plotNum),p,envir = .GlobalEnv)
 # 'arg' should be one of “y”, “y2”
-changeDate <- 
-  resultDF$changesInSlope[,1]
-changeDateDF <-
-  data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
-             stringsAsFactors = F)
-colnames(changeDateDF) <-
-  c('Point of Change','Month Difference')
-fun_markdownTable(obj = changeDateDF)
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hold'}
-summary(tail(changeDateDF[,2],-1))
+  changeDate <- 
+    resultDF$changesInSlope[,1]
+  changeDateDF <-
+    data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
+               stringsAsFactors = F)
+  colnames(changeDateDF) <-
+    c('Point of Change','Month Difference')
+  tmp <- 
+    cbind(summary(tail(changeDateDF[,2],-1)))
+  summaryData <-
+    data.frame(Item=row.names(tmp),Value=tmp[,1],
+               row.names = NULL,stringsAsFactors = F)
+  returnList <-
+      list('changeDateDF' = changeDateDF,
+           'summaryData' = summaryData)
+  return(returnList)
+}
+cat('# ローリング回帰\n\n')
+h <- 12
+cat('- The Width of the rolling window(months):',h,'\n\n')
+cat('## SMA\n\n')
+objCol <- 3
+returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = h)
+eval(parse(text = paste0('dygraphPlot',objCol)))
+fun_markdownTable(obj = returnList$changeDateDF)
+fun_markdownTable(obj = returnList$summaryData)
+cat('\n<hr>\n')
+cat('## EMA\n\n')
+objCol <- 4
+returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = h)
+eval(parse(text = paste0('dygraphPlot',objCol)))
+fun_markdownTable(obj = returnList$changeDateDF)
+fun_markdownTable(obj = returnList$summaryData)
 ```
 
 <script>MakeNegative();</script>
