@@ -4,7 +4,7 @@ knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'de
 title : 'Monetary Base:Japan'
 output: 
   html_document:
-    fig_height: 6
+    fig_height: 5
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -49,29 +49,82 @@ for(iii in 1:nrow(functionList)){
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-cat('\n***\n')
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 importData <- c('importMonetarybaseOfJapan-2017.r')
 script <-
   RCurl::getURL(paste0(baseURL,importData[1]),ssl.verifypeer = FALSE)
 eval(parse(text = script))
-obj <- monetaryBase_Japan
-levelCol <- 2
-fun_latestResult(obj = obj,objColumn = levelCol)
+obj <- monetaryBase_Japan[,c(1,6)]
+obj[,-1] <- apply(obj[,-1,drop=F],2,function(x)x*10^-4)
+colnames(obj)[2] <- gsub('億円','兆円',colnames(obj)[2])
+objYear <- tail(unique(year(obj[,1])),5)[1]
+ratioDF <- list()
+lag <- c(1,3,6,12,24,36)
+for(cnt in seq(length(lag))){
+  buf <- 
+    fun_makeDiffRatioTable(obj = obj,lag = lag[cnt])
+  colnames(buf)[2] <- 
+    paste0(gsub('\\([^\\(]+円\\)','',colnames(buf)[2]),':',lag[cnt],'ヶ月前との比(%)')
+  print(tail(buf))
+  ratioDF[[cnt]] <- buf
+}
+dateFormat <- '%Y-%m'
+fun_latestResult(obj = obj)
 dataTitle <- 
   paste0("マネタリーベース:",latestResult)
 dataSource <- "日本銀行"
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+cat('\n***\n')
 cat(paste0("- Title : ", dataTitle,'\n'))
 cat(paste0("- Source : ", dataSource,'\n'))
+cat('- SNA,NAの区別なく前年同月比および前月比を表示しています\n')
 cat('\n***\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-cat('#### 前年同月比(%)\n\n')
-cat('- ',colnames(obj)[levelCol],'\n\n')
-objYear <- tail(unique(year(obj[,1])),10)[1]
-tsData <- fun_convertToTS(tsData = subset(obj,objYear<=year(obj[,1])),dataCol = levelCol)
+library(scales)
+fun_ggplot <- function(obj=obj,size = 10){
+  p <- ggplot(obj,aes(x=obj[,1],y=obj[,2]))
+  p <- p + geom_line()
+  p <- p + geom_smooth(method = loess,color = "red")
+  p <- p + ggtitle(colnames(obj)[2])
+  p <- p + theme(plot.title = element_text(hjust = 0.5))
+  p <- p + xlab('') + ylab('')
+  p <- p + scale_x_date(labels = date_format(dateFormat))
+  p <- p + scale_y_continuous(labels = comma)
+  p <- p + theme(axis.text = element_text(size=size,face='plain',family='Meiryo'))
+  p <- p + theme(axis.title = element_text(size=size,face='plain',family='Meiryo'))
+  p <- p + theme(title = element_text(size=size,face='plain',family='Meiryo'))
+  print(p)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+cat('#### 対象時系列データ\n\n')
+cat('- ',colnames(obj)[2],'\n\n')
+cat('\n\n')
+n <- 1
+fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[2],group = 0,quantiles = 1)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+tsData <- fun_convertToTS(tsData = subset(obj,objYear<=year(obj[,1])))
 fun_markdownTable(obj = tsData$returnDF,rownames = T)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+for(iii in seq(length(lag))){
+  cat('##### ',lag[iii],'ヶ月前との比(%)\n\n')
+  obj <- ratioDF[[iii]]
+  tsData <- fun_convertToTS(tsData = subset(obj,objYear<=year(obj[,1])))
+  fun_markdownTable(obj = tsData$returnDF,rownames = T)
+  cat('\n<hr>\n')
+}
 ```
 
 <script>MakeNegative();</script>
