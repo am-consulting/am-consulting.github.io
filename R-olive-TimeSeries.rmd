@@ -79,7 +79,7 @@ dataSource <- "日本銀行"
 cat('\n***\n')
 cat(paste0("- Title : ", dataTitle,'\n'))
 cat(paste0("- Source : ", dataSource,'\n'))
-cat('- SNA,NAの区別なく前年同月比および前月比を表示しています\n')
+cat('- SNA,NAの区別なくXヶ月前との比を表示しています\n')
 cat('\n***\n')
 ```
 
@@ -120,11 +120,50 @@ cat('\n<hr>\n')
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 for(iii in seq(length(lag))){
   cat('##### ',lag[iii],'ヶ月前との比(%)\n\n')
-  obj <- ratioDF[[iii]]
-  tsData <- fun_convertToTS(tsData = subset(obj,objYear<=year(obj[,1])))
+  tmp <- ratioDF[[iii]]
+  tsData <- fun_convertToTS(tsData = subset(tmp,objYear<=year(tmp[,1])))
   fun_markdownTable(obj = tsData$returnDF,rownames = T)
   cat('\n<hr>\n')
 }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+cat('##### 移動平均\n\n')
+ma <- fun_MovingAverage(obj = obj,dateFormat = dateFormat)
+cat('\n\n')
+n <- 2
+fun_generateKnit(objDF = ma,plotNum = n,dygraphTitle = colnames(ma)[2],group = 0,quantiles = 0)
+eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+cat('###### ローリング回帰\n\n')
+resultDF <- 
+  fun_changesInSlope(obj = ma,h = 12,objCol = 3,plot = 0)
+tmp <- 
+  resultDF$changesInConditions
+xtsData <- 
+  xts(tmp[,-1],order.by=tmp[,1])
+dygraph(xtsData) %>%
+  dyAxis("y",label = colnames(xtsData)[1]) %>%
+  dyAxis("y2",label = colnames(xtsData)[2],independentTicks = T) %>%
+  dySeries(colnames(xtsData)[1], axis = 'y',fillGraph = F) %>%
+  dySeries(colnames(xtsData)[2], axis = 'y2',fillGraph = T) %>%
+  dyLegend(show = "follow")
+# 'arg' should be one of “y”, “y2”
+changeDate <- 
+  resultDF$changesInSlope[,1]
+changeDateDF <-
+  data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
+             stringsAsFactors = F)
+colnames(changeDateDF) <-
+  c('Point of Change','Month Difference')
+fun_markdownTable(obj = changeDateDF)
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hold'}
+summary(tail(changeDateDF[,2],-1))
 ```
 
 <script>MakeNegative();</script>
