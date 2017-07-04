@@ -1,4 +1,4 @@
-fun_changesInSlope <- function(obj,objCol = 2,h = 12){
+fun_changesInSlope <- function(obj,objCol = 2,h = 12,plot = 1){
   slopeDF <- data.frame()
   for(rrr in h:nrow(obj)){
     tmp <- obj[(rrr-h+1):rrr,c(1,objCol)]
@@ -13,6 +13,7 @@ fun_changesInSlope <- function(obj,objCol = 2,h = 12){
   slopeDF <- na.omit(slopeDF)
   changesInConditions <-
     merge(obj[,c(1,objCol)],slopeDF,by = 'Date',all = 'T')
+  if(plot==1){
   par(mar=c(4,5,4,5),family='Meiryo',font.main=1,cex.main=1)
   plot(changesInConditions[,c(1,2)],type='l',col = '#4169e1',
        xlab='',ylab='Value',
@@ -25,6 +26,7 @@ fun_changesInSlope <- function(obj,objCol = 2,h = 12){
        panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
   axis(side = 4,cex.axis = 1)
   mtext(text = colnames(changesInConditions)[3],side = 4,line = 2.2,cex = 1)
+  }
   changesInSlope <-
     na.omit(data.frame(tail(changesInConditions,-1),
                        Product=head(changesInConditions$Slope,-1)*tail(changesInConditions$Slope,-1)))
