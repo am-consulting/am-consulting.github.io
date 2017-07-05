@@ -48,9 +48,15 @@ if(length(grep(htmlName,titleHTML[,3]))==0){
            targetHTML,'" target="_blank">Link</a>')
   titleHTML[iii,4] <- as.character(timeStamp)
 }
-colnames(titleHTML) <- c('No.','Title','Link','TimeStamp')
+titleTxt <-  gsub('(.+):([0-9]{4}-[0-9]{2})','\\1',titleHTML[,2])
+dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\2',titleHTML[,2])
+titleHTML[,2] <- titleTxt
+titleHTML$Date <- dateTxt
+colnames(titleHTML) <- c('No.','Title','Link','TimeStamp','Date')
+titleHTML <- titleHTML[,c(1,2,5,3,4)]
 titleHTML <-
   titleHTML[order(titleHTML$TimeStamp,decreasing = T),]
+titleHTML[,1] <- seq(nrow(titleHTML))
 pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
 setwd(pathOutputTOcsv)
