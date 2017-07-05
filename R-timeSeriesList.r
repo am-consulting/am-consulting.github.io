@@ -16,7 +16,7 @@ objHTML <- grep('[^-]+-[0-9]{5}.html',htmlList)
 titleHTML <- data.frame()
 for(iii in seq(length(objHTML))){
   targetHTML <- htmlList[objHTML[iii]]
-  if(grep(htmlName,targetHTML)==0){
+  if(length(grep(htmlName,targetHTML))==0){
     htmlMarkup <-
       read_html(x = targetHTML,encoding = 'utf8')
     htmlTitle <-
@@ -27,8 +27,20 @@ for(iii in seq(length(objHTML))){
     timeStamp <- as.POSIXct(file.info(path = targetHTML)$mtime,origin = "1970-01-01")
   }else{
     htmlTitle <- tsTitle
-    timeStamp <-  Sys.time()
+    timeStamp <- Sys.time()
   }
+  titleHTML[iii,1] <- iii
+  titleHTML[iii,2] <- htmlTitle
+  titleHTML[iii,3] <-
+    paste0('<a href="http://knowledgevault.saecanet.com/charts/',
+           targetHTML,'" target="_blank">Link</a>')
+  titleHTML[iii,4] <- as.character(timeStamp)
+}
+iii <- iii + 1
+if(length(grep(htmlName,titleHTML[,3]))==0){
+  targetHTML <- paste0('am-consulting.co.jp-',htmlName,'.html')
+  htmlTitle <- tsTitle
+  timeStamp <- Sys.time()
   titleHTML[iii,1] <- iii
   titleHTML[iii,2] <- htmlTitle
   titleHTML[iii,3] <-
