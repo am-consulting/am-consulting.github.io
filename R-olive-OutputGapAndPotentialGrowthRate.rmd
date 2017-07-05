@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-OutputGapAndPotentialGrowthRate.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'OutputGapAndPotentialGrowthRate';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "Output Gap and Potential Growth Rate"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -136,7 +136,38 @@ fun_markdownTable(obj = objPNexclude0)
 cat(paste0('- ',texExclude0))
 ```
 
-***
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- na.omit(OutputGapAndPotentialGrowthRate[,c(1,2,3,4)])
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+lineColors <- c('black','blue','red')
+ylim <- c(min(obj[,-1]),max(obj[,-1]))
+par(mar=c(4,4,4,1),family='Meiryo',font.main=1,cex.main=1)
+plot(obj[,1],obj[,2],ylim=ylim,type='o',col=lineColors[1],pch=20,xlab='',ylab='',
+     panel.first = grid(nx = NA,ny = NULL,lty = 2,equilogs = T),
+     main=paste0('需給ギャップと潜在成長率(四半期データ)\n',paste0(format(range(obj[,1]),'%Y年%m月期'),collapse = '~'),'\nSource:',dataSource))
+lines(obj[,1],obj[,3],type='o',col=lineColors[2],pch=20)
+lines(obj[,1],obj[,4],type='o',col=lineColors[3],pch=20)
+graphics::legend(x = 'top',col = lineColors,lty = 1,legend = colnames(obj)[-1],
+                 cex = 1,bty = 'n',lwd = 2)
+abline(h=0)
+fun_addTxtToChart(obj = obj,cexTxt = 1,funType = 'min',col = 'black')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '需給ギャップ,日本銀行',
+             objDF = fun_transposeDataFrame(obj = obj,dateFormat = '%Y年%m月期'),
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,image3 = 0,
+             title = dataTitle,
+             tableTitle = '直近5期',
+             tableName = '需給ギャップと潜在成長率(四半期データ)')
+fun_updateURLcsv()
+```
+
 <script>MakeNegative()</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
