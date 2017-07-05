@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'00001';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'00002';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
-title : 'Monetary Base:Japan'
+title : 'Time Series Analysis'
 output: 
   html_document:
     fig_height: 4
@@ -10,7 +10,7 @@ output:
     md_extensions: -ascii_identifiers 
     toc: true
     toc_depth: 6
-    number_section: true
+    number_section: false
     toc_float:
       collapsed: false
       smooth_scroll: false
@@ -18,7 +18,25 @@ output:
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
+<style>
+*{-webkit-text-size-adjust: 100%;}
+h1{font-size:6vw;font-weight: bold;}
+h2{font-size:5vw;font-weight: bold;}
+h3{font-size:4vw;font-weight: bold;}
+h4{font-size:3vw;font-weight: bold;}
+h5{font-size:2vw;font-weight: bold;}
+h6{font-size:1vw;font-weight: bold;}
+@media(min-width:500px){
+  h1{font-size:1.6em;font-weight: bold;}
+  h2{font-size:1.3em;font-weight: bold;}
+  h3{font-size:1.1em;font-weight: bold;}
+  h4{font-size:1.0em;font-weight: bold;}
+  h5{font-size:0.9em;font-weight: bold;}
+  h6{font-size:0.8em;font-weight: bold;}
+}
+</style>
 
+# Title,Timestamp,Source etc.
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - `r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`
 - Olive http://olive.saecanet.com/
@@ -63,13 +81,33 @@ if(htmlName=='00001'){
   buf <- data.frame(buf[,1,drop=F],apply(buf[,-1,drop=F],2,function(x)x*10^-4),
                          stringsAsFactors = F,check.names = F,row.names = NULL)
   colnames(buf)[2] <- gsub('億円','兆円',colnames(buf)[2])
-  obj <- buf
+  obj <- na.omit(buf)
   fun_latestResult(obj = obj)
   dataTitle <- 
     paste0("マネタリーベース:日本:",latestResult)
   dataSource <- "日本銀行"
   dateFormat <- '%Y-%m'
   tags <- 'マネタリーベース,日本銀行'
+}
+if(htmlName=='00002'){
+  importData <- c('importMonetarybaseOfJapan-2017.r')
+  script <-
+    RCurl::getURL(paste0(baseURL,importData[1]),ssl.verifypeer = FALSE)
+  eval(parse(text = script))
+  buf <- monetaryBase_Japan
+  colnames(buf) <-
+    gsub('[^:]+:(.+)','\\1',colnames(buf))
+  buf <- buf[,c(1,9)]
+  buf <- data.frame(buf[,1,drop=F],apply(buf[,-1,drop=F],2,function(x)x*10^-4),
+                         stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(buf)[2] <- gsub('億円','兆円',colnames(buf)[2])
+  obj <- na.omit(buf)
+  fun_latestResult(obj = obj)
+  dataTitle <- 
+    paste0("マネタリーベース:日本:",latestResult)
+  dataSource <- "日本銀行"
+  dateFormat <- '%Y-%m'
+  tags <- 'マネタリーベース,日銀当座預金,日本銀行'
 }
 ```
 
@@ -85,6 +123,7 @@ for(cnt in seq(length(lag))){
   print(tail(buf))
   ratioDF[[cnt]] <- buf
 }
+tsTitle <- paste0(colnames(obj)[2],':',format(tail(obj[,1],1),dateFormat))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
@@ -96,10 +135,13 @@ cat('\n***\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('# 対象時系列データ\n\n')
-cat(paste0('<div id="htmlTitle" style="text-align:center">',colnames(obj)[2],':',
-    format(tail(obj[,1],1),dateFormat),'</div>\n\n'))
+cat(paste0('<div id="htmlTitle" style="text-align:center;font-weight: bold;font-size:1.6em;">',
+           tsTitle,'</div>\n\n'))
 cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+cat('# 時系列チャート\n\n')
 n <- 1
 fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[2],group = 0,quantiles = 1)
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
@@ -177,14 +219,18 @@ cat('## SMA\n\n')
 objCol <- 3
 returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = h)
 eval(parse(text = paste0('dygraphPlot',objCol)))
+cat('\n<hr>\n')
 fun_markdownTable(obj = returnList$changeDateDF)
+cat('\n<hr>\n')
 fun_markdownTable(obj = returnList$summaryData)
 cat('\n<hr>\n')
 cat('## EMA\n\n')
 objCol <- 4
 returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = h)
 eval(parse(text = paste0('dygraphPlot',objCol)))
+cat('\n<hr>\n')
 fun_markdownTable(obj = returnList$changeDateDF)
+cat('\n<hr>\n')
 fun_markdownTable(obj = returnList$summaryData)
 ```
 
@@ -193,7 +239,7 @@ library(ggpubr)
 library(ggsci)
 fun_preparePlot()
 pngFile <-
-  paste0(htmlName, "1.png")
+  paste0(htmlName, "-1.png")
 png(file = pngFile, width = 1000, height = 600)
 fun_plotTimeSeries(obj = obj,chartType = 0,dateFormat = dateFormat,dataSource = dataSource,
                    mar = c(4,4,5,1),needLefLab = 0,fitLcolor = 2)
@@ -201,13 +247,13 @@ fun_addTxtToChart(obj = obj,cexTxt = 1,funType = 'min',col = 'black')
 dev.off()
 ##########
 pngFile <-
-  paste0(htmlName, "2.png")
+  paste0(htmlName, "-2.png")
 png(file = pngFile, width = 1000, height = 600)
 fun_ggboxplot(obj = obj,dataSource = dataSource)
 dev.off()
 ##########
 pngFile <-
-  paste0(htmlName, "3.png")
+  paste0(htmlName, "-3.png")
 png(file = pngFile, width = 1000, height = 600)
 fun_withList(obj = obj)
 obj <- dfWithList
@@ -222,7 +268,7 @@ fun_outputMDforTS(tags = tags,
                    image1 = 1,image2 = 1,image3 = 1,
                    title = dataTitle,
                    tableTitle = colnames(obj)[2])
-fun_timeSeriesList()
+fun_timeSeriesList(tsTitle = tsTitle)
 ```
 
 <script>MakeNegative();</script>
