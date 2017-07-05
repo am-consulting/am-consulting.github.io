@@ -263,11 +263,11 @@ dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMDforTS(tags = tags,
-                   objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
-                   htmlName = htmlName,
-                   image1 = 1,image2 = 1,image3 = 1,
-                   title = dataTitle,
-                   tableTitle = colnames(obj)[2])
+                  objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
+                  htmlName = htmlName,
+                  image1 = 1,image2 = 1,image3 = 1,
+                  title = dataTitle,
+                  tableTitle = colnames(obj)[2])
 fun_timeSeriesList(tsTitle = tsTitle)
 ```
 
