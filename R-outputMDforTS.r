@@ -38,25 +38,25 @@ published : true
     if(image1!=0){
       txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                     htmlName,
-                    '1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+                    '-1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
                     htmlName,
-                    '1.png" width="100%" /></a>\n\n')
+                    '-1.png" width="100%" /></a>\n\n')
       fun_writeTable()
     }
     if(image2!=0){
       txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                     htmlName,
-                    '2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+                    '-2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
                     htmlName,
-                    '2.png" width="100%" /></a>\n\n')
+                    '-2.png" width="100%" /></a>\n\n')
       fun_writeTable()
     }
     if(image3!=0){
       txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                     htmlName,
-                    '3.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
+                    '-3.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
                     htmlName,
-                    '3.png" width="100%" /></a>\n\n')
+                    '-3.png" width="100%" /></a>\n\n')
       fun_writeTable()
     }
     txt <- paste0('***','\n\n')
