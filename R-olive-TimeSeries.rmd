@@ -60,7 +60,8 @@ if(htmlName=='00001'){
   colnames(buf) <-
     gsub('[^:]+:(.+)','\\1',colnames(buf))
   buf <- buf[,c(1,6)]
-  buf[,-1] <- apply(buf[,-1,drop=F],2,function(x)x*10^-4)
+  buf <- data.frame(buf[,1,drop=F],apply(buf[,-1,drop=F],2,function(x)x*10^-4),
+                         stringsAsFactors = F,check.names = F,row.names = NULL)
   colnames(buf)[2] <- gsub('億円','兆円',colnames(buf)[2])
   obj <- buf
   fun_latestResult(obj = obj)
