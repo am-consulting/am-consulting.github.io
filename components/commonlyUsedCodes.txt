@@ -1,3 +1,5 @@
+http://rmarkdown.rstudio.com/html_document_format.html#html_fragments
+
 `r paste(knit(text = c(get(paste0('knit_expanded',n1)),get(paste0('knit_expanded',n2)))), collapse = '\n')`
 
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', ConsumptionTax)))
