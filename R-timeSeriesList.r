@@ -1,4 +1,4 @@
-fun_timeSeriesList <- function(){
+fun_timeSeriesList <- function(tsTitle = tsTitle){
 library(rvest)
 userName <- Sys.info()['user']
 pathToFile <-
@@ -16,20 +16,29 @@ objHTML <- grep('[^-]+-[0-9]{5}.html',htmlList)
 titleHTML <- data.frame()
 for(iii in seq(length(objHTML))){
   targetHTML <- htmlList[objHTML[iii]]
-  htmlMarkup <-
-    read_html(x = targetHTML,encoding = 'utf8')
-  htmlTitle <-
-    htmlMarkup %>%
-    html_nodes(xpath = "//div[@id = 'htmlTitle']") %>%
-    html_text()
-  htmlTitle <- gsub('\n|\r','',htmlTitle)
+  if(grep(htmlName,targetHTML)==0){
+    htmlMarkup <-
+      read_html(x = targetHTML,encoding = 'utf8')
+    htmlTitle <-
+      htmlMarkup %>%
+      html_nodes(xpath = "//div[@id = 'htmlTitle']") %>%
+      html_text()
+    htmlTitle <- gsub('\n|\r','',htmlTitle)
+    timeStamp <- as.POSIXct(file.info(path = targetHTML)$mtime,origin = "1970-01-01")
+  }else{
+    htmlTitle <- tsTitle
+    timeStamp <-  Sys.time()
+  }
   titleHTML[iii,1] <- iii
   titleHTML[iii,2] <- htmlTitle
   titleHTML[iii,3] <-
     paste0('<a href="http://knowledgevault.saecanet.com/charts/',
            targetHTML,'" target="_blank">Link</a>')
+  titleHTML[iii,4] <- as.character(timeStamp)
 }
-colnames(titleHTML) <- c('No.','Title','Link')
+colnames(titleHTML) <- c('No.','Title','Link','TimeStamp')
+titleHTML <-
+  titleHTML[order(titleHTML$TimeStamp,decreasing = T),]
 pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
 setwd(pathOutputTOcsv)
