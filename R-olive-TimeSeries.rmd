@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'00002';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00003';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Time Series Analysis'
 output: 
@@ -38,7 +38,7 @@ h6{font-size:1vw;font-weight: bold;}
 
 # Title,Timestamp,Source etc.
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
-- `r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`
+- `r timeStamp`
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
@@ -69,6 +69,18 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_billToTri <- function(obj,dateCol = 1,valueCol = 2){
+  obj <- 
+    data.frame(obj[,dateCol,drop=F],apply(obj[,valueCol,drop=F],2,function(x)x*10^-4),
+               stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(obj)[2] <- Nippon::zen2han(gsub('億円','兆円',colnames(obj)[2]))
+  obj <- na.omit(obj)
+  row.names(obj) <- NULL
+  return(obj)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 if(htmlName=='00001'){
   importData <- c('importMonetarybaseOfJapan-2017.r')
   script <-
@@ -77,11 +89,7 @@ if(htmlName=='00001'){
   buf <- monetaryBase_Japan
   colnames(buf) <-
     gsub('[^:]+:(.+)','\\1',colnames(buf))
-  buf <- buf[,c(1,6)]
-  buf <- data.frame(buf[,1,drop=F],apply(buf[,-1,drop=F],2,function(x)x*10^-4),
-                         stringsAsFactors = F,check.names = F,row.names = NULL)
-  colnames(buf)[2] <- gsub('億円','兆円',colnames(buf)[2])
-  obj <- na.omit(buf)
+  obj <- fun_billToTri(obj = buf,valueCol = 6)
   fun_latestResult(obj = obj)
   dataTitle <- 
     paste0("マネタリーベース:日本:",latestResult)
@@ -97,17 +105,29 @@ if(htmlName=='00002'){
   buf <- monetaryBase_Japan
   colnames(buf) <-
     gsub('[^:]+:(.+)','\\1',colnames(buf))
-  buf <- buf[,c(1,9)]
-  buf <- data.frame(buf[,1,drop=F],apply(buf[,-1,drop=F],2,function(x)x*10^-4),
-                         stringsAsFactors = F,check.names = F,row.names = NULL)
-  colnames(buf)[2] <- gsub('億円','兆円',colnames(buf)[2])
-  obj <- na.omit(buf)
+  obj <- fun_billToTri(obj = buf,valueCol = 9)
   fun_latestResult(obj = obj)
   dataTitle <- 
     paste0("マネタリーベース:日本:",latestResult)
   dataSource <- "日本銀行"
   dateFormat <- '%Y-%m'
   tags <- 'マネタリーベース,日銀当座預金,日本銀行'
+}
+if(htmlName=='00003'){
+  importData <- c('importMoneyStock-2017.r')
+  script <-
+    RCurl::getURL(paste0(baseURL,importData[1]),ssl.verifypeer = FALSE)
+  eval(parse(text = script))
+  buf <- MoneyStock
+  colnames(buf) <-
+    gsub('[^:]+:(.+)','\\1',colnames(buf))
+  obj <- fun_billToTri(obj = buf,valueCol = 10)
+  fun_latestResult(obj = obj)
+  dataTitle <- 
+    paste0("マネーストック:日本:",latestResult)
+  dataSource <- "日本銀行"
+  dateFormat <- '%Y-%m'
+  tags <- 'マネーストック,日本銀行'
 }
 ```
 
@@ -130,7 +150,7 @@ tsTitle <- paste0(colnames(obj)[2],':',format(tail(obj[,1],1),dateFormat))
 cat('\n***\n')
 cat(paste0("- Title : ", dataTitle,'\n'))
 cat(paste0("- Source : ", dataSource,'\n'))
-cat('- SNA,NAの区別なくxヶ月前との比を表示しています\n')
+cat('- NSA,SAの区別なくxヶ月前との比を表示しています\n')
 cat('\n***\n')
 ```
 
@@ -195,18 +215,23 @@ fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0,plotNum = 1){
     dyOptions(maxNumberWidth = 100)
   assign(paste0('dygraphPlot',plotNum),p,envir = .GlobalEnv)
 # 'arg' should be one of “y”, “y2”
-  changeDate <- 
-    resultDF$changesInSlope[,1]
-  changeDateDF <-
-    data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
-               stringsAsFactors = F)
-  colnames(changeDateDF) <-
-    c('Point of Change','Month Difference')
-  tmp <- 
-    cbind(summary(tail(changeDateDF[,2],-1)))
-  summaryData <-
-    data.frame(Item=row.names(tmp),Value=tmp[,1],
-               row.names = NULL,stringsAsFactors = F)
+  if(nrow(resultDF$changesInSlope)!=0){
+    changeDate <- 
+      resultDF$changesInSlope[,1]
+    changeDateDF <-
+      data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
+                 stringsAsFactors = F)
+    colnames(changeDateDF) <-
+      c('Point of Change','Month Difference')
+    tmp <- 
+      cbind(summary(tail(changeDateDF[,2],-1)))
+    summaryData <-
+      data.frame(Item=row.names(tmp),Value=tmp[,1],
+                 row.names = NULL,stringsAsFactors = F)
+  }else{
+    changeDateDF <- NA
+    summaryData <-NA
+  }
   returnList <-
       list('changeDateDF' = changeDateDF,
            'summaryData' = summaryData)
@@ -220,18 +245,23 @@ objCol <- 3
 returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = h)
 eval(parse(text = paste0('dygraphPlot',objCol)))
 cat('\n<hr>\n')
-fun_markdownTable(obj = returnList$changeDateDF)
-cat('\n<hr>\n')
-fun_markdownTable(obj = returnList$summaryData)
-cat('\n<hr>\n')
+if(!is.na(returnList$changeDateDF)){
+  fun_markdownTable(obj = returnList$changeDateDF)
+  cat('\n<hr>\n')
+  fun_markdownTable(obj = returnList$summaryData)
+  cat('\n<hr>\n')
+}
 cat('## EMA\n\n')
 objCol <- 4
 returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = h)
 eval(parse(text = paste0('dygraphPlot',objCol)))
 cat('\n<hr>\n')
-fun_markdownTable(obj = returnList$changeDateDF)
-cat('\n<hr>\n')
-fun_markdownTable(obj = returnList$summaryData)
+if(!is.na(returnList$changeDateDF)){
+  fun_markdownTable(obj = returnList$changeDateDF)
+  cat('\n<hr>\n')
+  fun_markdownTable(obj = returnList$summaryData)
+  cat('\n<hr>\n')
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide',out.width='100%'}
@@ -270,6 +300,12 @@ fun_outputMDforTS(tags = tags,
                   tableTitle = colnames(obj)[2])
 fun_timeSeriesList(tsTitle = tsTitle)
 ```
+
+- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
+- `r timeStamp`
+- Olive http://olive.saecanet.com/
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 <script>MakeNegative();</script>
 <script>
