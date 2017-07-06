@@ -57,9 +57,9 @@ if(tsTitle!=0 & htmlName!=0){
     titleHTML[grep(htmlName,titleHTML[,2]),5] <- as.character(timeStamp)
   }
 }
-colnames(titleHTML) <- c('No.','Title','Date','Value','TimeStamp')
+colnames(titleHTML) <- c('No.','Title','    Date    ','    Value    ','TimeStamp')
 titleHTML <-
-  titleHTML[order(titleHTML$TimeStamp,decreasing = T),]
+  titleHTML[order(titleHTML[,5],decreasing = T),]
 titleHTML[,1] <- seq(nrow(titleHTML))
 pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
