@@ -57,7 +57,7 @@ if(tsTitle!=0 & htmlName!=0){
     titleHTML[grep(htmlName,titleHTML[,2]),5] <- as.character(timeStamp)
   }
 }
-colnames(titleHTML) <- c('No.','Title','Date(Year-Month)','Value','TimeStamp')
+colnames(titleHTML) <- c('No.','Title','Date(Year-Month)','Value(Unit:Check the Title column)','TimeStamp')
 titleHTML <-
   titleHTML[order(titleHTML[,5],decreasing = T),]
 titleHTML[,1] <- seq(nrow(titleHTML))
