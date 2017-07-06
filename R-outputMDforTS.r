@@ -74,9 +74,12 @@ published : true
     fun_writeTable()
     txt <- paste0('\n\n','***','\n\n')
     fun_writeTable()
-    txt <- paste0('<div style="text-align:center"><h1><a href="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
+    txt <- paste0('[前月比、前年比、移動平均等](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
+                  htmlName,'.html)\n\n')
+    fun_writeTable()
+    txt <- paste0('<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
                   htmlName,
-                  '.html" target="_blank">詳細分析結果</a></h1></div>\n\n')
+                  '.html" width="100%" height="800px"></iframe>')
     fun_writeTable()
     # md作成パート
   }
