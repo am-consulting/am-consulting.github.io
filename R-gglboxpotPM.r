@@ -10,10 +10,10 @@ fun_gglboxpotPM <- function(obj,personCol = 3,objCol = 2,ggtheme = theme_bw(),
               add = add,shape = "Person",ggtheme = ggtheme,repel = T)
   p <- p + xlab('') + ylab('') + theme(legend.position = "none")
   p <- p + ggtitle(paste0(colnames(obj)[objCol],'\nSource:',dataSource))
-  p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain'))
+  p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 16))
   p <- p + theme(legend.text =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain'))
   p <- p + theme(axis.title.x = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain'))
   p <- p + theme(axis.title.y = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain'))
-  p <- p + theme(axis.text =    element_text(hjust = 0.5,family = 'Meiryo',face = 'plain'))
+  p <- p + theme(axis.text =    element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 16))
   print(p)
 }
