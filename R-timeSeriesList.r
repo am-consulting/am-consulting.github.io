@@ -25,19 +25,22 @@ for(iii in seq(length(objHTML))){
   htmlTitle <- gsub('\n|\r','',htmlTitle)
   timeStamp <- as.POSIXct(file.info(path = targetHTML)$mtime,origin = "1970-01-01")
   titleHTML[iii,1] <- iii
-  titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\1',htmlTitle)
-  dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\2',htmlTitle)
+  titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\1',htmlTitle)
+  dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\2',htmlTitle)
+  valueTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\3',htmlTitle)
   titleHTML[iii,2] <-
     paste0('<a href="http://knowledgevault.saecanet.com/charts/',
            targetHTML,'" target="_blank">',titleTxt,'</a>')
   titleHTML[iii,3] <- dateTxt
-  titleHTML[iii,4] <- as.character(timeStamp)
+  titleHTML[iii,4] <- valueTxt
+  titleHTML[iii,5] <- as.character(timeStamp)
 }
 if(tsTitle!=0 & htmlName!=0){
   htmlTitle <- tsTitle
   timeStamp <- Sys.time()
-  titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\1',htmlTitle)
-  dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\2',htmlTitle)
+  titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\1',htmlTitle)
+  dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\2',htmlTitle)
+  valueTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\3',htmlTitle)
   if(length(grep(htmlName,titleHTML[,2]))==0){
     iii <- iii + 1
     targetHTML <- paste0('am-consulting.co.jp-',htmlName,'.html')
@@ -46,13 +49,15 @@ if(tsTitle!=0 & htmlName!=0){
       paste0('<a href="http://knowledgevault.saecanet.com/charts/',
              targetHTML,'" target="_blank">',titleTxt,'</a>')
     titleHTML[iii,3] <- dateTxt
-    titleHTML[iii,4] <- as.character(timeStamp)
+    titleHTML[iii,4] <- valueTxt
+    titleHTML[iii,5] <- as.character(timeStamp)
   }else{
     titleHTML[grep(htmlName,titleHTML[,2]),3] <- dateTxt
-    titleHTML[grep(htmlName,titleHTML[,2]),4] <- as.character(timeStamp)
+    titleHTML[grep(htmlName,titleHTML[,2]),4] <- valueTxt
+    titleHTML[grep(htmlName,titleHTML[,2]),5] <- as.character(timeStamp)
   }
 }
-colnames(titleHTML) <- c('No.','Title','Date','TimeStamp')
+colnames(titleHTML) <- c('No.','Title','Date','Value','TimeStamp')
 titleHTML <-
   titleHTML[order(titleHTML$TimeStamp,decreasing = T),]
 titleHTML[,1] <- seq(nrow(titleHTML))
