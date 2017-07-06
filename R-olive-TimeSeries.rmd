@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00006';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00007';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Time Series Analysis'
 output: 
@@ -181,6 +181,20 @@ if(htmlName=='00006'){
   diffType <- 2
   rollingN <- 12
 }
+if(htmlName=='00007'){
+  importData <- c('importEmploymentReferralsForGeneralWorkers.r')
+  script <-
+    RCurl::getURL(paste0(baseURL,importData[1]),ssl.verifypeer = FALSE)
+  eval(parse(text = script))
+  obj <- na.omit(jobOpenings[,c(1,4)])
+  dataTitle <- 
+    paste0("有効求人倍率:日本:")
+  dataSource <- "厚生労働省"
+  dateFormat <- '%Y-%m'
+  tags <- '有効求人倍率'
+  diffType <- 2
+  rollingN <- 12
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -235,8 +249,8 @@ cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-cat('# xヶ月前との比較(%)\n\n')
-cat('- %、パーセントポイント、ポイント\n\n')
+cat('# xヶ月前との比較\n\n')
+cat('- 単位:%(例 マネタリーベース)、パーセントポイント(例 失業率)、ポイント(例 有効求人倍率)\n\n')
 for(iii in seq(length(lag))){
   cat('## x=',lag[iii],'\n\n')
   tmp <- ratioDF[[iii]]
@@ -280,12 +294,12 @@ fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0,plotNum = 1){
     changeDate <- 
       resultDF$changesInSlope[,1]
     changeDateDF <-
-      data.frame(format(changeDate,dateFormat),c(0,diff(year(changeDate)*12+month(changeDate))),
+      data.frame(format(changeDate,dateFormat),c('*',diff(year(changeDate)*12+month(changeDate))),
                  stringsAsFactors = F)
     colnames(changeDateDF) <-
       c('Point of Change','Month Difference')
     tmp <- 
-      cbind(summary(tail(changeDateDF[,2],-1)))
+      cbind(summary(as.numeric(tail(changeDateDF[,2],-1))))
     summaryData <-
       data.frame(Item=row.names(tmp),Value=tmp[,1],
                  row.names = NULL,stringsAsFactors = F)
@@ -332,7 +346,7 @@ pngFile <-
   paste0(htmlName, "-1.png")
 png(file = pngFile, width = 1000, height = 600)
 fun_plotTimeSeries(obj = obj,chartType = 0,dateFormat = dateFormat,dataSource = dataSource,
-                   mar = c(4,4,5,1),needLefLab = 0,fitLcolor = 2,cex.axis = 1.1,cex.main = 1.1)
+                   mar = c(4,4,6,1),needLefLab = 0,fitLcolor = 2,cex.axis = 1.2,cex.main = 1.3)
 fun_addTxtToChart(obj = obj,cexTxt = 1,funType = 'min',col = 'black')
 dev.off()
 ##########
