@@ -1,4 +1,4 @@
-fun_timeSeriesList <- function(tsTitle = tsTitle){
+fun_timeSeriesList <- function(tsTitle = 0,htmlName = 0){
 library(rvest)
 userName <- Sys.info()['user']
 pathToFile <-
@@ -16,44 +16,43 @@ objHTML <- grep('[^-]+-[0-9]{5}.html',htmlList)
 titleHTML <- data.frame()
 for(iii in seq(length(objHTML))){
   targetHTML <- htmlList[objHTML[iii]]
-  if(length(grep(htmlName,targetHTML))==0){
-    htmlMarkup <-
-      read_html(x = targetHTML,encoding = 'utf8')
-    htmlTitle <-
-      htmlMarkup %>%
-      html_nodes(xpath = "//div[@id = 'htmlTitle']") %>%
-      html_text()
-    htmlTitle <- gsub('\n|\r','',htmlTitle)
-    timeStamp <- as.POSIXct(file.info(path = targetHTML)$mtime,origin = "1970-01-01")
-  }else{
-    htmlTitle <- tsTitle
-    timeStamp <- Sys.time()
-  }
+  htmlMarkup <-
+    read_html(x = targetHTML,encoding = 'utf8')
+  htmlTitle <-
+    htmlMarkup %>%
+    html_nodes(xpath = "//div[@id = 'htmlTitle']") %>%
+    html_text()
+  htmlTitle <- gsub('\n|\r','',htmlTitle)
+  timeStamp <- as.POSIXct(file.info(path = targetHTML)$mtime,origin = "1970-01-01")
   titleHTML[iii,1] <- iii
-  titleHTML[iii,2] <- htmlTitle
-  titleHTML[iii,3] <-
+  titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\1',htmlTitle)
+  dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\2',htmlTitle)
+  titleHTML[iii,2] <-
     paste0('<a href="http://knowledgevault.saecanet.com/charts/',
-           targetHTML,'" target="_blank">Link</a>')
+           targetHTML,'" target="_blank">',titleTxt,'</a>')
+  titleHTML[iii,3] <- dateTxt
   titleHTML[iii,4] <- as.character(timeStamp)
 }
-iii <- iii + 1
-if(length(grep(htmlName,titleHTML[,3]))==0){
-  targetHTML <- paste0('am-consulting.co.jp-',htmlName,'.html')
+if(tsTitle!=0 & htmlName!=0){
   htmlTitle <- tsTitle
   timeStamp <- Sys.time()
-  titleHTML[iii,1] <- iii
-  titleHTML[iii,2] <- htmlTitle
-  titleHTML[iii,3] <-
-    paste0('<a href="http://knowledgevault.saecanet.com/charts/',
-           targetHTML,'" target="_blank">Link</a>')
-  titleHTML[iii,4] <- as.character(timeStamp)
+  titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\1',htmlTitle)
+  dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\2',htmlTitle)
+  if(length(grep(htmlName,titleHTML[,2]))==0){
+    iii <- iii + 1
+    targetHTML <- paste0('am-consulting.co.jp-',htmlName,'.html')
+    titleHTML[iii,1] <- iii
+    titleHTML[iii,2] <-
+      paste0('<a href="http://knowledgevault.saecanet.com/charts/',
+             targetHTML,'" target="_blank">',titleTxt,'</a>')
+    titleHTML[iii,3] <- dateTxt
+    titleHTML[iii,4] <- as.character(timeStamp)
+  }else{
+    titleHTML[grep(htmlName,titleHTML[,2]),3] <- dateTxt
+    titleHTML[grep(htmlName,titleHTML[,2]),4] <- as.character(timeStamp)
+  }
 }
-titleTxt <-  gsub('(.+):([0-9]{4}-[0-9]{2})','\\1',titleHTML[,2])
-dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})','\\2',titleHTML[,2])
-titleHTML[,2] <- titleTxt
-titleHTML$Date <- dateTxt
-colnames(titleHTML) <- c('No.','Title','Link','TimeStamp','Date')
-titleHTML <- titleHTML[,c(1,2,5,3,4)]
+colnames(titleHTML) <- c('No.','Title','Date','TimeStamp')
 titleHTML <-
   titleHTML[order(titleHTML$TimeStamp,decreasing = T),]
 titleHTML[,1] <- seq(nrow(titleHTML))
