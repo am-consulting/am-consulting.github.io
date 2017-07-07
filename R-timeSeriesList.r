@@ -52,6 +52,9 @@ if(tsTitle!=0 & htmlName!=0){
     titleHTML[iii,4] <- valueTxt
     titleHTML[iii,5] <- as.character(timeStamp)
   }else{
+    titleHTML[grep(htmlName,titleHTML[,2]),2] <-
+      paste0('<a href="http://knowledgevault.saecanet.com/charts/',
+             targetHTML,'" target="_blank">',titleTxt,'</a>')
     titleHTML[grep(htmlName,titleHTML[,2]),3] <- dateTxt
     titleHTML[grep(htmlName,titleHTML[,2]),4] <- valueTxt
     titleHTML[grep(htmlName,titleHTML[,2]),5] <- as.character(timeStamp)
