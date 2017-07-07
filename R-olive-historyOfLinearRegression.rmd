@@ -39,6 +39,19 @@ for(iii in 1:nrow(functionList)){
 }
 ```
 
+```{r warning=F, error=F, message=F, echo=F, results='hold'}
+dataTitle <- 
+  paste0('消費者物価指数と完全失業率との線形回帰ヒストリカルデータ')
+dataSource <- '総務省'
+```
+
+***
+
+- `r paste0("タイトル : ", dataTitle)`
+- `r paste0("データ出所 : ", dataSource)`
+
+***
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 importAMCC <- 
   c('laborForceSurveyofJapan.r','consumerPriceIndexofJapan.r')
@@ -81,7 +94,6 @@ fun_rollingLM <- function(objDF = mergeData,rangeN = 12*5){
     resultDF[rrr,6] <- as.character(range(obj[,1])[1])
     resultDF[rrr,7] <- as.character(range(obj[,1])[2])
     resultDF[rrr,8] <- round(summary(resultLM)$adj.r.squared,3)
-    
   }
   colnames(resultDF) <- c('ID','Period','Slope','Lo 95','Hi 95','Date01','Date02','Adjusted r squared')
   return(resultDF)
@@ -112,7 +124,7 @@ fun_plotRolling <- function(obj,mainTitle){
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_plotR2 <- function(obj,mainTitle){
   par(mar=c(5,4,4,1),family='Meiryo',font.main=1,cex.main=1)
-  plot(obj$`Adjusted r squared`,type='l',xlab='ID',ylab='',col='blue',lwd=1,
+  plot(obj$`Adjusted r squared`,type='h',xlab='ID',ylab='',col='blue',lwd=1,
        main=mainTitle)
   grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
   abline(h=0,col='red')
@@ -134,7 +146,7 @@ fun_lmPlot <- function(dataDF){
   resultLM <- lm(y~x)
   dateRange <- 
     paste0(format(range(dataDF[,1]),'%Y-%m'),collapse = ' ~ ')
-  par(mar=c(5,5,4,1),family='Meiryo',font.main=1,cex.main=1.2)
+  par(mar=c(5,5,4,1),family='Meiryo',font.main=1,cex.main=1)
   plot(x,y,type='p',pch=20,xlab=colnames(dataDF)[2],ylab=colnames(dataDF)[3],
        main=paste0(dateRange,'\nAdjusted r squared = ',round(summary(resultLM)$adj.r.squared,3)))
   grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
@@ -144,17 +156,19 @@ fun_lmPlot <- function(dataDF){
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 rangeN <- 12*5
-mainTitle <- 
+mainTitle01 <- 
   paste0(paste0(colnames(mergeData)[2:3],collapse = 'と'),'との線形回帰スロープ')
-cat('#### ',mainTitle,'\n\n')
+cat('#### ',mainTitle01,'\n\n')
 cat('- 期間:',rangeN,'ヶ月毎\n\n')
 resultTable <- 
   fun_rollingLM(objDF = mergeData,rangeN = rangeN)
+resultTable[,c(3,4,5)] <-
+  apply(resultTable[,c(3,4,5)],2,function(x)round(x,3))
 fun_dataTable(obj = resultTable[,c(1,2,3,4,5,8)],dateFormat = 0,orderDirection = 'asc')
 cat('\n<hr>\n')
-cat('#### ',mainTitle,'\n\n')
+cat('#### ',mainTitle01,'\n\n')
 resultData <- 
-  fun_plotRolling(obj = resultTable,mainTitle = mainTitle)
+  fun_plotRolling(obj = resultTable,mainTitle = mainTitle01)
 lastData <- 
   mergeData[tail(resultTable$Date01,1)<=mergeData[,1],]
 cat('\n<hr>\n')
@@ -166,24 +180,60 @@ fun_lmPlot(dataDF = resultData$maxData)
 cat('\n<hr>\n')
 cat('#### 直近\n')
 fun_lmPlot(dataDF = lastData)
-cat('\n<hr>\n')
-cat('#### スロープヒストグラム\n')
-Slope <- resultTable$Slope
-hist(Slope,col = '#4169e1')
-mainTitle <- 
+mainTitle02 <- 
   paste0(paste0(colnames(mergeData)[2:3],collapse = 'と'),'との線形回帰自由度調整済決定係数')
 cat('\n<hr>\n')
-cat('#### ',mainTitle,'\n\n')
+cat('#### ',mainTitle02,'\n\n')
 resultData <- 
-  fun_plotR2(obj = resultTable,mainTitle = mainTitle)
+  fun_plotR2(obj = resultTable,mainTitle = mainTitle02)
 cat('\n<hr>\n')
 cat('#### 最大決定係数\n')
 fun_lmPlot(dataDF = resultData$maxData)
 cat('\n<hr>\n')
-cat('#### 決定係数ヒストグラム\n')
-Adjusted_R_Squared <- resultTable$`Adjusted r squared`
-hist(Adjusted_R_Squared,col = '#4169e1')
 ```
 
-```{r}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+Slope <- resultTable$Slope
+par(mar=c(5,5,4,1),family='Meiryo',font.main=1,cex.main=1)
+hist(Slope,col = '#4169e1',main = mainTitle01)
+dev.off()
+pngFile <-
+  paste0(htmlName, "2.png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+Adjusted_R_Squared <- resultTable$`Adjusted r squared`
+par(mar=c(5,5,4,1),family='Meiryo',font.main=1,cex.main=1)
+hist(Adjusted_R_Squared,col = '#4169e1',main = mainTitle02)
+dev.off()
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- 
+  merge(consumerPriceIndexofJapan,
+        laborforcesurvey[,-ncol(laborforcesurvey)],by='Date')
+fun_outputMD(tags = '消費者物価指数,失業率',
+             objDF = fun_transposeDataFrame(obj = obj,dateFormat = '%Y-%m',tailN = 3),
+             htmlName = htmlName,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
+             tableTitle = '直近3ヶ月',
+             tableName = '消費者物価指数と労働関連指標')
+fun_updateURLcsv()
+```
+
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
