@@ -16,6 +16,7 @@ fun_convertToTS <-
         frequencyN <- 4
       }
     }
+    if(frequencyN!=4){
     returnTS <-
       ts(data = tsData[,dataCol],
          start = c(year(tsData[1,dateCol]),month(tsData[1,dateCol])),
@@ -24,6 +25,18 @@ fun_convertToTS <-
       data.frame(tapply(returnTS,
                         list(year = floor(time(returnTS)), month = cycle(returnTS)), c),
                  check.names = F,stringsAsFactors = F)
+    }else{
+      returnTS <-
+        ts(data = tsData[,dataCol],
+           start = c(year(tsData[1,dateCol]),month(tsData[1,dateCol])/3),
+           frequency = frequencyN)
+      returnDF <-
+        data.frame(tapply(returnTS,
+                          list(year = floor(time(returnTS)), month = cycle(returnTS)), c),
+                   check.names = F,stringsAsFactors = F)
+      colnames(returnDF) <- paste0('Qtr',colnames(returnDF))
+      monthabb <- 0
+    }
     if(monthabb == 1){
       colnames(returnDF) <-
         month.abb[as.numeric(colnames(returnDF))]
