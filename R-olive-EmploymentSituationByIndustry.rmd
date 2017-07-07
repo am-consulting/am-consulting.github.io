@@ -144,7 +144,6 @@ fun_outputMD(tags = 'Employment Situation',
              objDF = obj,
              htmlName = htmlName,
              image1 = 1,
-             dataTitle = dataTitle,
              tableTitle = colnames(obj)[2],
              tableName = 'Unemployment rates by sector')
 fun_updateURLcsv()
