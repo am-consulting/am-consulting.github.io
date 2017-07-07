@@ -14,7 +14,33 @@ output:
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
 
-```{r}
+```{r set-options, echo=F, cache=F}
+options(width = 1000)
+```
+
+```{r warning=F, error=F, message=F, echo=F}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 999)
+```
+
+```{r warning = F, error = F, message = F, echo = F}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 importAMCC <- 
   c('laborForceSurveyofJapan.r','consumerPriceIndexofJapan.r')
 for(iii in seq(length(importAMCC))){
@@ -40,7 +66,7 @@ mergeData <-
                 consumerPriceIndexofJapan[,c(1,objCol)],by = "Date"))
 ```
 
-```{r}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_rollingLM <- function(objDF = mergeData,rangeN = 12*5){
   resultDF <- data.frame()
   for(rrr in 1:(nrow(objDF)-rangeN+1)){
@@ -63,16 +89,16 @@ fun_rollingLM <- function(objDF = mergeData,rangeN = 12*5){
 }
 ```
 
-```{r}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_plotRolling <- function(obj){
   ylim <- c(floor(min(obj[,3:5])),ceiling(max(obj[,3:5])))
-  plot(obj[,3],type='l',cex=0.6,xlab='ID',ylab='',ylim=ylim,col='blue',lwd=2)
+  plot(obj$Slope,type='l',xlab='ID',ylab='',ylim=ylim,col='blue',lwd=2)
   lines(obj$`Lo 95`,lty=2)
   lines(obj$`Hi 95`,lty=2)
   grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
   abline(h=0,col='red')
-  resultMin <- obj[which.min(obj$Slope),]
-  resultMax <- obj[which.max(obj$Slope),]
+  resultMin <- obj[tail(which.min(obj$Slope),1),]
+  resultMax <- obj[tail(which.max(obj$Slope),1),]
   minData <- mergeData[resultMin$Date01<=mergeData[,1] & mergeData[,1]<=resultMin$Date02,]
   maxData <- mergeData[resultMax$Date01<=mergeData[,1] & mergeData[,1]<=resultMax$Date02,]
   returnList <-
@@ -82,7 +108,7 @@ fun_plotRolling <- function(obj){
 }
 ```
 
-```{r}
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_lmPlot <- function(dataDF){
   x <- dataDF[,2]
   y <- dataDF[,3]
@@ -97,11 +123,13 @@ fun_lmPlot <- function(dataDF){
 }
 ```
 
-```{r}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 resultTable <- fun_rollingLM(objDF = mergeData,rangeN = 12*5)
 resultData <- fun_plotRolling(obj = resultTable)
+lastData <- mergeData[tail(resultTable$Date01,1)<=mergeData[,1],]
 fun_lmPlot(dataDF = resultData$minData)
 fun_lmPlot(dataDF = resultData$maxData)
+fun_lmPlot(dataDF = lastData)
 ```
 
 ```{r}
