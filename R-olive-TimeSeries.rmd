@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00012';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00014';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Time Series Analysis'
 output: 
@@ -260,6 +260,32 @@ if(htmlName=='00013'){
   dateFormat <- '%Y-%m'
   tags <- '日経平均株価'
   diffType <- 1
+  rollingN <- 12
+}
+if(htmlName=='00014'){
+  script <-
+    RCurl::getURL(
+      url = "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_JGBInterestRate.r",
+      ssl.verifypeer = F)
+  eval(parse(text = script))
+  objCol <- grep('2Y|10Y',colnames(jgbData))
+  buf <- 
+    na.omit(jgbData[,c(1,objCol)])
+  buf$`10-2年物日本国債イールドスプレッド` <- 
+    buf[,3] - buf[,2]
+  buf$YM <- 
+    as.Date(paste0(year(buf[,1]),'-',month(buf[,1]),'-1'))
+  obj <-
+    aggregate(x = buf$`10-2年物日本国債イールドスプレッド`,
+              by = list(Date = buf$YM),
+              FUN = mean)
+  colnames(obj)[2] <-
+    paste0(colnames(buf)[4],'平均値(%)')
+  obj[,2] <- round(obj[,2],3)
+  dataSource <- "財務省"
+  dateFormat <- '%Y-%m'
+  tags <- '日本国債金利'
+  diffType <- 2
   rollingN <- 12
 }
 ```
