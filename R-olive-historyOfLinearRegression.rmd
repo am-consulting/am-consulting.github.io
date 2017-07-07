@@ -1,0 +1,93 @@
+```{r}
+importAMCC <- 
+  c('laborForceSurveyofJapan.r','consumerPriceIndexofJapan.r')
+for(iii in seq(length(importAMCC))){
+  script <- 
+    RCurl::getURL(
+      url =paste0("https://raw.githubusercontent.com/am-consulting/Rscript/master/",importAMCC[iii]),
+      ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+colnames(consumerPriceIndexofJapan) <- 
+  sapply(colnames(consumerPriceIndexofJapan),Nippon::zen2han)
+colnames(laborforcesurvey) <- 
+  sapply(colnames(laborforcesurvey),Nippon::zen2han)
+objCol <- 
+  c(grep('^労働力人口.+男女計.+',colnames(laborforcesurvey)),
+    grep('^完全失業者.+男女計.+',colnames(laborforcesurvey)))
+laborforcesurvey$`完全失業率(%):男女計:季節調整値` <-
+  laborforcesurvey[,objCol[2]]/laborforcesurvey[,objCol[1]]*100
+objCol <-
+  grep(':総合$',colnames(consumerPriceIndexofJapan))
+mergeData <-
+  na.omit(merge(laborforcesurvey[,c(1,ncol(laborforcesurvey))], 
+                consumerPriceIndexofJapan[,c(1,objCol)],by = "Date"))
+```
+
+```{r}
+fun_rollingLM <- function(objDF = mergeData,rangeN = 12*5){
+  resultDF <- data.frame()
+  for(rrr in 1:(nrow(objDF)-rangeN+1)){
+    obj <- objDF[rrr:(rrr+rangeN-1),]
+    x <- obj[,2]
+    y <- obj[,3]
+    resultLM <- lm(y~x)
+    resultDF[rrr,1] <- rrr
+    resultDF[rrr,2] <- paste0(format(range(obj[,1]),'%Y-%m'),collapse = '~')
+    resultDF[rrr,3] <- resultLM$coefficients[2]
+    resultDF[rrr,4] <- confint(resultLM)[2]
+    resultDF[rrr,5] <- confint(resultLM)[4]
+    resultDF[rrr,6] <- as.character(range(obj[,1])[1])
+    resultDF[rrr,7] <- as.character(range(obj[,1])[2])
+    resultDF[rrr,8] <- round(summary(resultLM)$adj.r.squared,3)
+    
+  }
+  colnames(resultDF) <- c('ID','Period','Slope','Lo 95','Hi 95','Date01','Date02','Adjusted r squared')
+  return(resultDF)
+}
+```
+
+```{r}
+fun_plotRolling <- function(obj){
+  ylim <- c(floor(min(obj[,3:5])),ceiling(max(obj[,3:5])))
+  plot(obj[,3],type='l',cex=0.6,xlab='ID',ylab='',ylim=ylim,col='blue',lwd=2)
+  lines(obj$`Lo 95`,lty=2)
+  lines(obj$`Hi 95`,lty=2)
+  grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
+  abline(h=0,col='red')
+  resultMin <- obj[which.min(obj$Slope),]
+  resultMax <- obj[which.max(obj$Slope),]
+  minData <- mergeData[resultMin$Date01<=mergeData[,1] & mergeData[,1]<=resultMin$Date02,]
+  maxData <- mergeData[resultMax$Date01<=mergeData[,1] & mergeData[,1]<=resultMax$Date02,]
+  returnList <-
+      list('minData' = minData,
+           'maxData' = maxData)
+  return(returnList)
+}
+```
+
+```{r}
+fun_lmPlot <- function(dataDF){
+  x <- dataDF[,2]
+  y <- dataDF[,3]
+  resultLM <- lm(y~x)
+  dateRange <- 
+    paste0(format(range(dataDF[,1]),'%Y-%m'),collapse = ' ~ ')
+  par(mar=c(5,5,4,1),family='Meiryo',font.main=1,cex.main=1.2)
+  plot(x,y,type='p',pch=20,xlab=colnames(dataDF)[2],ylab=colnames(dataDF)[3],
+       main=paste0(dateRange,'\nAdjusted r squared = ',round(summary(resultLM)$adj.r.squared,3)))
+  grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
+  abline(resultLM,col='red')
+}
+```
+
+```{r}
+resultTable <- fun_rollingLM(objDF = mergeData,rangeN = 12*5)
+resultData <- fun_plotRolling(obj = resultTable)
+fun_lmPlot(dataDF = resultData$minData)
+fun_lmPlot(dataDF = resultData$maxData)
+```
+
+```{r}
+hist(resultTable$Slope)
+```
