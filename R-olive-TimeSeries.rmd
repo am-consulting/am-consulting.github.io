@@ -300,7 +300,7 @@ if(htmlName=='00015'){
   eval(parse(text = script))
   gdp1[,-1] <- apply(gdp1[,-1],2,function(x)x*10^-3)
   obj <- gdp1[,c(1,2)]
-  colnames(obj)[2] <- gsub('支出側','支出側,兆円,四半期',colnames(obj)[2])
+  colnames(obj)[2] <- gsub('支出側','支出側-兆円-四半期',colnames(obj)[2])
   dataSource <- "内閣府"
   dateFormat <- '%Y-%m'
   tags <- 'GDP'
@@ -316,7 +316,7 @@ if(htmlName=='00016'){
   eval(parse(text = script))
   gdp2[,-1] <- apply(gdp2[,-1],2,function(x)x*10^-3)
   obj <- gdp2[,c(1,2)]
-  colnames(obj)[2] <- gsub('支出側','支出側,兆円,四半期',colnames(obj)[2])
+  colnames(obj)[2] <- gsub('支出側','支出側-兆円-四半期',colnames(obj)[2])
   dataSource <- "内閣府"
   dateFormat <- '%Y-%m'
   tags <- 'GDP'
