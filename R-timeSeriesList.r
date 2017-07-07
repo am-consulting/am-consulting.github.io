@@ -57,10 +57,20 @@ if(tsTitle!=0 & htmlName!=0){
     titleHTML[grep(htmlName,titleHTML[,2]),5] <- as.character(timeStamp)
   }
 }
-colnames(titleHTML) <- c('No.','Title','Date(Year-Month)','Value(Unit:Check the Title)','TimeStamp')
+colnames(titleHTML) <- c('No.','Title','Date(Year-Month)','Value','TimeStamp')
 titleHTML <-
   titleHTML[order(titleHTML[,5],decreasing = T),]
 titleHTML[,1] <- seq(nrow(titleHTML))
+# figure part
+baseTxt <- '<a href="http://knowledgevault.saecanet.com/charts/chartImages/'
+htmlNameS <- gsub('.+jp-([0-9]{5}).+','\\1',titleHTML[,2])
+figLink <-
+  paste0(paste0(baseTxt,htmlNameS,'-1.png">01</a> - '),
+         paste0(baseTxt,htmlNameS,'-2.png">02</a> - '),
+         paste0(baseTxt,htmlNameS,'-3.png">03</a>'))
+titleHTML$Figure <- figLink
+titleHTML <- titleHTML[,-5]
+# figure part
 pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
 setwd(pathOutputTOcsv)
