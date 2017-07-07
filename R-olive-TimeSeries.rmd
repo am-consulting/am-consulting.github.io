@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00016';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00017';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Time Series Analysis'
 output: 
@@ -323,6 +323,26 @@ if(htmlName=='00016'){
   diffType <- 1
   rollingN <- 4
   lag <- c(1,4,8,12,24,36)
+}
+if(htmlName=='00017'){
+  tmp <- 
+    read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/csvData/TSdata/NationalGovernmentDebt.csv',
+             header = F,stringsAsFactors = F,fileEncoding = 'UTF8')
+  buf <- tmp[,c(1,2)]
+  colnames(buf) <- buf[2,]
+  buf[,2] <- as.numeric(buf[,2])*10^-4
+  colnames(buf)[2] <- paste0(colnames(buf)[2],'(兆円)')
+  buf <- buf[!is.na(buf[,2]),]
+  buf[,1] <-
+    as.Date(paste0(buf[,1],'/1'))
+  colnames(buf)[1] <- 'Date'
+  row.names(buf) <- NULL
+  obj <- buf
+  dataSource <- "日本銀行"
+  dateFormat <- '%Y-%m'
+  tags <- '政府債務'
+  diffType <- 1
+  rollingN <- 12
 }
 ```
 
