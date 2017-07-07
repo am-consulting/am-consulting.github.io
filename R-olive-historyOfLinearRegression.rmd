@@ -15,12 +15,11 @@ output:
 <style>.main-container {max-width : 1000px;}</style>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 1000,scipen = 999)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
 windowsFonts(Meiryo = windowsFont("Meiryo"))
-options(scipen = 999)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -90,15 +89,35 @@ fun_rollingLM <- function(objDF = mergeData,rangeN = 12*5){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_plotRolling <- function(obj){
+fun_plotRolling <- function(obj,mainTitle){
   ylim <- c(floor(min(obj[,3:5])),ceiling(max(obj[,3:5])))
-  plot(obj$Slope,type='l',xlab='ID',ylab='',ylim=ylim,col='blue',lwd=2)
+  par(mar=c(5,4,4,1),family='Meiryo',font.main=1,cex.main=1)
+  plot(obj$Slope,type='l',xlab='ID',ylab='',ylim=ylim,col='blue',lwd=2,
+       main=mainTitle)
   lines(obj$`Lo 95`,lty=2)
   lines(obj$`Hi 95`,lty=2)
   grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
   abline(h=0,col='red')
   resultMin <- obj[tail(which.min(obj$Slope),1),]
   resultMax <- obj[tail(which.max(obj$Slope),1),]
+  minData <- mergeData[resultMin$Date01<=mergeData[,1] & mergeData[,1]<=resultMin$Date02,]
+  maxData <- mergeData[resultMax$Date01<=mergeData[,1] & mergeData[,1]<=resultMax$Date02,]
+  returnList <-
+      list('minData' = minData,
+           'maxData' = maxData)
+  return(returnList)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_plotR2 <- function(obj,mainTitle){
+  par(mar=c(5,4,4,1),family='Meiryo',font.main=1,cex.main=1)
+  plot(obj$`Adjusted r squared`,type='l',xlab='ID',ylab='',col='blue',lwd=1,
+       main=mainTitle)
+  grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
+  abline(h=0,col='red')
+  resultMin <- obj[tail(which.min(obj$`Adjusted r squared`),1),]
+  resultMax <- obj[tail(which.max(obj$`Adjusted r squared`),1),]
   minData <- mergeData[resultMin$Date01<=mergeData[,1] & mergeData[,1]<=resultMin$Date02,]
   maxData <- mergeData[resultMax$Date01<=mergeData[,1] & mergeData[,1]<=resultMax$Date02,]
   returnList <-
@@ -124,14 +143,47 @@ fun_lmPlot <- function(dataDF){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-resultTable <- fun_rollingLM(objDF = mergeData,rangeN = 12*5)
-resultData <- fun_plotRolling(obj = resultTable)
-lastData <- mergeData[tail(resultTable$Date01,1)<=mergeData[,1],]
+rangeN <- 12*5
+mainTitle <- 
+  paste0(paste0(colnames(mergeData)[2:3],collapse = 'と'),'との線形回帰スロープ')
+cat('#### ',mainTitle,'\n\n')
+cat('- 期間:',rangeN,'ヶ月毎\n\n')
+resultTable <- 
+  fun_rollingLM(objDF = mergeData,rangeN = rangeN)
+fun_dataTable(obj = resultTable[,c(1,2,3,4,5,8)],dateFormat = 0,orderDirection = 'asc')
+cat('\n<hr>\n')
+cat('#### ',mainTitle,'\n\n')
+resultData <- 
+  fun_plotRolling(obj = resultTable,mainTitle = mainTitle)
+lastData <- 
+  mergeData[tail(resultTable$Date01,1)<=mergeData[,1],]
+cat('\n<hr>\n')
+cat('#### 最大マイナススロープ\n')
 fun_lmPlot(dataDF = resultData$minData)
+cat('\n<hr>\n')
+cat('#### 最大プラススロープ\n')
 fun_lmPlot(dataDF = resultData$maxData)
+cat('\n<hr>\n')
+cat('#### 直近\n')
 fun_lmPlot(dataDF = lastData)
+cat('\n<hr>\n')
+cat('#### スロープヒストグラム\n')
+Slope <- resultTable$Slope
+hist(Slope,col = '#4169e1')
+mainTitle <- 
+  paste0(paste0(colnames(mergeData)[2:3],collapse = 'と'),'との線形回帰自由度調整済決定係数')
+cat('\n<hr>\n')
+cat('#### ',mainTitle,'\n\n')
+resultData <- 
+  fun_plotR2(obj = resultTable,mainTitle = mainTitle)
+cat('\n<hr>\n')
+cat('#### 最大決定係数\n')
+fun_lmPlot(dataDF = resultData$maxData)
+cat('\n<hr>\n')
+cat('#### 決定係数ヒストグラム\n')
+Adjusted_R_Squared <- resultTable$`Adjusted r squared`
+hist(Adjusted_R_Squared,col = '#4169e1')
 ```
 
 ```{r}
-hist(resultTable$Slope)
 ```
