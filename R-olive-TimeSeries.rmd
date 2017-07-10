@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00018';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00001';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "`r Bigtitle`"
 output: 
@@ -360,6 +360,11 @@ if(htmlName=='00018'){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+buf <- fun_fit(obj = obj)
+obj <- buf[,c(1,2,3)]
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(obj) <- sapply(colnames(obj),Nippon::zen2han)
 fun_latestResult(obj = obj)
 objYear <- tail(unique(year(obj[,1])),5)[1]
@@ -375,7 +380,7 @@ for(cnt in seq(length(lag))){
   colnames(buf)[2] <- 
     paste0(gsub('\\([^\\(]{0,4}[円|%]\\)','',colnames(buf)[2]),':',lag[cnt],'ヶ月前との比')
   print(tail(buf))
-  ratioDF[[cnt]] <- buf
+  ratioDF[[cnt]] <- buf[,c(1,2)]
 }
 tsTitle <- paste0(colnames(obj)[2],':',format(tail(obj[,1],1),dateFormat),
                   '=',tail(obj[,2],1))
@@ -398,28 +403,69 @@ cat('\n<hr>\n')
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 時系列チャート\n\n')
-n <- 1
-fun_generateKnit(objDF = obj,plotNum = n,dygraphTitle = colnames(obj)[2],group = 0,quantiles = 1)
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+fun_dygraphPlot(tsData = obj,shadePattern = 3,drawPoints = c(T,F),
+                width = 300,fillGraph = c(F,F),pointSize = c(2,0))
 cat('\n\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-tsData <- fun_convertToTS(tsData = subset(obj,objYear<=year(obj[,1])))
-fun_markdownTable(obj = tsData$returnDF,rownames = T)
+shadePattern = 3;drawPoints = c(T);width = 300;fillGraph = c(T);pointSize = c(2)
+cat('# xヶ月(期)前との比較\n\n')
+cat('- 単位:%(例 マネタリーベース)、パーセントポイント(例 失業率)、ポイント(例 有効求人倍率)\n\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+iii <- 1
+cat('## x=',lag[iii],'\n\n')
+tmp <- ratioDF[[iii]]
+fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
+                width = width,fillGraph = fillGraph,pointSize = pointSize)
 cat('\n<hr>\n')
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-cat('# xヶ月(期)前との比較\n\n')
-cat('- 単位:%(例 マネタリーベース)、パーセントポイント(例 失業率)、ポイント(例 有効求人倍率)\n\n')
-for(iii in seq(length(lag))){
-  cat('## x=',lag[iii],'\n\n')
-  tmp <- ratioDF[[iii]]
-  tsData <- fun_convertToTS(tsData = subset(tmp,objYear<=year(tmp[,1])))
-  fun_markdownTable(obj = tsData$returnDF,rownames = T)
-  cat('\n<hr>\n')
-}
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+iii <- 2
+cat('## x=',lag[iii],'\n\n')
+tmp <- ratioDF[[iii]]
+fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
+                width = width,fillGraph = fillGraph,pointSize = pointSize)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+iii <- 3
+cat('## x=',lag[iii],'\n\n')
+tmp <- ratioDF[[iii]]
+fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
+                width = width,fillGraph = fillGraph,pointSize = pointSize)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+iii <- 4
+cat('## x=',lag[iii],'\n\n')
+tmp <- ratioDF[[iii]]
+fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
+                width = width,fillGraph = fillGraph,pointSize = pointSize)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+iii <- 5
+cat('## x=',lag[iii],'\n\n')
+tmp <- ratioDF[[iii]]
+fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
+                width = width,fillGraph = fillGraph,pointSize = pointSize)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+iii <- 6
+cat('## x=',lag[iii],'\n\n')
+tmp <- ratioDF[[iii]]
+fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
+                width = width,fillGraph = fillGraph,pointSize = pointSize)
+cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
