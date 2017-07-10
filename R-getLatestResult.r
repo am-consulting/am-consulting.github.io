@@ -11,6 +11,6 @@ fun_latestResult <-
                   ':',
                   paste0(paste0(colnames(obj)[objColumn],
                   ':',
-                  round(tail(obj[,objColumn],1),10)),collapse = ' , ' )),
+                  format(round(tail(obj[,objColumn],1),10),big.mark = ',')),collapse = ' , ' )),
            envir = .GlobalEnv)
 }
