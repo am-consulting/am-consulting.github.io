@@ -357,16 +357,16 @@ if(htmlName=='00018'){
   diffType <- 1
   rollingN <- 12
 }
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-buf <- fun_fit(obj = obj)
-obj <- buf[,c(1,2,3)]
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
 colnames(obj) <- sapply(colnames(obj),Nippon::zen2han)
-fun_latestResult(obj = obj)
+originalOBJ <- obj
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objWithfFit <- fun_fit(obj = obj)[,c(1,2,3)]
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_latestResult(obj = obj,objColumn = 2,dateFormat = dateFormat,dateColumn = 1,orderColumn = 2)
 objYear <- tail(unique(year(obj[,1])),5)[1]
 ratioDF <- list()
 for(cnt in seq(length(lag))){
@@ -380,7 +380,7 @@ for(cnt in seq(length(lag))){
   colnames(buf)[2] <- 
     paste0(gsub('\\([^\\(]{0,4}[円|%]\\)','',colnames(buf)[2]),':',lag[cnt],'ヶ月前との比')
   print(tail(buf))
-  ratioDF[[cnt]] <- buf[,c(1,2)]
+  ratioDF[[cnt]] <- buf
 }
 tsTitle <- paste0(colnames(obj)[2],':',format(tail(obj[,1],1),dateFormat),
                   '=',tail(obj[,2],1))
@@ -403,13 +403,13 @@ cat('\n<hr>\n')
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 時系列チャート\n\n')
-fun_dygraphPlot(tsData = obj,shadePattern = 3,drawPoints = c(T,F),
+fun_dygraphPlot(tsData = objWithfFit,shadePattern = 3,drawPoints = c(T,F),
                 width = 300,fillGraph = c(F,F),pointSize = c(2,0),show = 'follow')
-cat('\n\n')
+cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-shadePattern = 3;drawPoints = c(T);width = 300;fillGraph = c(T);pointSize = c(2);show = 'follow'
+shadePattern <- 3;drawPoints <- c(T);width <- 300;fillGraph <- c(T);pointSize <- c(2);show <- 'follow'
 cat('# xヶ月(期)前との比較\n\n')
 cat('- 単位:%(例 マネタリーベース)、パーセントポイント(例 失業率)、ポイント(例 有効求人倍率)\n\n')
 ```
@@ -432,12 +432,8 @@ for(iii in seq(length(ratioDF))){
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 移動平均\n\n')
-ma <- fun_MovingAverage(obj = obj,dateFormat = dateFormat,n = rollingN)
-cat('\n\n')
-n <- 2
-fun_generateKnit(objDF = ma,plotNum = n,
-                 dygraphTitle = paste0(colnames(ma)[2],':n=',rollingN),group = 0,quantiles = 0)
-eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
+ma <- fun_MovingAverage(obj = obj,dateFormat = dateFormat,n = rollingN,objColumn = 2,plot = 0)
+fun_dygraphPlot(tsData = ma,show = 'follow',axis = rep('y',3),drawPoints = c(T,F,F),pointSize = rep(2,3),fillGraph = rep(F,3),shadePattern = 3,mainTitle = paste0(colnames(ma)[2],':n=',rollingN))
 cat('\n<hr>\n')
 ```
 
@@ -531,14 +527,13 @@ pngFile <-
   paste0(htmlName, "-3.png")
 png(file = pngFile, width = 1000, height = 600)
 fun_withList(obj = obj)
-obj <- dfWithList
-fun_gglboxpotPM(obj = obj,dataSource = dataSource)
+fun_gglboxpotPM(obj = dfWithList,dataSource = dataSource)
 dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMDforTS(tags = tags,
-                  objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
+                  objDF = fun_summaryByName(obj = dfWithList,omitFirst = 1,dateFormat = dateFormat),
                   htmlName = htmlName,
                   image1 = 1,image2 = 1,image3 = 1,
                   title = Nippon::zen2han(latestResult),
