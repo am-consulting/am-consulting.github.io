@@ -78,7 +78,7 @@ pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
 setwd(pathOutputTOcsv)
 write.csv(x = titleHTML,file = 'timeSeriesList.csv',
-          quote = F,row.names = F,
+          quote = T,row.names = F,
           append = F,na = '',
           fileEncoding = 'UTF-8')
 }
