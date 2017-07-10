@@ -1,7 +1,7 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00017';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00018';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
-title : 'Time Series Analysis'
+title : "`r Bigtitle`"
 output: 
   html_document:
     fig_height: 4
@@ -341,6 +341,19 @@ if(htmlName=='00017'){
   dataSource <- "日本銀行"
   dateFormat <- '%Y-%m'
   tags <- '政府債務'
+  diffType <- 1
+  rollingN <- 12
+}
+if(htmlName=='00018'){
+  script <-
+    RCurl::getURL(
+      url = "https://raw.githubusercontent.com/am-consulting/Rscript/master/importConstructionStatistics.r",
+      ssl.verifypeer = FALSE)
+  eval(parse(text = script))
+  obj <- SAData[,c(1,2)]
+  dataSource <- "国土交通省"
+  dateFormat <- '%Y-%m'
+  tags <- '住宅着工件数'
   diffType <- 1
   rollingN <- 12
 }
