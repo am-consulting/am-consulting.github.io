@@ -1,11 +1,9 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00001';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00017';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "`r Bigtitle`"
 output: 
   html_document:
-    fig_height: 4
-    fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
     toc: true
@@ -404,7 +402,8 @@ cat('\n<hr>\n')
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 時系列チャート\n\n')
 fun_dygraphPlot(tsData = objWithfFit,shadePattern = 3,drawPoints = c(T,F),
-                width = 300,fillGraph = c(F,F),pointSize = c(2,0),show = 'follow')
+                width = 300,fillGraph = c(F,F),pointSize = c(2,0),show = 'follow',
+                mainTitle = colnames(objWithfFit)[2])
 cat('\n<hr>\n')
 ```
 
@@ -438,25 +437,47 @@ cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0,plotNum = 1){
+cat('# Boxplot\n\n')
+cat('## 内閣総理大臣毎\n\n')
+library(plotly)
+fun_withList(obj = obj)
+bufDate <-
+  head(dfWithList[tail(unique(dfWithList$PRIMEMINISTEROFJAPAN),7)[1]==dfWithList$PRIMEMINISTEROFJAPAN,1],1)
+dfWithList <-
+  dfWithList[bufDate<=dfWithList$Date,]
+dfWithList$PRIMEMINISTEROFJAPAN <- 
+  factor(x = dfWithList$PRIMEMINISTEROFJAPAN,
+         levels = unique(dfWithList$PRIMEMINISTEROFJAPAN))
+p <- 
+  plot_ly(data = dfWithList,y = dfWithList[,2],color = dfWithList$PRIMEMINISTEROFJAPAN,
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8)
+mar <- list(b = 100,pad = 4)
+p %>% layout(autosize = T, margin = mar)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+cat('## 年毎\n\n')
+boxData <- obj
+boxData$YY <- year(boxData$Date)
+boxData <- boxData[tail(year(boxData$Date),1)-6<=boxData$YY,]
+boxData$YY <- paste0(boxData$YY,'年')
+p <- 
+  plot_ly(data = boxData,y = boxData[,2],color = boxData$YY,
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8)
+mar <- list(b = 100,pad = 4)
+p %>% layout(autosize = T, margin = mar)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0){
   resultDF <- 
     fun_changesInSlope(obj = obj,h = h,objCol = objCol,plot = plot)
-  tmp <- 
-    resultDF$changesInConditions
-  xtsData <- 
-    xts(tmp[,-1],order.by=tmp[,1])
-  p <- 
-    dygraph(xtsData) %>%
-    dyAxis("y",label = colnames(xtsData)[1]) %>%
-    dyAxis("y2",label = colnames(xtsData)[2],independentTicks = T) %>%
-    dySeries(colnames(xtsData)[1], axis = 'y',fillGraph = F) %>%
-    dySeries(colnames(xtsData)[2], axis = 'y2',fillGraph = T) %>%
-    dyLegend(show = "follow") %>%
-    dyRangeSelector() %>%
-    dyUnzoom() %>%
-    dyOptions(maxNumberWidth = 100)
-  assign(paste0('dygraphPlot',plotNum),p,envir = .GlobalEnv)
-# 'arg' should be one of “y”, “y2”
+  dygraphData <- 
+    fun_dygraphPlot(tsData = resultDF$changesInConditions,show = 'follow',
+                    axis = c('y','y2'),shadePattern = 3,drawPoints = c(T,F),
+                    fillGraph = c(F,T),width = 350)
   if(nrow(resultDF$changesInSlope)!=0){
     changeDate <- 
       resultDF$changesInSlope[,1]
@@ -475,7 +496,8 @@ fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0,plotNum = 1){
     summaryData <-NA
   }
   returnList <-
-      list('changeDateDF' = changeDateDF,
+      list('dygraphData' = dygraphData,
+           'changeDateDF' = changeDateDF,
            'summaryData' = summaryData)
   return(returnList)
 }
@@ -483,8 +505,8 @@ cat('# ローリング回帰\n\n')
 cat('- The Width of the rolling window(months/periods):',rollingN,'\n\n')
 cat('## SMA\n\n')
 objCol <- 3
-returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = rollingN)
-eval(parse(text = paste0('dygraphPlot',objCol)))
+returnList <- fun_rolling(obj = ma,objCol = objCol,h = rollingN)
+returnList$dygraphData
 cat('\n<hr>\n')
 if(!is.na(returnList$changeDateDF)){
   fun_markdownTable(obj = returnList$changeDateDF)
@@ -494,8 +516,8 @@ if(!is.na(returnList$changeDateDF)){
 }
 cat('## EMA\n\n')
 objCol <- 4
-returnList <- fun_rolling(objCol = objCol,plotNum = objCol,h = rollingN)
-eval(parse(text = paste0('dygraphPlot',objCol)))
+returnList <- fun_rolling(obj = ma,objCol = objCol,h = rollingN)
+returnList$dygraphData
 cat('\n<hr>\n')
 if(!is.na(returnList$changeDateDF)){
   fun_markdownTable(obj = returnList$changeDateDF)
