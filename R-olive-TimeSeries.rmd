@@ -404,69 +404,31 @@ cat('\n<hr>\n')
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 時系列チャート\n\n')
 fun_dygraphPlot(tsData = obj,shadePattern = 3,drawPoints = c(T,F),
-                width = 300,fillGraph = c(F,F),pointSize = c(2,0))
+                width = 300,fillGraph = c(F,F),pointSize = c(2,0),show = 'follow')
 cat('\n\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-shadePattern = 3;drawPoints = c(T);width = 300;fillGraph = c(T);pointSize = c(2)
+shadePattern = 3;drawPoints = c(T);width = 300;fillGraph = c(T);pointSize = c(2);show = 'follow'
 cat('# xヶ月(期)前との比較\n\n')
 cat('- 単位:%(例 マネタリーベース)、パーセントポイント(例 失業率)、ポイント(例 有効求人倍率)\n\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-iii <- 1
-cat('## x=',lag[iii],'\n\n')
-tmp <- ratioDF[[iii]]
-fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
-                width = width,fillGraph = fillGraph,pointSize = pointSize)
-cat('\n<hr>\n')
+chunkOutput <- NULL
+for(iii in seq(length(ratioDF))){
+  knit_expanded <-
+    paste0(
+      "\n```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}\n\n",
+      "cat('## x=",lag[iii],"\n\n')\n\n",
+      "fun_dygraphPlot(tsData = ratioDF[[",iii,
+      "]],shadePattern = shadePattern,drawPoints = drawPoints,width = width,fillGraph = fillGraph,pointSize = pointSize,show = show)\n\n",
+      "cat('\n<hr>\n')")
+  chunkOutput <- c(chunkOutput, knit_expanded)
+}
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-iii <- 2
-cat('## x=',lag[iii],'\n\n')
-tmp <- ratioDF[[iii]]
-fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
-                width = width,fillGraph = fillGraph,pointSize = pointSize)
-cat('\n<hr>\n')
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-iii <- 3
-cat('## x=',lag[iii],'\n\n')
-tmp <- ratioDF[[iii]]
-fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
-                width = width,fillGraph = fillGraph,pointSize = pointSize)
-cat('\n<hr>\n')
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-iii <- 4
-cat('## x=',lag[iii],'\n\n')
-tmp <- ratioDF[[iii]]
-fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
-                width = width,fillGraph = fillGraph,pointSize = pointSize)
-cat('\n<hr>\n')
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-iii <- 5
-cat('## x=',lag[iii],'\n\n')
-tmp <- ratioDF[[iii]]
-fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
-                width = width,fillGraph = fillGraph,pointSize = pointSize)
-cat('\n<hr>\n')
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-iii <- 6
-cat('## x=',lag[iii],'\n\n')
-tmp <- ratioDF[[iii]]
-fun_dygraphPlot(tsData = tmp,shadePattern = shadePattern,drawPoints = drawPoints,
-                width = width,fillGraph = fillGraph,pointSize = pointSize)
-cat('\n<hr>\n')
-```
+`r paste(knitr::knit(text = chunkOutput),collapse = '\n')`
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 移動平均\n\n')
