@@ -41,9 +41,9 @@ if(tsTitle!=0 & htmlName!=0){
   titleTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\1',htmlTitle)
   dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\2',htmlTitle)
   valueTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\3',htmlTitle)
+  targetHTML <- paste0('am-consulting.co.jp-',htmlName,'.html')
   if(length(grep(htmlName,titleHTML[,2]))==0){
     iii <- iii + 1
-    targetHTML <- paste0('am-consulting.co.jp-',htmlName,'.html')
     titleHTML[iii,1] <- iii
     titleHTML[iii,2] <-
       paste0('<a href="http://knowledgevault.saecanet.com/charts/',
