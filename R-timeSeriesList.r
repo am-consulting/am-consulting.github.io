@@ -14,6 +14,7 @@ setwd(pathToCharts)
 htmlList <- dir(pathToCharts)
 objHTML <- grep('[^-]+-[0-9]{5}.html',htmlList)
 titleHTML <- data.frame()
+baseURL <- '<a href="http://indicator.am-consulting.co.jp/'
 for(iii in seq(length(objHTML))){
   targetHTML <- htmlList[objHTML[iii]]
   htmlMarkup <-
@@ -29,7 +30,7 @@ for(iii in seq(length(objHTML))){
   dateTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\2',htmlTitle)
   valueTxt <- gsub('(.+):([0-9]{4}-[0-9]{2})=(.+)','\\3',htmlTitle)
   titleHTML[iii,2] <-
-    paste0('<a href="http://knowledgevault.saecanet.com/charts/',
+    paste0(baseURL,
            targetHTML,'" target="_blank">',titleTxt,'</a>')
   titleHTML[iii,3] <- dateTxt
   titleHTML[iii,4] <- valueTxt
@@ -46,14 +47,14 @@ if(tsTitle!=0 & htmlName!=0){
     iii <- iii + 1
     titleHTML[iii,1] <- iii
     titleHTML[iii,2] <-
-      paste0('<a href="http://knowledgevault.saecanet.com/charts/',
+      paste0(baseURL,
              targetHTML,'" target="_blank">',titleTxt,'</a>')
     titleHTML[iii,3] <- dateTxt
     titleHTML[iii,4] <- valueTxt
     titleHTML[iii,5] <- as.character(timeStamp)
   }else{
     titleHTML[grep(htmlName,titleHTML[,2]),2] <-
-      paste0('<a href="http://knowledgevault.saecanet.com/charts/',
+      paste0(baseURL,
              targetHTML,'" target="_blank">',titleTxt,'</a>')
     titleHTML[grep(htmlName,titleHTML[,2]),3] <- dateTxt
     titleHTML[grep(htmlName,titleHTML[,2]),4] <- valueTxt
