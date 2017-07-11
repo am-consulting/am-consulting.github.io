@@ -1,10 +1,10 @@
 ---
 knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00006';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/indicator/','am-consulting.co.jp-',htmlName,'.html')) })
 
-title : "`r Bigtitle`"
+title : "`r paste0(gsub(':','<br>',Bigtitle),'<br>http://am-consulting.co.jp')`"
 output: 
   prettydoc::html_pretty:
-    theme: tactile
+    theme: leonids
     highlight: github
     keep_md: no
     md_extensions: -ascii_identifiers 
@@ -32,12 +32,6 @@ h6{font-size:1vw;font-weight: bold;}
 }
 </style>
 
-# Title,Timestamp,Source etc.
-- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
-- `r timeStamp`
-- Olive http://olive.saecanet.com/
-- twitter https://twitter.com/AMC2_Japan
-- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options,echo=F,cache=F}
 options(width = 1000,scipen = 999)
@@ -382,20 +376,25 @@ tsTitle <- paste0(colnames(obj)[2],':',format(tail(obj[,1],1),dateFormat),
                   '=',format(tail(obj[,2],1),big.mark = ','))
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='asis'}
-cat('\n***\n')
-cat(paste0("- Title : ",Nippon::zen2han(latestResult),'\n'))
-cat(paste0("- Source : ", dataSource,'\n'))
-cat('- NSA,SAの区別なくxヶ月前(x期前)との比を表示しています\n')
-cat('- 国内総生産は四半期データ\n')
-cat('\n***\n')
-```
+# Latest Result
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat(paste0('<div id="htmlTitle" style="text-align:center;font-weight: bold;font-size:1.6em;">',
            tsTitle,'</div>\n\n'))
 cat('\n<hr>\n')
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+cat(paste0("- Title : ",Nippon::zen2han(latestResult),'\n'))
+cat(paste0("- Date : ",timeStamp,'\n'))
+cat(paste0("- Source : ", dataSource,'\n'))
+```
+- NSA,SAの区別なくxヶ月前(x期前)との比を表示しています
+- twitter https://twitter.com/AMC2_Japan
+- 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+
+***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# 時系列チャート\n\n')
@@ -561,10 +560,6 @@ fun_outputMDforTS(tags = tags,
 fun_timeSeriesList(tsTitle = tsTitle,htmlName = htmlName)
 ```
 
-- アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
-- `r timeStamp`
-- Olive http://olive.saecanet.com/
-- twitter https://twitter.com/AMC2_Japan
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 <script>MakeNegative();</script>
