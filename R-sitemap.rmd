@@ -14,8 +14,7 @@ pathToCharts <-
 setwd(pathToCharts)
 targetHTML <- dir(pathToCharts)
 targetHTML <- targetHTML[grep('.html',targetHTML)]
-templateTxt <- '
-<?xml version="1.0" encoding="UTF-8"?>
+templateTxt <- '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
  {{#sitemapXML}}
    <url>
