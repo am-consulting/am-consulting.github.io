@@ -48,7 +48,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
-importAMCC <-c('importMonetarybaseOfJapan-2017.r','importMoneyStock-2017.r')
+importAMCC <-c('importMonetarybaseOfJapan-2017.r','importMoneyStock-2017.r','importNikkeiMonthly.r')
 for(iii in 1:length(importAMCC)){
   script <-
     getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/",
