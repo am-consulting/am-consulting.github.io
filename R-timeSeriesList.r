@@ -9,7 +9,7 @@ buf <-
   read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,
            check.names = F,fileEncoding = 'utf-8',quote = "\"")
 pathToCharts <-
-  paste0("C:/Users/", userName, buf[2,1],'charts/')
+  paste0("C:/Users/", userName, buf[2,1],'charts/indicator/')
 setwd(pathToCharts)
 htmlList <- dir(pathToCharts)
 objHTML <- grep('[^-]+-[0-9]{5}.html',htmlList)
@@ -72,7 +72,7 @@ figLink <-
          paste0(baseTxt,htmlNameS,'-2.png">02</a> - '),
          paste0(baseTxt,htmlNameS,'-3.png">03</a>'))
 titleHTML$Figure <- figLink
-titleHTML <- titleHTML[,-5]
+titleHTML <- titleHTML[,-6]
 # figure part
 pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
