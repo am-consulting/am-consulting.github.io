@@ -195,62 +195,20 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData[,-c(2,37)],
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
-fun_plot4charts <- 
-  function(obj = obj,tailN = c(10^10,100,50,30),
-           oma = c(0,0,3,0),mar = c(4,4,2,1),type = 'o',dateFormat = '%Y-%m-%d',
-           cex.main = 1.2,cex.axis = 1.2){
-    par(mfrow = c(2,2),family = 'Meiryo',font.main = 1,oma = oma,mar = mar)
-    for(iii in 1:4){
-      tmpDF <-fun_fit(obj = tail(obj,tailN[iii]))[,c(1,2,3)]
-      dateRange <- paste0(format(range(tmpDF[,1]),dateFormat),collapse = '~')
-      plot(x = tmpDF[,1],y = tmpDF[,2],
-           type = type,pch = 20,xaxt = 'n',
-           xlab = '',ylab = '',
-           main = paste0(dateRange,'. n = ',nrow(tmpDF)),
-           panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
-      axis.Date(side = 1,at = tmpDF[,1],format = dateFormat,padj = 1,cex.axis = 1)
-      lines(x = tmpDF[,1],y = tmpDF[,3],type = 'l',col = 'red',lwd = 2)
-    }
-    mtext(text = paste0(colnames(tmpDF)[2],'\nSource:',dataSource),side = 3,outer = T)
-    #dev.off()
-  }
 obj <-
   na.omit(mergeData[,c(1,6)])
-fun_plot4charts(obj = obj,dateFormat = '%Y-%m',tailN = c(10^10,12*5,12*3,12*1))
+fun_PlotStrawAnd4charts(obj = obj)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-summaryDF <- fun_summaryByName(obj = obj,omitFirst = 1)
-summaryDF[,-c(1,8)] <- apply(summaryDF[,-c(1,8)],2,function(x)round(x,2))
 fun_outputMD(tags = '株式月間売買高,売買代金',
-             objDF = summaryDF,
+             objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
