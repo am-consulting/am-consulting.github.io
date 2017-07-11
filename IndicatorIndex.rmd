@@ -8,24 +8,11 @@ output:
     theme: leonids
     highlight: github
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<style>
-*{-webkit-text-size-adjust: 100%;}
-h1{font-size:6vw;font-weight: bold;}
-h2{font-size:5vw;font-weight: bold;}
-h3{font-size:4vw;font-weight: bold;}
-h4{font-size:3vw;font-weight: bold;}
-h5{font-size:2vw;font-weight: bold;}
-h6{font-size:1vw;font-weight: bold;}
-@media(min-width:500px){
-  h1{font-size:1.6em;font-weight: bold;}
-  h2{font-size:1.3em;font-weight: bold;}
-  h3{font-size:1.1em;font-weight: bold;}
-  h4{font-size:1.0em;font-weight: bold;}
-  h5{font-size:0.9em;font-weight: bold;}
-  h6{font-size:0.8em;font-weight: bold;}
-}
-</style>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<script src="http://knowledgevault.saecanet.com/components/csvtotable/jquery.csvToTable.indicator.js"></script>
+<link  href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
+<script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
 
 <!--
 https://cran.r-project.org/web/packages/prettydoc/
@@ -35,6 +22,12 @@ http://yixuan.cos.name/prettydoc/index.html
 
 ## Contents
 
+<script>
+  $(function() {
+    $('.amcc').CSVToTable('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/urlList.csv');
+  });
+</script>
+<div class="amcc"></div>
 
 ## Profile
 
