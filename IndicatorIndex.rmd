@@ -9,17 +9,11 @@ output:
     highlight: github
 ---
 
+<link  href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico" rel="icon">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
 <script src="http://knowledgevault.saecanet.com/components/csvtotable/jquery.csvToTable.indicator.js"></script>
 <link  href="https://cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css" rel="stylesheet">
 <script src="https://cdn.datatables.net/1.10.12/js/jquery.dataTables.min.js"></script>
-<link rel="icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
-
-<!--
-https://cran.r-project.org/web/packages/prettydoc/
-https://github.com/yixuan/prettydoc
-http://yixuan.cos.name/prettydoc/index.html
--->
 
 ## Contents
 
