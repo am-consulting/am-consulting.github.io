@@ -1,0 +1,41 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# https://stackoverflow.com/questions/12255359/how-to-create-a-sitemap-xml-file-using-r-and-the-xml-package
+library(whisker)
+library(httr)
+userName <- Sys.info()['user']
+pathToFile <- paste0('C:/Users/', userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <- 'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,
+           check.names = F,fileEncoding = 'utf-8',quote = "\"")
+pathToCharts <-
+  paste0("C:/Users/", userName, buf[2,1],'charts/indicator/')
+setwd(pathToCharts)
+targetHTML <- dir(pathToCharts)
+targetHTML <- targetHTML[grep('.html',targetHTML)]
+templateTxt <- '
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+ {{#sitemapXML}}
+   <url>
+      <loc>{{{loc}}}</loc>
+      <lastmod>{{{lastmod}}}</lastmod>
+      <changefreq>{{{changefreq}}}</changefreq>
+      <priority>{{{priority}}}</priority>
+   </url>
+ {{/sitemapXML}}
+</urlset>
+'
+sitemapList <- function(html){
+  dateTxt <- 
+    as.Date(as.POSIXct(file.info(path = html)$mtime,origin = "1970-01-01"))
+  list(loc = paste0('http://indicator.am-consulting.co.jp/',html),
+       lastmod = dateTxt,
+       changefreq = "monthly",
+       priority = "0.8")
+}
+sitemapXML <- lapply(targetHTML,sitemapList)
+write.table(x = whisker.render(templateTxt),file = 'sitemap.xml',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+```
