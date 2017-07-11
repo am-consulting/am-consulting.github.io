@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00017';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00005';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "`r Bigtitle`"
 output: 
@@ -79,7 +79,7 @@ fun_billToTri <- function(obj,dateCol = 1,valueCol = 2){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-lag <- c(1,3,6,12,24,36)
+lag <- c(1,12,36)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -381,7 +381,7 @@ for(cnt in seq(length(lag))){
   ratioDF[[cnt]] <- buf
 }
 tsTitle <- paste0(colnames(obj)[2],':',format(tail(obj[,1],1),dateFormat),
-                  '=',tail(obj[,2],1))
+                  '=',format(tail(obj[,2],1),big.mark = ','))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
