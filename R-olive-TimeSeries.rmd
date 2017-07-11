@@ -10,6 +10,8 @@ output:
     md_extensions: -ascii_identifiers 
 ---
 
+<link rel="icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+
 ```{r set-options,echo=F,cache=F}
 options(scipen = 999)
 ```
@@ -426,7 +428,8 @@ dfWithList$PRIMEMINISTEROFJAPAN <-
          levels = unique(dfWithList$PRIMEMINISTEROFJAPAN))
 p <- 
   plot_ly(data = dfWithList,y = dfWithList[,2],color = dfWithList$PRIMEMINISTEROFJAPAN,
-          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8)
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8) %>% 
+  config(displayModeBar = FALSE) 
 mar <- list(b = 100,pad = 4)
 p %>% layout(autosize = T, margin = mar)
 cat('\n\n')
@@ -440,7 +443,8 @@ boxData <- boxData[tail(year(boxData$Date),1)-6<=boxData$YY,]
 boxData$YY <- paste0(boxData$YY,'年')
 p <- 
   plot_ly(data = boxData,y = boxData[,2],color = boxData$YY,
-          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8)
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8) %>% 
+  config(displayModeBar = FALSE) 
 mar <- list(b = 100,pad = 4)
 p %>% layout(autosize = T, margin = mar)
 cat('\n<hr>\n')
