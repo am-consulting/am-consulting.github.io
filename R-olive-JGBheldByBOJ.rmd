@@ -9,7 +9,10 @@ output:
     fig_height: 10
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    self_contained: false
+    includes:
+      in_header: insertHeader.html
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
