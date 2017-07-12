@@ -9,7 +9,10 @@ output:
     fig_height: 3
     fig_width: 10  
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    self_contained: false
+    includes:
+      in_header: insertHeader.html   
 ---
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
@@ -65,7 +68,7 @@ htmlMarkup <- read_html(url, encoding = "utf8")
 trList <- htmlMarkup %>% html_nodes(xpath = "//tr")
 funDownloadXLS <- function(objWord = keyword2,cnt = 1,sheet = 6){
   setwd(pathOutput)
-  objTr <- gsub('\n|\t','',trList[grep(objWord,trList)])
+  objTr <- tail(gsub('\n|\t','',trList[grep(objWord,trList)]),1)
   pattern <- "<a\\shref=\".*?xlsDownload.*?\""
   objHref <- unlist(regmatches(objTr, gregexpr(pattern, objTr, fixed = F)))
   pattern <- "./.*?\\.do"
@@ -98,16 +101,16 @@ funTimeSeries <- function(objDF){
   obj[,4] <- as.numeric(gsub('月','',obj[,4]))
   tmp <- NA;objRow <- 4
   for(ccc in 1:ncol(obj)){
-   if(!is.na(obj[objRow,ccc])){tmp <- zen2han(gsub('\\s','',obj[objRow,ccc]))}
+   if(!is.na(obj[objRow,ccc])){tmp <- Nippon::zen2han(gsub('\\s','',obj[objRow,ccc]))}
     obj[objRow,ccc] <- tmp
   }
   tmp <- NA;objRow <- 5
   for(ccc in 1:ncol(obj)){
-   if(!is.na(obj[objRow,ccc])){tmp <- zen2han(gsub('\\s','',obj[objRow,ccc]))}
+   if(!is.na(obj[objRow,ccc])){tmp <- Nippon::zen2han(gsub('\\s','',obj[objRow,ccc]))}
     obj[objRow,ccc] <- tmp
   }
   colnames(obj) <-
-    sapply(gsub('[:]*na|\n','',paste0(obj[4,],':',obj[5,],obj[6,]),ignore.case = T),zen2han)
+    sapply(gsub('[:]*na|\n','',paste0(obj[4,],':',obj[5,],obj[6,]),ignore.case = T),Nippon::zen2han)
   obj <- obj[!is.na(as.numeric(obj[,4])),]
   tmp <- NA;objCol <- 3
   for(rrr in 1:nrow(obj)){
@@ -124,7 +127,7 @@ funTimeSeries <- function(objDF){
   obj <- na.omit(obj)
   obj[,-1] <- data.frame(apply(obj[,-1],2,as.numeric),stringsAsFactors = F,check.names = F)
   returnDF <-
-    list("title" = zen2han(paste(na.omit(objDF[,2]),collapse=":")), 
+    list("title" = Nippon::zen2han(paste(na.omit(objDF[,2]),collapse=":")), 
          "dataSet" = obj)
   return(returnDF)
 }
@@ -275,41 +278,19 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = mer
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
-pngFile <-
-  paste0(htmlName, ".png")
-png(file = pngFile, width = 1000, height = 600)
-##################
 obj <- dataSet1[,c(1,2)]
-fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,12*5,12*3,12))
-dev.off()
+fun_PlotStrawAnd4charts(obj = obj,dateFormat = dateFormat)
+dev.off();dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '特定サービス産業動態売上高指数',
              objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,image2 = 1,
+             title = dataTitle,
              tableTitle = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 ***
