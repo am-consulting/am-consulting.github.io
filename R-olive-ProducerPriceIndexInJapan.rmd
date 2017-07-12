@@ -123,24 +123,26 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = ProducerPriceIndex,dateForm
 - 原系列
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
-apply(mergeData[,c(6,14)],2, tseries::adf.test)
+xCol <- 6
+yCol <- 14
+apply(mergeData[,c(xCol,yCol)],2, tseries::adf.test)
 ```
 
 - 一次差分
 
 ```{r warning=F, error=F, message=F, echo=F, results='hold'}
 diffDF <- fun_makeDiffTable(mergeData,lag = 1)
-apply(diffDF[,c(6,14)], 2, tseries::adf.test)
+apply(diffDF[,c(xCol,yCol)], 2, tseries::adf.test)
 ```
 
 ##### 一次差分同士の相互相関係数
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis', fig.height=6}
-par(family = 'Meiryo', mar = c(5,5,5,2), font.main = 1, cex.main = 1.1)
+par(family = 'Meiryo', mar = c(5,5,6,2), font.main = 1, cex.main = 1.1)
 ccfResult <- 
-  ccf(diffDF[,2], 
-      diffDF[,3], 
-      main = paste0(colnames(diffDF)[2:3], collapse = '\n×\n'),
+  ccf(diffDF[,xCol], 
+      diffDF[,yCol], 
+      main = paste0(colnames(diffDF)[c(xCol,yCol)], collapse = '\n×\n'),
       panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T))
 text(ccfResult$lag, ccfResult$acf, round(ccfResult$acf,2))
 ```
