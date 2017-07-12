@@ -31,7 +31,7 @@ sitemapList <- function(html){
     as.Date(as.POSIXct(file.info(path = html)$mtime,origin = "1970-01-01"))
   list(loc = paste0('http://indicator.am-consulting.co.jp/',html),
        lastmod = dateTxt,
-       changefreq = "monthly",
+       changefreq = "daily",
        priority = "0.8")
 }
 sitemapXML <- lapply(targetHTML,sitemapList)
