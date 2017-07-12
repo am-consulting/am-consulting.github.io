@@ -1,11 +1,12 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00026';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/indicator/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00027';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/indicator/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "`r paste0(gsub(':|/|-','<br>',Bigtitle),'<br>http://am-consulting.co.jp')`"
 output: 
   prettydoc::html_pretty:
     theme: leonids
     highlight: github
+    self_contained: false
     keep_md: no
     md_extensions: -ascii_identifiers
     includes:
@@ -15,8 +16,10 @@ output:
 ```{r setup, include=FALSE}
 # https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
 insertFile <- file("insertHeader.html")
-writeLines('<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">',
-           insertFile)
+writeLines(paste0('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+<link rel="stylesheet" href="am-consulting.co.jp-',htmlName,'_files/style.css" type="text/css" />'),
+insertFile)
 close(insertFile)
 ```
 
@@ -441,6 +444,18 @@ if(htmlName=='00026'){
   diffType <- 2
   rollingN <- 12
 }  
+if(htmlName=='00027'){
+  script <-
+    RCurl::getURL(
+      url = "https://raw.githubusercontent.com/am-consulting/Rscript/master/importPERPBR.r",
+      ssl.verifypeer = FALSE)
+  eval(parse(text = script))
+  obj <- PERPBR[,c(1,2)]
+  dataSource <- "株式会社日本取引所グループ"
+  dateFormat <- '%Y-%m'
+  diffType <- 3
+  rollingN <- 12
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -449,7 +464,7 @@ originalOBJ <- obj
 switch(diffType,
   unitMark <- '%',
   unitMark <- 'PP',
-  unitMark <- 'P')
+  unitMark <- 'Point')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -464,7 +479,7 @@ for(cnt in seq(length(lag))){
   if(diffType==1){
     buf <- 
       fun_makeDiffRatioTable(obj = obj,lag = lag[cnt])
-  }else if(diffType==2){
+  }else{
     buf <- 
       fun_makeDiffTable(obj = obj,lag = lag[cnt])
   }
@@ -634,9 +649,15 @@ if(!is.na(returnList$changeDateDF)){
 }
 if((length(SMAresult)+length(EMAresult))!=0){
   cat('## Interval between Changing Point\n\n')
+  bothResult <- matrix(ncol=2)
+  if(length(SMAresult)!=0){
+    bothResult <- rbind(cbind(SMAresult,'SMA'),bothResult)
+  }
+  if(length(EMAresult)!=0){
+    bothResult <- rbind(cbind(EMAresult,'EMA'),bothResult)
+  }
   bothResult <- 
-    data.frame(rbind(cbind(SMAresult,'SMA'),cbind(EMAresult,'EMA')),
-               stringsAsFactors = F,row.names = NULL)
+    data.frame(na.omit(bothResult),stringsAsFactors = F,row.names = NULL)
   bothResult[,1] <- as.numeric(bothResult[,1])
   colnames(bothResult) <- 
     c('Interval between Changing Point','Moving Average')
