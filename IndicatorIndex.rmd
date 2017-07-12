@@ -7,6 +7,9 @@ output:
   prettydoc::html_pretty:
     theme: leonids
     highlight: github
+    keep_md: no
+    md_extensions: -ascii_identifiers
+    self_contained: false
     includes:
        in_header: insertHeader.html
 ---
