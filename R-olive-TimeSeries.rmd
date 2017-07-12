@@ -7,7 +7,9 @@ output:
     theme: leonids
     highlight: github
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
 ---
 
 ```{r setup, include=FALSE}
