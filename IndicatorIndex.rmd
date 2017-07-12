@@ -7,7 +7,7 @@ output:
   prettydoc::html_pretty:
     theme: leonids
     highlight: github
-    self_contained: true
+    self_contained: false
     includes:
        in_header: insertHeader.html
 ---
@@ -15,8 +15,10 @@ output:
 ```{r setup, include=FALSE}
 # https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
 insertFile <- file("insertHeader.html")
-writeLines('<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">',
-           insertFile)
+writeLines(paste0('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+<link rel="stylesheet" href="',htmlName,'_files/style.css" type="text/css" />'),
+insertFile)
 close(insertFile)
 ```
 
