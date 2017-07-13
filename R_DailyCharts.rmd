@@ -26,7 +26,7 @@ for(iii in 1:nrow(functionList)){
 fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
   pngFile <- paste0('AMCC-',pngN,".png")
   png(file = pngFile, width = 1400, height = 900)
-  par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,7,1),
+  par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,8,1),
       cex.main = 1.5,cex.axis = 1.4)
   for(iii in s:e){
     obj0 <- na.omit(dailyChart[[iii]])
@@ -39,10 +39,10 @@ fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
     axis.Date(side = 1,at = obj[,1],format = dateFormat)
     lines(obj[,1],obj[,3],type = 'l',col = 'red',lwd = 1.2)
   }
-  mtext(text = paste0('Red Line:Moving Average(Over ',n,' days)'),
+  mtext(text = paste0('Red Line:Moving Average(Over ',n,' days(weeks))'),
         side = 1,outer = T,col = 'red',cex = 1.5)
   mtext(text = paste0('Latest ',tailN,
-                      ' days.Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P'),
+                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P'),
         side = 3,outer = T,col = 'black',cex = 1.8,line = 1)
   dev.off()
 }
@@ -81,7 +81,9 @@ print(tail(obj))
 dailyChart[[cnt]] <- obj
 cnt <- cnt + 1
 fromYahoo <- c('DGS10','10-Year Treasury Constant Maturity Rate',
-               'T10Y2Y','10-Year Treasury Constant Maturity\n Minus 2-Year Treasury Constant Maturity')
+               'T10Y2Y','10-Year Treasury Constant Maturity\n Minus 2-Year Treasury Constant Maturity',
+               'T10YIE',  '10-Year Breakeven Inflation Rate',
+               'T5YIFR',  '5-Year, 5-Year Forward Inflation Expectation Rate')
 for(iii in seq(1,length(fromYahoo),by = 2)){
   obj <- getSymbols(Symbols = fromYahoo[iii],auto.assign = F,src = 'FRED')
   obj <-
@@ -126,7 +128,8 @@ buf_cnt01 <- cnt
 importIndex <- 
   c('importPutCallRatios.r','importSkew.r','importTokyoRepoRate.r',
     'importHenryHubNaturalGasSpotPrice.r','importGMVI.r','importREIT.r',
-    'importNaturalGasPrice.r','importNYMEXFuturesPrices.r','importLIBORandTED.r')
+    'importNaturalGasPrice.r','importNYMEXFuturesPrices.r','importLIBORandTED.r',
+    'importDepositInterest-Rate-2017.r')
 for(jjj in seq(length(importIndex))){
   script <- 
     RCurl::getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
@@ -242,6 +245,58 @@ obj[,1] <-
 obj[,2] <- 
   as.numeric(obj[,2])
 dailyChart[[cnt]] <- obj
+for(gggg in c(2:3)){
+  cnt <- cnt + 1
+  obj <- 
+    na.omit(DepositInterestRate[,c(1,gggg)])
+  colnames(obj)[2] <- gsub(':','\n',colnames(obj)[2])
+  obj[,1] <- 
+    as.Date(obj[,1])
+  print(tail(obj,2))
+  dailyChart[[cnt]] <- obj
+}
+# effective FX
+fun_effectiveFX <- function(){
+  pathOutput <- paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
+  setwd(pathOutput)
+  urlToData <- 'http://www.bis.org/statistics/'
+  zipFile <- 'full_webstats_eer_d_dataflow_csv.zip'
+  if(!file.exists(paste0(pathOutput,zipFile))) {
+    download.file(paste0(urlToData,zipFile), zipFile, mode = 'wb')
+  }
+  buf0 <- 
+    excel.link::xl.read.file(unzip(zipFile), header=F, top.left.cell = "A1", xl.sheet = 1, excel.visible = F)
+  buf1 <- buf0
+  cc <- which((apply(buf1,2,(function(x)length(grep('reference area',x,ignore.case = T)))))!=0)
+  rr <- which((apply(buf1,1,(function(x)length(grep('reference area',x,ignore.case = T)))))!=0)
+  buf2 <- buf1[rr:nrow(buf1),cc:ncol(buf1)]
+  buf3 <- t(buf2) # matrix
+  buf3 <- data.frame(buf3,row.names = NULL,stringsAsFactors = F)
+  colnames(buf3) <- paste0(unlist(buf3[1,]),'-',unlist(buf3[2,]))
+  buf3 <- buf3[-c(1:2),]
+  colnames(buf3)[1] <- 'Date'
+  class(buf3[,1])
+  buf3[,1] <- as.Date(buf3[,1])
+  class(buf3[,1])
+  buf3[,-1] <- apply(buf3[,-1],2,as.numeric)
+  class(buf3[,ncol(buf3)])
+  buf4 <- buf3
+  buf4[is.na(buf4)] <- NA
+  return(buf4)
+}
+EERdataSet <- fun_effectiveFX()
+objCol <- grep('(\\bgb|\\bus|\\bjp):.+D:N:N:(\\bgb|\\bus|\\bjp)',colnames(EERdataSet),ignore.case = T)
+for(cccc in objCol){
+  cnt <- cnt + 1
+  obj <- 
+    na.omit(EERdataSet[,c(1,cccc)])
+  obj[,1] <- 
+    as.Date(obj[,1])
+  colnames(obj)[2] <- paste0('Effective Exchange Rate\n',colnames(obj)[2])
+  print(tail(obj,2))
+  dailyChart[[cnt]] <- obj
+}
+# effective FX
 ```
 
 ```{r}
