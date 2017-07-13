@@ -26,7 +26,7 @@ for(iii in 1:nrow(functionList)){
 fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
   pngFile <- paste0('AMCC-',pngN,".png")
   png(file = pngFile, width = 1400, height = 900)
-  par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,6,1),
+  par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,7,1),
       cex.main = 1.5,cex.axis = 1.4)
   for(iii in s:e){
     obj0 <- na.omit(dailyChart[[iii]])
@@ -52,7 +52,7 @@ fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
 dailyChart <- list()
 cnt <- 1
 dateFormat <- '%Y%m%d'
-fromOANDA <- c('USD/JPY','EUR/USD','BTC/USD','XAU/USD','XAU/XAG','XAU/XPT','BTC/XAU','ZAR/USD')
+fromOANDA <- c('USD/JPY','EUR/USD','CNY/USD','TWD/USD','CHF/USD','USD/KRW','BTC/USD','XAU/USD','XAU/XAG','XAU/XPT','BTC/XAU','ZAR/USD')
 for(iii in seq(length(fromOANDA))){
   obj <- getSymbols(Symbols = fromOANDA[iii],auto.assign = F,src = 'oanda')
   colnames(obj) <- gsub('\\.','/',colnames(obj))
@@ -122,7 +122,7 @@ obj[,1] <-
   as.Date(obj[,1])
 print(tail(obj))
 dailyChart[[cnt]] <- obj
-buf_cnt <- cnt
+buf_cnt01 <- cnt
 importIndex <- 
   c('importPutCallRatios.r','importSkew.r','importTokyoRepoRate.r',
     'importHenryHubNaturalGasSpotPrice.r','importGMVI.r','importREIT.r',
@@ -134,7 +134,7 @@ for(jjj in seq(length(importIndex))){
                   ssl.verifypeer = F)
   eval(parse(text = script))
 }
-cnt <- buf_cnt
+cnt <- buf_cnt01
 for(put in 1:5){
   cnt <- cnt + 1
   tmp <- putCallRatio[[put]]
@@ -187,9 +187,13 @@ for(nnnn in c(1,3,4)){
     obj <- na.omit(tmp[,c(1,cccc)])
     colnames(obj)[2] <- 
       gsub('\\s\\(Dollars','\n(Dollars',colnames(obj)[2],ignore.case = T)
+    colnames(obj)[2] <- 
+      gsub('Harbor\\s','Harbor\n',colnames(obj)[2],ignore.case = T)
     dailyChart[[cnt]] <- obj
   }
 }
+buf_cnt02 <- cnt
+cnt <- buf_cnt02
 for(cccc in 2:ncol(LIBOR)){
   cnt <- cnt + 1
   obj <- na.omit(LIBOR[,c(1,cccc)])
@@ -253,7 +257,9 @@ pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/')
 setwd(pathOutput)
 fun_plot(pngN = 1)
 fun_plot(s = 17,e = 32,pngN = 2)
-fun_plot(s = 33,e = length(dailyChart),pngN = 3)
+fun_plot(s = 33,e = 48,pngN = 3)
+fun_plot(s = 49,e = 64,pngN = 4)
+fun_plot(s = 65,e = length(dailyChart),pngN = 5)
 #NIKKEI , #10YrJGB , #10YrBond , #USDJPY , #VIX, #EURUSD, #Bitcoin, #Gold, #SKEW, #Put, #Call, #TokyoRepoRate, #Henryhub, #REIT
 # 1400 * 900
 ```
