@@ -1,21 +1,15 @@
 Title,Period,URL
-実効為替レート:日本、米国、ユーロ圏、オーストラリア、中国、英国、ニュージーランド、韓国、南アフリカ,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-EffectiveExchangeRateIndices.html
 日本国債イールドカーブ,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-yieldCurve.html
-米国債利回り,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGS.html
 直近のGDPNow,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LatestGDPNow.html
-日米国債金利差,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DGSversusJGB.html
 ゴールド価格,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-GoldPrice.html
 Quantitative analysis of Bitcoin/ビットコインの計量分析,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-QuantitativeAnalysisForBitcoin.html
-期待インフレ率(米国)、米国財務省証券利回り、日本国債利回りおよびドル円為替レート,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BreakevenInflationRate.html
 Dow Jones Industrial Average,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DOW.html
-ボラティリティ･インデックス,Daily,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-VIX.html
 対外及び対内証券売買契約等の状況:日本,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-internationalTransactionsInSecurities.html
 北米ロータリー・リグカウント 石油とガス,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-NorthAmericaRigCount.html
 IMM･CFTC投機筋ポジション,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html
 日本銀行営業毎旬報告,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-BankOfJapanAccounts.html
 日本銀行が保有する国債の銘柄別残高,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-JGBheldByBOJ.html
 U.S. Weekly Leading Index(weekly),Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-USWeeklyLeadingIndex.html
-預金種類別店頭表示金利の平均年利率等(週次<月曜基準>),Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-DepositInterestRate.html
 U.S. Treasury Securities and Mortgage-backed Securities held by the Federal Reserve,Weekly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-TREASTandMBST.html
 外国為替平衡操作の実施状況(月次ベース):日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-foreignExchangeIntervention.html
 株式関連月次統計情報:市場別時価総額、株式平均利回り、PER･PBRおよび日経平均株価:日本,Monthly,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-equitySecurities.html
@@ -129,10 +123,8 @@ Calculations Powered By DataCamp,,http://knowledgevault.saecanet.com/charts/am-c
 系統継続性シミュレーション,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-lineageContinuitySimulation.html
 店頭デリバティブ外国為替取引高(Billion $/日、4月の平均),,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ForeignExchangeTurnover.html
 法令条文検索:建築関連法令,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ConstructionRelatedLawsInJapan.html
-話題の株価,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-TopicalStockPrice.html
 電力使用実績,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ElectricityDemand.html
 軍事産業データベース,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SIPRItop100.html
-日次金融指標の月別トレンド,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-dailyFinancialDataTrend.html
 土地取引件数,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-LandDealNumber.html
 FRED Economic Data: 10 Popular Series,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-FredPopularTS.html
 学校保健統計調査:2016年度:都道府県別,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SchoolHealthSurvey.html
@@ -166,7 +158,6 @@ Long-Term Government Bond Yields:10-year,,http://knowledgevault.saecanet.com/cha
 OECD株価指数/OECD Share Prices Index,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-OECDSharePricesIndex.html
 日銀当座預金増減要因(見込み),,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-SourcesOfChangesInCurrentAccountBalancesAtTheBankOfJapan.html
 購買力平価米ドル円為替レート(出所:公益財団法人国際通貨研究所),,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-PPP.html
-外国為替市況:東京市場:ドル円、ユーロドル,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-ForeignExchangeRatesInTokyoMarket.html
 ETFおよびJ-REITの買入結果,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-PurchasesETFs.html
 CFTC Historical Data:Futures Only Reports,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTChistoricalData.html
 Historical Data Of Financial Indices,,http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-IndexYearlyVariation.html
