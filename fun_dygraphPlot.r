@@ -26,7 +26,7 @@ fun_dygraphPlot <- function(tsData,mainTitle = '',name = 'Dark2',group = 0,show 
   }
   obj <- obj %>%
     dyLegend(show = show,width = width,showZeroValues = 'TRUE',
-             labelsSeparateLines = 'TRUE',hideOnMouseOut = 'FALSE') %>%
+             labelsSeparateLines = 'TRUE',hideOnMouseOut = 'TRUE') %>%
     dyRangeSelector(keepMouseZoom = 'TRUE',retainDateWindow = 'FALSE') %>%
     dyUnzoom() %>%
     dyCrosshair(direction = direction) %>%
