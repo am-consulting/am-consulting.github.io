@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00027';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/indicator/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y-%m-%d %H:%M:%S');htmlName<-'00028';tmp<-read.csv(file = paste0('C:/Users/',username,buf0[2,1],'csv/timeSeriesList.csv'),fileEncoding = 'UTF8',stringsAsFactors = F);Bigtitle<-gsub('.+>(.+)</a.','\\1',tmp[grep(htmlName,tmp[,2]),2]);if(length(Bigtitle)==0){Bigtitle<-''};rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/indicator/','am-consulting.co.jp-',htmlName,'.html')) })
 
 title : "`r paste0(gsub(':|/|-','<br>',Bigtitle),'<br>http://am-consulting.co.jp')`"
 output: 
@@ -62,6 +62,7 @@ fun_billToTri <- function(obj,dateCol = 1,valueCol = 2){
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 lag <- c(1,12,36)
+legendWidth <- 300
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -456,6 +457,23 @@ if(htmlName=='00027'){
   diffType <- 3
   rollingN <- 12
 }
+if(htmlName=='00028'){
+  script <-
+    RCurl::getURL(
+      "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importMichiganData.r",
+      ssl.verifypeer = F
+    )
+  eval(parse(text = script))
+  buf <- IndexOfConsumerSentiment
+  obj <- buf[which(diff(buf[,1])<=31),]
+  colnames(obj)[2] <- 
+    paste0('University of Michigan Consumer Sentiment Index:',colnames(obj)[2])
+  colnames(obj)[2] <- gsub('([[:upper:]])', ' \\1', colnames(obj)[2])
+  dataSource <- "University of Michigan"
+  dateFormat <- '%Y-%m'
+  diffType <- 3
+  rollingN <- 12
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -514,17 +532,17 @@ cat(paste0("- Source : ", dataSource,'\n'))
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('# 時系列チャート\n\n')
+cat('# Time Series Chart\n\n')
 fun_dygraphPlot(tsData = objWithfFit,shadePattern = 3,drawPoints = c(T,F),
-                width = 300,fillGraph = c(F,F),pointSize = c(2,0),show = 'follow',
+                width = legendWidth,fillGraph = c(F,F),pointSize = c(2,0),show = 'onmouseover',
                 mainTitle = colnames(objWithfFit)[2])
 cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-shadePattern <- 3;drawPoints <- c(T);width <- 300;fillGraph <- c(T);pointSize <- c(2);show <- 'follow'
+shadePattern <- 3;drawPoints <- c(T);width <- legendWidth;fillGraph <- c(T);pointSize <- c(2);show <- 'onmouseover'
 cat('# Comparison with x month/period(s) ago\n\n')
-cat('- 単位:',unitMark,'\n\n')
+cat('- Unit:',unitMark,'\n\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
@@ -545,15 +563,15 @@ for(iii in seq(length(ratioDF))){
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('\n\n')
-cat('# 移動平均\n\n')
+cat('# Moving Average\n\n')
 ma <- fun_MovingAverage(obj = obj,dateFormat = dateFormat,n = rollingN,objColumn = 2,plot = 0)
-fun_dygraphPlot(tsData = ma,show = 'follow',axis = rep('y',3),drawPoints = c(T,F,F),pointSize = rep(2,3),fillGraph = rep(F,3),shadePattern = 3,mainTitle = paste0(colnames(ma)[2],':n=',rollingN))
+fun_dygraphPlot(tsData = ma,show = 'onmouseover',axis = rep('y',3),drawPoints = c(T,F,F),pointSize = rep(2,3),fillGraph = rep(F,3),shadePattern = 3,mainTitle = paste0(colnames(ma)[2],':n=',rollingN),width = legendWidth)
 cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# Boxplot\n\n')
-cat('## 内閣総理大臣毎\n\n')
+cat('## By Prime Minister of Japan\n\n')
 library(plotly)
 fun_withList(obj = obj)
 bufDate <-
@@ -573,7 +591,7 @@ cat('\n\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('## 年毎\n\n')
+cat('## By Year\n\n')
 boxData <- obj
 boxData$YY <- year(boxData$Date)
 boxData <- boxData[tail(year(boxData$Date),1)-6<=boxData$YY,]
@@ -592,9 +610,9 @@ fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0){
   resultDF <- 
     fun_changesInSlope(obj = obj,h = h,objCol = objCol,plot = plot)
   dygraphData <- 
-    fun_dygraphPlot(tsData = resultDF$changesInConditions,show = 'follow',
+    fun_dygraphPlot(tsData = resultDF$changesInConditions,show = 'onmouseover',
                     axis = c('y','y2'),shadePattern = 3,drawPoints = c(T,F),
-                    fillGraph = c(F,T),width = 350)
+                    fillGraph = c(F,T),width = legendWidth)
   if(nrow(resultDF$changesInSlope)!=0){
     changeDate <- 
       resultDF$changesInSlope[,1]
@@ -621,7 +639,7 @@ fun_rolling <- function(obj = ma,h = 12,objCol = 3,plot = 0){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
-cat('# ローリング回帰\n\n')
+cat('# Rolling Regression\n\n')
 cat('- The Width of the rolling window(months/periods):',rollingN,'\n\n')
 cat('## SMA\n\n')
 objCol <- 3
