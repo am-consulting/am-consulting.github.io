@@ -1,15 +1,30 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'historyOfLinearRegression';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'H29TogiKaihyouTouhabetsutokuhyouritsu';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
 
-title : 'History Of Linear Regression between CPI and Unemployment Rate'
+title : '2017 Tokyo Metropolitan Government Election'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
+    fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -49,6 +64,7 @@ dataSource <- '東京都'
 
 - `r paste0("タイトル : ", dataTitle)`
 - `r paste0("データ出所 : ", dataSource)`
+- Source http://www.senkyo.metro.tokyo.jp/election/togikai-all/togikai-sokuhou2017/
 
 ***
 
@@ -62,23 +78,28 @@ for(iii in seq(length(importAMCC))){
 }
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
-
-buf <- votes
-
-rrr <- 1
-tmp0 <- buf[rrr,]
-tmp1 <- t(tmp0)
-tmp2 <- data.frame(row.names(tmp1),tmp1,stringsAsFactors = F,check.names = F,row.names = NULL)
-colnames(tmp2) <- tmp2[1,]
-tmp3 <- tmp2[-1,]
-tmp3[,2] <- as.numeric(tmp3[,2])
-objRaw <- grep('全党派計',tmp3[,1])
-tmp3[,3] <- round(tmp3[,2]/tmp3[objRaw,2]*100,2)
-areaTxt <- colnames(tmp3)[2]
-colnames(tmp3) <- c('地区','票数','率')
-tmp3[,1] <- gsub(':票数','',tmp3[,1])
-tmp3[order(tmp3$`率`,decreasing = T),]
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+for(rrr in seq(nrow(votes))){
+  tmp0 <- votes[rrr,]
+  tmp1 <- t(tmp0)
+  tmp2 <- data.frame(row.names(tmp1),tmp1,stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(tmp2) <- tmp2[1,]
+  tmp3 <- tmp2[-1,]
+  tmp3[,2] <- as.numeric(tmp3[,2])
+  objRaw <- grep('全党派計',tmp3[,1])
+  tmp3[,3] <- round(tmp3[,2]/tmp3[objRaw,2]*100,2)
+  areaTxt <- colnames(tmp3)[2]
+  titleTxt <- paste0(areaTxt,':',tmp3[objRaw,1],':',format(tmp3[objRaw,2],big.mark=','))
+  tmp4 <- tmp3[-objRaw,]
+  colnames(tmp4) <- c('地区','票数','率')
+  tmp4[,1] <- gsub(':票数','',tmp4[,1])
+  resultDF <- tmp4[order(tmp4$`率`,decreasing = T),]
+  row.names(resultDF) <- NULL
+  cat('#### ',titleTxt,'\n\n')
+  fun_markdownTable(obj = resultDF,rownames = T)
+  cat('\n\n<hr>\n\n')
+  if(rrr==1){plotData <- resultDF;plotTitle <- titleTxt}
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -87,20 +108,21 @@ pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
-
+par(mar=c(4,11,5,3),family='Meiryo',cex.axis=0.9,font.main=1,cex.main=1)
+barplot(height = plotData[,3],names.arg = plotData[,1],col = '#4169e1',
+        horiz = T,las=1,main = paste0(dataTitle,'\n',plotTitle,'\n党派別得票率\nSource:',dataSource))
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
+dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-obj <- 
-  merge(consumerPriceIndexofJapan,
-        laborforcesurvey[,-ncol(laborforcesurvey)],by='Date')
-fun_outputMD(tags = '消費者物価指数,失業率',
-             objDF = fun_transposeDataFrame(obj = obj,dateFormat = '%Y-%m',tailN = 3),
+fun_outputMD(tags = '都議会',
+             objDF = plotData,
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
+             image1 = 1,
              title = dataTitle,
-             tableTitle = '直近3ヶ月',
-             tableName = '消費者物価指数と労働関連指標')
+             tableTitle = paste0(plotTitle,':党派別得票率'),
+             tableName = dataTitle)
 fun_updateURLcsv()
 ```
 
