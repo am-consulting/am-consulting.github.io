@@ -1,11 +1,8 @@
 ```{r}
 library(quantmod);library(forecast);library(gridExtra);library(grid)
+library(RCurl);library(excel.link)
 options(scipen = 999)
 windowsFonts(Meiryo = windowsFont("Meiryo"))
-```
-
-```{r,warning=F,error=F,message=F,echo=F}
-library(RCurl)
 fileName <- 'functionList.csv'
 functionList <-
   read.csv(
@@ -20,9 +17,6 @@ for(iii in 1:nrow(functionList)){
   )
   eval(parse(text = script))
 }
-```
-
-```{r}
 fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
   pngFile <- paste0('AMCC-',pngN,".png")
   png(file = pngFile, width = 1400, height = 900)
@@ -42,7 +36,7 @@ fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
   mtext(text = paste0('Red Line:Moving Average(Over ',n,' days(weeks))'),
         side = 1,outer = T,col = 'red',cex = 1.5)
   mtext(text = paste0('Latest ',tailN,
-                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P'),
+                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P,Mizuho Bank, Ltd.'),
         side = 3,outer = T,col = 'black',cex = 1.8,line = 1)
   dev.off()
 }
@@ -129,7 +123,7 @@ importIndex <-
   c('importPutCallRatios.r','importSkew.r','importTokyoRepoRate.r',
     'importHenryHubNaturalGasSpotPrice.r','importGMVI.r','importREIT.r',
     'importNaturalGasPrice.r','importNYMEXFuturesPrices.r','importLIBORandTED.r',
-    'importDepositInterest-Rate-2017.r')
+    'importDepositInterest-Rate-2017.r','importHistoricalFXData.r')
 for(jjj in seq(length(importIndex))){
   script <- 
     RCurl::getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
@@ -256,6 +250,8 @@ for(gggg in c(2:3)){
   dailyChart[[cnt]] <- obj
 }
 # effective FX
+buf_cnt03 <- cnt
+cnt <- buf_cnt03
 fun_effectiveFX <- function(){
   pathOutput <- paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
   setwd(pathOutput)
@@ -264,8 +260,13 @@ fun_effectiveFX <- function(){
   if(!file.exists(paste0(pathOutput,zipFile))) {
     download.file(paste0(urlToData,zipFile), zipFile, mode = 'wb')
   }
+  unzip(zipFile)
+  fileList <- dir(pathOutput)
+  csvFile <- 
+    fileList[grep(paste0(gsub('(.+).zip','\\1',zipFile),'.csv'),fileList,ignore.case = T)]
   buf0 <- 
-    excel.link::xl.read.file(unzip(zipFile), header=F, top.left.cell = "A1", xl.sheet = 1, excel.visible = F)
+    xl.read.file(filename = unzip(zipFile), header=F, top.left.cell = "A1", 
+                 xl.sheet = 1, excel.visible = F)
   buf1 <- buf0
   cc <- which((apply(buf1,2,(function(x)length(grep('reference area',x,ignore.case = T)))))!=0)
   rr <- which((apply(buf1,1,(function(x)length(grep('reference area',x,ignore.case = T)))))!=0)
@@ -297,6 +298,24 @@ for(cccc in objCol){
   dailyChart[[cnt]] <- obj
 }
 # effective FX
+# historical FX
+buf_cnt04 <- cnt
+cnt <- buf_cnt04
+objCurrency <- 
+  c('Date','米ドル','英ポンド','ユーロ','カナダ','スイス','オーストラリア','ニュージーランド','南アフリカ','中国')
+historicalFXData <-
+  historicalFXData[,!is.na(tail(historicalFXData,1))]
+buf <- 
+  historicalFXData[,grep(paste0(objCurrency,collapse = '|'),colnames(historicalFXData))]
+for(ccc in 2:ncol(buf)){
+  cnt <- cnt + 1
+  obj <- na.omit(buf[,c(1,ccc)])
+  obj[,1] <- as.Date(obj[,1])
+  colnames(obj)[-1] <- paste0('FX QUOTATION(Unit:JPY):',colnames(obj)[-1])
+  print(tail(obj,2))
+  dailyChart[[cnt]] <- obj
+}
+# historical FX
 ```
 
 ```{r}
@@ -314,7 +333,8 @@ fun_plot(pngN = 1)
 fun_plot(s = 17,e = 32,pngN = 2)
 fun_plot(s = 33,e = 48,pngN = 3)
 fun_plot(s = 49,e = 64,pngN = 4)
-fun_plot(s = 65,e = length(dailyChart),pngN = 5)
+fun_plot(s = 65,e = 80,pngN = 5)
+fun_plot(s = 81,e = length(dailyChart),pngN = 6)
 #NIKKEI , #10YrJGB , #10YrBond , #USDJPY , #VIX, #EURUSD, #Bitcoin, #Gold, #SKEW, #Put, #Call, #TokyoRepoRate, #Henryhub, #REIT
 # 1400 * 900
 ```
