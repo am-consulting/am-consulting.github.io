@@ -484,7 +484,7 @@ for(cnt in seq(length(lag))){
       fun_makeDiffTable(obj = obj,lag = lag[cnt])
   }
   colnames(buf)[2] <- 
-    paste0(gsub('\\([^\\(]{0,4}[円|%]\\)','',colnames(buf)[2]),':',lag[cnt],'ヶ月前との比.単位:',unitMark)
+    paste0(gsub('\\([^\\(]{0,4}[円|%]\\)','',colnames(buf)[2]),':Comparison with ',lag[cnt],' month/period(s) ago.Unit:',unitMark)
   print(tail(buf))
   ratioDF[[cnt]] <- buf
 }
@@ -523,7 +523,7 @@ cat('\n<hr>\n')
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 shadePattern <- 3;drawPoints <- c(T);width <- 300;fillGraph <- c(T);pointSize <- c(2);show <- 'follow'
-cat('# xヶ月(期)前との比較\n\n')
+cat('# Comparison with x month/period(s) ago\n\n')
 cat('- 単位:',unitMark,'\n\n')
 ```
 
