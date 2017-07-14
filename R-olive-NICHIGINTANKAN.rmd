@@ -1,5 +1,6 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-NICHIGINTANKAN.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'NICHIGINTANKAN';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Bank of Japan - TANKAN "
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
@@ -8,8 +9,22 @@ output:
     fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -103,14 +118,46 @@ for(iii in 2:ncol(timeSeriesDF)){
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_transposeDataFrame(obj = allData,tailN = 3,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = allData,tailN = 3,dateFormat = dateFormat))
+```
+
+***
+#### 前期比
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = na.omit(allData),lag = 1),
+                                               tailN = 3,dateFormat = dateFormat))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_makeDiffTable(obj = na.omit(allData),lag = 1)
-fun_transposeDataFrame(obj = diffDF,tailN = 2,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+obj <- na.omit(allData[,c(1,2,6,10)])
+lineCol <- c('black','red','blue')
+ylim <- c(min(obj[,-1]),max(obj[,-1]))
+par(mar=c(4,3,4,1),font.main=1,cex.main=1.2,cex.axis=1.1,family='Meiryo')
+plot(obj[,c(1,2)],type='o',pch=20,ylim=ylim,xlab='',ylab='',col=lineCol[1],
+     main=paste0('日銀短観\n',paste0(format(range(obj[,1]),dateFormat),collapse = '~')))
+lines(obj[,c(1,3)],type='o',pch=20,col=lineCol[2])
+lines(obj[,c(1,4)],type='o',pch=20,col=lineCol[3])
+grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
+abline(h=0)
+graphics::legend(x = 'topleft',col = lineCol,lty = 1,legend = colnames(obj)[-1],cex = 0.9,bty = 'n',lwd = 2)
+fun_addTxtToChart(obj = obj,cexTxt = 1,funType = 'min',col = 'black')
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = '日銀短観',
+             objDF = fun_transposeDataFrame(obj = obj,dateFormat = dateFormat,tailN = 3),
+             htmlName = htmlName,
+             image1 = 1,
+             title = dataTitle,
+             tableTitle = '直近3期',
+             tableName = '日銀短観')
+fun_updateURLcsv()
 ```
 
 ***
