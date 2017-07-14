@@ -74,10 +74,12 @@ colnames(obj)[2] <-
 print(tail(obj))
 dailyChart[[cnt]] <- obj
 cnt <- cnt + 1
-fromYahoo <- c('DGS10','10-Year Treasury Constant Maturity Rate',
-               'T10Y2Y','10-Year Treasury Constant Maturity\n Minus 2-Year Treasury Constant Maturity',
-               'T10YIE',  '10-Year Breakeven Inflation Rate',
-               'T5YIFR',  '5-Year, 5-Year Forward Inflation Expectation Rate')
+fromYahoo <- 
+  c('DGS10','10-Year Treasury Constant Maturity Rate',
+    'T10Y2Y','10-Year Treasury Constant Maturity\nMinus 2-Year Treasury Constant Maturity',
+    'T10YIE','10-Year Breakeven Inflation Rate',
+    'T5YIFR','5-Year, 5-Year Forward Inflation Expectation Rate',
+    'IC4WSA','4-Week Moving Average of Initial Claims')
 for(iii in seq(1,length(fromYahoo),by = 2)){
   obj <- getSymbols(Symbols = fromYahoo[iii],auto.assign = F,src = 'FRED')
   obj <-
@@ -316,6 +318,20 @@ for(ccc in 2:ncol(buf)){
   dailyChart[[cnt]] <- obj
 }
 # historical FX
+fromYahoo <- 
+  c('TREAST','U.S.Treasury securities\nheld by the Federal Reserve\nAll Maturities:T$',
+    'MBST','Mortgage-backed securities\nheld by the Federal Reserve\nAll Maturities:T$')
+for(iii in seq(1,length(fromYahoo),by = 2)){
+  cnt <- cnt + 1
+  obj <- getSymbols(Symbols = fromYahoo[iii],auto.assign = F,src = 'FRED')
+  obj <-
+    data.frame(Date = index(obj),obj,
+               stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(obj)[2] <- fromYahoo[iii+1]
+  obj[,2] <- obj[,2]*10^-6
+  dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
+}
 ```
 
 ```{r}
@@ -335,6 +351,15 @@ fun_plot(s = 33,e = 48,pngN = 3)
 fun_plot(s = 49,e = 64,pngN = 4)
 fun_plot(s = 65,e = 80,pngN = 5)
 fun_plot(s = 81,e = length(dailyChart),pngN = 6)
+chartName <- data.frame()
+for(iiii in seq(cnt)){
+  chartName[iiii,1] <- ceiling(iiii/16)
+  chartName[iiii,2] <- gsub('\n',' ',colnames(dailyChart[[iiii]])[2])
+}
+colnames(chartName) <- c('No.','Indicator')
+getwd()
+write.csv(x = chartName,file = 'chartName.csv',
+          quote = T,row.names = F,append = F,fileEncoding = 'utf8')
 #NIKKEI , #10YrJGB , #10YrBond , #USDJPY , #VIX, #EURUSD, #Bitcoin, #Gold, #SKEW, #Put, #Call, #TokyoRepoRate, #Henryhub, #REIT
 # 1400 * 900
 ```
