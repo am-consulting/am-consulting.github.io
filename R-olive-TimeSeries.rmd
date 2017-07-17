@@ -552,6 +552,20 @@ cat(paste0("- Source : ", dataSource,'\n'))
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
+cat('# Historgame\n\n')
+p <- plotly::plot_ly(x = ~obj[,2],type = "histogram",
+                     marker = list(color = 'rgb(158,202,225)',
+                                   line = list(color = 'rgb(8,48,107)',
+                                               width = 1.0))) %>%
+  config(displayModeBar = FALSE) %>%
+  layout(title = paste0('Histogram of ',colnames(obj)[2]),
+         xaxis = list(title = ""),
+         yaxis = list(title = ""))
+p
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis',out.width='100%'}
 cat('# Time Series Chart\n\n')
 fun_dygraphPlot(tsData = objWithfFit,shadePattern = 3,drawPoints = c(T,F),
                 width = legendWidth,fillGraph = c(F,F),pointSize = c(2,0),show = 'onmouseover',
