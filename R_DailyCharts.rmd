@@ -36,7 +36,7 @@ fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
   mtext(text = paste0('Red Line:Moving Average(Over ',n,' days(weeks))'),
         side = 1,outer = T,col = 'red',cex = 1.5)
   mtext(text = paste0('Latest ',tailN,
-                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P,Mizuho Bank, Ltd.'),
+                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P,Mizuho Bank, Ltd.,EIA,ECRI'),
         side = 3,outer = T,col = 'black',cex = 1.8,line = 1)
   dev.off()
 }
@@ -332,6 +332,77 @@ for(iii in seq(1,length(fromYahoo),by = 2)){
   dailyChart[[cnt]] <- obj
   print(tail(dailyChart[[cnt]]))
 }
+# weekly leading index
+cnt <- cnt + 1
+library(excel.link)
+pathOutput <- 
+  paste0("C:/Users/", Sys.info()['user'], "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- 'ECRI_wliw_free.xls'
+fileURL <- 'https://www.businesscycle.com/download/index/WLIW_f'
+download.file(fileURL, fileName, mode = "wb")
+buf0 <- 
+  XLConnect::readWorksheetFromFile(paste0(pathOutput, fileName), sheet = 1, check.names = F, header = F)
+bufRow <- 
+  grep('date',buf0[,1],ignore.case = T)
+buf <- 
+  xl.read.file(fileName, header=T, top.left.cell = paste0("A",bufRow),
+               xl.sheet = 1, excel.visible = F)
+buf[,1] <- as.Date(buf[,1])
+buf <- buf[,apply(buf,2,function(x)sum(is.na(x)))!=nrow(buf)]
+buf <- buf[!is.na(buf[,1]),]
+buf[,-1] <- apply(buf[,-1],2,as.numeric)
+obj <- buf[,c(1,2)]
+colnames(obj)[2] <- paste0('U.S. Weekly Leading Index:',colnames(obj)[2])
+print(tail(obj,2))
+dailyChart[[cnt]] <- obj
+# weekly leading index
+buf_cnt05 <- cnt
+cnt <- buf_cnt05
+# EIA
+pathOutput <-
+  paste0("C:/Users/", Sys.info()['user'], "/Desktop/R_Data_Write/")
+setwd(pathOutput)
+fileName <- 'psw09.xls'
+if(!file.exists(paste0(pathOutput,fileName))){
+  download.file(paste0('http://ir.eia.gov/wpsr/',fileName),fileName,mode = "wb")
+}
+targetSheet <- c(2:22)
+dateFormat <- '%Y-%m-%d'
+for(sss in 1:length(targetSheet)){
+  buf <-
+    XLConnect::readWorksheetFromFile(paste0(pathOutput,fileName),sheet = targetSheet[sss],
+                          check.names = F,header = F)
+  colnames(buf) <- unlist(buf[3,])
+  buf <- buf[-c(1:3),]
+  if(sss == 1){EIAData <- buf}else{EIAData <- merge(EIAData,buf,by = 'Date',all = T)}
+  gc();gc()
+}
+EIAData[, 1] <- as.Date(EIAData[, 1])
+EIAData <- EIAData[order(EIAData[, 1]),]
+EIAData <-
+  data.frame(EIAData[,1,drop = F],apply(EIAData[,-1],2,as.numeric),check.names = F)
+colnameTxt <- c(
+  'Weekly U.S. Ending Stocks excluding SPR of Crude Oil  ',
+  'Weekly Cushing, OK Ending Stocks excluding SPR of Crude Oil  ',
+  'Weekly U.S. Ending Stocks of Total Gasoline  ',
+  'Weekly U.S. Ending Stocks of Distillate Fuel Oil  ',
+  'Weekly U.S. Ending Stocks of Propane and Propylene  ',
+  'Weekly U.S. Refiner Net Input of Crude Oil  ',
+  'Weekly U.S. Percent Utilization of Refinery Operable Capacity ',
+  'Weekly U.S. Imports of Crude Oil  ',
+  'Weekly U.S. Imports of Total Gasoline  ')
+for(iii in 1:length(colnameTxt)){
+  cnt <- cnt + 1
+  ccc <- grep(colnameTxt[iii],colnames(EIAData))
+  obj <- EIAData[,c(1,ccc)]
+  colnames(obj)[2] <- gsub('\\s{1,2}\\(','\n(',colnames(obj)[2])
+  colnames(obj)[2] <- gsub('excluding\\s','excluding\n',colnames(obj)[2])
+  colnames(obj)[2] <- gsub('Utilization of\\s','Utilization of\n',colnames(obj)[2])
+  print(tail(obj,2))
+  dailyChart[[cnt]] <- obj
+}
+# EIA
 ```
 
 ```{r}
@@ -350,7 +421,8 @@ fun_plot(s = 17,e = 32,pngN = 2)
 fun_plot(s = 33,e = 48,pngN = 3)
 fun_plot(s = 49,e = 64,pngN = 4)
 fun_plot(s = 65,e = 80,pngN = 5)
-fun_plot(s = 81,e = length(dailyChart),pngN = 6)
+fun_plot(s = 81,e = 96,pngN = 6)
+fun_plot(s = 97,e = length(dailyChart),pngN = 7)
 chartName <- data.frame()
 for(iiii in seq(cnt)){
   chartName[iiii,1] <- ceiling(iiii/16)
