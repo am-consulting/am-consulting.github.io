@@ -9,8 +9,22 @@ output:
     fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;} </style>
@@ -174,7 +188,7 @@ for (iii in 1:length(dataset)) {
 }
 ```
 
-## 直近 `r tailN <- 15;tailN` 週の時系列推移
+<!--## 直近 `r tailN <- 15;tailN` 週の時系列推移-->
 
 ```{r,warning=F,error=F,message=F,echo=F,include=F}
 out = NULL
@@ -193,7 +207,7 @@ for (iii in 1:length(dataset)) {
   out = c(out, knit_expanded)
 }
 ```
-`r paste(knit(text = out), collapse = '\n')`
+<!--`r paste(knit(text = out), collapse = '\n')`-->
 
 ## 直近 `r tailN <- 5;tailN` 週のネットポジション
 
@@ -228,25 +242,7 @@ for(iii in 1:length(dataset)){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
   paste0(htmlName, ".png")
 png(file = pngFile, width = 1000, height = 600)
