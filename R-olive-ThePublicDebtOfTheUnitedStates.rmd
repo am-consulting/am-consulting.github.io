@@ -162,7 +162,7 @@ eval(parse(text = paste0('dygraphPlot', n)))
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- fun_makeDiffRatioTable(obj = mdDF)
