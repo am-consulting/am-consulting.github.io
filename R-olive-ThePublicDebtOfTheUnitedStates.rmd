@@ -9,8 +9,22 @@ output:
     fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -64,7 +78,7 @@ dateFormat <- '%Y-%m'
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hold'}
-fun_MSPD(breakYear = 2017, breakMonth = 4)
+fun_MSPD(breakYear = 2017, breakMonth = 7)
 # 2009-01は計算式
 ```
 
@@ -146,25 +160,7 @@ eval(parse(text = paste0('dygraphPlot', n)))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
   paste0(htmlName, ".png")
 png(file = pngFile, width = 1000, height = 600)
@@ -186,10 +182,11 @@ dev.off()
 fun_outputMD(tags = 'U.S. Department of the Treasury,米国の公的債務',
              objDF = tail(obj,10),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = 'Year over Year(%)',
              tableName = 'Total Public Debt Outstanding')
+fun_updateURLcsv()
 ```
 
 ***
