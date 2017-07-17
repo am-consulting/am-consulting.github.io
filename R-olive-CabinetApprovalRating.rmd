@@ -9,8 +9,22 @@ output:
     fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>.main-container {max-width : 1000px;}</style>
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
@@ -184,13 +198,8 @@ cat('\n- 合計(日):',sum(shinzoAbeFuture[,4]),'\n\n')
 ***
 
 ```{r,warning=F,error=F,message=F,echo=F}
-# library(lubridate)
-# library(ggplot2)
-# library(scales)
-# library(zoo)
 library(reshape)
-library(rAmCharts)
-# library(knitr)
+library(plotly)
 windowsFonts(Meiryo=windowsFont("Meiryo"))
 ```
 
@@ -236,53 +245,38 @@ for(pm in 1:length(cabinetUnique)){
 }  
 ```
 
-```{r,warning=F,error=F,message=F,echo=F} 
-fun_boxplot <- function(boxplotData){
-colnames(boxplotData)[2] <- 
-  "Person"
-boxplotData <- 
-  melt(boxplotData, id = "Person")
-boxplotData <- 
-  boxplotData[, -2]
-boxplotData[, 2] <- 
-  as.numeric(boxplotData[, 2])
-colnames(boxplotData)[1] <- 
-  "variable"
-for(iii in 1:length(unique(boxplotData[, 1]))) {
-  buf0 <- 
-    subset(boxplotData, boxplotData[, 1] == unique(boxplotData[, 1])[iii])
-  colnames(buf0)[2] <- 
-    as.character(unique(boxplotData[, 1])[iii])
-  if (iii == 1) {
-    buf <- buf0[, 2, drop = F]
-  } else{
-    buf <- qpcR:::cbind.na(buf, buf0[, 2, drop = F])
-  }
-}
-amBoxplot(buf, horiz = T)
-}
-```
-
 ***
 #### 内閣毎の月例内閣支持率:ボックスプロット(単位:%)
-
-- Powered By https://www.amcharts.com/
 
 ```{r,warning=F,error=F,message=F,echo=F} 
 boxplotData <- 
   cabinetApprovalRatingS[,c(2,4)]
-fun_boxplot(boxplotData = boxplotData)
+boxplotData$`内閣` <- 
+  factor(x = boxplotData$`内閣`,
+         levels = unique(boxplotData$`内閣`))
+p <- 
+  plot_ly(data = boxplotData,y = boxplotData$`内閣:支持する`,color = boxplotData$`内閣`,
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8) %>% 
+  config(displayModeBar = FALSE) 
+mar <- list(b = 100,pad = 4)
+p %>% layout(autosize = T, margin = mar)
 ```
 
 ***
 #### 内閣毎の月例内閣不支持率:ボックスプロット(単位:%)
 
-- Powered By https://www.amcharts.com/
-
 ```{r,warning=F,error=F,message=F,echo=F} 
 boxplotData <- 
   cabinetApprovalRatingS[,c(3,4)]
-fun_boxplot(boxplotData = boxplotData)
+boxplotData$`内閣` <- 
+  factor(x = boxplotData$`内閣`,
+         levels = unique(boxplotData$`内閣`))
+p <- 
+  plot_ly(data = boxplotData,y = boxplotData$`内閣:支持しない`,color = boxplotData$`内閣`,
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8) %>% 
+  config(displayModeBar = FALSE) 
+mar <- list(b = 100,pad = 4)
+p %>% layout(autosize = T, margin = mar)
 ```
 
 ***
@@ -330,9 +324,24 @@ fun_markdownTable(obj = dataDF)
 - 対象期間:`r paste0(format(range(politicalPartyApprovalRatingsS[,1]),dateFormat),collapse = ' ~ ')`
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-boxplotData <- 
+boxplotData0 <- 
   politicalPartyApprovalRatingsS[,grep('自民党|民進党|民主党',colnames(politicalPartyApprovalRatingsS))]
-amBoxplot(object = boxplotData,horiz = T)
+boxplotData <-
+  rbind(cbind(boxplotData0[,1],colnames(boxplotData0)[1]),
+        cbind(boxplotData0[,2],colnames(boxplotData0)[2]),
+        cbind(boxplotData0[,3],colnames(boxplotData0)[3]))
+boxplotData <- data.frame(boxplotData,stringsAsFactors = F,row.names = NULL)
+boxplotData[,1] <- as.numeric(boxplotData[,1])
+colnames(boxplotData) <- c('政党支持率','政党名')
+boxplotData$`政党名` <- 
+  factor(x = boxplotData$`政党名`,
+         levels = unique(boxplotData$`政党名`))
+p <- 
+  plot_ly(data = boxplotData,y = boxplotData$`政党支持率`,color = boxplotData$`政党名`,
+          type = 'box',boxpoints = "all",jitter = 0.3,pointpos = -1.8) %>% 
+  config(displayModeBar = FALSE) 
+mar <- list(b = 100,pad = 4)
+p %>% layout(autosize = T, margin = mar)
 ```
 
 ***
