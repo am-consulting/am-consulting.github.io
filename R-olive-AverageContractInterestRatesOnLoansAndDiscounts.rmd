@@ -9,8 +9,22 @@ output:
     fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -56,7 +70,8 @@ eval(parse(text = script))
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dateFormat <- '%Y年%m月'
-fun_latestResult(obj = AverageContractInterestRatesOnLoansAndDiscounts,dateFormat = dateFormat,objColumn = 3)
+objCol <- 3
+fun_latestResult(obj = AverageContractInterestRatesOnLoansAndDiscounts,dateFormat = dateFormat,objColumn = objCol)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
@@ -99,18 +114,16 @@ lapply(AverageContractInterestRatesOnLoansAndDiscounts[,-1],summary)
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
 fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = AverageContractInterestRatesOnLoansAndDiscounts,
-                                            dateFormat = dateFormat,
-                                            tailN = tailN)))
+                                                       dateFormat = dateFormat,
+                                                       tailN = tailN)))
 ```
 
 ***
 ##### 前月差(パーセントポイント)
 
 ```{r warning=F, error=F, message=F, echo=F,results='asis'}
-fun_makeDiffTable(obj = AverageContractInterestRatesOnLoansAndDiscounts)
-fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = diffDF,
-                                                       dateFormat = dateFormat,
-                                                       tailN = tailN)))
+diffDF <- fun_makeDiffTable(obj = AverageContractInterestRatesOnLoansAndDiscounts,lag = 1)
+fun_markdownTable(obj = na.omit(fun_transposeDataFrame(obj = diffDF,dateFormat = dateFormat,tailN = tailN)))
 ```
 
 ***
@@ -124,61 +137,15 @@ scatterData <- tail(na.omit(allData[,c(1,11,3)]), 12 * 100)
 fun_scatterPlot(obj = scatterData, cexText = 0.7, srtText = 0, posText = 4, offsetText = -1, dataSource = dataSource)
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-obj <- 
-  AverageContractInterestRatesOnLoansAndDiscounts
-fun_summaryByName(obj = obj)
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+cat('#### 内閣総理大臣毎の基本統計量\n\n')
+cat('-',colnames(AverageContractInterestRatesOnLoansAndDiscounts)[objCol],'\n\n')
+fun_markdownTable(obj = fun_summaryByName(obj = AverageContractInterestRatesOnLoansAndDiscounts,
+                                          dateFormat = dateFormat,objColumn = objCol))
 ```
 
-```{r warning=F, error=F, message=F, echo=F, results='hide'}
-username <- 
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,header = F,skip = 0,
-           stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'md/')
-setwd(pathOutputTOcsv)
-getwd()
-mdFile <- 
-  paste0(format(Sys.Date(),'%Y%m%d'),'-olive.md')
-cat('',file = mdFile,append = F)
-cat('
---- 
-tags : [貸出約定平均金利,日本銀行] 
-published : true
----\n\n',file = mdFile,append = T)
-cat(paste0('# ',dataTitle,'\n\n'),file = mdFile,append = T)
-cat(paste0('## 統計データ概要','\n\n'),file = mdFile,append = T)
-cat(paste0('***','\n\n'),file = mdFile,append = T)
-cat(paste0('#### 内閣総理大臣毎の基本統計量','\n\n'),file = mdFile,append = T)
-cat(paste0(knitr::kable(x = summaryByName,
-                        row.names = F,
-                        format = 'html',
-                        align = 'r',
-                        table.attr = "id = 'amcc' width = '100%'",
-                        format.args = list(big.mark = ',', drop0trailing = T),
-                        escape = F),
-           '\n'),
-    file = mdFile,
-    append = T)
-cat(paste0('\n\n***','\n\n'),file = mdFile,append = T)
-cat(paste0('## データテーブル･チャート','\n\n'),file = mdFile,append = T)
-cat(paste0('Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
-           htmlName,
-           '.html)\n\n'),
-    file = mdFile,
-    append = T)
-cat(paste0('<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
-           htmlName,
-           '.html" width="100%" height="800px"></iframe>'),
-    file = mdFile,
-    append = T)
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+fun_updateURLcsv()
 ```
 
 ***
