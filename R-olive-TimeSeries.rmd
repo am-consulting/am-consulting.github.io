@@ -601,6 +601,31 @@ cat('\n<hr>\n')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_variance <- function(obj,objCol = 2,rangeN = 12){
+  varDF <- data.frame()
+  cnt <- 0
+  for(rrr in rangeN:nrow(obj)){
+    cnt <- cnt + 1
+    tmp <- obj[(rrr-rangeN+1):rrr,]
+    varDF[cnt,1] <- as.character(tail(tmp[,1],1))
+    varDF[cnt,2] <- var(tmp[,objCol])
+  }
+  varDF[,1] <- as.Date(varDF[,1])
+  colnames(varDF) <- c('Date',paste0(colnames(obj)[objCol],':Variance'))
+  mergeData <- merge(obj,varDF,all=T)
+  return(mergeData)
+}
+rangeN <- 12
+cat('# Variance\n\n')
+varResult <- fun_variance(obj = obj,objCol = 2,rangeN = rangeN)
+tsData <- na.omit(varResult[,c(1,3)])
+fun_dygraphPlot(tsData = tsData,shadePattern = 3,drawPoints = c(T,F),
+                width = legendWidth,fillGraph = c(T,F),pointSize = c(2,0),show = 'onmouseover',
+                mainTitle = paste0(colnames(tsData)[2],':n=',rangeN),strawBroom = 0,quantiles = 2)
+cat('\n<hr>\n')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 shadePattern <- 3;drawPoints <- c(T);width <- legendWidth;fillGraph <- c(T);pointSize <- c(2);show <- 'onmouseover'
 cat('# Comparison with x month/period(s) ago\n\n')
 cat('- Unit:',unitMark,'\n\n')
