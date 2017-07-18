@@ -1,6 +1,6 @@
 library(dygraphs)
 library(xts)
-fun_dygraphPlot <- function(tsData,mainTitle = '',name = 'Dark2',group = 0,show = c("auto","always","onmouseover","follow","never"),width = 250,direction = c("both","horizontal","vertical"),maxNumberWidth = 100,axis = c("y","y"),drawPoints = c(TRUE,TRUE),pointSize = c(2,2),fillGraph = c(TRUE,FALSE),shadePattern = c(seq(8)),strawBroom = 0){
+fun_dygraphPlot <- function(tsData,mainTitle = '',name = 'Dark2',group = 0,show = c("auto","always","onmouseover","follow","never"),width = 250,direction = c("both","horizontal","vertical"),maxNumberWidth = 100,axis = c("y","y"),drawPoints = c(TRUE,TRUE),pointSize = c(2,2),fillGraph = c(TRUE,FALSE),shadePattern = c(seq(8)),strawBroom = 0,quantiles = 0){
   xtsData <- xts(tsData[,-1],order.by = tsData[,1])
   colnames(xtsData) <- colnames(tsData)[-1]
   colors <- RColorBrewer::brewer.pal(n = ncol(xtsData),name = name)
@@ -32,6 +32,16 @@ fun_dygraphPlot <- function(tsData,mainTitle = '',name = 'Dark2',group = 0,show 
     dyCrosshair(direction = direction) %>%
     dyOptions(maxNumberWidth = maxNumberWidth,pointSize = pointSize)
   if(strawBroom == 1){obj <- obj %>% dyRebase(percent = T)}
+  if(quantiles != 0){
+    summaryResult <- summary(na.omit(as.vector(xtsData[,quantiles-1])))
+    obj <- obj %>%
+      dyLimit(as.numeric(summaryResult[1]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[2]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[3]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[4]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[5]), color = "red") %>%
+      dyLimit(as.numeric(summaryResult[6]), color = "red")
+  }
   fun_consumptionTax(obj = tsData)
   fun_primeMinisterOfJapan(obj = tsData)
   fun_boj(obj = tsData)
