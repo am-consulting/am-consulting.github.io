@@ -32,6 +32,11 @@ fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
     grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
     axis.Date(side = 1,at = obj[,1],format = dateFormat)
     lines(obj[,1],obj[,3],type = 'l',col = 'red',lwd = 1.2)
+    if(min(unique(diff(dailyChart[[iii]][,1])))==1){label <- 'Daily'}else{label <- 'Weekly'}
+    text(x = grconvertX(0.5, from = "npc"),
+         y = grconvertY(0.5, from = "npc"),
+         labels = label,
+         cex = 3,font = 2,col = rgb(1,0,0,0.2),srt = 0)
   }
   mtext(text = paste0('Red Line:Moving Average(Over ',n,' days(weeks))'),
         side = 1,outer = T,col = 'red',cex = 1.5)
@@ -437,7 +442,6 @@ chartName <- data.frame()
 for(iiii in seq(cnt)){
   chartName[iiii,1] <- ceiling(iiii/16)
   chartName[iiii,2] <- gsub('\n',' ',colnames(dailyChart[[iiii]])[2])
-  
   if(min(unique(diff(dailyChart[[iiii]][,1])))==1){
     chartName[iiii,3] <- 'Daily'
   }else{
