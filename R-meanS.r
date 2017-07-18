@@ -1,5 +1,5 @@
 fun_meanS <-
-  function(objDF,dateCol = 1,objCol = 2,roundN = 2,baseN = 10,powerN = 3,dateFormat = '%Y-%m'){
+  function(objDF,dateCol = 1,objCol = 2,roundN = 2,baseN = 10,powerN = 3,dateFormat = '%Y-%m',needPlot = F){
     windowsFonts(Meiryo = windowsFont("Meiryo"))
     par(mfrow = c(1,1),oma = c(0,0,2,0),family = 'Meiryo')
     obj <-
@@ -15,7 +15,7 @@ fun_meanS <-
           baseN^powerN)
     par(mar=c(4,5,0,2))
     tmpHist <-
-      hist(x = x,breaks = breaks,col = '#4682b4',xlab = '',main = '',plot = T)
+      hist(x = x,breaks = breaks,col = '#4682b4',xlab = '',main = '',plot = needPlot)
     Mode <-
       paste0(tmpHist$mids[max(tmpHist$counts)==tmpHist$counts],collapse = ',')
 # 平均値
