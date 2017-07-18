@@ -403,6 +403,16 @@ for(iii in 1:length(colnameTxt)){
   dailyChart[[cnt]] <- obj
 }
 # EIA
+buf_cnt06 <- cnt
+cnt <- buf_cnt06
+cnt <- cnt + 1
+buf0 <- 
+  getSymbols(Symbols = 'STLFSI',src = 'FRED',auto.assign = F)
+obj <-
+  data.frame(Date = index(buf0),buf0,stringsAsFactors = F,check.names = F,row.names = NULL)
+colnames(obj)[2] <- 'St. Louis Fed Financial Stress Index'
+print(tail(obj,2))
+dailyChart[[cnt]] <- obj
 ```
 
 ```{r}
@@ -427,8 +437,14 @@ chartName <- data.frame()
 for(iiii in seq(cnt)){
   chartName[iiii,1] <- ceiling(iiii/16)
   chartName[iiii,2] <- gsub('\n',' ',colnames(dailyChart[[iiii]])[2])
+  
+  if(min(unique(diff(dailyChart[[iiii]][,1])))==1){
+    chartName[iiii,3] <- 'Daily'
+  }else{
+    chartName[iiii,3] <- 'Weekly'
+  }
 }
-colnames(chartName) <- c('No.','Indicator')
+colnames(chartName) <- c('No.','Indicator','Period')
 getwd()
 write.csv(x = chartName,file = 'chartName.csv',
           quote = T,row.names = F,append = F,fileEncoding = 'utf8')
