@@ -60,7 +60,9 @@ fun_meanS <-
     #   barplot(resultDF[,2],names.arg = resultDF[,1],
     #           horiz = T,las = 1,plot = T,col = '#4682b4')
     # text(y = obj0,x = resultDF[,2],labels = resultDF[,2],cex = 1,pos = 2,offset = 1,col = 'white')
+    if(needPlot==T){
     mtext(text = paste0(colnames(obj)[2],'. ',dateRage,paste0('. Trim=',trim),'. 最頻値:',Mode),
           side = 3,outer = T,font = 2)
+    }
     return(resultDF)
   }
