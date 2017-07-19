@@ -1,15 +1,30 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-BigMacIndex.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName <- 'BigMacIndex';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+
 title : "Big Mac Index"
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 4
+    fig_height: 5
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -70,82 +85,112 @@ options(scipen = 999)
 #### Big Mac Index / ビッグマック指数
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_extractCountryData <- function(country){
+  buf <- bigMacIndex[grep(country,bigMacIndex[,2],ignore.case = T),c(1,5)]
+  colnames(buf)[2] <- paste0(country,':Big Mac Price:',colnames(buf)[2])
+  buf <- buf[order(buf$Date,decreasing = F),]
+  return(buf)
+}
+fun_plotBMI <- function(obj1,obj2){
+  mergeData <- merge(obj1,obj2)
+  fun_plotTimeSeries(obj = mergeData,typeL = 'o',typeR = 'o',chartType = 1,dateFormat = dateFormat,dataTitle = 'Big Mac Index',mar = c(4,3,5,1),dataSource = dataSource,needLefLab = 0,cexL = 1.5,cexR = 1.5)
+}
+USA <- fun_extractCountryData(country = 'United States')
+JPN <- fun_extractCountryData(country = 'Japan')
+EUR <- fun_extractCountryData(country = 'Euro area')
+CHN <- fun_extractCountryData(country = 'China')
+GBP <- fun_extractCountryData(country = 'Britain')
+AUS <- fun_extractCountryData(country = 'Australia')
+SWZ <- fun_extractCountryData(country = 'Switzerland')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 country <- 'Japan'
-obj <- bigMacIndex[grep(country,bigMacIndex[,2],ignore.case = T),c(1,4)]
-obj <- obj[order(obj[,1],decreasing = F),]
-colnames(obj)[2] <- paste0('Big Mac Index:',country)
 cat(paste0('<h5><b>',country,'</b></h5>\n'))
-fun_plotTimeSeries(obj = obj[,],chartType = 0,typeL = 'o',dateFormat = dateFormat,
-                   dataSource = dataSource,needLefLab = 0,fitLcolor = 2,cexL = 2)
+fun_plotBMI(obj1 = USA,obj2 = JPN)
 cat('<hr>')
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = JPN,dateFormat = dateFormat))
 cat('<hr>')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 country <- 'Euro area'
-obj <- bigMacIndex[grep(country,bigMacIndex[,2],ignore.case = T),c(1,4)]
-obj <- obj[order(obj[,1],decreasing = F),]
-colnames(obj)[2] <- paste0('Big Mac Index:',country)
 cat(paste0('<h5><b>',country,'</b></h5>\n'))
-fun_plotTimeSeries(obj = obj[,],chartType = 0,typeL = 'o',dateFormat = dateFormat,
-                   dataSource = dataSource,needLefLab = 0,fitLcolor = 2,cexL = 2)
+fun_plotBMI(obj1 = USA,obj2 = EUR)
 cat('<hr>')
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = EUR,dateFormat = dateFormat))
 cat('<hr>')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 country <- 'China'
-obj <- bigMacIndex[grep(country,bigMacIndex[,2],ignore.case = T),c(1,4)]
-obj <- obj[order(obj[,1],decreasing = F),]
-colnames(obj)[2] <- paste0('Big Mac Index:',country)
 cat(paste0('<h5><b>',country,'</b></h5>\n'))
-fun_plotTimeSeries(obj = obj[,],chartType = 0,typeL = 'o',dateFormat = dateFormat,
-                   dataSource = dataSource,needLefLab = 0,fitLcolor = 2,cexL = 2)
+fun_plotBMI(obj1 = USA,obj2 = CHN)
 cat('<hr>')
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = CHN,dateFormat = dateFormat))
 cat('<hr>')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 country <- 'Britain'
-obj <- bigMacIndex[grep(country,bigMacIndex[,2],ignore.case = T),c(1,4)]
-obj <- obj[order(obj[,1],decreasing = F),]
-colnames(obj)[2] <- paste0('Big Mac Index:',country)
 cat(paste0('<h5><b>',country,'</b></h5>\n'))
-fun_plotTimeSeries(obj = obj[,],chartType = 0,typeL = 'o',dateFormat = dateFormat,
-                   dataSource = dataSource,needLefLab = 0,fitLcolor = 2,cexL = 2)
+fun_plotBMI(obj1 = USA,obj2 = GBP)
 cat('<hr>')
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = GBP,dateFormat = dateFormat))
 cat('<hr>')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 country <- 'Australia'
-obj <- bigMacIndex[grep(country,bigMacIndex[,2],ignore.case = T),c(1,4)]
-obj <- obj[order(obj[,1],decreasing = F),]
-colnames(obj)[2] <- paste0('Big Mac Index:',country)
 cat(paste0('<h5><b>',country,'</b></h5>\n'))
-fun_plotTimeSeries(obj = obj[,],chartType = 0,typeL = 'o',dateFormat = dateFormat,
-                   dataSource = dataSource,needLefLab = 0,fitLcolor = 2,cexL = 2)
+fun_plotBMI(obj1 = USA,obj2 = AUS)
 cat('<hr>')
-fun_transposeDataFrame(obj = obj,dateFormat = dateFormat)
-fun_markdownTable(obj = tDF)
+fun_markdownTable(obj = fun_transposeDataFrame(obj = AUS,dateFormat = dateFormat))
+cat('<hr>')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+country <- 'Switzerland'
+cat(paste0('<h5><b>',country,'</b></h5>\n'))
+fun_plotBMI(obj1 = USA,obj2 = SWZ)
+cat('<hr>')
+fun_markdownTable(obj = fun_transposeDataFrame(obj = SWZ,dateFormat = dateFormat))
 cat('<hr>')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-obj <- subset(bigMacIndex,bigMacIndex[,1]==bigMacIndex[1,1])[,c(2,3,4,5)]
-cat(paste0('#### ',format(bigMacIndex[1,1],dateFormat)))
-fun_markdownTable(obj = obj)
+objDate <- bigMacIndex[1,1]
+obj <- subset(bigMacIndex,bigMacIndex[,1]==objDate)[,c(2,3,4,5,6)]
+colnames(obj)[-1] <- paste0(format(objDate,dateFormat),':',colnames(obj)[-1])
 ```
 
-***
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+##################
+obj <- obj[order(obj[,4],decreasing = T),]
+obj0 <- obj[1:20,]
+obj0$Color <- '#4169e1'
+obj0$Color[which(obj0$Country=='United States')] <- '#dc143c'
+par(mar=c(4,8,4,2),family='Meiryo',font.main=1,cex.main=1)
+barplot(height = obj0[,4],names.arg = obj0$Country,horiz = T,col = obj0$Color,
+        las=1,main = paste0('Big Mac Price:',colnames(obj0)[4],'\nSource:',dataSource))
+dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_outputMD(tags = 'ビッグマック指数',
+             objDF = obj,
+             htmlName = htmlName,
+             image1 = 1,
+             title = dataTitle,
+             tableTitle = 'Latest Data',
+             tableName = 'Big Mac Index')
+fun_updateURLcsv()
+```
+
 <script>MakeNegative();</script>
 <script>
   (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
