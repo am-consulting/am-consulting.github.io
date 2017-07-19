@@ -1,0 +1,2487 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+
+
+<title>Functions http://am-consulting.co.jp</title>
+
+
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+
+
+
+
+
+<link rel="stylesheet" href="R-Functions_files/style.css" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<div class="row">
+<div class="col s12 m3">
+<div class="table cover">
+<div class="cover-card table-cell table-middle">
+<span class="author_name">Functions<br><a href="http://am-consulting.co.jp" class="uri">http://am-consulting.co.jp</a></span>
+</div>
+</div>
+</div>
+
+
+<div class="col s12 m9">
+<div class="post-listing">
+
+<div id="post">
+<article class="post-content">
+<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+<style>.main-container {max-width : 1000px;}</style>
+<div id="functions" class="section level1">
+<h1>Functions</h1>
+<hr />
+<ul>
+<li>Title : Functions</li>
+<li>Date : 2017-07-19 15:28:25</li>
+</ul>
+<hr />
+<pre><code>## $dyBarChart
+## function (dygraph) 
+## {
+##     dyPlotter(dygraph = dygraph, name = &quot;BarChart&quot;, path = system.file(&quot;examples/plotters/barchart.js&quot;, 
+##         package = &quot;dygraphs&quot;))
+## }
+## 
+## $dyCrosshair
+## function (dygraph, direction = c(&quot;both&quot;, &quot;horizontal&quot;, &quot;vertical&quot;)) 
+## {
+##     dyPlugin(dygraph = dygraph, name = &quot;Crosshair&quot;, path = system.file(&quot;plugins/crosshair.js&quot;, 
+##         package = &quot;dygraphs&quot;), options = list(direction = match.arg(direction)))
+## }
+## 
+## $dyMultiColumn
+## function (dygraph) 
+## {
+##     dyPlotter(dygraph = dygraph, name = &quot;MultiColumn&quot;, path = system.file(&quot;examples/plotters/multicolumn.js&quot;, 
+##         package = &quot;dygraphs&quot;))
+## }
+## 
+## $dyUnzoom
+## function (dygraph) 
+## {
+##     dyPlugin(dygraph = dygraph, name = &quot;Unzoom&quot;, path = system.file(&quot;plugins/unzoom.js&quot;, 
+##         package = &quot;dygraphs&quot;))
+## }
+## 
+## $fun_acf
+## function (obj, lag.max = 12 * 3, objColumn = 2) 
+## {
+##     if (exists(&quot;acfDF&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;acfDF&quot;, envir = .GlobalEnv)
+##     }
+##     row.names(obj) &lt;- NULL
+##     lag.max &lt;- lag.max
+##     par(mar = c(5, 5, 4, 2), family = &quot;Meiryo&quot;, font.main = 1, 
+##         cex.main = 1.1)
+##     resultACF &lt;- acf(x = obj[, objColumn], lag.max = lag.max, 
+##         main = paste0(&quot;自己相関係数\n&quot;, colnames(obj)[objColumn]), 
+##         panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T), 
+##         drop.lag.0 = F, plot = T)
+##     return(data.frame(Lag = resultACF$lag, ACF = resultACF$acf, 
+##         stringsAsFactors = F))
+## }
+## 
+## $fun_addTxtToChart
+## function (obj, objCol = 2, cexTxt = 1.2, funType = &quot;mean&quot;, col = &quot;red&quot;) 
+## {
+##     y &lt;- funType
+##     if (funType == &quot;mean&quot;) {
+##         y &lt;- mean(obj[, objCol])
+##     }
+##     if (funType == &quot;min&quot;) {
+##         y &lt;- min(obj[, objCol])
+##     }
+##     if (funType == &quot;max&quot;) {
+##         y &lt;- max(obj[, objCol])
+##     }
+##     abline(v = as.numeric(as.Date(&quot;1989-04-01&quot;)), lty = 2)
+##     text(x = as.numeric(as.Date(&quot;1989-04-01&quot;)), y = y, labels = &quot;消費税3%導入&quot;, 
+##         srt = 90, pos = 4, cex = cexTxt, col = col)
+##     abline(v = as.numeric(as.Date(&quot;1997-04-01&quot;)), lty = 2)
+##     text(x = as.numeric(as.Date(&quot;1997-04-01&quot;)), y = y, labels = &quot;消費税増税(5%)&quot;, 
+##         srt = 90, pos = 4, cex = cexTxt, col = col)
+##     abline(v = as.numeric(as.Date(&quot;2008-09-15&quot;)), lty = 2)
+##     text(x = as.numeric(as.Date(&quot;2008-09-15&quot;)), y = y, labels = &quot;リーマンショック&quot;, 
+##         srt = 90, pos = 4, cex = cexTxt, col = col)
+##     abline(v = as.numeric(as.Date(&quot;2012-12-26&quot;)), lty = 2)
+##     text(x = as.numeric(as.Date(&quot;2012-12-26&quot;)), y = y, labels = &quot;第二次安倍政権発足&quot;, 
+##         srt = 90, pos = 4, cex = cexTxt, col = col)
+##     abline(v = as.numeric(as.Date(&quot;2014-04-01&quot;)), lty = 2)
+##     text(x = as.numeric(as.Date(&quot;2014-04-01&quot;)), y = y, labels = &quot;消費税増税(8%)&quot;, 
+##         srt = 90, pos = 4, cex = cexTxt, col = col)
+##     abline(v = as.numeric(as.Date(&quot;2016-01-29&quot;)), lty = 2)
+##     text(x = as.numeric(as.Date(&quot;2016-01-29&quot;)), y = y, labels = &quot;マイナス金利付き量的質的金融緩和の導入&quot;, 
+##         srt = 90, pos = 4, cex = cexTxt, col = col)
+## }
+## 
+## $fun_adfTest
+## function (obj, objColumn = 2, lag = 1, diff = 1) 
+## {
+##     library(tseries)
+##     cat(&quot;原数値\n&quot;)
+##     print(apply(obj[, objColumn, drop = F], 2, function(x) adf.test(x = x)))
+##     cat(&quot;一次差分\n&quot;)
+##     diffDF &lt;- fun_makeDiffTable(obj = obj, lag = lag, diff = diff)
+##     print(apply(diffDF[, objColumn, drop = F], 2, function(x) adf.test(x = x)))
+## }
+## 
+## $fun_Anomaly
+## function (obj, dateCol = 1, valueCol = 2, max_anoms = 0.1, direction = &quot;both&quot;, 
+##     plot = T, alpha = 0.5, y_log = F, title = &quot;&quot;, tz = &quot;GMT&quot;) 
+## {
+##     tsWithTZ &lt;- obj[, c(dateCol, valueCol)]
+##     tsWithTZ[, 1] &lt;- as.POSIXct(x = tsWithTZ[, 1], tz = tz)
+##     detectResult &lt;- AnomalyDetectionTs(x = tsWithTZ, max_anoms = max_anoms, 
+##         direction = direction, plot = plot, alpha = alpha, y_log = y_log, 
+##         title = title)
+##     returnList &lt;- list(tsWithTZ = tsWithTZ, detectResult = detectResult)
+##     return(returnList)
+## }
+## 
+## $fun_arfima
+## function (obj, objColumn = 2, h = 12, displayRange = 12 * 2, 
+##     ciLevel = c(0.95, 0.7)) 
+## {
+##     if (exists(&quot;forecastResultDF&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;forecastResultDF&quot;, envir = .GlobalEnv)
+##     }
+##     library(forecast)
+##     result_arfima &lt;- arfima(y = obj[, objColumn], drange = c(0, 
+##         1), estim = &quot;mle&quot;, lambda = NULL)
+##     forecastResult &lt;- forecast(result_arfima, level = ciLevel, 
+##         h = h, plot = F)
+##     xlim &lt;- c(length(forecastResult$x) - displayRange + 1, length(forecastResult$x) + 
+##         h)
+##     ylim &lt;- c(min(forecastResult$lower, tail(forecastResult$x, 
+##         displayRange + 1)), max(forecastResult$upper, tail(forecastResult$x, 
+##         displayRange + 1)))
+##     xAxisTex &lt;- format(x = seq(from = tail(obj, displayRange)[1, 
+##         1], by = &quot;+1 month&quot;, length.out = length(seq(xlim[1], 
+##         xlim[2]))), &quot;%Y-%m&quot;)
+##     par(family = &quot;Meiryo&quot;, mar = c(5, 5, 5.5, 2))
+##     plot(forecastResult, xaxt = &quot;n&quot;, font.axis = 1, font.main = 1, 
+##         font.lab = 1, font.sub = 1, cex.main = 1.1, xlim = xlim, 
+##         ylim = ylim, type = &quot;o&quot;, pch = 20)
+##     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+##     axis(side = 1, at = seq(xlim[1], xlim[2]), labels = xAxisTex, 
+##         cex.axis = 1, las = 2)
+##     text(x = seq(xlim[1], xlim[2] - h), y = tail(forecastResult$x, 
+##         displayRange), labels = tail(forecastResult$x, displayRange), 
+##         srt = 90, pos = 3, offset = 2, cex = 0.8)
+##     mtext(text = paste0(colnames(obj)[objColumn], &quot;\nC.I:&quot;, paste0(ciLevel, 
+##         collapse = &quot;,&quot;)), side = 3, outer = F, line = 0)
+##     return(data.frame(forecastResult, row.names = NULL, stringsAsFactors = F, 
+##         check.names = F))
+## }
+## 
+## $fun_ArimaTest
+## function (obj, tailN = c(10^10, 12 * 10, 12 * 5, 12 * 3), dateColumn = 1, 
+##     valueColumn = 2, h = 12, ic = &quot;aic&quot;, level = c(0.6, 0.8, 
+##         0.95), arfima = 0, plotV = 1, plotF = 1) 
+## {
+##     forecastByArima &lt;- list()
+##     accuracyList &lt;- list()
+##     Date &lt;- format(tail(seq(tail(obj[, 1], 1), by = &quot;month&quot;, 
+##         length.out = 13), -1), &quot;%Y-%m&quot;)
+##     par(mar = c(5, 4, 4, 1), family = &quot;Meiryo&quot;, oma = c(3, 0, 
+##         0, 0), mfrow = c(2, 2))
+##     for (iii in seq(length(tailN))) {
+##         tsData &lt;- tail(obj, tailN[iii])
+##         row.names(tsData) &lt;- NULL
+##         TimeSeriesData &lt;- head(tsData[, valueColumn], -h)
+##         if (arfima == 0) {
+##             resultArima &lt;- auto.arima(y = TimeSeriesData, ic = ic, 
+##                 trace = F, stepwise = T)
+##         }
+##         else {
+##             resultArima &lt;- arfima(y = TimeSeriesData, drange = c(0, 
+##                 1), estim = &quot;mle&quot;, lambda = NULL)
+##         }
+##         resultForecast &lt;- forecast(object = resultArima, level = level, 
+##             h = h)
+##         if (plotV == 1) {
+##             plot(resultForecast)
+##             mtext(text = paste0(&quot;Tail=&quot;, tailN[iii], &quot;months&quot;), 
+##                 side = 1, outer = F, padj = 2.6, font = 3)
+##             lines(tsData[, 2])
+##         }
+##         buf0 &lt;- accuracy(resultForecast, tail(tsData[, 2], h))
+##         accuracyList[[iii]] &lt;- buf0
+##         buf1 &lt;- data.frame(Set = paste0(row.names(buf0), &quot;:&quot;, 
+##             tailN[iii], &quot;months&quot;), buf0, stringsAsFactors = F, 
+##             check.names = F, row.names = NULL)
+##         if (iii == 1) {
+##             accuracyResult &lt;- buf1
+##         }
+##         else {
+##             accuracyResult &lt;- rbind(accuracyResult, buf1)
+##         }
+##     }
+##     if (plotV == 1) {
+##         mtext(text = paste0(colnames(tsData)[valueColumn], &quot;\nLevel:&quot;, 
+##             paste0(level, collapse = &quot;, &quot;), &quot;\nNumber of periods for forecasting=&quot;, 
+##             h), side = 1, outer = T, padj = 0.5, font = 4)
+##     }
+##     accTraining &lt;- accuracyResult[grep(&quot;training&quot;, accuracyResult$Set, 
+##         ignore.case = T), ]
+##     accTest &lt;- accuracyResult[-grep(&quot;training&quot;, accuracyResult$Set, 
+##         ignore.case = T), ]
+##     par(mar = c(5, 4, 4, 1), family = &quot;Meiryo&quot;, oma = c(3, 0, 
+##         0, 0), mfrow = c(2, 2))
+##     for (iii in seq(length(tailN))) {
+##         tsData &lt;- tail(obj, tailN[iii])
+##         TimeSeriesData &lt;- tsData[, valueColumn]
+##         if (arfima == 0) {
+##             resultArima &lt;- auto.arima(y = TimeSeriesData, ic = ic, 
+##                 trace = F, stepwise = T)
+##         }
+##         else {
+##             resultArima &lt;- arfima(y = TimeSeriesData, drange = c(0, 
+##                 1), estim = &quot;mle&quot;, lambda = NULL)
+##         }
+##         resultForecast &lt;- forecast(object = resultArima, level = level, 
+##             h = h)
+##         if (plotF == 1) {
+##             plot(resultForecast)
+##             mtext(text = paste0(&quot;Tail=&quot;, tailN[iii], &quot;months&quot;), 
+##                 side = 1, outer = F, padj = 2.6, font = 3)
+##         }
+##         buf0 &lt;- summary(resultForecast)
+##         buf0$Date &lt;- Date
+##         forecastByArima[[iii]] &lt;- buf0
+##     }
+##     if (plotF == 1) {
+##         mtext(text = paste0(colnames(tsData)[valueColumn], &quot;\nLevel:&quot;, 
+##             paste0(level, collapse = &quot;, &quot;), &quot;\nNumber of periods for forecasting=&quot;, 
+##             h), side = 1, outer = T, padj = 0.5, font = 4)
+##     }
+##     returnList &lt;- list(forecastByArima = forecastByArima, accuracyList = accuracyList, 
+##         accTraining = accTraining, accTest = accTest)
+##     return(returnList)
+## }
+## 
+## $fun_beforeORafter
+## function (obj, dateFormat = &quot;%Y-%m&quot;, colName = &quot;項目&quot;, grepWord = c(&quot;%&quot;, 
+##     &quot;倍率&quot;, &quot;\\(倍\\)&quot;, &quot;消費者態度指数&quot;, &quot;消費者意識指標&quot;, &quot;不足率&quot;), 
+##     targetYear = 2012, checkBlankRowColumn = 2) 
+## {
+##     if (exists(&quot;beforeORafter&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;beforeORafter&quot;, envir = .GlobalEnv)
+##     }
+##     library(RCurl)
+##     library(lubridate)
+##     script &lt;- getURL(&quot;https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/transposeDataFrame.r&quot;, 
+##         ssl.verifypeer = F)
+##     eval(parse(text = script))
+##     obj &lt;- obj[!is.na(obj[, checkBlankRowColumn]), ]
+##     obj &lt;- subset(obj, as.Date(paste0(targetYear, &quot;-&quot;, month(tail(obj[, 
+##         1], 1)), &quot;-1&quot;)) &lt;= obj[, 1])
+##     obj &lt;- obj[, !is.na(obj[1, ])]
+##     obj &lt;- obj[, !is.na(obj[nrow(obj), ])]
+##     obj &lt;- obj[c(1, nrow(obj)), ]
+##     obj0 &lt;- fun_transposeDataFrame(obj = obj, tailN = 2, dateFormat = dateFormat, 
+##         colName = colName)
+##     rateR &lt;- grep(paste0(grepWord, collapse = &quot;|&quot;), obj0[, 1], 
+##         ignore.case = T)
+##     if (length(rateR) != 0) {
+##         obj0[rateR, 4] &lt;- obj0[rateR, 3] - obj0[rateR, 2]
+##         obj0[-rateR, 4] &lt;- round((obj0[-rateR, 3] - obj0[-rateR, 
+##             2])/obj0[-rateR, 2] * 100, 1)
+##     }
+##     else {
+##         obj0[, 4] &lt;- round((obj0[, 3] - obj0[, 2])/obj0[, 2] * 
+##             100, 1)
+##     }
+##     colnames(obj0)[4] &lt;- &quot;変化(%またはポイント)&quot;
+##     obj0 &lt;- data.frame(ID = seq(1, nrow(obj0)), obj0, check.names = F, 
+##         stringsAsFactors = F)
+##     return(obj0)
+## }
+## 
+## $fun_boj
+## function (obj = dataSet) 
+## {
+##     boj &lt;- c(&quot;1882-10-6&quot;, &quot;Shigetoshi Yoshihara&quot;, &quot;1888-2-21&quot;, 
+##         &quot;Tetsunosuke Tomita&quot;, &quot;1889-9-3&quot;, &quot;Koichiro Kawada&quot;, 
+##         &quot;1896-11-11&quot;, &quot;Yanosuke Iwasaki&quot;, &quot;1898-10-20&quot;, &quot;Tatsuo Yamamoto&quot;, 
+##         &quot;1903-10-20&quot;, &quot;Shigeyoshi Matsuo&quot;, &quot;1911-6-1&quot;, &quot;Korekiyo Takahashi&quot;, 
+##         &quot;1913-2-28&quot;, &quot;Yataro Mishima&quot;, &quot;1919-3-13&quot;, &quot;Junnosuke Inoue(1)&quot;, 
+##         &quot;1923-9-5&quot;, &quot;Otohiko Ichiki&quot;, &quot;1927-5-10&quot;, &quot;Junnosuke Inoue(2)&quot;, 
+##         &quot;1928-6-12&quot;, &quot;Hisaakira Hijikata&quot;, &quot;1935-6-4&quot;, &quot;Eigo Fukai&quot;, 
+##         &quot;1937-2-9&quot;, &quot;Shigeaki Ikeda&quot;, &quot;1937-7-27&quot;, &quot;Toyotaro Yuki&quot;, 
+##         &quot;1944-3-18&quot;, &quot;渋澤敬三&quot;, &quot;1945-10-9&quot;, &quot;新木栄吉(1)&quot;, 
+##         &quot;1946-6-1&quot;, &quot;一萬田尚登&quot;, &quot;1954-12-11&quot;, &quot;新木栄吉(2)&quot;, 
+##         &quot;1956-11-30&quot;, &quot;山際正道&quot;, &quot;1964-12-17&quot;, &quot;宇佐美洵&quot;, &quot;1969-12-17&quot;, 
+##         &quot;佐々木直&quot;, &quot;1974-12-17&quot;, &quot;森永貞一郎&quot;, &quot;1979-12-17&quot;, 
+##         &quot;前川春夫&quot;, &quot;1984-12-17&quot;, &quot;澄田智&quot;, &quot;1989-12-17&quot;, &quot;三重野康&quot;, 
+##         &quot;1994-12-17&quot;, &quot;松下康夫&quot;, &quot;1998-3-20&quot;, &quot;速水優&quot;, &quot;2003-3-20&quot;, 
+##         &quot;福井俊彦&quot;, &quot;2008-4-9&quot;, &quot;白川正明&quot;, &quot;2013-3-20&quot;, &quot;黒田東彦&quot;)
+##     cnt &lt;- 1
+##     bojTable &lt;- data.frame()
+##     for (rrr in seq(1, length(boj), by = 2)) {
+##         bojTable[cnt, 1] &lt;- as.character(as.Date(boj[rrr]))
+##         bojTable[cnt, 2] &lt;- as.character(as.Date(boj[rrr + 2]))
+##         bojTable[cnt, 3] &lt;- boj[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     bojTable[nrow(bojTable), 2] &lt;- as.character(Sys.Date())
+##     write.table(bojTable, &quot;clipboard&quot;, sep = &quot;\t&quot;, row.names = F, 
+##         col.names = T)
+##     out &lt;- NULL
+##     for (rrr in 1:nrow(bojTable)) {
+##         if (rrr%%2 == 0) {
+##             col &lt;- &quot;#FFE6E6&quot;
+##         }
+##         else {
+##             col &lt;- &quot;#CCEBD6&quot;
+##         }
+##         tmp1 &lt;- paste0(&quot;dyShading(from = &#39;&quot;, bojTable[rrr, 1], 
+##             &quot;&#39;, to = &#39;&quot;, bojTable[rrr, 2], &quot;&#39;, color = &#39;&quot;, col, 
+##             &quot;&#39;) %&gt;% &quot;)
+##         if (rrr != nrow(bojTable)) {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, bojTable[rrr, 2], &quot;&#39;,&#39;&quot;, 
+##                 bojTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;) %&gt;% &quot;)
+##         }
+##         else {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, obj[nrow(obj), 1], &quot;&#39;,&#39;&quot;, 
+##                 bojTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;)&quot;)
+##         }
+##         out &lt;- c(out, tmp1, tmp2)
+##     }
+##     buf0 &lt;- paste(out, collapse = &quot;&quot;)
+##     assign(&quot;boj_dygraph&quot;, buf0, envir = .GlobalEnv)
+## }
+## 
+## $fun_CCF
+## function (objDF, y1 = 2, y2 = 3, lagmax = 30, plotLog = &quot;T&quot;, 
+##     dateFormat = &quot;%Y-%m&quot;) 
+## {
+##     windowsFonts(Meiryo = windowsFont(&quot;Meiryo&quot;))
+##     fun_plotCCF &lt;- function() {
+##         par(mar = c(5, 5, 6, 1), family = &quot;Meiryo&quot;, cex.main = 1)
+##         ccfResult &lt;- ccf(x = obj01, y = obj02, lag.max = lagmax, 
+##             na.action = na.omit, plot = plotLog, panel.first = grid(nx = NULL, 
+##                 ny = NULL, lty = 2, equilogs = T), main = paste0(paste0(colnames(obj)[c(y1, 
+##                 y2)], collapse = &quot;×&quot;), &quot;\n&quot;, dateRange, &quot;\n&quot;, 
+##                 mainTxt))
+##         return(ccfResult)
+##     }
+##     obj &lt;- na.omit(objDF)
+##     dateRange &lt;- paste0(format(range(obj[, 1]), dateFormat), 
+##         collapse = &quot;~&quot;)
+##     obj01 &lt;- obj[, y1]
+##     obj02 &lt;- obj[, y2]
+##     mainTxt &lt;- &quot;Level&quot;
+##     resultLevel &lt;- fun_plotCCF()
+##     cat(&quot;&lt;hr&gt;&quot;)
+##     objDiff &lt;- fun_makeDiffTable(obj = obj, lag = 1, diff = 1)
+##     obj01 &lt;- objDiff[, y1]
+##     obj02 &lt;- objDiff[, y2]
+##     mainTxt &lt;- &quot;1st Difference&quot;
+##     result1stDiff &lt;- fun_plotCCF()
+##     cat(&quot;&lt;hr&gt;&quot;)
+##     obj01 &lt;- rank(x = obj[, y1], ties.method = &quot;average&quot;)
+##     obj02 &lt;- rank(x = obj[, y2], ties.method = &quot;average&quot;)
+##     mainTxt &lt;- &quot;Spearman&#39;s rank correlation coefficient&quot;
+##     resultSpearman &lt;- fun_plotCCF()
+##     returnList &lt;- list(resultLevel = resultLevel, result1stDiff = result1stDiff, 
+##         resultSpearman = resultSpearman)
+##     return(returnList)
+## }
+## 
+## $fun_changesInSlope
+## function (obj, objCol = 2, h = 12, plot = 1) 
+## {
+##     slopeDF &lt;- data.frame()
+##     for (rrr in h:nrow(obj)) {
+##         tmp &lt;- obj[(rrr - h + 1):rrr, c(1, objCol)]
+##         lmResult &lt;- lm(tmp[, 2] ~ tmp[, 1])
+##         slopeDF[rrr, 1] &lt;- obj[rrr, 1]
+##         slopeDF[rrr, 2] &lt;- lmResult$coefficients[2]
+##     }
+##     slopeDF[, 1] &lt;- as.Date(slopeDF[, 1])
+##     colnames(slopeDF) &lt;- c(&quot;Date&quot;, &quot;Slope&quot;)
+##     slopeDF &lt;- na.omit(slopeDF)
+##     changesInConditions &lt;- merge(obj[, c(1, objCol)], slopeDF, 
+##         by = &quot;Date&quot;, all = &quot;T&quot;)
+##     if (plot == 1) {
+##         par(mar = c(4, 5, 4, 5), family = &quot;Meiryo&quot;, font.main = 1, 
+##             cex.main = 1)
+##         plot(changesInConditions[, c(1, 2)], type = &quot;l&quot;, col = &quot;#4169e1&quot;, 
+##             xlab = &quot;&quot;, ylab = &quot;Value&quot;, main = paste0(colnames(changesInConditions)[2], 
+##                 &quot;\n&quot;, paste0(format(range(changesInConditions[, 
+##                   1]), &quot;%Y-%m&quot;), collapse = &quot;~&quot;), &quot;\nRange(months):&quot;, 
+##                 h), panel.first = grid(nx = NULL, ny = NULL, 
+##                 lty = 2, equilogs = T))
+##         par(new = T)
+##         plot(changesInConditions[, c(1, 3)], type = &quot;h&quot;, col = &quot;#696969&quot;, 
+##             xlab = &quot;&quot;, ylab = &quot;&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;, panel.first = grid(nx = NULL, 
+##                 ny = NULL, lty = 2, equilogs = T))
+##         axis(side = 4, cex.axis = 1)
+##         mtext(text = colnames(changesInConditions)[3], side = 4, 
+##             line = 2.2, cex = 1)
+##     }
+##     changesInSlope &lt;- na.omit(data.frame(tail(changesInConditions, 
+##         -1), Product = head(changesInConditions$Slope, -1) * 
+##         tail(changesInConditions$Slope, -1)))
+##     changesInSlope &lt;- changesInSlope[changesInSlope$Product &lt; 
+##         0, ]
+##     returnList &lt;- list(changesInSlope = changesInSlope, changesInConditions = changesInConditions)
+##     return(returnList)
+## }
+## 
+## $fun_cointegration
+## function (obj, objX = 2, objY = 3) 
+## {
+##     par(mfrow = c(1, 2), family = &quot;Meiryo&quot;, mar = c(5, 5, 3, 
+##         3))
+##     resultLM &lt;- lm(obj[, objY] ~ obj[, objX])
+##     plot(x = obj[, objX], y = obj[, objY], pch = 20, xlab = colnames(obj)[objX], 
+##         ylab = colnames(obj)[objY], panel.first = grid(nx = NULL, 
+##             ny = NULL, lty = 2, equilogs = T))
+##     abline(resultLM, col = &quot;red&quot;, lwd = 2)
+##     plot(resultLM$residuals, type = &quot;h&quot;, ylab = &quot;Residuals&quot;, 
+##         panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T))
+##     cat(paste0(&quot;x:&quot;, colnames(obj)[objX], &quot; , y:&quot;, colnames(obj)[objY]))
+##     `x~y` &lt;- obj[, c(objX, objY)]
+##     tseries::po.test(x = `x~y`)
+## }
+## 
+## $fun_consumptionTax
+## function (obj = dataSet) 
+## {
+##     borderDate &lt;- tail(obj[, 1], 1)
+##     assign(&quot;ConsumptionTax&quot;, paste0(&quot;dyShading(from = &#39;1989-04-01&#39;, to = &#39;1997-03-31&#39;,color = &#39;#FFE6E6&#39;) %&gt;%\n    dyShading(from = &#39;1997-04-01&#39;, to = &#39;2014-03-31&#39;,color = &#39;#CCEBD6&#39;) %&gt;%\n    dyShading(from = &#39;2014-04-01&#39;, to = &#39;&quot;, 
+##         borderDate, &quot;&#39;, color = &#39;#FFE6E6&#39;) %&gt;%\n    dyEvent(&#39;1997-03-31&#39;, &#39;消費税3%&#39;, labelLoc = &#39;bottom&#39;) %&gt;%\n    dyEvent(&#39;2014-03-31&#39;, &#39;消費税5%&#39;, labelLoc = &#39;bottom&#39;) %&gt;%\n    dyEvent(&#39;&quot;, 
+##         borderDate, &quot;&#39;, &#39;消費税8%&#39;, labelLoc = &#39;bottom&#39;)&quot;), envir = .GlobalEnv)
+## }
+## 
+## $fun_convertToTS
+## function (tsData = obj, dateCol = 1, dataCol = 2, monthabb = 1) 
+## {
+##     if (4 &lt; length(unique(month(tsData[, dateCol])))) {
+##         if (3 &lt; length(unique(day(tsData[, dateCol])))) {
+##             frequencyN &lt;- 365
+##         }
+##         else {
+##             frequencyN &lt;- 12
+##         }
+##     }
+##     else {
+##         if (1 == length(unique(month(tsData[, dateCol])))) {
+##             frequencyN &lt;- 1
+##         }
+##         else {
+##             frequencyN &lt;- 4
+##         }
+##     }
+##     if (frequencyN != 4) {
+##         returnTS &lt;- ts(data = tsData[, dataCol], start = c(year(tsData[1, 
+##             dateCol]), month(tsData[1, dateCol])), frequency = frequencyN)
+##         returnDF &lt;- data.frame(tapply(returnTS, list(year = floor(time(returnTS)), 
+##             month = cycle(returnTS)), c), check.names = F, stringsAsFactors = F)
+##     }
+##     else {
+##         returnTS &lt;- ts(data = tsData[, dataCol], start = c(year(tsData[1, 
+##             dateCol]), month(tsData[1, dateCol])/3), frequency = frequencyN)
+##         returnDF &lt;- data.frame(tapply(returnTS, list(year = floor(time(returnTS)), 
+##             month = cycle(returnTS)), c), check.names = F, stringsAsFactors = F)
+##         colnames(returnDF) &lt;- paste0(&quot;Qtr&quot;, colnames(returnDF))
+##         monthabb &lt;- 0
+##     }
+##     if (monthabb == 1) {
+##         colnames(returnDF) &lt;- month.abb[as.numeric(colnames(returnDF))]
+##     }
+##     returnList &lt;- list(returnTS = returnTS, returnDF = returnDF)
+##     return(returnList)
+## }
+## 
+## $fun_dataTable
+## function (obj, orderColumn = 0, orderDirection = &quot;desc&quot;, caption = &quot;&quot;, 
+##     title = &quot;&quot;, leftcolumns = 1, dateFormat = &quot;%Y-%m&quot;, menuLength = 10, 
+##     needID = 0, filter = &quot;none&quot;, bigmarkColumn = 0) 
+## {
+##     cat(paste0(&quot;&lt;h5&gt;&quot;, title, &quot;&lt;/h5&gt;&quot;))
+##     if (dateFormat != 0) {
+##         obj[, 1] &lt;- format(obj[, 1], dateFormat)
+##     }
+##     if (needID == 1) {
+##         obj &lt;- data.frame(ID = seq(1, nrow(obj)), obj, check.names = F, 
+##             stringsAsFactors = F)
+##     }
+##     if (bigmarkColumn != 0) {
+##         obj[, -bigmarkColumn] &lt;- apply(obj[, -bigmarkColumn, 
+##             drop = F], 2, function(x) format(x, big.mark = &quot;,&quot;, 
+##             scientific = F))
+##     }
+##     DT::datatable(obj, extensions = c(&quot;Buttons&quot;, &quot;ColReorder&quot;, 
+##         &quot;FixedColumns&quot;, &quot;FixedHeader&quot;), options = list(paging = T, 
+##         autoWidth = F, info = T, lengthChange = T, ordering = T, 
+##         searching = T, scrollX = T, lengthMenu = list(c(menuLength, 
+##             -1), c(menuLength, &quot;All&quot;)), orderClasses = T, order = list(list(orderColumn, 
+##             orderDirection)), search = list(regex = T, caseInsensitive = T), 
+##         searchHighlight = T, dom = &quot;BRlfrtip&quot;, buttons = I(&quot;colvis&quot;), 
+##         colReorder = T, fixedHeader = T, fixedColumns = list(leftColumns = leftcolumns), 
+##         columnDefs = list(list(className = &quot;dt-right&quot;, targets = 0:(ncol(obj) - 
+##             1)))), rownames = F, class = &quot;display compact&quot;, escape = F, 
+##         filter = filter, caption = caption)
+## }
+## 
+## $fun_doSimulation
+## function (obj, breaksBy = 0.01, finalbreaksBy = 2, objCol = 2, 
+##     adjustment = 100, simulationLength = 100, simulationNumber = 100) 
+## {
+##     x &lt;- fun_makeDiffRatioTable(obj = obj, lag = 1, diff = 1, 
+##         roundDigits = 5)[, objCol]
+##     startValue &lt;- tail(obj, 1)[, objCol]
+##     par(mfrow = c(1, 2), family = &quot;Meiryo&quot;, font.main = 1, cex.main = 1.1, 
+##         oma = c(0, 0, 2, 0))
+##     breaks &lt;- seq(from = floor(min(x)), to = ceiling(max(x)) + 
+##         breaksBy, by = breaksBy)
+##     resultHist &lt;- hist(x = x, breaks = breaks, plot = F)
+##     buf0 &lt;- data.frame(resultHist$mids, resultHist$counts, resultHist$counts/sum(resultHist$counts))
+##     histTable &lt;- buf0[buf0[, 2] != 0, ]
+##     checkSum &lt;&lt;- sum(histTable[, 3])
+##     fun_simulate &lt;- function() {
+##         simulationResult &lt;- vector()
+##         simulationResult[1] &lt;- startValue
+##         for (iii in 2:simulationLength) {
+##             prob &lt;- sample(x = histTable[, 1], size = 1, replace = T, 
+##                 prob = histTable[, 3])
+##             simulationResult[iii] &lt;- simulationResult[iii - 1] * 
+##                 (1 + prob/100)
+##         }
+##         assign(&quot;simulationResult&quot;, simulationResult, envir = .GlobalEnv)
+##     }
+##     simulationResultS &lt;- data.frame()
+##     for (iii in 1:simulationNumber) {
+##         fun_simulate()
+##         if (iii == 1) {
+##             simulationResultS &lt;- simulationResult
+##         }
+##         else {
+##             simulationResultS &lt;- data.frame(simulationResultS, 
+##                 simulationResult, stringsAsFactors = F)
+##         }
+##     }
+##     colnames(simulationResultS) &lt;- paste0(&quot;sim&quot;, seq(1, simulationNumber))
+##     ylim &lt;- c(min(simulationResultS), max(simulationResultS))
+##     plot(x = simulationResultS[, 1], type = &quot;o&quot;, pch = 20, ylim = ylim, 
+##         xlab = &quot;&quot;, ylab = &quot;&quot;, panel.first = grid(nx = NULL, ny = NULL, 
+##             lty = 2, equilogs = T), main = paste0(&quot;Initial:&quot;, 
+##             startValue))
+##     for (iii in 2:simulationNumber) {
+##         lines(simulationResultS[, iii], type = &quot;o&quot;, pch = 20)
+##     }
+##     abline(h = startValue, col = &quot;red&quot;, lwd = 2)
+##     x0 &lt;- unlist(tail(simulationResultS, 1))
+##     breaks &lt;- seq(from = floor(min(x0) * adjustment)/adjustment, 
+##         to = ceiling(max(x0) * adjustment)/adjustment + finalbreaksBy, 
+##         by = finalbreaksBy)
+##     finalHist &lt;- hist(x = x0, breaks = breaks, xlab = &quot;&quot;, main = &quot;&quot;, 
+##         col = &quot;gray&quot;, plot = T)
+##     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+##     mtext(text = colnames(obj)[objCol], side = 3, outer = T)
+##     assign(&quot;simulationResultS&quot;, simulationResultS, envir = .GlobalEnv)
+##     assign(&quot;finalHist&quot;, finalHist, envir = .GlobalEnv)
+##     finalHistDF &lt;- data.frame(finalHist$mids, finalHist$counts, 
+##         finalHist$counts/sum(finalHist$counts) * 100)
+##     colnames(finalHistDF) &lt;- c(&quot;Mid&quot;, &quot;Count&quot;, &quot;Ratio(%)&quot;)
+##     assign(&quot;finalHistDF&quot;, finalHistDF, envir = .GlobalEnv)
+## }
+## 
+## $fun_downloadFromESTAT
+## function (tclassID = &quot;000001047452&quot;, targetFile = 1) 
+## {
+##     library(rvest)
+##     username &lt;- Sys.info()[&quot;user&quot;]
+##     pathOutput &lt;- paste0(&quot;C:/Users/&quot;, username, &quot;/Desktop/R_Data_Write/&quot;)
+##     setwd(pathOutput)
+##     pageURL &lt;- paste0(&quot;http://www.e-stat.go.jp/SG1/estat/GL08020102.do?_toGL08020102_&amp;tclassID=&quot;, 
+##         tclassID, &quot;&amp;cycleCode=1&amp;requestSender=estat&quot;)
+##     htmlMarkup &lt;- read_html(x = pageURL, encoding = &quot;utf8&quot;)
+##     linkList &lt;- htmlMarkup %&gt;% html_nodes(xpath = &quot;//table[@class = &#39;noborder&#39;]&quot;) %&gt;% 
+##         html_nodes(&quot;a&quot;) %&gt;% html_attr(&quot;href&quot;)
+##     listIDs &lt;- gsub(&quot;.+listid=([0-9]+)&amp;.+&quot;, &quot;\\1&quot;, linkList, 
+##         ignore.case = T)
+##     targetURL &lt;- paste0(&quot;http://www.e-stat.go.jp/SG1/estat/&quot;, 
+##         linkList[which(max(listIDs) == listIDs)])
+##     htmlMarkup &lt;- read_html(x = targetURL, encoding = &quot;utf8&quot;)
+##     linkList &lt;- htmlMarkup %&gt;% html_nodes(xpath = &quot;//table[@class = &#39;black&#39;]&quot;) %&gt;% 
+##         html_nodes(&quot;a&quot;) %&gt;% html_attr(&quot;href&quot;)
+##     fileList &lt;- gsub(&quot;.+(gl[0-9]+).+fileid=([0-9]+).+&quot;, &quot;\\1*\\2&quot;, 
+##         linkList[grep(&quot;xlsDownload&quot;, linkList)], ignore.case = T)
+##     buf1 &lt;- gsub(&quot;([^*]+)\\*.+&quot;, &quot;\\1&quot;, fileList[targetFile])
+##     buf2 &lt;- gsub(&quot;[^*]+\\*(.+)&quot;, &quot;\\1&quot;, fileList[targetFile])
+##     fileLink &lt;- paste0(&quot;http://www.e-stat.go.jp/SG1/estat/&quot;, 
+##         buf1, &quot;.do?_xlsDownload_&amp;fileId=&quot;, buf2, &quot;&amp;releaseCount=1&quot;)
+##     download.file(url = fileLink, destfile = paste0(buf2, &quot;.xls&quot;), 
+##         mode = &quot;wb&quot;)
+##     assign(&quot;fileNameFromESTAT&quot;, paste0(buf2, &quot;.xls&quot;), envir = .GlobalEnv)
+## }
+## 
+## $fun_dw
+## function (dwDF = obj, objX = 2, objY = 3) 
+## {
+##     library(lmtest)
+##     cat(paste0(&quot;x:&quot;, colnames(dwDF)[objX], &quot; , y:&quot;, colnames(dwDF)[objY]))
+##     x &lt;- dwDF[, objX]
+##     y &lt;- dwDF[, objY]
+##     print(dwtest(y ~ x))
+##     par(family = &quot;Meiryo&quot;, font.main = 1, font.lab = 1, mar = c(5, 
+##         5, 3, 1), cex.main = 1.1, cex.lab = 1, mfrow = c(1, 2))
+##     plot(x = x, y = y, type = &quot;p&quot;, pch = 20, xlab = colnames(dwDF)[objX], 
+##         ylab = colnames(dwDF)[objY], panel.first = grid(nx = NULL, 
+##             ny = NULL, lty = 2, equilogs = T))
+##     resultLM &lt;- lm(y ~ x)
+##     print(summary(resultLM))
+##     abline(resultLM, col = &quot;red&quot;)
+##     residualDF &lt;- data.frame(dwDF[, 1, drop = F], Residual = resultLM$residuals, 
+##         stringsAsFactors = F, check.names = F)
+##     plot(x = residualDF[, 1], y = residualDF[, 2], xlab = colnames(residualDF)[1], 
+##         ylab = colnames(residualDF)[2], type = &quot;p&quot;, pch = 20, 
+##         panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T))
+## }
+## 
+## $fun_dygraph
+## function (obj = dataSet, mainTitle = &quot;&quot;, legendWidth = 600, hairDirection = &quot;both&quot;, 
+##     plotNum = 1, barPlot = 0, colors = colors, group = group, 
+##     quantiles = quantiles, strawBroom = strawBroom) 
+## {
+##     xtsData &lt;- xts(obj[, -1], order.by = obj[, 1])
+##     colnames(xtsData) &lt;- colnames(obj)[-1]
+##     if (group == 1) {
+##         dygraphPlot &lt;- dygraph(xtsData, main = mainTitle, group = &quot;amcc&quot;)
+##     }
+##     else {
+##         dygraphPlot &lt;- dygraph(xtsData, main = mainTitle)
+##     }
+##     dygraphPlot &lt;- dygraphPlot %&gt;% dyLegend(width = legendWidth, 
+##         show = &quot;follow&quot;) %&gt;% dyRangeSelector() %&gt;% dyUnzoom() %&gt;% 
+##         dyCrosshair(direction = hairDirection) %&gt;% dyOptions(colors = colors, 
+##         maxNumberWidth = 100)
+##     if (quantiles != 0) {
+##         summaryResult &lt;- summary(obj[, quantiles])
+##         dygraphPlot &lt;- dygraphPlot %&gt;% dyLimit(as.numeric(summaryResult[1]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[2]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[3]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[4]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[5]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[6]), 
+##             color = &quot;red&quot;)
+##     }
+##     if (barPlot == 1) {
+##         dygraphPlot &lt;- dygraphPlot %&gt;% dyBarChart()
+##     }
+##     if (strawBroom == 1) {
+##         dygraphPlot &lt;- dygraphPlot %&gt;% dyRebase(percent = T)
+##     }
+##     dygraphPlot &lt;- dygraphPlot %&gt;% dyLimit(0, color = &quot;red&quot;)
+##     assign(paste0(&quot;dygraphPlot&quot;, plotNum), dygraphPlot, envir = .GlobalEnv)
+## }
+## 
+## $fun_dygraph_shade
+## function (plotNum = 1) 
+## {
+##     assign(paste0(&quot;knit_expanded&quot;, plotNum), paste0(&quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, ConsumptionTax)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;, &quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, primeMinisterOfJapan_dygraph)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;, &quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, boj_dygraph)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;, &quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, potus_dygraph)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;, &quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, frb_dygraph)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;, &quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, event_dygraph_point,&#39; %&gt;%  &#39;,event_dygraph_range)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;, &quot;\n```{r warning=F, error=F, message=F, echo=F, results=&#39;asis&#39;}\n\n&quot;, 
+##         &quot;eval(parse(text = paste0(&#39;dygraphPlot&quot;, plotNum, &quot; %&gt;% &#39;, eventE_dygraph_point)))&quot;, 
+##         &quot;\n\ncat(&#39;&lt;hr&gt;&#39;)\n\n```&quot;), envir = .GlobalEnv)
+## }
+## 
+## $fun_dygraphPlot
+## function (tsData, mainTitle = &quot;&quot;, name = &quot;Dark2&quot;, group = 0, 
+##     show = c(&quot;auto&quot;, &quot;always&quot;, &quot;onmouseover&quot;, &quot;follow&quot;, &quot;never&quot;), 
+##     width = 250, direction = c(&quot;both&quot;, &quot;horizontal&quot;, &quot;vertical&quot;), 
+##     maxNumberWidth = 100, axis = c(&quot;y&quot;, &quot;y&quot;), drawPoints = c(TRUE, 
+##         TRUE), pointSize = c(2, 2), fillGraph = c(TRUE, FALSE), 
+##     shadePattern = c(seq(8)), strawBroom = 0, quantiles = 0) 
+## {
+##     xtsData &lt;- xts(tsData[, -1], order.by = tsData[, 1])
+##     colnames(xtsData) &lt;- colnames(tsData)[-1]
+##     colors &lt;- RColorBrewer::brewer.pal(n = ncol(xtsData), name = name)
+##     if (group == 1) {
+##         obj &lt;- dygraph(xtsData, main = mainTitle, group = &quot;amcc&quot;)
+##     }
+##     else {
+##         obj &lt;- dygraph(xtsData, main = mainTitle)
+##     }
+##     for (ccc in seq(ncol(xtsData))) {
+##         obj &lt;- obj %&gt;% dySeries(colnames(xtsData)[ccc], drawPoints = drawPoints[ccc], 
+##             pointSize = pointSize[ccc], axis = axis[ccc], color = colors[ccc], 
+##             fillGraph = fillGraph[ccc])
+##     }
+##     if (length(unique(axis)) != 1) {
+##         labelY &lt;- paste0(colnames(xtsData)[grep(&quot;y$&quot;, axis)], 
+##             collapse = &quot;,&quot;)
+##         labelY2 &lt;- paste0(colnames(xtsData)[grep(&quot;y2&quot;, axis)], 
+##             collapse = &quot;,&quot;)
+##         obj &lt;- obj %&gt;% dyAxis(&quot;y&quot;, label = labelY) %&gt;% dyAxis(&quot;y2&quot;, 
+##             label = labelY2, independentTicks = T)
+##     }
+##     obj &lt;- obj %&gt;% dyLegend(show = show, width = width, showZeroValues = &quot;TRUE&quot;, 
+##         labelsSeparateLines = &quot;TRUE&quot;, hideOnMouseOut = &quot;TRUE&quot;) %&gt;% 
+##         dyRangeSelector(keepMouseZoom = &quot;TRUE&quot;, retainDateWindow = &quot;FALSE&quot;) %&gt;% 
+##         dyUnzoom() %&gt;% dyCrosshair(direction = direction) %&gt;% 
+##         dyOptions(maxNumberWidth = maxNumberWidth, pointSize = pointSize)
+##     if (strawBroom == 1) {
+##         obj &lt;- obj %&gt;% dyRebase(percent = T)
+##     }
+##     if (quantiles != 0) {
+##         summaryResult &lt;- summary(na.omit(as.vector(xtsData[, 
+##             quantiles - 1])))
+##         obj &lt;- obj %&gt;% dyLimit(as.numeric(summaryResult[1]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[2]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[3]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[4]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[5]), 
+##             color = &quot;red&quot;) %&gt;% dyLimit(as.numeric(summaryResult[6]), 
+##             color = &quot;red&quot;)
+##     }
+##     fun_consumptionTax(obj = tsData)
+##     fun_primeMinisterOfJapan(obj = tsData)
+##     fun_boj(obj = tsData)
+##     fun_event(obj = tsData)
+##     fun_potus(obj = tsData)
+##     fun_frb(obj = tsData)
+##     fun_eventE(obj = tsData)
+##     dygraphTxt &lt;- switch(shadePattern, obj, eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, ConsumptionTax))), eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, primeMinisterOfJapan_dygraph))), eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, boj_dygraph))), eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, potus_dygraph))), eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, frb_dygraph))), eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, event_dygraph_point))), eval(parse(text = paste0(&quot;obj&quot;, 
+##         &quot; %&gt;% &quot;, eventE_dygraph_point))))
+##     return(dygraphTxt)
+## }
+## 
+## $fun_event
+## function (obj = dataSet) 
+## {
+##     eventRange &lt;- c(&quot;2013-09-08&quot;, as.character(obj[nrow(obj), 
+##         1]), &quot;2020年東京オリンピック決定&quot;, &quot;1986-12-01&quot;, &quot;1991-02-01&quot;, 
+##         &quot;バブル景気&quot;, &quot;1997-01-01&quot;, &quot;1998-01-01&quot;, &quot;アジア通貨危機&quot;)
+##     event &lt;- c(as.character(obj[nrow(obj), 1]), &quot;2020年東京オリンピック決定&quot;, 
+##         &quot;1998-01-01&quot;, &quot;アジア通貨危機&quot;, &quot;1991-02-01&quot;, &quot;バブル景気&quot;, 
+##         &quot;2008-09-15&quot;, &quot;リーマン･ブラザーズ破綻&quot;, &quot;2016-11-08&quot;, 
+##         &quot;2016年アメリカ合衆国大統領選挙&quot;, &quot;2011-03-11&quot;, &quot;東日本大震災&quot;, 
+##         &quot;1995-01-17&quot;, &quot;阪神･淡路大震災&quot;, &quot;1985-09-22&quot;, &quot;プラザ合意&quot;, 
+##         &quot;1990-03-27&quot;, &quot;総量規制&quot;, &quot;1987-10-19&quot;, &quot;ブラックマンデー&quot;, 
+##         &quot;1987-02-22&quot;, &quot;ルーブル合意&quot;, &quot;2017-03-24&quot;, &quot;オバマケア代替案撤回&quot;)
+##     event &lt;- iconv(event, &quot;shift_jis&quot;, &quot;utf8&quot;)
+##     cnt &lt;- 1
+##     eventTable &lt;- data.frame()
+##     for (rrr in seq(1, length(event), by = 2)) {
+##         eventTable[cnt, 1] &lt;- as.character(as.Date(event[rrr]))
+##         eventTable[cnt, 2] &lt;- event[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     cnt &lt;- 1
+##     eventRangeTable &lt;- data.frame()
+##     for (rrr in seq(1, length(eventRange), by = 3)) {
+##         eventRangeTable[cnt, 1] &lt;- as.character(as.Date(eventRange[rrr]))
+##         eventRangeTable[cnt, 2] &lt;- as.character(as.Date(eventRange[rrr + 
+##             1]))
+##         eventRangeTable[cnt, 3] &lt;- eventRange[rrr + 2]
+##         cnt &lt;- cnt + 1
+##     }
+##     out &lt;- NULL
+##     for (rrr in 1:nrow(eventRangeTable)) {
+##         if (rrr%%2 == 0) {
+##             col &lt;- &quot;#FFE6E6&quot;
+##         }
+##         else {
+##             col &lt;- &quot;#CCEBD6&quot;
+##         }
+##         tmp &lt;- paste0(&quot;dyShading(from = &#39;&quot;, eventRangeTable[rrr, 
+##             1], &quot;&#39;, to = &#39;&quot;, eventRangeTable[rrr, 2], &quot;&#39;, color = &#39;&quot;, 
+##             col, &quot;&#39;)&quot;)
+##         out &lt;- c(out, tmp)
+##     }
+##     buf0 &lt;- paste(out, collapse = &quot; %&gt;% &quot;)
+##     assign(&quot;event_dygraph_range&quot;, buf0, envir = .GlobalEnv)
+##     out &lt;- NULL
+##     for (rrr in seq(1, length(event), by = 2)) {
+##         if (obj[1, 1] &lt;= event[rrr]) {
+##             tmp &lt;- paste0(&quot;dyEvent(&#39;&quot;, event[rrr], &quot;&#39;,&#39;&quot;, event[rrr + 
+##                 1], &quot;&#39;, labelLoc = &#39;bottom&#39;)&quot;)
+##             out &lt;- c(out, tmp)
+##         }
+##     }
+##     buf1 &lt;- paste(out, collapse = &quot; %&gt;% &quot;)
+##     assign(&quot;event_dygraph_point&quot;, buf1, envir = .GlobalEnv)
+## }
+## 
+## $fun_eventE
+## function (obj = dataSet) 
+## {
+##     eventE &lt;- c(&quot;1971-12-18&quot;, &quot;Smithsonian Agreement&quot;, &quot;1985-09-22&quot;, 
+##         &quot;Plaza Accord&quot;, &quot;1987-02-22&quot;, &quot;Louvre Accord&quot;, &quot;1987-10-19&quot;, 
+##         &quot;Black Monday&quot;, &quot;2008-09-15&quot;, &quot;Bankruptcy of Lehman Brothers&quot;, 
+##         &quot;2016-06-23&quot;, &quot;United Kingdom European Union Membership Referendum&quot;, 
+##         &quot;2016-11-09&quot;, &quot;United States presidential election of 2016&quot;, 
+##         &quot;2017-03-24&quot;, &quot;Republicans failed to repeal Obamacare&quot;, 
+##         &quot;2017-03-29&quot;, &quot;Theresa May triggers Article 50&quot;)
+##     eventE &lt;- iconv(eventE, &quot;shift_jis&quot;, &quot;utf8&quot;)
+##     cnt &lt;- 1
+##     eventTable &lt;- data.frame()
+##     for (rrr in seq(1, length(eventE), by = 2)) {
+##         eventTable[cnt, 1] &lt;- as.character(as.Date(eventE[rrr]))
+##         eventTable[cnt, 2] &lt;- eventE[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     cnt &lt;- 1
+##     out &lt;- NULL
+##     for (rrr in seq(1, length(eventE), by = 2)) {
+##         if (obj[1, 1] &lt;= eventE[rrr]) {
+##             tmp &lt;- paste0(&quot;dyEvent(&#39;&quot;, eventE[rrr], &quot;&#39;,&#39;&quot;, eventE[rrr + 
+##                 1], &quot;&#39;, labelLoc = &#39;bottom&#39;)&quot;)
+##             out &lt;- c(out, tmp)
+##         }
+##     }
+##     buf1 &lt;- paste(out, collapse = &quot; %&gt;% &quot;)
+##     assign(&quot;eventE_dygraph_point&quot;, buf1, envir = .GlobalEnv)
+## }
+## 
+## $fun_fit
+## function (obj, dateColumn = 1, objColumn = 2, needSA = 0) 
+## {
+##     library(lubridate)
+##     obj &lt;- na.omit(obj[, c(dateColumn, objColumn)])
+##     if (needSA != 0) {
+##         SAData &lt;- stl(ts(obj[, 2], start = c(year(obj[1, 1]), 
+##             month(obj[1, 1])), frequency = 12), s.window = &quot;periodic&quot;)
+##         SeasonalAdjustment &lt;- as.numeric(obj[, 2] - SAData$time.series[, 
+##             1])
+##     }
+##     loessResult &lt;- loess(formula = obj[, 2] ~ as.numeric(obj[, 
+##         1]), degree = 2)
+##     lmResult &lt;- lm(formula = obj[, 2] ~ as.numeric(obj[, 1]))
+##     if (needSA != 0) {
+##         objDF &lt;- data.frame(obj, `fit-loess` = predict(loessResult), 
+##             `fit-lm` = predict(lmResult), SeasonalAdjustment, 
+##             check.names = F, stringsAsFactors = F)
+##     }
+##     else {
+##         objDF &lt;- data.frame(obj, `fit-loess` = predict(loessResult), 
+##             `fit-lm` = predict(lmResult), check.names = F, stringsAsFactors = F)
+##     }
+##     return(objDF)
+## }
+## 
+## $fun_frb
+## function (obj = dataSet) 
+## {
+##     frb &lt;- c(&quot;1934-11-15&quot;, &quot;Marriner Eccles&quot;, &quot;1948-4-15&quot;, &quot;Thomas B. McCabe&quot;, 
+##         &quot;1951-4-2&quot;, &quot;William M. Martin&quot;, &quot;1970-2-1&quot;, &quot;Arthur F.Burns&quot;, 
+##         &quot;1978-3-8&quot;, &quot;G.William Miller&quot;, &quot;1987-8-11&quot;, &quot;Alan Greenspan&quot;, 
+##         &quot;2006-2-1&quot;, &quot;Ben S.Bernanke&quot;, &quot;2014-2-1&quot;, &quot;Janet Yellen&quot;)
+##     cnt &lt;- 1
+##     frbTable &lt;- data.frame()
+##     for (rrr in seq(1, length(frb), by = 2)) {
+##         frbTable[cnt, 1] &lt;- as.character(as.Date(frb[rrr]))
+##         frbTable[cnt, 2] &lt;- as.character(as.Date(frb[rrr + 2]))
+##         frbTable[cnt, 3] &lt;- frb[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     frbTable[nrow(frbTable), 2] &lt;- as.character(Sys.Date())
+##     write.table(frbTable, &quot;clipboard&quot;, sep = &quot;\t&quot;, row.names = F, 
+##         col.names = T)
+##     out &lt;- NULL
+##     for (rrr in 1:nrow(frbTable)) {
+##         if (rrr%%2 == 0) {
+##             col &lt;- &quot;#FFE6E6&quot;
+##         }
+##         else {
+##             col &lt;- &quot;#CCEBD6&quot;
+##         }
+##         tmp1 &lt;- paste0(&quot;dyShading(from = &#39;&quot;, frbTable[rrr, 1], 
+##             &quot;&#39;, to = &#39;&quot;, frbTable[rrr, 2], &quot;&#39;, color = &#39;&quot;, col, 
+##             &quot;&#39;) %&gt;% &quot;)
+##         if (rrr != nrow(frbTable)) {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, frbTable[rrr, 2], &quot;&#39;,&#39;&quot;, 
+##                 frbTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;) %&gt;% &quot;)
+##         }
+##         else {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, obj[nrow(obj), 1], &quot;&#39;,&#39;&quot;, 
+##                 frbTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;)&quot;)
+##         }
+##         out &lt;- c(out, tmp1, tmp2)
+##     }
+##     buf0 &lt;- paste(out, collapse = &quot;&quot;)
+##     assign(&quot;frb_dygraph&quot;, buf0, envir = .GlobalEnv)
+## }
+## 
+## $fun_generateKnit
+## function (objDF = dataSet, plotNum = 1, barPlot = 0, dygraphTitle = &quot;&quot;, 
+##     legendWidth = 300, colors = RColorBrewer::brewer.pal(ncol(objDF) - 
+##         1, &quot;Dark2&quot;), group = 1, quantiles = 0, strawBroom = 0) 
+## {
+##     fun_plot_dygraph(obj = objDF, plotNum = plotNum, dygraphTitle = dygraphTitle, 
+##         legendWidth = legendWidth, barPlot = barPlot, colors = colors, 
+##         group = group, quantiles = quantiles, strawBroom = strawBroom)
+##     fun_dygraph_shade(plotNum = plotNum)
+## }
+## 
+## $fun_getStockPriceFromYJ
+## function (Symbol) 
+## {
+##     library(quantmod)
+##     tmp &lt;- getSymbols.yahooj(Symbols = Symbol, auto.assign = F, 
+##         return.class = &quot;data.frame&quot;)
+##     buf &lt;- colnames(tmp)
+##     buf &lt;- gsub(&quot;open&quot;, &quot;始値&quot;, buf, ignore.case = T)
+##     buf &lt;- gsub(&quot;high&quot;, &quot;高値&quot;, buf, ignore.case = T)
+##     buf &lt;- gsub(&quot;low&quot;, &quot;安値&quot;, buf, ignore.case = T)
+##     buf &lt;- gsub(&quot;close&quot;, &quot;終値&quot;, buf, ignore.case = T)
+##     buf &lt;- gsub(&quot;volume&quot;, &quot;出来高&quot;, buf, ignore.case = T)
+##     buf &lt;- gsub(&quot;yj&quot;, &quot;&quot;, buf, ignore.case = T)
+##     colnames(tmp) &lt;- buf
+##     tmp0 &lt;- data.frame(Date = as.Date(row.names(tmp)), tmp[, 
+##         1:5], stringsAsFactors = F, check.names = F, row.names = NULL)
+##     assign(paste0(&quot;sp&quot;, as.character(Symbol)), tmp0, envir = .GlobalEnv)
+## }
+## 
+## $fun_ggboxplot
+## function (obj, dateCol = 1, objCol = 2, ggtheme = theme_bw(), 
+##     palette = &quot;UChicago&quot;, add = &quot;jitter&quot;, discreteN = 6, dataSource = dataSource) 
+## {
+##     plotData &lt;- obj[, c(dateCol, objCol)]
+##     plotData$Year &lt;- as.factor(lubridate::year(plotData[, 1]))
+##     colnames(plotData)[2] &lt;- &quot;Value&quot;
+##     plotData &lt;- subset(plotData, as.character(tail(unique(plotData$Year), 
+##         discreteN)[1]) &lt;= as.character(plotData$Year))
+##     p &lt;- ggboxplot(plotData, x = &quot;Year&quot;, y = &quot;Value&quot;, color = &quot;Year&quot;, 
+##         palette = palette, add = add, shape = &quot;Year&quot;, ggtheme = ggtheme, 
+##         repel = T)
+##     p &lt;- p + xlab(&quot;&quot;) + ylab(&quot;&quot;) + theme(legend.position = &quot;none&quot;)
+##     p &lt;- p + ggtitle(paste0(colnames(obj)[objCol], &quot;\nSource:&quot;, 
+##         dataSource))
+##     p &lt;- p + theme(plot.title = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;, size = 16))
+##     p &lt;- p + theme(legend.text = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;))
+##     p &lt;- p + theme(axis.title.x = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;))
+##     p &lt;- p + theme(axis.title.y = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;))
+##     p &lt;- p + theme(axis.text = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;, size = 16))
+##     print(p)
+##     returnDF &lt;- ts(data = plotData$Value, start = c(year(plotData[1, 
+##         1]), month(plotData[1, 1])), frequency = 12)
+##     return(returnDF)
+## }
+## 
+## $fun_gglboxpotPM
+## function (obj, personCol = 3, objCol = 2, ggtheme = theme_bw(), 
+##     palette = &quot;UChicago&quot;, add = &quot;jitter&quot;, discreteN = 6, dataSource = dataSource) 
+## {
+##     plotData &lt;- obj[, c(personCol, objCol)]
+##     colnames(plotData)[1] &lt;- &quot;Person&quot;
+##     colnames(plotData)[2] &lt;- &quot;Value&quot;
+##     plotData &lt;- plotData[which(plotData[, 1] == tail(unique(plotData[, 
+##         1]), discreteN)[1])[1]:nrow(plotData), ]
+##     p &lt;- ggboxplot(plotData, x = &quot;Person&quot;, y = &quot;Value&quot;, color = &quot;Person&quot;, 
+##         palette = palette, add = add, shape = &quot;Person&quot;, ggtheme = ggtheme, 
+##         repel = T)
+##     p &lt;- p + xlab(&quot;&quot;) + ylab(&quot;&quot;) + theme(legend.position = &quot;none&quot;)
+##     p &lt;- p + ggtitle(paste0(colnames(obj)[objCol], &quot;\nSource:&quot;, 
+##         dataSource))
+##     p &lt;- p + theme(plot.title = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;, size = 16))
+##     p &lt;- p + theme(legend.text = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;))
+##     p &lt;- p + theme(axis.title.x = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;))
+##     p &lt;- p + theme(axis.title.y = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;))
+##     p &lt;- p + theme(axis.text = element_text(hjust = 0.5, family = &quot;Meiryo&quot;, 
+##         face = &quot;plain&quot;, size = 16))
+##     print(p)
+## }
+## 
+## $fun_historicalVolatility
+## function (obj, objColumn = 2, width = 30) 
+## {
+##     HV &lt;- vector()
+##     for (rrr in width:nrow(obj)) {
+##         tmp &lt;- obj[c((rrr - width + 1):rrr), c(1, objColumn)]
+##         diffRatioDF &lt;- fun_makeDiffRatioTable(obj = tmp, lag = 1, 
+##             roundDigits = 3)
+##         HV[rrr] &lt;- sd(diffRatioDF[, 2]/100) * sqrt(260) * 100
+##     }
+##     historicalVolatility &lt;- data.frame(Date = tail(obj[, 1], 
+##         -(width - 1)), `HistoricalVolatility(%)` = na.omit(HV), 
+##         stringsAsFactors = F, check.names = F)
+##     return(historicalVolatility)
+## }
+## 
+## $fun_Ichimokukinkou
+## function (objDF, objDateCol = 1, objCloseCol = 2, objPlotCol = 2, 
+##     a1 = 26, a2 = 52, ct = 9, st = 26, dateFormat = &quot;%Y-%m-%d&quot;, 
+##     tailN = 20 * 6) 
+## {
+##     lineColor &lt;- c(&quot;&quot;, &quot;black&quot;, &quot;blue&quot;, &quot;red&quot;)
+##     objClose &lt;- objDF[, objCloseCol]
+##     obj &lt;- objDF[, -objDateCol]
+##     KijyunSen &lt;- TenkanSen &lt;- SenkouSpan1 &lt;- SenkouSpan2 &lt;- ChikouSpan &lt;- vector()
+##     for (iii in (ct - 1):nrow(objDF)) {
+##         if (iii &gt; (st - 1)) {
+##             KijyunSen[iii] &lt;- (max(obj[(iii - (st - 1)):iii, 
+##                 ]) + min(obj[(iii - (st - 1)):iii, ]))/2
+##         }
+##         if (iii &gt; a1) {
+##             ChikouSpan[iii - a1] &lt;- objClose[iii]
+##         }
+##         if (iii &gt; (a2 - 1)) {
+##             SenkouSpan2[iii + a1] &lt;- (max(obj[(iii - (a2 - 1)):iii, 
+##                 ]) + min(obj[(iii - (a2 - 1)):iii, ]))/2
+##         }
+##         TenkanSen[iii] &lt;- (max(obj[(iii - (ct - 1)):iii, ]) + 
+##             min(obj[(iii - (ct - 1)):iii, ]))/2
+##         SenkouSpan1[iii + a1] &lt;- (KijyunSen[iii] + TenkanSen[iii])/2
+##     }
+##     length(SenkouSpan1)
+##     length(SenkouSpan2)
+##     length(TenkanSen)
+##     length(KijyunSen)
+##     length(ChikouSpan)
+##     plotDF &lt;- tail(cbind(objDF[, c(objDateCol, objPlotCol)], 
+##         KijyunSen, TenkanSen), tailN)
+##     y1 &lt;- min(plotDF[, -1], na.rm = T)
+##     y2 &lt;- max(plotDF[, -1], na.rm = T)
+##     par(family = &quot;Meiryo&quot;, font.main = 1, mar = c(4, 4, 3, 2), 
+##         cex.main = 1.1, cex.axis = 1)
+##     plot(plotDF[, c(1, 2)], ylim = c(y1, y2), type = &quot;l&quot;, main = paste0(colnames(plotDF)[2], 
+##         &quot;、基準線、転換線&quot;), xlab = &quot;&quot;, ylab = &quot;&quot;, xaxt = &quot;n&quot;, 
+##         lty = 2, panel.first = grid(nx = NULL, ny = NULL, lty = 2, 
+##             equilogs = T))
+##     axis.Date(side = 1, at = plotDF[, 1], format = dateFormat, 
+##         padj = 1, cex.axis = 1)
+##     lines(plotDF[, c(1, 3)], col = &quot;blue&quot;, lwd = 2)
+##     lines(plotDF[, c(1, 4)], col = &quot;red&quot;, lwd = 3)
+##     graphics::legend(x = &quot;topleft&quot;, col = lineColor[c(2, 3, 4)], 
+##         lty = c(2, 1, 1), legend = colnames(plotDF)[c(2, 3, 4)], 
+##         cex = 1.2, bty = &quot;n&quot;, lwd = 2)
+##     cat(&quot;&lt;hr&gt;&quot;)
+##     plotDF &lt;- tail(cbind(SenkouSpan1, SenkouSpan2), length(SenkouSpan1) - 
+##         nrow(objDF))
+##     row.names(plotDF) &lt;- NULL
+##     y1 &lt;- min(plotDF, na.rm = T)
+##     y2 &lt;- max(plotDF, na.rm = T)
+##     par(family = &quot;Meiryo&quot;, font.main = 1, mar = c(4, 4, 3, 2), 
+##         cex.main = 1.1, cex.axis = 1)
+##     plot(plotDF[, 1], ylim = c(y1, y2), type = &quot;o&quot;, pch = 20, 
+##         main = paste0(gsub(&quot;東京市場.?(.+).+スポット.+&quot;, &quot;\\1&quot;, 
+##             colnames(objDF)[2]), &quot;:先行スパン1と先行スパン2&quot;), 
+##         xlab = &quot;&quot;, ylab = &quot;&quot;, xaxt = &quot;n&quot;, col = lineColor[3], 
+##         lwd = 2, cex = 1.2, panel.first = grid(nx = NULL, ny = NULL, 
+##             lty = 2, equilogs = T))
+##     axis(side = 1, at = index(plotDF), labels = paste0(index(plotDF), 
+##         &quot;日目&quot;), las = 2)
+##     lines(plotDF[, 2], col = lineColor[4], lwd = 2, type = &quot;o&quot;, 
+##         pch = 20, cex = 1.2)
+##     graphics::legend(x = &quot;topleft&quot;, col = lineColor[c(3, 4)], 
+##         lty = 1, legend = colnames(plotDF)[c(1, 2)], cex = 1.2, 
+##         bty = &quot;n&quot;, lwd = 2)
+## }
+## 
+## $fun_latestResult
+## function (obj, objColumn = 2, orderDirection = 0, orderColumn = 1, 
+##     dateColumn = 1, dateFormat = &quot;%Y-%m&quot;) 
+## {
+##     if (orderDirection == 1) {
+##         obj &lt;- obj[order(obj[, orderColumn], decreasing = T), 
+##             ]
+##     }
+##     assign(&quot;latestResult&quot;, paste0(ifelse(dateFormat == 0, tail(obj[, 
+##         dateColumn], 1), format(tail(obj[, dateColumn], 1), dateFormat)), 
+##         &quot;:&quot;, paste0(paste0(colnames(obj)[objColumn], &quot;:&quot;, format(round(tail(obj[, 
+##             objColumn], 1), 10), big.mark = &quot;,&quot;)), collapse = &quot; , &quot;)), 
+##         envir = .GlobalEnv)
+## }
+## 
+## $fun_list
+## function (obj, csvfileName) 
+## {
+##     cnt &lt;- 1
+##     dfTable &lt;- data.frame()
+##     for (rrr in seq(1, length(obj), by = 2)) {
+##         dfTable[cnt, 1] &lt;- as.Date(obj[rrr])
+##         dfTable[cnt, 2] &lt;- as.Date(obj[rrr + 2])
+##         dfTable[cnt, 3] &lt;- obj[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     dfTable[nrow(dfTable), 2] &lt;- Sys.Date()
+##     dfTable[, 1] &lt;- as.Date(dfTable[, 1], origin = &quot;1970-01-01&quot;)
+##     dfTable[, 2] &lt;- as.Date(dfTable[, 2], origin = &quot;1970-01-01&quot;)
+##     write.csv(x = dfTable, file = csvfileName, quote = T, row.names = F, 
+##         append = F, fileEncoding = &quot;utf8&quot;)
+## }
+## &lt;bytecode: 0x0000000040844220&gt;
+## 
+## $fun_makeDiffRatioTable
+## function (obj, lag = 1, diff = 1, roundDigits = 1) 
+## {
+##     if (exists(&quot;diffRatioDF&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;diffRatioDF&quot;, envir = .GlobalEnv)
+##     }
+##     diffRatioDF &lt;- data.frame(tail(obj[, 1], -lag * diff), round(diff(as.matrix(obj[, 
+##         -1]), lag = lag, differences = diff)/head(obj[, -1], 
+##         -lag * diff) * 100, roundDigits), check.names = F, stringsAsFactors = F)
+##     colnames(diffRatioDF) &lt;- colnames(obj)
+##     return(diffRatioDF)
+## }
+## 
+## $fun_makeDiffTable
+## function (obj, lag = 1, diff = 1, roundDigits = 10) 
+## {
+##     if (exists(&quot;diffDF&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;diffDF&quot;, envir = .GlobalEnv)
+##     }
+##     diffDF &lt;- data.frame(tail(obj[, 1], -lag * diff), round(diff(as.matrix(obj[, 
+##         -1]), lag = lag, differences = diff), roundDigits), check.names = F, 
+##         stringsAsFactors = F)
+##     colnames(diffDF) &lt;- colnames(obj)
+##     return(diffDF)
+## }
+## 
+## $fun_markdownTable
+## function (obj, rownames = F, table.attr = &quot;id = &#39;amcc&#39; width = &#39;100%&#39;&quot;, 
+##     format = &quot;markdown&quot;, escape = F) 
+## {
+##     kableText &lt;- knitr::kable(obj, row.names = rownames, align = &quot;r&quot;, 
+##         format = format, format.args = list(big.mark = &quot;,&quot;, drop0trailing = T), 
+##         table.attr = table.attr, escape = escape)
+##     cat(&quot;\n&lt;div class = \&quot;amccTableAutoScroll\&quot;&gt;\n&quot;)
+##     print(kableText)
+##     cat(&quot;\n&lt;/div&gt;\n&quot;)
+## }
+## 
+## $fun_meanS
+## function (objDF, dateCol = 1, objCol = 2, roundN = 2, baseN = 10, 
+##     powerN = 3, dateFormat = &quot;%Y-%m&quot;, needPlot = F) 
+## {
+##     windowsFonts(Meiryo = windowsFont(&quot;Meiryo&quot;))
+##     par(mfrow = c(1, 1), oma = c(0, 0, 2, 0), family = &quot;Meiryo&quot;)
+##     obj &lt;- na.omit(objDF[, c(dateCol, objCol)])
+##     x &lt;- obj[, 2]
+##     dateRage &lt;- paste0(format(range(obj[, 1]), dateFormat), collapse = &quot;~&quot;)
+##     resultDF &lt;- data.frame()
+##     breaks &lt;- seq(floor(min(x)/baseN^powerN) * baseN^powerN, 
+##         ceiling(max(x)/baseN^powerN) * baseN^powerN, baseN^powerN)
+##     par(mar = c(4, 5, 0, 2))
+##     tmpHist &lt;- hist(x = x, breaks = breaks, col = &quot;#4682b4&quot;, 
+##         xlab = &quot;&quot;, main = &quot;&quot;, plot = needPlot)
+##     Mode &lt;- paste0(tmpHist$mids[max(tmpHist$counts) == tmpHist$counts], 
+##         collapse = &quot;,&quot;)
+##     trim &lt;- 0.1
+##     Mean &lt;- round(mean(x = x, na.rm = T), roundN)
+##     rowN &lt;- 1
+##     resultDF[rowN, 1] &lt;- &quot;平均値&quot;
+##     resultDF[rowN, 2] &lt;- Mean
+##     resultDF[rowN, 3] &lt;- &quot;-&quot;
+##     MeanTrim &lt;- round(mean(x = x, trim = trim, na.rm = T), roundN)
+##     rowN &lt;- 2
+##     resultDF[rowN, 1] &lt;- &quot;トリムド平均値&quot;
+##     resultDF[rowN, 2] &lt;- MeanTrim
+##     resultDF[rowN, 3] &lt;- paste0(&quot;Trim=&quot;, trim)
+##     WinsorizedMean &lt;- round(psych::winsor.mean(x = x, trim = trim, 
+##         na.rm = T), roundN)
+##     rowN &lt;- 3
+##     resultDF[rowN, 1] &lt;- &quot;ウィンザライズド平均値&quot;
+##     resultDF[rowN, 2] &lt;- WinsorizedMean
+##     resultDF[rowN, 3] &lt;- paste0(&quot;Trim=&quot;, trim)
+##     Midrange &lt;- round((max(x) + min(x))/2, roundN)
+##     rowN &lt;- 4
+##     resultDF[rowN, 1] &lt;- &quot;ミッドレンジ&quot;
+##     resultDF[rowN, 2] &lt;- Midrange
+##     resultDF[rowN, 3] &lt;- &quot;-&quot;
+##     Median &lt;- round(median(x), roundN)
+##     rowN &lt;- 5
+##     resultDF[rowN, 1] &lt;- &quot;中央値&quot;
+##     resultDF[rowN, 2] &lt;- Median
+##     resultDF[rowN, 3] &lt;- &quot;-&quot;
+##     colnames(resultDF) &lt;- c(&quot;統計量&quot;, &quot;値&quot;, &quot;特記&quot;)
+##     resultDF &lt;- resultDF[order(resultDF[, 2], decreasing = T), 
+##         ]
+##     if (needPlot == T) {
+##         mtext(text = paste0(colnames(obj)[2], &quot;. &quot;, dateRage, 
+##             paste0(&quot;. Trim=&quot;, trim), &quot;. 最頻値:&quot;, Mode), side = 3, 
+##             outer = T, font = 2)
+##     }
+##     return(resultDF)
+## }
+## 
+## $fun_monthlyTSbyYear
+## function (obj0, mainTitle = &quot;&quot;) 
+## {
+##     for (mm in 1:12) {
+##         obj &lt;- subset(obj0, month(obj0[, 1]) == mm)
+##         yyyy &lt;- unique(year(obj[, 1]))
+##         cntP &lt;- cntN &lt;- 0
+##         ylimL &lt;- 10^10
+##         ylimU &lt;- -10^10
+##         xlimU &lt;- 0
+##         scaleData &lt;- list()
+##         for (iii in 1:length(yyyy)) {
+##             tsData &lt;- subset(obj, year(obj[, 1]) == yyyy[iii])
+##             scaleData[[iii]] &lt;- scale(x = tsData[, 2], center = tsData[1, 
+##                 2])
+##             ylimL &lt;- min(ylimL, scaleData[[iii]])
+##             ylimU &lt;- max(ylimU, scaleData[[iii]])
+##             xlimU &lt;- max(xlimU, nrow(scaleData[[iii]]))
+##         }
+##         for (iii in 1:length(yyyy)) {
+##             ifelse(0 &lt;= tail(scaleData[[iii]], 1), cntP &lt;- cntP + 
+##                 1, cntN &lt;- cntN + 1)
+##             if (iii == 1) {
+##                 par(family = &quot;Meiryo&quot;, font.main = 1, mar = c(3, 
+##                   4, 3, 1), cex.main = 1)
+##                 plot(scaleData[[iii]], type = &quot;o&quot;, ylim = c(floor(ylimL), 
+##                   ceiling(ylimU)), xlim = c(1, xlimU), pch = 20, 
+##                   xlab = &quot;&quot;, ylab = &quot;Normalized data&quot;, main = paste0(mainTitle, 
+##                     &quot;. &quot;, paste0(range(yyyy), collapse = &quot; ~ &quot;), 
+##                     &quot;. Month:&quot;, month.abb[mm]), panel.first = grid(nx = NULL, 
+##                     ny = NULL, lty = 2, equilogs = T))
+##             }
+##             else if (iii != length(yyyy)) {
+##                 lines(scaleData[[iii]], type = &quot;o&quot;, pch = 20)
+##             }
+##             else {
+##                 lines(scaleData[[iii]], type = &quot;o&quot;, pch = 20, 
+##                   col = &quot;blue&quot;, lwd = 2)
+##             }
+##         }
+##         abline(h = 0, lwd = 2, col = &quot;red&quot;)
+##         mtext(text = paste0(&quot;Positive:&quot;, cntP, &quot; , Negative:&quot;, 
+##             cntN), side = 3, cex = 0.8, font = 1)
+##     }
+## }
+## 
+## $fun_MovingAverage
+## function (obj, objColumn = 2, n = 12, dateFormat = &quot;%Y-%m&quot;, plot = 0) 
+## {
+##     buf0 &lt;- obj[, c(1, objColumn)]
+##     objMA &lt;- data.frame(buf0, SMA = TTR::SMA(buf0[, 2], n = n), 
+##         EMA = TTR::EMA(buf0[, 2], n = n), stringsAsFactors = F, 
+##         check.names = F, row.names = NULL)
+##     colnames(objMA)[3:4] &lt;- paste0(colnames(objMA)[2], &quot;:&quot;, colnames(objMA)[3:4], 
+##         &quot;:n=&quot;, n)
+##     assign(&quot;MovingAverageDF&quot;, objMA)
+##     if (plot == 1) {
+##         par(family = &quot;Meiryo&quot;, font.main = 1, mar = c(4, 5, 2, 
+##             2))
+##         lineColor &lt;- c(&quot;black&quot;, &quot;red&quot;, &quot;blue&quot;)
+##         plot(x = MovingAverageDF[, 1], y = MovingAverageDF[, 
+##             2], type = &quot;o&quot;, pch = 20, cex = 0.9, xlab = &quot;&quot;, ylab = colnames(MovingAverageDF)[2], 
+##             xaxt = &quot;n&quot;, col = lineColor[1], lwd = 1, main = paste0(&quot;オリジナル &amp; &quot;, 
+##                 monthS, &quot;ヶ月移動平均&quot;), panel.first = grid(nx = NULL, 
+##                 ny = NULL, lty = 2, equilogs = T))
+##         axis.Date(side = 1, at = MovingAverageDF[, 1], format = dateFormat, 
+##             padj = 1, cex.axis = 1)
+##         lines(x = MovingAverageDF[, 1], y = MovingAverageDF[, 
+##             3], col = lineColor[2], lwd = 2)
+##         lines(x = MovingAverageDF[, 1], y = MovingAverageDF[, 
+##             4], col = lineColor[3], lwd = 2)
+##         graphics::legend(x = &quot;topleft&quot;, col = lineColor, lty = 1, 
+##             legend = colnames(MovingAverageDF)[c(2, 3, 4)], cex = 1, 
+##             bty = &quot;n&quot;, lwd = c(1, 2, 2))
+##         abline(h = 0, col = &quot;red&quot;)
+##     }
+##     return(objMA)
+## }
+## 
+## $fun_outputMD
+## function (tags = &quot;貸出約定平均金利,日本銀行&quot;, title = title, 
+##     objDF = summaryByName, htmlName = htmlName, tableTitle = tableTitle, 
+##     dataTitle = &quot;&quot;, image1 = 0, image2 = 0, image3 = 0, tableName = &quot;内閣総理大臣毎の基本統計量&quot;) 
+## {
+##     username &lt;- Sys.info()[&quot;user&quot;]
+##     pathToFile &lt;- paste0(&quot;C:/Users/&quot;, username, &quot;/Desktop/pathToCSV/&quot;)
+##     setwd(pathToFile)
+##     fileName &lt;- &quot;defaultPath.csv&quot;
+##     buf &lt;- read.csv(file = fileName, header = F, skip = 0, stringsAsFactor = F, 
+##         check.names = F, fileEncoding = &quot;utf-8&quot;, quote = &quot;\&quot;&quot;)
+##     pathOutputTOcsv &lt;- paste0(&quot;C:/Users/&quot;, username, buf[2, 1], 
+##         &quot;md/&quot;)
+##     setwd(pathOutputTOcsv)
+##     getwd()
+##     mdFile &lt;- paste0(format(Sys.Date(), &quot;%Y%m%d&quot;), &quot;-olive.md&quot;)
+##     txt &lt;- paste0(&quot;\n---\ntags : [&quot;, tags, &quot;]\ntitle : &quot;, title, 
+##         &quot;\npublished : true\n---\n\n&quot;)
+##     write.table(x = txt, file = mdFile, append = F, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     if (image1 != 0) {
+##         txt &lt;- paste0(&quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;1.png\&quot;&gt;&lt;img border=\&quot;0\&quot; src=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;1.png\&quot; width=\&quot;100%\&quot; /&gt;&lt;/a&gt;\n\n&quot;)
+##         write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##             col.names = F, row.names = F, quote = F)
+##     }
+##     if (image2 != 0) {
+##         txt &lt;- paste0(&quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;2.png\&quot;&gt;&lt;img border=\&quot;0\&quot; src=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;2.png\&quot; width=\&quot;100%\&quot; /&gt;&lt;/a&gt;\n\n&quot;)
+##         write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##             col.names = F, row.names = F, quote = F)
+##     }
+##     if (image3 != 0) {
+##         txt &lt;- paste0(&quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;3.png\&quot;&gt;&lt;img border=\&quot;0\&quot; src=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;3.png\&quot; width=\&quot;100%\&quot; /&gt;&lt;/a&gt;\n\n&quot;)
+##         write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##             col.names = F, row.names = F, quote = F)
+##     }
+##     txt &lt;- paste0(&quot;***&quot;, &quot;\n\n&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     txt &lt;- paste0(&quot;#### &quot;, tableName, &quot;&quot;, &quot;\n\n&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     txt &lt;- paste0(&quot;- &quot;, tableTitle, &quot;&quot;, &quot;\n\n&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     txt &lt;- paste0(knitr::kable(x = objDF, row.names = F, format = &quot;html&quot;, 
+##         table.attr = &quot;id = &#39;amcc&#39; width = &#39;100%&#39;&quot;, format.args = list(big.mark = &quot;,&quot;, 
+##             drop0trailing = T), escape = F), &quot;\n&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     txt &lt;- paste0(&quot;## データテーブル･チャート&quot;, &quot;\n\n&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     txt &lt;- paste0(&quot;Link : [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-&quot;, 
+##         htmlName, &quot;.html)\n\n&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+##     txt &lt;- paste0(&quot;&lt;iframe src=\&quot;http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-&quot;, 
+##         htmlName, &quot;.html\&quot; width=\&quot;100%\&quot; height=\&quot;800px\&quot;&gt;&lt;/iframe&gt;&quot;)
+##     write.table(x = txt, file = mdFile, append = T, fileEncoding = &quot;utf8&quot;, 
+##         col.names = F, row.names = F, quote = F)
+## }
+## 
+## $fun_outputMDforTS
+## function (tags = &quot;&quot;, title = title, objDF = summaryByName, htmlName = htmlName, 
+##     tableTitle = tableTitle, image1 = 0, image2 = 0, image3 = 0, 
+##     tableName = &quot;内閣総理大臣毎の基本統計量&quot;) 
+## {
+##     username &lt;- Sys.info()[&quot;user&quot;]
+##     pathToFile &lt;- paste0(&quot;C:/Users/&quot;, username, &quot;/Desktop/pathToCSV/&quot;)
+##     setwd(pathToFile)
+##     fileName &lt;- &quot;defaultPath.csv&quot;
+##     buf &lt;- read.csv(file = fileName, header = F, skip = 0, stringsAsFactor = F, 
+##         check.names = F, fileEncoding = &quot;utf-8&quot;, quote = &quot;\&quot;&quot;)
+##     pathOutputTOcsv &lt;- paste0(&quot;C:/Users/&quot;, username, buf[2, 1], 
+##         &quot;md/&quot;)
+##     setwd(pathOutputTOcsv)
+##     mdFile &lt;- paste0(htmlName, &quot;-olive.md&quot;)
+##     fun_writeTable &lt;- function(append = T) {
+##         write.table(x = txt, file = mdFile, append = append, 
+##             fileEncoding = &quot;utf8&quot;, col.names = F, row.names = F, 
+##             quote = F)
+##     }
+##     txt &lt;- paste0(&quot;\n---\ntags : [&quot;, tags, &quot;]\ntitle : &quot;, title, 
+##         &quot;\npublished : true\n---\n\n&quot;)
+##     fun_writeTable(append = F)
+##     if (image1 != 0) {
+##         txt &lt;- paste0(&quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;-1.png\&quot;&gt;&lt;img border=\&quot;0\&quot; src=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;-1.png\&quot; width=\&quot;100%\&quot; /&gt;&lt;/a&gt;\n\n&quot;)
+##         fun_writeTable()
+##     }
+##     if (image2 != 0) {
+##         txt &lt;- paste0(&quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;-2.png\&quot;&gt;&lt;img border=\&quot;0\&quot; src=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;-2.png\&quot; width=\&quot;100%\&quot; /&gt;&lt;/a&gt;\n\n&quot;)
+##         fun_writeTable()
+##     }
+##     if (image3 != 0) {
+##         txt &lt;- paste0(&quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;-3.png\&quot;&gt;&lt;img border=\&quot;0\&quot; src=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;, 
+##             htmlName, &quot;-3.png\&quot; width=\&quot;100%\&quot; /&gt;&lt;/a&gt;\n\n&quot;)
+##         fun_writeTable()
+##     }
+##     txt &lt;- paste0(&quot;***&quot;, &quot;\n\n&quot;)
+##     fun_writeTable()
+##     txt &lt;- paste0(&quot;#### &quot;, tableName, &quot;&quot;, &quot;\n\n&quot;)
+##     fun_writeTable()
+##     txt &lt;- paste0(&quot;- &quot;, tableTitle, &quot;&quot;, &quot;\n\n&quot;)
+##     fun_writeTable()
+##     txt &lt;- paste0(knitr::kable(x = objDF, row.names = F, format = &quot;html&quot;, 
+##         table.attr = &quot;id = &#39;amcc&#39; width = &#39;100%&#39;&quot;, format.args = list(big.mark = &quot;,&quot;, 
+##             drop0trailing = T), escape = F), &quot;\n&quot;)
+##     fun_writeTable()
+##     txt &lt;- paste0(&quot;\n\n&quot;, &quot;***&quot;, &quot;\n\n&quot;)
+##     fun_writeTable()
+##     txt &lt;- paste0(&quot;[前月比、前年比、移動平均等](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-&quot;, 
+##         htmlName, &quot;.html)\n\n&quot;)
+##     fun_writeTable()
+##     txt &lt;- paste0(&quot;&lt;iframe src=\&quot;http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-&quot;, 
+##         htmlName, &quot;.html\&quot; width=\&quot;100%\&quot; height=\&quot;800px\&quot;&gt;&lt;/iframe&gt;&quot;)
+##     fun_writeTable()
+## }
+## 
+## $fun_plot_dygraph
+## function (obj = tmp, plotNum = 1, dygraphTitle = &quot;&quot;, legendWidth = 600, 
+##     barPlot = 0, colors = colors, group = group, quantiles = quantiles, 
+##     strawBroom = strawBroom) 
+## {
+##     buf &lt;- na.omit(obj)
+##     fun_dygraph(obj = buf, mainTitle = dygraphTitle, plotNum = plotNum, 
+##         legendWidth = legendWidth, barPlot = barPlot, colors = colors, 
+##         group = group, quantiles = quantiles, strawBroom = strawBroom)
+##     fun_consumptionTax(obj = buf)
+##     fun_primeMinisterOfJapan(obj = buf)
+##     fun_boj(obj = buf)
+##     fun_event(obj = buf)
+##     fun_potus(obj = buf)
+##     fun_frb(obj = buf)
+##     fun_eventE(obj = buf)
+## }
+## 
+## $fun_plot4charts
+## function (obj = obj, tailN = c(10^10, 100, 50, 30), oma = c(0, 
+##     0, 3, 0), mar = c(4, 4, 2, 1), type = &quot;o&quot;, dateFormat = &quot;%Y-%m-%d&quot;, 
+##     cex.main = 1.2, cex.axis = 1.2) 
+## {
+##     par(mfrow = c(2, 2), family = &quot;Meiryo&quot;, font.main = 1, oma = oma, 
+##         mar = mar)
+##     for (iii in 1:4) {
+##         tmpDF &lt;- fun_fit(obj = tail(obj, tailN[iii]))[, c(1, 
+##             2, 3)]
+##         dateRange &lt;- paste0(format(range(tmpDF[, 1]), dateFormat), 
+##             collapse = &quot;~&quot;)
+##         plot(x = tmpDF[, 1], y = tmpDF[, 2], type = type, pch = 20, 
+##             xaxt = &quot;n&quot;, xlab = &quot;&quot;, ylab = &quot;&quot;, main = paste0(dateRange, 
+##                 &quot;. n = &quot;, nrow(tmpDF)), panel.first = grid(nx = NULL, 
+##                 ny = NULL, lty = 2, equilogs = T))
+##         axis.Date(side = 1, at = tmpDF[, 1], format = dateFormat, 
+##             padj = 1, cex.axis = 1)
+##         lines(x = tmpDF[, 1], y = tmpDF[, 3], type = &quot;l&quot;, col = &quot;red&quot;, 
+##             lwd = 1)
+##         abline(h = 0, lwd = 1, col = &quot;blue&quot;)
+##     }
+##     mtext(text = paste0(colnames(tmpDF)[2], &quot;\nSource:&quot;, dataSource), 
+##         side = 3, outer = T)
+## }
+## 
+## $fun_plotQuadrant
+## function (obj, aggFun = &quot;mean&quot;, pm = &quot;japan&quot;, xCol = 2, yCol = 3, 
+##     main = &quot;&quot;, pCEX = 2, pCol = &quot;blue&quot;) 
+## {
+##     fun_withList(obj = obj)
+##     pmCol &lt;- grep(pm, colnames(dfWithList), ignore.case = T)
+##     dfWithList$ShortName &lt;- gsub(&quot;菅直&quot;, &quot;菅&quot;, substring(dfWithList[, 
+##         pmCol], 1, 2))
+##     objRaw &lt;- grep(&quot;[0-9]&quot;, dfWithList[, pmCol])
+##     if (length(objRaw) != 0) {
+##         dfWithList$ShortName[objRaw] &lt;- paste0(dfWithList$ShortName[objRaw], 
+##             gsub(&quot;.+(\\(.+\\))&quot;, &quot;\\1&quot;, dfWithList[, pmCol][objRaw]))
+##     }
+##     objCol &lt;- grep(&quot;shortname&quot;, colnames(dfWithList), ignore.case = T)
+##     x &lt;- na.omit(dfWithList[, c(xCol, objCol)])
+##     x &lt;- subset(x, unique(x[, 2])[1] != x[, 2])
+##     y &lt;- na.omit(dfWithList[, c(yCol, objCol)])
+##     y &lt;- subset(y, unique(y[, 2])[1] != y[, 2])
+##     aggX &lt;- aggregate(x[, 1, drop = F], list(x[, 2]), aggFun)
+##     aggY &lt;- aggregate(y[, 1, drop = F], list(y[, 2]), aggFun)
+##     obj &lt;- merge(aggX, aggY, by = &quot;Group.1&quot;)
+##     par(mar = c(5, 5, 3, 1), family = &quot;Meiryo&quot;, font.main = 1, 
+##         cex.main = 1)
+##     plot(x = obj[, 2], y = obj[, 3], type = &quot;p&quot;, pch = 20, cex = pCEX, 
+##         xlab = paste0(colnames(obj)[2], &quot;:&quot;, aggFun), ylab = paste0(colnames(obj)[3], 
+##             &quot;:&quot;, aggFun), col = pCol, main = paste0(main, &quot;\nSource:&quot;, 
+##             dataSource))
+##     text(x = obj[, 2], y = obj[, 3], labels = obj[, 1], pos = 4, 
+##         offset = 0.3)
+##     abline(v = 0)
+##     abline(h = 0)
+##     rect(par(&quot;usr&quot;)[1], 0, 0, par(&quot;usr&quot;)[3], border = &quot;black&quot;, 
+##         col = rgb(red = 245, green = 222, blue = 179, alpha = 50, 
+##             maxColorValue = 255))
+##     rect(0, 0, par(&quot;usr&quot;)[2], par(&quot;usr&quot;)[4], border = &quot;black&quot;, 
+##         col = rgb(red = 245, green = 222, blue = 179, alpha = 50, 
+##             maxColorValue = 255))
+##     rect(0, par(&quot;usr&quot;)[3], par(&quot;usr&quot;)[2], 0, border = &quot;black&quot;, 
+##         col = rgb(red = 176, green = 196, blue = 222, alpha = 50, 
+##             maxColorValue = 255))
+##     rect(par(&quot;usr&quot;)[1], 0, 0, par(&quot;usr&quot;)[4], border = &quot;black&quot;, 
+##         col = rgb(red = 176, green = 196, blue = 222, alpha = 50, 
+##             maxColorValue = 255))
+## }
+## 
+## $fun_PlotStrawAnd4charts
+## function (obj, varType = 1, width = 1000, height = 600, dateFormat = &quot;%Y-%m&quot;, 
+##     tailN = c(10^10, 12 * 5, 12 * 3, 12), chartType = &quot;o&quot;, startYear = 2013) 
+## {
+##     fun_preparePlot()
+##     if (exists(&quot;htmlName&quot;)) {
+##         pngFile &lt;- paste0(htmlName, &quot;1.png&quot;)
+##         png(file = pngFile, width = width, height = height)
+##     }
+##     par(mfrow = c(1, 1), family = &quot;Meiryo&quot;)
+##     tmp0 &lt;- fun_tsDataByYear(objDF = obj, dateCol = 1, dataCol = 2)
+##     tmp1 &lt;- fun_strawBroomData(objDF = tmp0, varType = varType)
+##     fun_plotStrawBroomByYear(strawData = tmp1$strawData, lastDate = tmp1$lastDate, 
+##         variation = tmp1$variation, dateFormat = dateFormat, 
+##         startYear = startYear)
+##     if (exists(&quot;htmlName&quot;)) {
+##         pngFile &lt;- paste0(htmlName, &quot;2.png&quot;)
+##         png(file = pngFile, width = width, height = height)
+##     }
+##     par(mfrow = c(1, 1), family = &quot;Meiryo&quot;)
+##     fun_plot4charts(obj = obj, dateFormat = dateFormat, tailN = tailN, 
+##         type = chartType)
+## }
+## 
+## $fun_plotStrawBroomByYear
+## function (strawData, lastDate, variation, startYear = 2013, pch = 20, 
+##     cex = 1, dateFormat = dateFormat) 
+## {
+##     startYearCol &lt;- grep(startYear, colnames(strawData))
+##     ylim &lt;- c(min(strawData[, startYearCol:ncol(strawData)], 
+##         na.rm = T), max(strawData[, startYearCol:ncol(strawData)], 
+##         na.rm = T))
+##     par(family = &quot;Meiryo&quot;, font.main = 1, mar = c(5, 3, 5, 1), 
+##         cex.main = 1.1)
+##     lineColors &lt;- RColorBrewer::brewer.pal(ncol(strawData) - 
+##         startYearCol + 1, &quot;Dark2&quot;)
+##     for (ccc in startYearCol:ncol(strawData)) {
+##         obj &lt;- strawData[, ccc, drop = F]
+##         if (ccc == startYearCol) {
+##             plot(obj, xlab = ifelse(12 &lt; nrow(obj), ifelse(55 &lt; 
+##                 nrow(obj), &quot;Day&quot;, &quot;Week&quot;), ifelse(4 &lt; nrow(obj), 
+##                 &quot;Month&quot;, &quot;Quarter&quot;)), ylab = &quot;&quot;, pch = pch, cex = cex, 
+##                 col = lineColors[ccc - startYearCol + 1], lwd = 1, 
+##                 type = ifelse(12 &lt; nrow(obj), &quot;l&quot;, &quot;o&quot;), ylim = ylim, 
+##                 panel.first = grid(nx = NULL, ny = NULL, lty = 2, 
+##                   equilogs = T), main = paste0(gsub(&quot;(.+):([0-9]+)&quot;, 
+##                   &quot;\\1&quot;, colnames(obj)), &quot;\n&quot;, variation, &quot; Since the Beginning of the Year . Last:&quot;, 
+##                   format(x = lastDate, dateFormat), &quot;\nSource:&quot;, 
+##                   dataSource))
+##         }
+##         else {
+##             lines(obj, xlab = &quot;&quot;, ylab = &quot;&quot;, pch = pch, cex = cex, 
+##                 col = lineColors[ccc - startYearCol + 1], lwd = ifelse(ccc == 
+##                   ncol(strawData), 2, 1), type = ifelse(12 &lt; 
+##                   nrow(obj), &quot;l&quot;, &quot;o&quot;), xaxt = &quot;n&quot;, yaxt = &quot;n&quot;)
+##         }
+##         text(x = tail(index(na.omit(obj)), 1), y = tail(na.omit(obj), 
+##             1), labels = gsub(&quot;.+:([0-9]+)&quot;, &quot;\\1&quot;, colnames(obj)), 
+##             col = lineColors[ccc - startYearCol + 1], cex = ifelse(ccc == 
+##                 ncol(strawData), 1.5, 1), adj = 1, font = 4)
+##     }
+##     abline(h = 0, col = &quot;black&quot;, lwd = 2)
+## }
+## 
+## $fun_plotTimeSeries
+## function (obj, objX = 1, objYL = 2, objYR = 3, typeL = &quot;l&quot;, typeR = &quot;l&quot;, 
+##     dateFormat = &quot;%Y-%m-%d&quot;, chartType = 2, lineColor = c(&quot;blue&quot;, 
+##         &quot;red&quot;, &quot;lightcoral&quot;, &quot;black&quot;), lwdL = 1, lwdR = 1, dataTitle = &quot;&quot;, 
+##     mar = c(3, 5, 4, 5), dataSource = &quot;&quot;, cex.axis = 1, cex.lab = 1, 
+##     cex.main = 1, cex.sub = 1, cex.legend = 1, needLefLab = 1, 
+##     fitLcolor = 1, fitRcolor = 2, yaxisReverseL = FALSE, yaxisReverseR = FALSE, 
+##     font.axis = 1, font.main = 1, font.lab = 1, fitlwdL = 1, 
+##     fitlwdR = 1, font.sub = 1, pchL = 20, pchR = 20, cexL = 0.9, 
+##     cexR = 0.9) 
+## {
+##     if (chartType != 0) {
+##         obj &lt;- obj[, c(objX, objYL, objYR)]
+##         mainTitle &lt;- paste0(dataTitle, &quot;\n&quot;, colnames(obj)[2], 
+##             &quot; × &quot;, colnames(obj)[3])
+##     }
+##     else {
+##         obj &lt;- na.omit(obj[, c(objX, objYL)])
+##         mainTitle &lt;- paste0(dataTitle, &quot;\n&quot;, colnames(obj)[2])
+##     }
+##     if (chartType == 1) {
+##         maxValue &lt;- max(na.omit(obj[, 2]), na.omit(obj[, 3]))
+##         minValue &lt;- min(na.omit(obj[, 2]), na.omit(obj[, 3]))
+##     }
+##     par(mar = mar, family = &quot;Meiryo&quot;, font.axis = font.axis, 
+##         font.main = font.main, font.lab = font.lab, font.sub = font.sub)
+##     plot(x = obj[, 1], y = obj[, 2], type = typeL, col = lineColor[1], 
+##         xlab = &quot;&quot;, ylab = &quot;&quot;, xaxt = &quot;n&quot;, ylim = if (chartType == 
+##             1) {
+##             if (yaxisReverseL == F) {
+##                 c(minValue, maxValue)
+##             }
+##             else {
+##                 rev(c(minValue, maxValue))
+##             }
+##         }
+##         else {
+##             if (yaxisReverseL == T) {
+##                 rev(range(na.omit(obj[, 2])))
+##             }
+##         }, main = paste(mainTitle, &quot;\n&quot;, paste0(format(range(obj[, 
+##             1]), dateFormat), collapse = &quot;~&quot;), &quot;\nSource:&quot;, dataSource), 
+##         cex.axis = cex.axis, cex.lab = cex.lab, cex.main = cex.main, 
+##         lwd = lwdL, panel.first = grid(nx = NULL, ny = NULL, 
+##             lty = 2, equilogs = T), pch = pchL, cex = cexL)
+##     if (fitLcolor != 0) {
+##         lo &lt;- loess(formula = obj[, 2] ~ as.numeric(obj[, 1]), 
+##             degree = 2)
+##         lines(x = obj[, 1], y = predict(lo), col = lineColor[fitLcolor], 
+##             lwd = fitlwdL, lty = 2)
+##     }
+##     if (chartType != 0) {
+##         if (chartType == 1) {
+##             lines(x = obj[, 1], y = obj[, 3], col = lineColor[2], 
+##                 lwd = lwdR, type = typeR, pch = pchR, cex = cexR)
+##         }
+##         else {
+##             par(new = T)
+##             plot(x = obj[, 1], y = obj[, 3], type = typeR, col = lineColor[2], 
+##                 xlab = &quot;&quot;, ylab = &quot;&quot;, xaxt = &quot;n&quot;, yaxt = &quot;n&quot;, 
+##                 cex.axis = cex.axis, cex.lab = cex.lab, cex.main = cex.main, 
+##                 lwd = lwdR, ylim = if (yaxisReverseR == T) {
+##                   rev(range(na.omit(obj[, 3])))
+##                 }, panel.first = grid(nx = NULL, ny = NULL, lty = 2, 
+##                   equilogs = T), pch = pchR, cex = cexR)
+##             axis(side = 4, cex.axis = cex.axis, cex.lab = cex.lab)
+##             mtext(text = colnames(obj)[3], side = 4, line = 3.2, 
+##                 cex = cex.lab)
+##         }
+##         if (fitRcolor != 0) {
+##             lo &lt;- loess(formula = obj[, 3] ~ as.numeric(obj[, 
+##                 1]), degree = 2)
+##             lines(x = obj[, 1], y = predict(lo), col = lineColor[fitRcolor], 
+##                 lwd = fitlwdR, lty = 2)
+##         }
+##         graphics::legend(x = &quot;topleft&quot;, col = lineColor, lty = 1, 
+##             legend = colnames(obj)[c(2, 3)], cex = cex.legend, 
+##             bty = &quot;n&quot;, lwd = 2)
+##     }
+##     axis.Date(side = 1, at = obj[, 1], format = dateFormat, padj = 1, 
+##         cex.axis = cex.axis)
+##     if (needLefLab == 1) {
+##         mtext(text = colnames(obj)[2], side = 2, line = 3.2, 
+##             cex = cex.lab)
+##     }
+## }
+## 
+## $fun_potus
+## function (obj = dataSet) 
+## {
+##     potus &lt;- c(&quot;1933-3-4&quot;, &quot;Franklin Delano Roosevelt&quot;, &quot;1945-4-12&quot;, 
+##         &quot;Harry S. Truman&quot;, &quot;1953-1-20&quot;, &quot;Dwight David Eisenhower&quot;, 
+##         &quot;1961-1-20&quot;, &quot;John Fitzgerald Kennedy&quot;, &quot;1963-11-22&quot;, 
+##         &quot;Lyndon Baines Johnson&quot;, &quot;1969-1-20&quot;, &quot;Richard Milhouse Nixon&quot;, 
+##         &quot;1974-8-9&quot;, &quot;Gerald Rudolph Ford Jr.&quot;, &quot;1977-1-20&quot;, &quot;James Earl Carter&quot;, 
+##         &quot;1981-1-20&quot;, &quot;Ronald Wilson Reagan&quot;, &quot;1989-1-20&quot;, &quot;George H.W Bush&quot;, 
+##         &quot;1993-1-20&quot;, &quot;Bill Clinton&quot;, &quot;2001-1-20&quot;, &quot;George W. Bush&quot;, 
+##         &quot;2009-1-20&quot;, &quot;Barack Obama&quot;, &quot;2017-1-20&quot;, &quot;Donald Trump&quot;)
+##     cnt &lt;- 1
+##     potusTable &lt;- data.frame()
+##     for (rrr in seq(1, length(potus), by = 2)) {
+##         potusTable[cnt, 1] &lt;- as.character(as.Date(potus[rrr]))
+##         potusTable[cnt, 2] &lt;- as.character(as.Date(potus[rrr + 
+##             2]))
+##         potusTable[cnt, 3] &lt;- potus[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     potusTable[nrow(potusTable), 2] &lt;- as.character(Sys.Date())
+##     write.table(potusTable, &quot;clipboard&quot;, sep = &quot;\t&quot;, row.names = F, 
+##         col.names = T)
+##     out &lt;- NULL
+##     for (rrr in 1:nrow(potusTable)) {
+##         if (rrr%%2 == 0) {
+##             col &lt;- &quot;#FFE6E6&quot;
+##         }
+##         else {
+##             col &lt;- &quot;#CCEBD6&quot;
+##         }
+##         tmp1 &lt;- paste0(&quot;dyShading(from = &#39;&quot;, potusTable[rrr, 
+##             1], &quot;&#39;, to = &#39;&quot;, potusTable[rrr, 2], &quot;&#39;, color = &#39;&quot;, 
+##             col, &quot;&#39;) %&gt;% &quot;)
+##         if (rrr != nrow(potusTable)) {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, potusTable[rrr, 2], &quot;&#39;,&#39;&quot;, 
+##                 potusTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;) %&gt;% &quot;)
+##         }
+##         else {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, obj[nrow(obj), 1], &quot;&#39;,&#39;&quot;, 
+##                 potusTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;)&quot;)
+##         }
+##         out &lt;- c(out, tmp1, tmp2)
+##     }
+##     buf0 &lt;- paste(out, collapse = &quot;&quot;)
+##     assign(&quot;potus_dygraph&quot;, buf0, envir = .GlobalEnv)
+## }
+## 
+## $fun_preparePlot
+## function () 
+## {
+##     username &lt;- Sys.info()[&quot;user&quot;]
+##     pathToFile &lt;- paste0(&quot;C:/Users/&quot;, username, &quot;/Desktop/pathToCSV/&quot;)
+##     setwd(pathToFile)
+##     fileName &lt;- &quot;defaultPath.csv&quot;
+##     buf &lt;- read.csv(file = fileName, header = F, skip = 0, stringsAsFactor = F, 
+##         check.names = F, fileEncoding = &quot;utf-8&quot;, quote = &quot;\&quot;&quot;)
+##     pathOutputTOchart &lt;- paste0(&quot;C:/Users/&quot;, username, buf[2, 
+##         1], &quot;charts/chartImages/&quot;)
+##     setwd(pathOutputTOchart)
+##     getwd()
+## }
+## 
+## $fun_primeMinisterOfJapan
+## function (obj = dataSet) 
+## {
+##     primeMinisterOfJapan &lt;- c(&quot;1885-12-22&quot;, &quot;Hirobumi Ito(1)&quot;, 
+##         &quot;1888-4-30&quot;, &quot;Kiyotaka Kuroda&quot;, &quot;1889-10-25&quot;, &quot;Sanetomi Sanjo&quot;, 
+##         &quot;1889-12-24&quot;, &quot;Aritomo Yamagata(1)&quot;, &quot;1891-5-6&quot;, &quot;Masayoshi Matsukata(1)&quot;, 
+##         &quot;1892-8-8&quot;, &quot;Hirobumi Ito(2)&quot;, &quot;1896-9-18&quot;, &quot;Masayoshi Matsukata(2)&quot;, 
+##         &quot;1898-1-12&quot;, &quot;Hirobumi Ito(3)&quot;, &quot;1898-6-30&quot;, &quot;Shigenobu Okuma(1)&quot;, 
+##         &quot;1898-11-8&quot;, &quot;Aritomo Yamagata(2)&quot;, &quot;1900-10-19&quot;, &quot;Hirobumi Ito(4)&quot;, 
+##         &quot;1901-6-2&quot;, &quot;Taro Katsura(1)&quot;, &quot;1906-1-7&quot;, &quot;Kinmochi Saionji(1)&quot;, 
+##         &quot;1908-7-14&quot;, &quot;Taro Katsura(2)&quot;, &quot;1911-8-30&quot;, &quot;Kinmochi Saionji(2)&quot;, 
+##         &quot;1912-12-21&quot;, &quot;Taro Katsura(3)&quot;, &quot;1913-2-20&quot;, &quot;Gonnohyoe Yamamoto(1)&quot;, 
+##         &quot;1914-4-16&quot;, &quot;Shigenobu Okuma(2)&quot;, &quot;1916-10-9&quot;, &quot;Masatake Terauchi&quot;, 
+##         &quot;1918-9-29&quot;, &quot;Takashi Hara&quot;, &quot;1921-11-13&quot;, &quot;Korekiyo Takahashi&quot;, 
+##         &quot;1922-6-12&quot;, &quot;Tomosaburo Kato&quot;, &quot;1923-9-2&quot;, &quot;Gonnohyoe Yamamoto(2)&quot;, 
+##         &quot;1924-1-7&quot;, &quot;Keigo Kiyoura&quot;, &quot;1924-6-11&quot;, &quot;Takaaki Kato&quot;, 
+##         &quot;1926-1-30&quot;, &quot;Reijiro Wakatsuki(1)&quot;, &quot;1927-4-20&quot;, &quot;Giichi Tanaka&quot;, 
+##         &quot;1929-7-2&quot;, &quot;Osachi Hamaguchi&quot;, &quot;1931-4-14&quot;, &quot;Reijiro Wakatsuki(2)&quot;, 
+##         &quot;1931-12-13&quot;, &quot;Tsuyoshi Inukai&quot;, &quot;1932-5-26&quot;, &quot;Makoto Saito&quot;, 
+##         &quot;1934-7-8&quot;, &quot;Keisuke Okada&quot;, &quot;1936-3-9&quot;, &quot;Koki Hirota&quot;, 
+##         &quot;1937-2-2&quot;, &quot;Senjuro Hayashi&quot;, &quot;1937-6-4&quot;, &quot;Fumimaro Konoe(1)&quot;, 
+##         &quot;1939-1-5&quot;, &quot;Kiichiro Hiranuma&quot;, &quot;1939-8-30&quot;, &quot;Nobuyuki Abe&quot;, 
+##         &quot;1940-1-16&quot;, &quot;Mitsumasa Yonai&quot;, &quot;1940-7-22&quot;, &quot;Fumimaro Konoe(2-3)&quot;, 
+##         &quot;1941-10-18&quot;, &quot;Hideki Tojo&quot;, &quot;1944-7-22&quot;, &quot;Kuniaki Koiso&quot;, 
+##         &quot;1945-4-7&quot;, &quot;Kantaro Suzuki&quot;, &quot;1945-8-17&quot;, &quot;Prince Naruhiko Higashikuni&quot;, 
+##         &quot;1945-10-9&quot;, &quot;Kijuro Shidehara&quot;, &quot;1946-5-22&quot;, &quot;Shigeru Yoshida(1)&quot;, 
+##         &quot;1947-5-24&quot;, &quot;Tetsu Katayama&quot;, &quot;1948-3-10&quot;, &quot;Hitoshi Ashida&quot;, 
+##         &quot;1948-10-15&quot;, &quot;吉田茂(2-5)&quot;, &quot;1954-12-10&quot;, &quot;鳩山一郎(1-3)&quot;, 
+##         &quot;1956-12-23&quot;, &quot;石橋湛山&quot;, &quot;1957-2-25&quot;, &quot;岸信介(1-2)&quot;, 
+##         &quot;1960-7-19&quot;, &quot;池田勇人(1-3)&quot;, &quot;1964-11-9&quot;, &quot;佐藤栄作(1-3)&quot;, 
+##         &quot;1972-7-7&quot;, &quot;田中角栄(1-2)&quot;, &quot;1974-12-9&quot;, &quot;三木武夫&quot;, 
+##         &quot;1976-12-24&quot;, &quot;福田赳夫&quot;, &quot;1978-12-7&quot;, &quot;大平正芳(1-2)&quot;, 
+##         &quot;1980-7-17&quot;, &quot;鈴木善幸&quot;, &quot;1982-11-27&quot;, &quot;中曽根康弘(1-3)&quot;, 
+##         &quot;1987-11-6&quot;, &quot;竹下登&quot;, &quot;1989-6-3&quot;, &quot;宇野宗佑&quot;, &quot;1989-8-10&quot;, 
+##         &quot;海部俊樹(1-2)&quot;, &quot;1991-11-5&quot;, &quot;宮沢喜一&quot;, &quot;1993-8-9&quot;, 
+##         &quot;細川護煕&quot;, &quot;1994-4-28&quot;, &quot;羽田孜&quot;, &quot;1994-6-30&quot;, &quot;村山富市&quot;, 
+##         &quot;1996-1-11&quot;, &quot;橋本龍太郎(1-2)&quot;, &quot;1998-7-30&quot;, &quot;小渕恵三&quot;, 
+##         &quot;2000-4-5&quot;, &quot;森喜朗(1-2)&quot;, &quot;2001-4-26&quot;, &quot;小泉純一郎(1-3)&quot;, 
+##         &quot;2006-9-26&quot;, &quot;安倍晋三(1)&quot;, &quot;2007-9-26&quot;, &quot;福田康夫&quot;, 
+##         &quot;2008-9-24&quot;, &quot;麻生太郎&quot;, &quot;2009-9-16&quot;, &quot;鳩山由紀夫&quot;, &quot;2010-6-8&quot;, 
+##         &quot;菅直人&quot;, &quot;2011-9-2&quot;, &quot;野田佳彦&quot;, &quot;2012-12-26&quot;, &quot;安倍晋三(2,3)&quot;)
+##     cnt &lt;- 1
+##     pmTable &lt;- data.frame()
+##     for (rrr in seq(1, length(primeMinisterOfJapan), by = 2)) {
+##         pmTable[cnt, 1] &lt;- as.character(as.Date(primeMinisterOfJapan[rrr]))
+##         pmTable[cnt, 2] &lt;- as.character(as.Date(primeMinisterOfJapan[rrr + 
+##             2]))
+##         pmTable[cnt, 3] &lt;- primeMinisterOfJapan[rrr + 1]
+##         cnt &lt;- cnt + 1
+##     }
+##     pmTable[nrow(pmTable), 2] &lt;- as.character(Sys.Date())
+##     write.table(pmTable, &quot;clipboard&quot;, sep = &quot;\t&quot;, row.names = F, 
+##         col.names = T)
+##     out &lt;- NULL
+##     for (rrr in 1:nrow(pmTable)) {
+##         if (rrr%%2 == 0) {
+##             col &lt;- &quot;#FFE6E6&quot;
+##         }
+##         else {
+##             col &lt;- &quot;#CCEBD6&quot;
+##         }
+##         tmp1 &lt;- paste0(&quot;dyShading(from = &#39;&quot;, pmTable[rrr, 1], 
+##             &quot;&#39;, to = &#39;&quot;, pmTable[rrr, 2], &quot;&#39;, color = &#39;&quot;, col, 
+##             &quot;&#39;) %&gt;% &quot;)
+##         if (rrr != nrow(pmTable)) {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, pmTable[rrr, 2], &quot;&#39;,&#39;&quot;, 
+##                 pmTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;) %&gt;% &quot;)
+##         }
+##         else {
+##             tmp2 &lt;- paste0(&quot;dyEvent(&#39;&quot;, obj[nrow(obj), 1], &quot;&#39;,&#39;&quot;, 
+##                 pmTable[rrr, 3], &quot;&#39;, labelLoc = &#39;bottom&#39;)&quot;)
+##         }
+##         out &lt;- c(out, tmp1, tmp2)
+##     }
+##     buf0 &lt;- paste(out, collapse = &quot;&quot;)
+##     assign(&quot;primeMinisterOfJapan_dygraph&quot;, buf0, envir = .GlobalEnv)
+## }
+## 
+## $fun_scale
+## function (obj, center = T, scale = T) 
+## {
+##     if (exists(&quot;resultScaleDF&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;resultScaleDF&quot;, envir = .GlobalEnv)
+##     }
+##     if (exists(&quot;resultScale&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;resultScale&quot;, envir = .GlobalEnv)
+##     }
+##     resultScale0 &lt;- scale(obj[, -1], center = center, scale = scale)
+##     resultScaleDF &lt;- data.frame(attributes(resultScale0)$`scaled:center`, 
+##         attributes(resultScale0)$`scaled:scale`, stringsAsFactors = F)
+##     colnames(resultScaleDF) &lt;- c(&quot;Center&quot;, &quot;Scale&quot;)
+##     resultScale &lt;- data.frame(obj[, 1, drop = F], resultScale0, 
+##         stringsAsFactors = F, check.names = F, row.names = NULL)
+##     resultList &lt;- list(resultScaleDF = resultScaleDF, resultScale = resultScale)
+##     return(resultList)
+## }
+## 
+## $fun_scatterPlot
+## function (obj, mar = c(5, 5, 6, 2), objDate = 1, objX = 2, objY = 3, 
+##     dateFormat = &quot;%Y-%m&quot;, dataSource = &quot;&quot;, asp = 0, needLim = 0, 
+##     cexText = 1, srtText = 90, posText = 1, offsetText = 1, cexAxis = 1, 
+##     cexLab = 1, cexMain = 1, cexLegend = 1, cexPlot = 1, cexSub = 1, 
+##     pch = 20, plotType = &quot;o&quot;) 
+## {
+##     par(mar = mar, family = &quot;Meiryo&quot;)
+##     windowsFonts(Meiryo = windowsFont(&quot;Meiryo&quot;))
+##     minValue &lt;- min(obj[, objX:objY])
+##     maxValue &lt;- max(obj[, objX:objY])
+##     plot(obj[, objX], obj[, objY], asp = if (asp == 1) {
+##         asp
+##     }, col = &quot;blue&quot;, cex = cexPlot, pch = pch, type = plotType, 
+##         main = paste0(paste0(colnames(obj)[objX:objY], collapse = &quot;\n × \n&quot;), 
+##             &quot;\n&quot;, &quot;対象期間:&quot;, paste0(format(range(obj[, objDate]), 
+##                 dateFormat), collapse = &quot;~&quot;), &quot;\nSource:&quot;, dataSource), 
+##         cex.axis = cexAxis, cex.lab = cexLab, cex.main = cexMain, 
+##         cex.sub = cexSub, xlab = colnames(obj)[objX], ylab = colnames(obj)[objY], 
+##         xlim = if (needLim == 1) {
+##             c(minValue, maxValue)
+##         }, ylim = if (needLim == 1) {
+##             c(minValue, maxValue)
+##         })
+##     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+##     graphics::text(obj[, objX], obj[, objY], labels = format(obj[, 
+##         objDate], dateFormat), pos = posText, srt = srtText, 
+##         cex = cexText, offset = offsetText)
+##     lines(par()$usr[1:2], par()$usr[1:2], col = &quot;red&quot;)
+## }
+## 
+## $fun_strawBroomData
+## function (objDF, varType = 1) 
+## {
+##     buf &lt;- objDF$withoutDate
+##     if (varType == 1) {
+##         obj &lt;- apply(buf, 2, function(x) (na.omit(x)/head(x, 
+##             1) - 1) * 100)
+##         variation &lt;- &quot;Variation(%)&quot;
+##     }
+##     else {
+##         obj &lt;- apply(buf, 2, function(x) na.omit(x) - head(x, 
+##             1))
+##         variation &lt;- &quot;Variation(Difference)&quot;
+##     }
+##     strawData &lt;- Reduce(function(x, y) {
+##         qpcR:::cbind.na(x, y)
+##     }, obj)
+##     colnames(strawData) &lt;- colnames(buf)
+##     tmp000 &lt;- objDF$withDate
+##     lastDate &lt;- tail(na.omit(tmp000[, c(ncol(tmp000) - 1, ncol(tmp000))]), 
+##         1)[, 1]
+##     returnDF &lt;- list(variation = variation, strawData = strawData, 
+##         lastDate = lastDate)
+##     return(returnDF)
+## }
+## 
+## $fun_summaryByName
+## function (obj, omitFirst = 1, objColumn = 2, objPerson = &quot;primeminister&quot;, 
+##     digits = 2, needTidy = 1, dateFormat = &quot;%Y-%m-%d&quot;) 
+## {
+##     if (exists(&quot;summaryByName&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;summaryByName&quot;, envir = .GlobalEnv)
+##     }
+##     fun_withList(obj = obj[, c(1, objColumn)])
+##     objPersonColumn &lt;- grep(objPerson, colnames(dfWithList), 
+##         ignore.case = T)
+##     buf0 &lt;- dfWithList[, c(1, 2, objPersonColumn)]
+##     if (omitFirst == 1) {
+##         buf0 &lt;- subset(buf0, unique(buf0[, 3])[1] != buf0[, 3])
+##     }
+##     uniqObj &lt;- unique(buf0[, 3])
+##     for (iii in seq(length(uniqObj))) {
+##         tmp &lt;- subset(buf0, buf0[, 3] == uniqObj[iii])
+##         if (iii == 1) {
+##             allRecord &lt;- summary(tmp[, 2])
+##         }
+##         else {
+##             allRecord &lt;- rbind(allRecord, summary(tmp[, 2]))
+##         }
+##     }
+##     rownames(allRecord) &lt;- NULL
+##     Period &lt;- sapply(uniqObj, function(x) paste0(format(range(buf0[buf0[, 
+##         3] == x, 1]), dateFormat), collapse = &quot;~&quot;))
+##     returnData &lt;- data.frame(Name = uniqObj, allRecord, Period, 
+##         stringsAsFactors = F, check.names = F, row.names = NULL)
+##     if (needTidy == 1) {
+##         returnData[, -c(1, 8)] &lt;- apply(returnData[, -c(1, 8)], 
+##             2, function(x) round(x, digits))
+##     }
+##     return(returnData)
+## }
+## 
+## $fun_timeSeriesDataFundamentalStatistics
+## function (obj = dataSet, objCCC = 2, lagN = 1, diffN = 1) 
+## {
+##     library(tseries)
+##     library(lubridate)
+##     dataSet &lt;- dataSet0 &lt;- na.omit(obj)
+##     dateFormat &lt;- &quot;%Y-%m-%d&quot;
+##     dateUnit &lt;- &quot;Day&quot;
+##     if (length(unique(month(dataSet[, 1]))) == 1) {
+##         dateFormat &lt;- &quot;%Y&quot;
+##         dateUnit &lt;- &quot;Year&quot;
+##     }
+##     else if (length(unique(day(dataSet[, 1]))) == 1) {
+##         dateFormat &lt;- &quot;%Y-%m&quot;
+##         dateUnit &lt;- &quot;Month&quot;
+##     }
+##     colnames(dataSet0)[objCCC] &lt;- paste0(colnames(dataSet0)[objCCC], 
+##         &quot;&lt;br&gt;n=&quot;, nrow(dataSet0), &quot;:&quot;, paste0(format(range(dataSet0[, 
+##             1]), dateFormat), collapse = &quot;~&quot;))
+##     dataSet1 &lt;- data.frame(Date = tail(dataSet[, 1], -(lagN * 
+##         diffN)), diff(as.matrix(dataSet[, -1]), lag = lagN, differences = diffN), 
+##         check.names = F, stringsAsFactors = F)
+##     colnames(dataSet1)[objCCC] &lt;- paste0(colnames(dataSet)[objCCC], 
+##         &quot;&lt;br&gt;n=&quot;, nrow(dataSet1), &quot;:lag=&quot;, lagN, &quot;:diff=&quot;, diffN, 
+##         &quot;:&quot;, paste0(format(range(dataSet1[, 1]), dateFormat), 
+##             collapse = &quot;~&quot;))
+##     resultADF &lt;- adf.test(dataSet0[, objCCC])
+##     resultADF &lt;- rbind(cbind(resultADF$statistic), cbind(resultADF$parameter), 
+##         cbind(resultADF$alternative), cbind(resultADF$p.value), 
+##         cbind(resultADF$method), cbind(paste0(format(range(dataSet0[, 
+##             1]), dateFormat), collapse = &quot;~&quot;)))
+##     row.names(resultADF)[3:6] &lt;- c(&quot;Alternative&quot;, &quot;p.value&quot;, 
+##         &quot;Method&quot;, &quot;Period&quot;)
+##     colnames(resultADF)[1] &lt;- &quot;Result&quot;
+##     resultADFdiff &lt;- adf.test(diff(dataSet0[, objCCC], lag = lagN, 
+##         differences = diffN))
+##     resultADFdiff &lt;- rbind(cbind(resultADFdiff$statistic), cbind(resultADFdiff$parameter), 
+##         cbind(resultADFdiff$alternative), cbind(resultADFdiff$p.value), 
+##         cbind(resultADFdiff$method), cbind(paste0(format(range(tail(dataSet0[, 
+##             1], -(lagN * diffN))), dateFormat), collapse = &quot;~&quot;)), 
+##         cbind(paste0(&quot;lag:&quot;, lagN, &quot;,diff:&quot;, diffN)))
+##     row.names(resultADFdiff)[3:7] &lt;- c(&quot;Alternative&quot;, &quot;p.value&quot;, 
+##         &quot;Method&quot;, &quot;Period&quot;, &quot;Lag&quot;)
+##     colnames(resultADFdiff)[1] &lt;- &quot;Result&quot;
+##     summaryTable &lt;- cbind(summary(dataSet[, objCCC]))
+##     latestValue &lt;- tail(dataSet[, objCCC], 1)
+##     latestDate &lt;- format(tail(dataSet[, 1], 1), dateFormat)
+##     statisticsTable &lt;- data.frame(cbind(summaryTable, round(latestValue/summaryTable * 
+##         100, 1), latestValue - summaryTable))
+##     colnames(statisticsTable) &lt;- c(colnames(dataSet)[objCCC], 
+##         paste0(&quot;Latest(&quot;, latestDate, &quot;:&quot;, latestValue, &quot;)&lt;br&gt;to Summary(%)&quot;), 
+##         paste0(&quot;Latest(&quot;, latestDate, &quot;:&quot;, latestValue, &quot;)&lt;br&gt;to Summary(Diff)&quot;))
+##     colnames(statisticsTable)[1] &lt;- paste0(colnames(statisticsTable)[1], 
+##         &quot;&lt;br&gt;&quot;, paste0(format(range(dataSet[, 1]), dateFormat), 
+##             collapse = &quot;~&quot;))
+##     dataSetDiff &lt;- data.frame(tail(dataSet[, 1], -(lagN * diffN)), 
+##         diff(dataSet[, objCCC], lag = lagN, differences = diffN))
+##     dataRangeDiff &lt;- paste0(as.character(format(range(dataSetDiff[, 
+##         1]), dateFormat)), collapse = &quot;~&quot;)
+##     appendTitle &lt;- paste0(&quot;&lt;br&gt;lag=&quot;, lagN, &quot;,diff=&quot;, diffN)
+##     colnames(dataSetDiff) &lt;- c(&quot;Date&quot;, paste0(colnames(dataSet)[objCCC], 
+##         appendTitle))
+##     dataSet01Positive &lt;- subset(dataSetDiff, 0 &lt;= dataSetDiff[, 
+##         2])
+##     dataSet01Negative &lt;- subset(dataSetDiff, 0 &gt; dataSetDiff[, 
+##         2])
+##     statisticsTableDiff &lt;- data.frame(cbind(cbind(summary(dataSet01Positive[, 
+##         -1])), cbind(summary(dataSet01Negative[, -1]))))
+##     colnames(statisticsTableDiff) &lt;- paste0(colnames(dataSet)[objCCC], 
+##         paste0(appendTitle, c(&quot;:Positive&quot;, &quot;:Negative&quot;)), &quot;:&quot;, 
+##         dataRangeDiff)
+##     RatioPositive &lt;- round(nrow(dataSet01Positive)/nrow(dataSetDiff) * 
+##         100)
+##     RatioNegative &lt;- round(nrow(dataSet01Negative)/nrow(dataSetDiff) * 
+##         100)
+##     statisticsTableDiffRatio &lt;- data.frame(rbind(NumberPositive = nrow(dataSet01Positive), 
+##         RatioPositive, NumberNegative = nrow(dataSet01Negative), 
+##         RatioNegative, Total = nrow(dataSetDiff)), check.names = F, 
+##         stringsAsFactors = F)
+##     colnames(statisticsTableDiffRatio)[1] &lt;- paste0(colnames(dataSet)[objCCC], 
+##         appendTitle, &quot;:&quot;, dataRangeDiff)
+##     statisticsTableDiffMaxMin &lt;- data.frame(rbind(dataSetDiff[which.max(dataSetDiff[, 
+##         2]), ], dataSetDiff[which.min(dataSetDiff[, 2]), ]), 
+##         check.names = F, stringsAsFactors = F)
+##     colnames(statisticsTableDiffMaxMin)[2] &lt;- paste0(colnames(statisticsTableDiffMaxMin)[2], 
+##         &quot;:Max&amp;Min&quot;, &quot;:&quot;, dataRangeDiff)
+##     statisticsTableDiffMaxMin[, 1] &lt;- format(statisticsTableDiffMaxMin[, 
+##         1], dateFormat)
+##     for (rrr in 1:nrow(dataSetDiff)) {
+##         if (0 &lt;= dataSetDiff[rrr, objCCC]) {
+##             dataSetDiff[rrr, 3] &lt;- 1
+##             dataSetDiff[rrr, 4] &lt;- 0
+##         }
+##         else {
+##             dataSetDiff[rrr, 3] &lt;- 0
+##             dataSetDiff[rrr, 4] &lt;- 1
+##         }
+##     }
+##     colnames(dataSetDiff)[3:4] &lt;- c(&quot;Positive&quot;, &quot;Negative&quot;)
+##     dataSetDiff0 &lt;- dataSetDiff
+##     for (rrr in 2:nrow(dataSetDiff0)) {
+##         if (dataSetDiff0[rrr, 3] == 1) {
+##             dataSetDiff0[rrr, 3] &lt;- dataSetDiff0[rrr - 1, 3] + 
+##                 dataSetDiff0[rrr, 3]
+##         }
+##         if (dataSetDiff0[rrr, 4] == 1) {
+##             dataSetDiff0[rrr, 4] &lt;- dataSetDiff0[rrr - 1, 4] + 
+##                 dataSetDiff0[rrr, 4]
+##         }
+##     }
+##     dataSetDiff0Positive &lt;- rbind(dataSetDiff0[which(dataSetDiff0[, 
+##         3] == 0) - 1, c(1, 2, 3)], tail(dataSetDiff0[, c(1, 2, 
+##         3)], 1))
+##     dataSetDiff0Positive &lt;- dataSetDiff0Positive[which(dataSetDiff0Positive[, 
+##         3] != 0), ]
+##     dataSetDiff0Negative &lt;- rbind(dataSetDiff0[which(dataSetDiff0[, 
+##         4] == 0) - 1, c(1, 2, 4)], tail(dataSetDiff0[, c(1, 2, 
+##         4)], 1))
+##     dataSetDiff0Negative &lt;- dataSetDiff0Negative[which(dataSetDiff0Negative[, 
+##         3] != 0), ]
+##     statSequencePositive &lt;- data.frame()
+##     seqList &lt;- unique(dataSetDiff0Positive[, 3])[order(unique(dataSetDiff0Positive[, 
+##         3]))]
+##     for (iii in 1:length(seqList)) {
+##         statSequencePositive[iii, 1] &lt;- seqList[iii]
+##         statSequencePositive[iii, 2] &lt;- nrow(subset(dataSetDiff0Positive, 
+##             dataSetDiff0Positive[, 3] == seqList[iii]))
+##     }
+##     colnames(statSequencePositive) &lt;- c(paste0(&quot;x Straight Positive &quot;, 
+##         dateUnit, &quot;s&quot;), &quot;N&quot;)
+##     statSequencePositive$Ratio &lt;- round(statSequencePositive[, 
+##         2]/sum(statSequencePositive[, 2]) * 100, 1)
+##     colnames(statSequencePositive)[3] &lt;- paste0(colnames(dataSet)[objCCC], 
+##         appendTitle, &quot;:&quot;, colnames(statSequencePositive)[3], 
+##         &quot;:&quot;, dataRangeDiff)
+##     statSequenceNegative &lt;- data.frame()
+##     seqList &lt;- unique(dataSetDiff0Negative[, 3])[order(unique(dataSetDiff0Negative[, 
+##         3]))]
+##     for (iii in 1:length(seqList)) {
+##         statSequenceNegative[iii, 1] &lt;- seqList[iii]
+##         statSequenceNegative[iii, 2] &lt;- nrow(subset(dataSetDiff0Negative, 
+##             dataSetDiff0Negative[, 3] == seqList[iii]))
+##     }
+##     colnames(statSequenceNegative) &lt;- c(paste0(&quot;x Straight Negative &quot;, 
+##         dateUnit, &quot;s&quot;), &quot;N&quot;)
+##     statSequenceNegative$Ratio &lt;- round(statSequenceNegative[, 
+##         2]/sum(statSequenceNegative[, 2]) * 100, 1)
+##     colnames(statSequenceNegative)[3] &lt;- paste0(colnames(dataSet)[objCCC], 
+##         appendTitle, &quot;:&quot;, colnames(statSequenceNegative)[3], 
+##         &quot;:&quot;, dataRangeDiff)
+##     dateFormat &lt;&lt;- dateFormat
+##     dateUnit &lt;&lt;- dateUnit
+##     timeSeriesdata &lt;- dataSet0
+##     timeSeriesdata[, 1] &lt;- format(timeSeriesdata[, 1], dateFormat)
+##     timeSeriesdata &lt;&lt;- timeSeriesdata
+##     timeSeriesdataDiff &lt;&lt;- dataSet1
+##     timeSeriesdataDiff[, 1] &lt;- format(timeSeriesdataDiff[, 1], 
+##         dateFormat)
+##     timeSeriesdataDiff &lt;&lt;- timeSeriesdataDiff
+##     statisticsTable &lt;&lt;- statisticsTable
+##     statisticsTableDiff &lt;&lt;- statisticsTableDiff
+##     statisticsTableDiffRatio &lt;&lt;- statisticsTableDiffRatio
+##     statisticsTableDiffMaxMin &lt;&lt;- statisticsTableDiffMaxMin
+##     statSequencePositive &lt;&lt;- statSequencePositive
+##     statSequenceNegative &lt;&lt;- statSequenceNegative
+##     resultADF &lt;&lt;- resultADF
+##     resultADFdiff &lt;&lt;- resultADFdiff
+## }
+## 
+## $fun_timeSeriesForecast
+## function (obj = dataSet, surrogateSignificance = 0.05, surrogateK = 1, 
+##     surrogateOnesided = F, surrogatePlot = F, arimaIC = &quot;aic&quot;, 
+##     arfimaEstim = &quot;mle&quot;, acfLag = 12, acfType = &quot;correlation&quot;, 
+##     acfMainTitle = &quot;&quot;) 
+## {
+##     result_acfTest &lt;&lt;- acf(x = obj, lag.max = acfLag, type = acfType, 
+##         drop.lag.0 = F, plot = T, main = acfMainTitle)
+##     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+##     result_spectrum &lt;&lt;- spectrum(obj, method = &quot;ar&quot;)
+##     panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+##     result_adfTest &lt;&lt;- adf.test(x = obj)
+##     result_surrogateTest &lt;&lt;- surrogateTest(time.series = obj, 
+##         significance = surrogateSignificance, K = surrogateK, 
+##         one.sided = surrogateOnesided, FUN = timeAsymmetry, do.plot = surrogatePlot)
+##     if (surrogatePlot == T) {
+##         panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+##     }
+##     result_nnetar &lt;&lt;- nnetar(y = obj)
+##     result_arima &lt;&lt;- auto.arima(y = obj, ic = arimaIC, trace = F, 
+##         stepwise = F, approximation = F)
+##     result_arfima &lt;&lt;- arfima(y = obj, drange = c(0, 1), estim = arfimaEstim, 
+##         lambda = NULL)
+## }
+## 
+## $fun_timeSeriesList
+## function (tsTitle = 0, htmlName = 0) 
+## {
+##     library(rvest)
+##     userName &lt;- Sys.info()[&quot;user&quot;]
+##     pathToFile &lt;- paste0(&quot;C:/Users/&quot;, userName, &quot;/Desktop/pathToCSV/&quot;)
+##     setwd(pathToFile)
+##     fileName &lt;- &quot;defaultPath.csv&quot;
+##     buf &lt;- read.csv(file = fileName, header = F, skip = 0, stringsAsFactor = F, 
+##         check.names = F, fileEncoding = &quot;utf-8&quot;, quote = &quot;\&quot;&quot;)
+##     pathToCharts &lt;- paste0(&quot;C:/Users/&quot;, userName, buf[2, 1], 
+##         &quot;charts/indicator/&quot;)
+##     setwd(pathToCharts)
+##     htmlList &lt;- dir(pathToCharts)
+##     objHTML &lt;- grep(&quot;[^-]+-[0-9]{5}.html&quot;, htmlList)
+##     titleHTML &lt;- data.frame()
+##     baseURL &lt;- &quot;&lt;a href=\&quot;http://indicator.am-consulting.co.jp/&quot;
+##     for (iii in seq(length(objHTML))) {
+##         targetHTML &lt;- htmlList[objHTML[iii]]
+##         htmlMarkup &lt;- read_html(x = targetHTML, encoding = &quot;utf8&quot;)
+##         htmlTitle &lt;- htmlMarkup %&gt;% html_nodes(xpath = &quot;//div[@id = &#39;htmlTitle&#39;]&quot;) %&gt;% 
+##             html_text()
+##         htmlTitle &lt;- gsub(&quot;\n|\r&quot;, &quot;&quot;, htmlTitle)
+##         timeStamp &lt;- as.POSIXct(file.info(path = targetHTML)$mtime, 
+##             origin = &quot;1970-01-01&quot;)
+##         titleHTML[iii, 1] &lt;- iii
+##         titleTxt &lt;- gsub(&quot;(.+):([0-9]{4}-[0-9]{2})=(.+)&quot;, &quot;\\1&quot;, 
+##             htmlTitle)
+##         dateTxt &lt;- gsub(&quot;(.+):([0-9]{4}-[0-9]{2})=(.+)&quot;, &quot;\\2&quot;, 
+##             htmlTitle)
+##         valueTxt &lt;- gsub(&quot;(.+):([0-9]{4}-[0-9]{2})=(.+)&quot;, &quot;\\3&quot;, 
+##             htmlTitle)
+##         titleHTML[iii, 2] &lt;- paste0(baseURL, targetHTML, &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot;, 
+##             titleTxt, &quot;&lt;/a&gt;&quot;)
+##         titleHTML[iii, 3] &lt;- dateTxt
+##         titleHTML[iii, 4] &lt;- valueTxt
+##         titleHTML[iii, 5] &lt;- as.character(timeStamp)
+##     }
+##     if (tsTitle != 0 &amp; htmlName != 0) {
+##         htmlTitle &lt;- tsTitle
+##         timeStamp &lt;- Sys.time()
+##         titleTxt &lt;- gsub(&quot;(.+):([0-9]{4}-[0-9]{2})=(.+)&quot;, &quot;\\1&quot;, 
+##             htmlTitle)
+##         dateTxt &lt;- gsub(&quot;(.+):([0-9]{4}-[0-9]{2})=(.+)&quot;, &quot;\\2&quot;, 
+##             htmlTitle)
+##         valueTxt &lt;- gsub(&quot;(.+):([0-9]{4}-[0-9]{2})=(.+)&quot;, &quot;\\3&quot;, 
+##             htmlTitle)
+##         targetHTML &lt;- paste0(&quot;am-consulting.co.jp-&quot;, htmlName, 
+##             &quot;.html&quot;)
+##         if (length(grep(htmlName, titleHTML[, 2])) == 0) {
+##             iii &lt;- iii + 1
+##             titleHTML[iii, 1] &lt;- iii
+##             titleHTML[iii, 2] &lt;- paste0(baseURL, targetHTML, 
+##                 &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot;, titleTxt, &quot;&lt;/a&gt;&quot;)
+##             titleHTML[iii, 3] &lt;- dateTxt
+##             titleHTML[iii, 4] &lt;- valueTxt
+##             titleHTML[iii, 5] &lt;- as.character(timeStamp)
+##         }
+##         else {
+##             titleHTML[grep(htmlName, titleHTML[, 2]), 2] &lt;- paste0(baseURL, 
+##                 targetHTML, &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot;, titleTxt, 
+##                 &quot;&lt;/a&gt;&quot;)
+##             titleHTML[grep(htmlName, titleHTML[, 2]), 3] &lt;- dateTxt
+##             titleHTML[grep(htmlName, titleHTML[, 2]), 4] &lt;- valueTxt
+##             titleHTML[grep(htmlName, titleHTML[, 2]), 5] &lt;- as.character(timeStamp)
+##         }
+##     }
+##     colnames(titleHTML) &lt;- c(&quot;No.&quot;, &quot;Title&quot;, &quot;Date(Year-Month)&quot;, 
+##         &quot;Value&quot;, &quot;TimeStamp&quot;)
+##     titleHTML &lt;- titleHTML[order(titleHTML[, 5], decreasing = T), 
+##         ]
+##     titleHTML[, 1] &lt;- seq(nrow(titleHTML))
+##     baseTxt &lt;- &quot;&lt;a href=\&quot;http://knowledgevault.saecanet.com/charts/chartImages/&quot;
+##     htmlNameS &lt;- gsub(&quot;.+jp-([0-9]{5}).+&quot;, &quot;\\1&quot;, titleHTML[, 
+##         2])
+##     figLink &lt;- paste0(paste0(baseTxt, htmlNameS, &quot;-1.png\&quot;&gt;01&lt;/a&gt; - &quot;), 
+##         paste0(baseTxt, htmlNameS, &quot;-2.png\&quot;&gt;02&lt;/a&gt; - &quot;), paste0(baseTxt, 
+##             htmlNameS, &quot;-3.png\&quot;&gt;03&lt;/a&gt;&quot;))
+##     titleHTML$Figure &lt;- figLink
+##     titleHTML &lt;- titleHTML[, -6]
+##     pathOutputTOcsv &lt;- paste0(&quot;C:/Users/&quot;, userName, buf[2, 1], 
+##         &quot;csv/&quot;)
+##     setwd(pathOutputTOcsv)
+##     write.csv(x = titleHTML, file = &quot;timeSeriesList.csv&quot;, quote = T, 
+##         row.names = F, append = F, na = &quot;&quot;, fileEncoding = &quot;UTF-8&quot;)
+## }
+## 
+## $fun_TimeSeriesSummary
+## function (obj, dateCol = 1, dataCol = 2, dateFormat = &quot;%Y-%m&quot;, 
+##     indicatorName = &quot;&quot;) 
+## {
+##     dateRange &lt;- paste0(paste0(format(range(obj[, dateCol]), 
+##         dateFormat), collapse = &quot;から&quot;), &quot;における&quot;)
+##     if (indicatorName == &quot;&quot;) {
+##         indicatorName &lt;- colnames(obj)[dataCol]
+##     }
+##     cat(&quot;&lt;ol&gt;\n&quot;)
+##     for (iii in 1:6) {
+##         statName &lt;- switch(iii, &quot;最小値&quot;, &quot;第1四分位数&quot;, &quot;中央値&quot;, 
+##             &quot;平均値&quot;, &quot;第3四分位数&quot;, &quot;最大値&quot;)
+##         cat(paste0(&quot;&lt;li&gt;&quot;, indicatorName, &quot;の&quot;, dateRange, statName, 
+##             &quot;は&quot;, summary(obj[, dataCol])[iii]), &quot;&lt;/li&gt;\n&quot;)
+##     }
+##     meanResult &lt;- fun_meanS(objDF = obj, dateCol = dateCol, objCol = dataCol, 
+##         dateFormat = dateFormat)
+##     meanResult &lt;- meanResult[-grep(&quot;^平均値|^中央値&quot;, meanResult[, 
+##         1]), ]
+##     for (iii in 1:nrow(meanResult)) {
+##         cat(paste0(&quot;&lt;li&gt;&quot;, indicatorName, &quot;の&quot;, dateRange, meanResult[iii, 
+##             1], &quot;は&quot;, meanResult[iii, 2]), &quot;&lt;/li&gt;\n&quot;)
+##     }
+##     summaryResult &lt;- fun_summaryByName(obj = obj, objColumn = dataCol, 
+##         dateFormat = dateFormat)
+##     maxResult &lt;- summaryResult[which.max(summaryResult$Mean), 
+##         ]
+##     minResult &lt;- summaryResult[which.min(summaryResult$Mean), 
+##         ]
+##     cat(paste0(&quot;&lt;li&gt;&quot;, indicatorName, &quot;の平均値が最も高い政権は&quot;, 
+##         maxResult[1, 1], &quot;政権の&quot;, maxResult[1, grep(&quot;mean&quot;, 
+##             colnames(maxResult), ignore.case = T)], &quot;&lt;/li&gt;\n&quot;))
+##     cat(paste0(&quot;&lt;li&gt;&quot;, indicatorName, &quot;の平均値が最も低い政権は&quot;, 
+##         minResult[1, 1], &quot;政権の&quot;, minResult[1, grep(&quot;mean&quot;, 
+##             colnames(minResult), ignore.case = T)], &quot;&lt;/li&gt;\n&quot;))
+##     cat(&quot;&lt;/ol&gt;\n&quot;)
+## }
+## 
+## $fun_transposeDataFrame
+## function (obj, tailN = 5, dateFormat = &quot;%Y-%m-%d&quot;, colName = &quot;Item&quot;) 
+## {
+##     if (exists(&quot;tDF&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;tDF&quot;, envir = .GlobalEnv)
+##     }
+##     if (dateFormat != 0) {
+##         obj[, 1] &lt;- format(obj[, 1], dateFormat)
+##     }
+##     buf &lt;- t(tail(obj, tailN))
+##     buf &lt;- data.frame(row.names(buf), buf, check.names = F, stringsAsFactors = F, 
+##         row.names = NULL)
+##     colnames(buf) &lt;- buf[1, ]
+##     buf &lt;- buf[-1, ]
+##     colnames(buf)[1] &lt;- colName
+##     buf[, -1] &lt;- apply(buf[, -1, drop = F], 2, as.numeric)
+##     return(buf)
+## }
+## 
+## $fun_tsDataByYear
+## function (objDF, dateCol = 1, dataCol = 2) 
+## {
+##     obj &lt;- objDF[, c(dateCol, dataCol)]
+##     yearList &lt;- unique(year(obj[, 1]))
+##     byYear &lt;- lapply(yearList, function(x) subset(obj, x == year(obj[, 
+##         1])))
+##     cbindData0 &lt;- Reduce(function(x, y) {
+##         qpcR:::cbind.na(x, y)
+##     }, byYear)
+##     objCol &lt;- grep(&quot;date&quot;, colnames(cbindData0), ignore.case = T)
+##     colnames(cbindData0)[-objCol] &lt;- paste0(colnames(cbindData0)[-objCol], 
+##         &quot;:&quot;, year(as.Date(unlist(cbindData0[1, objCol]))))
+##     cbindData1 &lt;- cbindData0[, -objCol]
+##     returnDF &lt;- list(withDate = cbindData0, withoutDate = cbindData1)
+##     return(returnDF)
+## }
+## 
+## $fun_turningPoint
+## function (obj, dateFormat = &quot;%Y-%m&quot;, unit = &quot;月&quot;, judge = c(&quot;輸入超&quot;, 
+##     &quot;輸出超&quot;)) 
+## {
+##     if (exists(&quot;durationInclude0&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;durationInclude0&quot;, envir = .GlobalEnv)
+##     }
+##     if (exists(&quot;objPNinclude0&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;objPNinclude0&quot;, envir = .GlobalEnv)
+##     }
+##     if (exists(&quot;durationExclude0&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;durationExclude0&quot;, envir = .GlobalEnv)
+##     }
+##     if (exists(&quot;objPNexclude0&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;objPNexclude0&quot;, envir = .GlobalEnv)
+##     }
+##     if (exists(&quot;texInclude0&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;texInclude0&quot;, envir = .GlobalEnv)
+##     }
+##     if (exists(&quot;texExclude0&quot;, envir = .GlobalEnv)) {
+##         remove(&quot;texExclude0&quot;, envir = .GlobalEnv)
+##     }
+##     obj[, 1] &lt;- as.Date(obj[, 1])
+##     obj0 &lt;- obj
+##     obj0[obj0 == 0] &lt;- 1
+##     obj0 &lt;- obj[which(head(obj0[, 2], -1) * tail(obj0[, 2], -1) &lt; 
+##         0) + 1, ]
+##     assign(&quot;durationInclude0&quot;, nrow(subset(obj, tail(obj0[, 1], 
+##         1) &lt;= obj[, 1])), envir = .GlobalEnv)
+##     obj0[, 1] &lt;- format(obj0[, 1], dateFormat)
+##     assign(&quot;objPNinclude0&quot;, obj0, envir = .GlobalEnv)
+##     obj0 &lt;- obj
+##     obj0 &lt;- subset(obj0, obj0[, 2] != 0)
+##     obj0 &lt;- obj0[which(head(obj0[, 2], -1) * tail(obj0[, 2], 
+##         -1) &lt; 0) + 1, ]
+##     assign(&quot;durationExclude0&quot;, nrow(subset(obj, tail(obj0[, 1], 
+##         1) &lt;= obj[, 1])), envir = .GlobalEnv)
+##     obj0[, 1] &lt;- format(obj0[, 1], dateFormat)
+##     assign(&quot;objPNexclude0&quot;, obj0, envir = .GlobalEnv)
+##     assign(&quot;texInclude0&quot;, paste0(tail(objPNinclude0[, 1], 1), 
+##         &quot;から&quot;, format(tail(obj[, 1], 1), dateFormat), &quot;まで&quot;, 
+##         durationInclude0, unit, &quot;連続で&quot;, ifelse(tail(objPNinclude0[, 
+##             2], 1) &lt; 0, judge[1], judge[2])), envir = .GlobalEnv)
+##     assign(&quot;texExclude0&quot;, paste0(tail(objPNexclude0[, 1], 1), 
+##         &quot;から&quot;, format(tail(obj[, 1], 1), dateFormat), &quot;まで&quot;, 
+##         durationExclude0, unit, &quot;連続で&quot;, ifelse(tail(objPNexclude0[, 
+##             2], 1) &lt; 0, judge[1], judge[2])), envir = .GlobalEnv)
+## }
+## 
+## $fun_updateURLcsv
+## function () 
+## {
+##     fileName &lt;- &quot;defaultPath.csv&quot;
+##     username &lt;- Sys.info()[&quot;user&quot;]
+##     pathToFile &lt;- paste0(&quot;C:/Users/&quot;, username, &quot;/Desktop/pathToCSV/&quot;)
+##     setwd(pathToFile)
+##     buf000 &lt;- read.csv(fileName, header = F, skip = 0, stringsAsFactor = F, 
+##         check.names = F, fileEncoding = &quot;utf-8&quot;)
+##     pathOutput &lt;- paste0(&quot;C:/Users/&quot;, username, buf000[2, 1], 
+##         &quot;csv/&quot;)
+##     setwd(pathOutput)
+##     fileName &lt;- dir(pathOutput)[grep(&quot;knowledgevault&quot;, dir(pathOutput), 
+##         ignore.case = T)]
+##     tmp0 &lt;- read.table(fileName, sep = &quot;,&quot;, fileEncoding = &quot;utf8&quot;, 
+##         header = T)
+##     buf &lt;- tmp0
+##     buf[, 1] &lt;- gsub(&quot;,&quot;, &quot;、&quot;, buf[, 1])
+##     buf[, grep(&quot;title&quot;, colnames(buf), ignore.case = T)] &lt;- paste0(&quot;&lt;a href=\&quot;&quot;, 
+##         buf[, grep(&quot;url&quot;, colnames(buf), ignore.case = T)], &quot;\&quot; target=\&quot;_blank\&quot;&gt;&quot;, 
+##         buf[, grep(&quot;title&quot;, colnames(buf), ignore.case = T)], 
+##         &quot;&lt;/a&gt;&quot;)
+##     buf &lt;- buf[, -grep(&quot;url&quot;, colnames(buf), ignore.case = T)]
+##     buf &lt;- data.frame(No. = seq(1, nrow(buf)), buf, check.names = F, 
+##         stringsAsFactors = F)
+##     fileList &lt;- paste0(paste0(&quot;C:/Users/&quot;, username, buf000[2, 
+##         1], &quot;charts/&quot;), gsub(&quot;http.+/(.+.html)&quot;, &quot;\\1&quot;, tmp0[, 
+##         3]))
+##     timeStamp &lt;- as.POSIXct(sapply(fileList, function(x) file.info(path = x)$mtime), 
+##         origin = &quot;1970-01-01&quot;)
+##     buf$TimeStamp &lt;- timeStamp
+##     if (exists(&quot;htmlName&quot;)) {
+##         buf[grep(paste0(&quot;am-consulting.co.jp-&quot;, htmlName, &quot;.html&quot;), 
+##             buf[, 2]), 4] &lt;- Sys.time()
+##     }
+##     buf &lt;- buf[order(buf$TimeStamp, decreasing = T), ]
+##     buf$No. &lt;- seq(nrow(buf))
+##     setwd(pathOutput)
+##     write.csv(x = buf[, c(1, 2, 4)], file = &quot;urlList.csv&quot;, quote = F, 
+##         row.names = F, append = F, fileEncoding = &quot;utf8&quot;, na = &quot;-&quot;)
+## }
+## 
+## $fun_waterMark
+## function () 
+## {
+##     text(x = grconvertX(0.5, from = &quot;npc&quot;), y = grconvertY(0.5, 
+##         from = &quot;npc&quot;), labels = &quot;http://olive.saecanet.com&quot;, 
+##         cex = 3, font = 2, col = rgb(1, 0, 0, 0.1), srt = 45)
+##     watermark &lt;- paste(&quot;http://am-consulting.co.jp&quot;, Sys.Date())
+##     mtext(watermark, side = 1, line = -1, adj = 1, col = rgb(1, 
+##         0, 0, 0.1), cex = 1.2)
+## }
+## 
+## $fun_withList
+## function (obj) 
+## {
+##     csvFile &lt;- c(&quot;primeMinisterOfJapan.csv&quot;, &quot;boj.csv&quot;, &quot;potus.csv&quot;, 
+##         &quot;frb.csv&quot;)
+##     baseURL &lt;- &quot;https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/ListOfPresidents/&quot;
+##     for (iii in seq(length(csvFile))) {
+##         listDF &lt;- read.csv(file = paste0(baseURL, csvFile[iii]), 
+##             header = T, quote = &quot;\&quot;&quot;, stringsAsFactors = F, check.names = F, 
+##             fileEncoding = &quot;utf8&quot;)
+##         objRow &lt;- sapply(obj[, 1], function(x) tail(which(as.Date(listDF[, 
+##             1]) &lt;= x &amp; x &lt;= as.Date(listDF[, 2])), 1))
+##         objRow &lt;- unlist(objRow)
+##         if (iii == 1) {
+##             buf &lt;- listDF[objRow, 3]
+##         }
+##         else {
+##             buf &lt;- cbind(buf, listDF[objRow, 3])
+##         }
+##     }
+##     colnames(buf) &lt;- toupper(gsub(&quot;.csv&quot;, &quot;&quot;, csvFile))
+##     bufDF &lt;- data.frame(obj, buf, stringsAsFactors = F, check.names = F, 
+##         row.names = NULL)
+##     assign(&quot;dfWithList&quot;, bufDF, envir = .GlobalEnv)
+## }
+## 
+## $fun_withWiki
+## function (obj) 
+## {
+##     library(lubridate)
+##     monthS &lt;- c(&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, &quot;May&quot;, 
+##         &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, &quot;October&quot;, &quot;November&quot;, 
+##         &quot;December&quot;)
+##     USA &lt;- paste0(&quot;https://en.wikipedia.org/wiki/&quot;, year(obj[, 
+##         1]), &quot;_in_the_United_States#&quot;, monthS[month(obj[, 1])])
+##     UK &lt;- paste0(&quot;https://en.wikipedia.org/wiki/&quot;, year(obj[, 
+##         1]), &quot;_in_the_United_Kingdom#&quot;, monthS[month(obj[, 1])])
+##     JAPAN &lt;- paste0(&quot;https://ja.wikipedia.org/wiki/&quot;, year(obj[, 
+##         1]), &quot;%E5%B9%B4%E3%81%AE%E6%97%A5%E6%9C%AC#&quot;, month(obj[, 
+##         1]), &quot;.E6.9C.88&quot;)
+##     wikiLink &lt;- cbind(JAPAN, USA, UK)
+##     wikiLink &lt;- apply(wikiLink, 2, function(x) paste0(&quot;&lt;a href=\&quot;&quot;, 
+##         x, &quot;\&quot; target=\&quot;_blank\&quot;&gt;Link&lt;/a&gt;&quot;))
+##     assign(&quot;dfWithWiki&quot;, data.frame(obj, wikiLink, stringsAsFactors = F, 
+##         check.names = F, row.names = NULL), envir = .GlobalEnv)
+## }</code></pre>
+<hr />
+<script>MakeNegative();</script>
+<script>
+  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+  ga('create', 'UA-3077339-5', 'auto');
+  ga('send', 'pageview');
+
+</script>
+</div>
+</article>
+</div>
+</div>
+</div>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
