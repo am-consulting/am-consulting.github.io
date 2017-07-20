@@ -275,3 +275,54 @@ for(iii in 1:2){
   fun_ggboxplotByMonth(obj = MMT[[iii]],pngN = iii+9)
 }
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+dataSource <- 'Japan Meteorological Agency'
+library(rvest)
+url_SST <- 
+  c("http://www.data.jma.go.jp/gmd/cpd/data/elnino/index/nino3abs.html",
+    "http://www.data.jma.go.jp/gmd/cpd/data/elnino/index/ninowabs.html",
+    "http://www.data.jma.go.jp/gmd/cpd/data/elnino/index/iobwabs.html")
+dataTitles <- 
+  c("NINO.3 Sea Surface Temperature(Celsius)",
+    "NINO.WEST Sea Surface Temperature(Celsius)",
+    "IOBW Sea Surface Temperature(Celsius)")
+SST <- list()
+startRaw <- 2
+for (iii in 1:length(url_SST)) {
+  source <- read_html(url_SST[iii])
+  tmp01 <- 
+    source %>% html_nodes(xpath = '//pre') %>% html_text %>% iconv(from = "UTF-8")
+  tmp01 <- gsub('^\n','',tmp01)
+  buf <- strsplit(tmp01,"\n")
+  for(fff in startRaw:length(buf[[1]])){
+    tmp02 <- buf[[1]][fff]
+    tmp02 <- gsub('^\\s','',tmp02)
+    tmp02 <- gsub("  "," ",tmp02)
+    tmp02 <- strsplit(tmp02," ")
+    tmp03 <- t(tmp02[[1]])
+    if(fff == startRaw){
+      tmp04 <- as.data.frame(tmp03)
+    }else{
+      tmp04 <- rbind(tmp04,as.data.frame(tmp03))
+    }
+  }
+  tmp04 <- 
+    data.frame(apply(tmp04,2,as.numeric),stringsAsFactors = F,check.names = F)
+  tmp05 <-
+    data.frame(Date = seq(as.Date(paste0(tmp04[1,1],"-1-1")),by = "month",length = nrow(tmp04)*12),
+               value = as.vector(t(tmp04)[-1,]),
+               check.names = F,stringsAsFactors = F,row.names = NULL)
+  tmp05[tmp05 == 99.9] <- NA
+  colnames(tmp05)[2] <- dataTitles[[iii]]
+  SST[[iii]] <- na.omit(tmp05)
+  print(tail(SST[[iii]]))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+for(iii in 1:3){
+  fun_ggplot_line(plotData = SST[[iii]],pngN = iii+12)
+  fun_ggboxplotByMonth(obj = SST[[iii]],pngN = iii+12)
+}
+```
