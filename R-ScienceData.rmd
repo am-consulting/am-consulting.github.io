@@ -207,3 +207,32 @@ for(iii in 1:3){
   fun_ggboxplotByMonth(obj = plotData,pngN = iii+3)
 }
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+dataSource <- 'Japan Meteorological Agency'
+url_CO2 <- c(
+  "http://ds.data.jma.go.jp/ghg/kanshi/obs/co2_monthave_ryo.csv",
+  "http://ds.data.jma.go.jp/ghg/kanshi/obs/co2_monthave_mnm.csv",
+  "http://ds.data.jma.go.jp/ghg/kanshi/obs/co2_monthave_yon.csv")
+CO2 <- list()    
+for(iii in 1:length(url_CO2)){
+  tmp0 <-
+    read.csv(file = url_CO2[iii],header = T,skip = 0,stringsAsFactor = F,check.names = F)
+  tmp <- tmp0[,-c(4:5)]
+  tmp[,3] <- as.numeric(tmp[,3])
+  tmp <- tmp[!is.na(tmp[,3]),]
+  tmp <- 
+    data.frame(Date = as.Date(paste0(tmp[,1],"-",tmp[,2],"-1")),co2 = tmp[,3])
+  colnames(tmp)[2] <- Nippon::zen2han(paste0(colnames(tmp0)[3],':ppm'))
+  CO2[[iii]] <- tmp
+  print(tail(CO2[[iii]]))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+for(iii in 1:3){
+  fun_ggplot_line(plotData = CO2[[iii]],pngN = iii+6)
+  fun_ggboxplotByMonth(obj = CO2[[iii]],pngN = iii+6)
+}
+```
+
