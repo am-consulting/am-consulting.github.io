@@ -78,46 +78,9 @@ dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-datatitleSeaIceIndex <-
-  c("Sea Ice Index Data:North",
-    "Sea Ice Index Data:South",
-    "Sea Ice Index Data:Total(North+South)")
-dataUrlSeaIceIndex <- 
-  c('ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v2.1.csv',
-    'ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/south/daily/data/S_seaice_extent_daily_v2.1.csv')
-dataSource <- 'National Snow and Ice Data Center'
-seaIceIndex <- list()
-for(iii in 1:2){
-  buf <- 
-    read.csv(dataUrlSeaIceIndex[iii],header = T,skip = 0,stringsAsFactor = F, 
-             na.strings = c(""),check.names = F)
-  colnames(buf) <- gsub('\\s','',paste0(colnames(buf),':',buf[1,]))
-  buf <- buf[-1,]
-  buf$Date <-
-    as.Date(gsub('\\s','',paste0(buf$`Year:YYYY`,'-',buf$`Month:MM`,'-',buf$`Day:DD`)))
-  area <-
-    toupper(gsub('.+G02135/([^/]+)/.+','\\1',dataUrlSeaIceIndex[iii]))
-  seaIceIndex[[iii]] <-
-    data.frame(Date=buf$Date,apply(buf[,c(4,5)],2,as.numeric),stringsAsFactors = F,
-               row.names = NULL,check.names = F)
-  colnames(seaIceIndex[[iii]])[2:3] <- 
-    paste0(area,':',colnames(seaIceIndex[[iii]])[2:3])
-  print(tail(seaIceIndex[[iii]]))
-}
-mergeData <- merge(seaIceIndex[[1]],seaIceIndex[[2]])
-objCol <- grep('extent',colnames(mergeData),ignore.case = T)
-unit <- unique(gsub('.+:([^:]+)','\\1',colnames(mergeData)[objCol]))
-mergeData$`Total(North+South)` <- apply(mergeData[,objCol],1,sum)
-iii <- 3
-seaIceIndex[[iii]] <- mergeData[,c(1,ncol(mergeData))]
-colnames(seaIceIndex[[iii]])[2] <- paste0(colnames(seaIceIndex[[iii]])[2],':',unit)
-print(tail(seaIceIndex[[iii]]))
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_ggplot_line <- function(plotData,pngN){
   setwd(pathOutput)
-  pngFile <- paste0('AMCC-science-',pngN,".png")
+  pngFile <- paste0('AMCC-science-TS-',pngN,".png")
   png(file = pngFile, width = pngWidth, height = pngHeight)
   if(length(unique(lubridate::day(plotData$Date)))<=5){
     dateFormat <- '%Y-%m'
@@ -147,8 +110,81 @@ fun_ggplot_line <- function(plotData,pngN){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(ggpubr)
+library(ggsci)
+fun_ggboxplotByMonth <-
+  function(obj,dateCol = 1,objCol = 2,ggtheme = theme_bw(),palette = "UChicago",
+           add = "jitter",pngN){
+    setwd(pathOutput)
+    pngFile <- paste0('AMCC-science-Box-',pngN,".png")
+    png(file = pngFile, width = pngWidth, height = pngHeight)
+    plotData <- obj[,c(dateCol,objCol)]
+    plotData$Month <-
+      as.factor(lubridate::month(plotData[,1]))
+    colnames(plotData)[2] <- 'Value'
+    if(length(unique(lubridate::day(plotData$Date)))<=5){
+      dateFormat <- '%Y-%m'
+    }else{
+      dateFormat <- '%Y-%m-%d'
+    }
+    dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
+    p <-
+      ggboxplot(plotData,x = "Month",y = 'Value',color = "Month",palette = palette,
+                add = add,shape = "Year",ggtheme = ggtheme,repel = T)
+    p <- p + ylab(colnames(obj)[objCol]) + theme(legend.position = "none")
+    p <- p + ggtitle(paste0(colnames(obj)[objCol],'\n',dateRange,'\nSource:',dataSource))
+    p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+    p <- p + theme(legend.text =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+    p <- p + theme(axis.title.x = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+    p <- p + theme(axis.title.y = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+    p <- p + theme(axis.text =    element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+    print(p)
+    dev.off()
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# http://nsidc.org/data/g02135.html
+datatitleSeaIceIndex <-
+  c("Sea Ice Index Data:North",
+    "Sea Ice Index Data:South",
+    "Sea Ice Index Data:Total(North+South)")
+dataUrlSeaIceIndex <- 
+  c('ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v2.1.csv',
+    'ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/south/daily/data/S_seaice_extent_daily_v2.1.csv')
+dataSource <- 'National Snow and Ice Data Center'
+seaIceIndex <- list()
+for(iii in 1:2){
+  buf <- 
+    read.csv(dataUrlSeaIceIndex[iii],header = T,skip = 0,stringsAsFactor = F, 
+             na.strings = c(""),check.names = F)
+  colnames(buf) <- gsub('\\s','',paste0(colnames(buf),':',buf[1,]))
+  buf <- buf[-1,]
+  buf$Date <-
+    as.Date(gsub('\\s','',paste0(buf$`Year:YYYY`,'-',buf$`Month:MM`,'-',buf$`Day:DD`)))
+  area <-
+    toupper(gsub('.+G02135/([^/]+)/.+','\\1',dataUrlSeaIceIndex[iii]))
+  seaIceIndex[[iii]] <-
+    data.frame(Date=buf$Date,apply(buf[,c(4,5)],2,as.numeric),stringsAsFactors = F,
+               row.names = NULL,check.names = F)
+  colnames(seaIceIndex[[iii]])[2:3] <- 
+    paste0('Sea Ice Index:',area,':',colnames(seaIceIndex[[iii]])[2:3])
+  print(tail(seaIceIndex[[iii]]))
+}
+mergeData <- merge(seaIceIndex[[1]],seaIceIndex[[2]])
+objCol <- grep('extent',colnames(mergeData),ignore.case = T)
+unit <- unique(gsub('.+:([^:]+)','\\1',colnames(mergeData)[objCol]))
+mergeData$`Total(North+South)` <- apply(mergeData[,objCol],1,sum)
+iii <- 3
+seaIceIndex[[iii]] <- mergeData[,c(1,ncol(mergeData))]
+colnames(seaIceIndex[[iii]])[2] <- paste0('Sea Ice Index:',colnames(seaIceIndex[[iii]])[2],':',unit)
+print(tail(seaIceIndex[[iii]]))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 for(iii in 1:3){
-  fun_ggplot_line(plotData = seaIceIndex[[iii]],pngN = iii+1)
+  fun_ggplot_line(plotData = seaIceIndex[[iii]],pngN = iii)
+  fun_ggboxplotByMonth(obj = seaIceIndex[[iii]],pngN = iii)
 }
 ```
 
@@ -159,15 +195,15 @@ script <-
     url = "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_SunspotNumber.r",
     ssl.verifypeer = F)
 eval(parse(text = script))
-datatitle_Sunspot <- c(
-  "Monthly mean total sunspot number",
-  "North monthly mean sunspot number",
-  "South monthly mean sunspot number")
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 for(iii in 1:3){
   switch(iii,
          plotData <- origData_sunspot01[,c(1,3)],
          plotData <- origData_sunspot02[,c(1,4)],
          plotData <- origData_sunspot02[,c(1,5)])
-  fun_ggplot_line(plotData = plotData,pngN = iii+4)    
+  fun_ggplot_line(plotData = plotData,pngN = iii+3)
+  fun_ggboxplotByMonth(obj = plotData,pngN = iii+3)
 }
 ```
