@@ -119,11 +119,17 @@ fun_ggplot_line <- function(plotData,pngN){
   setwd(pathOutput)
   pngFile <- paste0('AMCC-science-',pngN,".png")
   png(file = pngFile, width = pngWidth, height = pngHeight)
-  dateRange <- paste0(range(plotData$Date),collapse = '~')
+  if(length(unique(lubridate::day(plotData$Date)))<=5){
+    dateFormat <- '%Y-%m'
+  }else{
+    dateFormat <- '%Y-%m-%d'
+  }
+  dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
+  latestData <- paste0(format(tail(plotData,1)[1,1],dateFormat),':',tail(plotData,1)[1,2])
   g <- ggplot(data = plotData,aes(x = Date,y = plotData[,2]))
   g <- g + geom_line(size = 0.5,col = "black")
   g <- g + geom_smooth(method = lm,lwd = 1,col = "red")
-  g <- g + scale_x_date(labels = date_format("%Y-%m-%d"))
+  g <- g + scale_x_date(labels = date_format(dateFormat))
   g <- g + theme(plot.title = element_text(family = "Meiryo",hjust = 0.5,size = 15))
   g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 15))
   g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 15))
@@ -131,13 +137,37 @@ fun_ggplot_line <- function(plotData,pngN){
   g <- g + theme(axis.text.y = element_text(family = "Meiryo",size = 15, angle = 90))
   g <- g + xlab("")
   g <- g + ylab(paste(colnames(plotData)[2]))
-  g <- g + ggtitle(paste('Sea Ice Index Data:',colnames(plotData)[2],'\n',dateRange,
+  g <- g + ggtitle(paste0(colnames(plotData)[2],'\n',dateRange,
                          '\nSource:',dataSource,
-                         "\nUnit Root Test p-value:",tseries::adf.test(plotData[,2])$p.value))
+                         '\nUnit Root Test p-value:',round(tseries::adf.test(plotData[,2])$p.value,3),
+                         '\nLatest:',latestData))
   print(g)
   dev.off()
 }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 for(iii in 1:3){
   fun_ggplot_line(plotData = seaIceIndex[[iii]],pngN = iii+1)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+dataSource <- 'Royal Observatory of Belgium'
+script <-
+  RCurl::getURL(
+    url = "https://raw.githubusercontent.com/am-consulting/Rscript/master/Rscript_SunspotNumber.r",
+    ssl.verifypeer = F)
+eval(parse(text = script))
+datatitle_Sunspot <- c(
+  "Monthly mean total sunspot number",
+  "North monthly mean sunspot number",
+  "South monthly mean sunspot number")
+for(iii in 1:3){
+  switch(iii,
+         plotData <- origData_sunspot01[,c(1,3)],
+         plotData <- origData_sunspot02[,c(1,4)],
+         plotData <- origData_sunspot02[,c(1,5)])
+  fun_ggplot_line(plotData = plotData,pngN = iii+4)    
 }
 ```
