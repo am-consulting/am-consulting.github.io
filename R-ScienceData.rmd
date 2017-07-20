@@ -1,0 +1,18 @@
+```{r}
+borderM <- 4
+dataFile <- "all_month.csv"
+earthQuakeData <-
+  read.csv(file = paste0("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/",dataFile),
+           header = T,as.is = T,skip = 0,stringsAsFactor = F,na.strings = c(""),check.names = F)
+earthQuakeData$GMT <- 
+  as.POSIXlt(sub("Z","",sub("T"," ",earthQuakeData$time)),"GMT")
+earthQuakeData$JST <- 
+  as.POSIXct(sub("Z","",sub("T"," ",earthQuakeData$time)))+3600*9
+earthQuakeData$JSTDate <- 
+  as.Date(earthQuakeData$JST,tz = "Asia/Tokyo")
+# POSIXctをas.Date処理する際、tzを指定しないとGMTとしてマイナス9時間後の日付に変換される
+yesterdayData <- 
+  earthQuakeData[earthQuakeData$JSTDate==(Sys.Date()-1),c(1,2,3,4,5,6,14,24,25)]
+yesterdayDataOver <- 
+  yesterdayData[borderM<=yesterdayData$mag,]
+```
