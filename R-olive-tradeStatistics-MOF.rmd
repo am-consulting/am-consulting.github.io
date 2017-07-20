@@ -9,8 +9,22 @@ output:
     fig_height: 6
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <style>.main-container {max-width : 1000px;}</style>
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
@@ -63,7 +77,7 @@ library(knitr)
 <!-- 前月データ取得 -->
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 4
+targetMonth <- 5
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -86,7 +100,7 @@ lastMonthBuf <- buf0
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
 targetYear <- 2017
-targetMonth <- 5
+targetMonth <- 6
 targetMonth <- formatC(targetMonth, width=2, flag='0')
 targetURL <- paste0('http://www.customs.go.jp/toukei/shinbun/trade-st/',targetYear,'/',targetYear, targetMonth, 'c.xml') 
 buf0 <- xmlToList(targetURL)
@@ -237,11 +251,12 @@ pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
-fun_plotTimeSeries(obj = ExportAndImportSA,typeL = 'o',typeR = 'o',chartType = 1,dateFormat = '%Y-%m',
+EIdata <- na.omit(ExportAndImportSA)
+fun_plotTimeSeries(obj = EIdata,typeL = 'o',typeR = 'o',chartType = 1,dateFormat = '%Y-%m',
                    dataSource = paste0(dataSource,'   (注)季節調整値'),
                    dataTitle = dataTitle,mar = c(4,4,5,1),needLefLab = 0,
                    fitlwdL = 2,fitlwdR = 2)
-fun_addTxtToChart(obj = ExportAndImportSA,funType = 'min',col = 'black')
+fun_addTxtToChart(obj = EIdata,funType = 'min',col = 'black',cexTxt = 1)
 dev.off()
 ```
 
@@ -249,7 +264,7 @@ dev.off()
 dateFormat <- '%Y年%m月'
 objColumn <- 2
 obj <-
-  ExportAndImportSA[,c(1,objColumn)]
+  EIdata[,c(1,objColumn)]
 fun_outputMD(tags = '財務省,貿易統計',
              objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
