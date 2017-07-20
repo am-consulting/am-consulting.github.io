@@ -236,3 +236,42 @@ for(iii in 1:3){
 }
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+dataSource <- 'Japan Meteorological Agency'
+sourceURL_MMT <- 
+  c("http://www.data.jma.go.jp/cpdinfo/temp/list/mon_wld.html",
+    "http://www.data.jma.go.jp/cpdinfo/temp/list/mon_jpn.html")
+dataTitles <- 
+  c("Monthly Mean Temperature Anomaly:World\n(Celsius,Base Line:30 years mean from Y1981 to Y2010)",
+    "Monthly Mean Temperature Anomaly:Japan\n(Celsius,Base Line:30 years mean from Y1981 to Y2010)")
+MMT <- list()
+for(iii in 1:length(sourceURL_MMT)){
+  buf0 <-
+    XML::readHTMLTable(doc = sourceURL_MMT[iii],header = T,trim = T,stringsAsFactors = F,as.data.frame = T,which = 1)
+  buf1 <- buf0
+  buf1[,-1] <- 
+    sapply(buf1[,-1],function(x){gsub('\\+|\\*','',x)})
+  buf2 <- 
+    data.frame(Year = buf1[,1],sapply(buf1[,-1],as.numeric),check.names = F,stringsAsFactors = F)
+  print(tail(buf2))
+  start <- 
+    as.numeric(gsub("年","",buf2[1,1]))
+  tmpValue <- 
+    as.numeric(as.vector(t(buf2[,-1])))
+  tmpDate <- 
+    seq(as.Date(paste0(start,"-1-1")),by = "month",length.out = length(tmpValue))
+  buf3 <- 
+    data.frame(Date = tmpDate,value = tmpValue,stringsAsFactors = F,check.names = F,row.names = NULL)
+  buf4 <- na.omit(buf3)
+  colnames(buf4)[2] <- dataTitles[iii]
+  MMT[[iii]] <- buf4
+  print(tail(MMT[[iii]]))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+for(iii in 1:2){
+  fun_ggplot_line(plotData = MMT[[iii]],pngN = iii+9)
+  fun_ggboxplotByMonth(obj = MMT[[iii]],pngN = iii+9)
+}
+```
