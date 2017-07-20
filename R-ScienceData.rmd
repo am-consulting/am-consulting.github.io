@@ -1,4 +1,34 @@
-```{r}
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'UTF8')
+pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 borderM <- 4
 dataFile <- "all_month.csv"
 earthQuakeData <-
@@ -15,4 +45,26 @@ yesterdayData <-
   earthQuakeData[earthQuakeData$JSTDate==(Sys.Date()-1),c(1,2,3,4,5,6,14,24,25)]
 yesterdayDataOver <- 
   yesterdayData[borderM<=yesterdayData$mag,]
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+pngN <- 1
+setwd(pathOutput)
+pngFile <- paste0('AMCC-science-',pngN,".png")
+png(file = pngFile, width = 1400, height = 900)
+g <- fun_ggplotWorldMap(ratio = 1.15)
+g <- g + geom_point(data = yesterdayDataOver,aes(x = longitude, y = latitude),colour = "red",
+                    alpha = 30/100,size = 4) 
+g <- g + geom_text(data = yesterdayDataOver,aes(x = longitude,y = latitude,
+                                                label = paste0(mag,':',magType)),
+                   vjust = 0,hjust = 0,family = "Meiryo",size= 6)
+g <- g + ggtitle(paste0('Earthquakes occurred on ',
+                        unique(yesterdayDataOver$JSTDate),'\nMagnitude over ',borderM,'\nSource:USGS'))  
+g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.y = element_text(angle = 90,family = "Meiryo",size = 16))
+g
+dev.off()
 ```
