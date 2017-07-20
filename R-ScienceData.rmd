@@ -59,7 +59,8 @@ g <- g + geom_text(data = yesterdayDataOver,aes(x = longitude,y = latitude,
                                                 label = paste0(mag,':',magType)),
                    vjust = 0,hjust = 0,family = "Meiryo",size= 6)
 g <- g + ggtitle(paste0('Earthquakes occurred on ',
-                        unique(yesterdayDataOver$JSTDate),'\nMagnitude over ',borderM,'\nSource:USGS'))  
+                        unique(yesterdayDataOver$JSTDate),'\nMagnitude over ',borderM,
+                        '\nSource:United States Geological Survey'))  
 g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
 g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
 g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
@@ -67,4 +68,41 @@ g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16)
 g <- g + theme(axis.text.y = element_text(angle = 90,family = "Meiryo",size = 16))
 g
 dev.off()
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+datatitleSeaIceIndex <-
+  c("Sea Ice Index Data:North",
+    "Sea Ice Index Data:South",
+    "Sea Ice Index Data:Total(North+South)")
+dataUrlSeaIceIndex <- 
+  c('ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/north/daily/data/N_seaice_extent_daily_v2.1.csv',
+    'ftp://sidads.colorado.edu/DATASETS/NOAA/G02135/south/daily/data/S_seaice_extent_daily_v2.1.csv')
+dataSource <- 'National Snow and Ice Data Center'
+seaIceIndex <- list()
+for(iii in 1:2){
+  buf <- 
+    read.csv(dataUrlSeaIceIndex[iii],header = T,skip = 0,stringsAsFactor = F, 
+             na.strings = c(""),check.names = F)
+  colnames(buf) <- gsub('\\s','',paste0(colnames(buf),':',buf[1,]))
+  buf <- buf[-1,]
+  buf$Date <-
+    as.Date(gsub('\\s','',paste0(buf$`Year:YYYY`,'-',buf$`Month:MM`,'-',buf$`Day:DD`)))
+  area <-
+    toupper(gsub('.+G02135/([^/]+)/.+','\\1',dataUrlSeaIceIndex[iii]))
+  seaIceIndex[[iii]] <-
+    data.frame(Date=buf$Date,apply(buf[,c(4,5)],2,as.numeric),stringsAsFactors = F,
+               row.names = NULL,check.names = F)
+  colnames(seaIceIndex[[iii]])[2:3] <- 
+    paste0(area,':',colnames(seaIceIndex[[iii]])[2:3])
+  print(tail(seaIceIndex[[iii]]))
+}
+mergeData <- merge(seaIceIndex[[1]],seaIceIndex[[2]])
+objCol <- grep('extent',colnames(mergeData),ignore.case = T)
+unit <- unique(gsub('.+:([^:]+)','\\1',colnames(mergeData)[objCol]))
+mergeData$`Total(North+South)` <- apply(mergeData[,objCol],1,sum)
+iii <- 3
+seaIceIndex[[iii]] <- mergeData[,c(1,ncol(mergeData))]
+colnames(seaIceIndex[[iii]]) <- paste0(colnames(seaIceIndex[[iii]]),':',unit)
+print(tail(seaIceIndex[[iii]]))
 ```
