@@ -48,3 +48,4 @@ R-gglboxpotPM.r
 R-outputMDforTS.r
 fun_dygraphPlot.r
 fun_TimeSeriesSummary.r
+fun_ggplotWorldMap.r
