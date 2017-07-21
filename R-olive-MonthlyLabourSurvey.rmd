@@ -69,7 +69,10 @@ script <-
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importMonthlyLabourSurvey.r",
     ssl.verifypeer = F)
 eval(parse(text = script))
-fun_MonthlyLabourSurvey(fileID = '000007945942')
+fun_MonthlyLabourSurvey(fileID = '000007983335')
+# http://www.e-stat.go.jp/SG1/estat/GL08020102.do?_toGL08020102_&tclassID=000001029065&cycleCode=1&requestSender=estat
+# http://www.e-stat.go.jp/SG1/estat/GL08020103.do?_toGL08020103_&listID=000001187203&disp=Other&requestSender=estat
+# http://www.e-stat.go.jp/SG1/estat/GL08020103.do?_xlsDownload_&fileId=000007983335&releaseCount=1
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
