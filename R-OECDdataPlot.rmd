@@ -6,6 +6,7 @@ library(ggpubr)
 library(ggsci)
 pngWidth <- 1000
 pngHeight <- 600
+yearN <- 10
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -53,6 +54,24 @@ OECD_SharePricesIndex_sdmxURL <-
   paste0('http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_FIN/SP.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+OECDE+OECD+SDR+NMEC+BRA+CHN+COL+CRI+IND+IDN+LTU+RUS+ZAF.M/all?startTime=1950-01&endTime=',yyyy,'-',mm)
 fun_OECDStatisticData(sdmxURL = OECD_SharePricesIndex_sdmxURL)
 sharePriceIndexData <- allOECDData
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='asis'}
+q <- 4
+sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/STLABOUR/AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+EU28+G-7+OECD.LRUN25TT.STSA.Q/all?startTime=1953-Q1&endTime=2020-Q",q)
+fun_OECDStatisticData(sdmxURL = sdmxURL, period = 4)
+unemploymentData <- allOECDData
+unemploymentData[,-1] <- apply(unemploymentData[,-1],2,function(x)round(x,1))
+unemploymentDataAppend <- 'Aged 25-54,All persons'
+```
+
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  RCurl::getURL(
+    url = "https://raw.githubusercontent.com/am-consulting/Rscript/master/importIMFPrimaryCommodityPrices.r",
+    ssl.verifypeer = FALSE)
+eval(parse(text = script))
+IMFcommodity <- origData
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -114,7 +133,7 @@ fun_ggboxplotByYear <-
     dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
     p <-
       ggboxplot(plotData,x = "Year",y = 'Value',color = "Year",palette = palette,
-                add = add,shape = "Year",ggtheme = ggtheme,repel = T)
+                add = add,ggtheme = ggtheme,repel = T)
     p <- p + ylab('') + theme(legend.position = "none")
     p <- p + ggtitle(paste0(colnames(obj)[objCol],'\n',dateRange,'\nSource:',dataSource))
     p <- p + theme(plot.title =   element_text(hjust=0.5,family='Meiryo',face='plain',size=fontSize))
@@ -167,7 +186,7 @@ for(iii in 2:ncol(oecd01)){
   colnames(plotData)[2] <- paste0('Composite Leading Indicators:',
                                   colnames(plotData)[2],'\n',sdmxTitle01)
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
-  fun_ggboxplotByYear(obj = plotData,yearN = 6,pngN = iii-1,pngTitle = pngTitle02,output = 1)
+  fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1)
 }
 fun_outputHtmlFile(obj = oecd01,htmlFile = 'OECD-olive.html')
 ```
@@ -179,7 +198,32 @@ for(iii in 2:ncol(sharePriceIndexData)){
   plotData <- na.omit(sharePriceIndexData[,c(1,iii)])
   colnames(plotData)[2] <- paste0('OECD Share Prices Index:2010=100:',colnames(plotData)[2])
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
-  fun_ggboxplotByYear(obj = plotData,yearN = 6,pngN = iii-1,pngTitle = pngTitle02,output = 1)
+  fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1)
 }
 fun_outputHtmlFile(obj = sharePriceIndexData,htmlFile = 'OECD-sharePrice-olive.html')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+pngTitle01 <- 'AMCC-OECD-unemployment-TS-'
+pngTitle02 <- 'AMCC-OECD-unemployment-BP-'
+for(iii in 2:ncol(unemploymentData)){
+  plotData <- na.omit(unemploymentData[,c(1,iii)])
+  colnames(plotData)[2] <- paste0('Unemployment Rate:Quarterly Data:',
+                                  colnames(plotData)[2],'\n',unemploymentDataAppend)
+  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
+  fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1)
+}
+fun_outputHtmlFile(obj = unemploymentData,htmlFile = 'OECD-unemployment-olive.html')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataSource <- 'International Monetary Fund'
+pngTitle01 <- 'AMCC-IMF-commodity-TS-'
+pngTitle02 <- 'AMCC-IMF-commodity-BP-'
+for(iii in 2:ncol(IMFcommodity)){
+  plotData <- na.omit(IMFcommodity[,c(1,iii)])
+  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1,fontSize = 14)
+  fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1,fontSize = 14)
+}
+fun_outputHtmlFile(obj = IMFcommodity,htmlFile = 'IMF-commodity-olive.html')
 ```
