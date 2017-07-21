@@ -315,6 +315,10 @@ colnames(pmABE)[2] <-
   '第2次安倍内閣発足以降のネット合計(兆円)'
 fun_outputMD(tags = '財務省,証券売買契約',
              objDF = pmABE,
+             summaryDF = specificDF[,c(1,3)],
+             dateFormat = '%Y-%m-%d',
+             dateCol = 1,
+             objCol = 2,
              htmlName = htmlName,
              image1 = 1,
              image2 = 0,
