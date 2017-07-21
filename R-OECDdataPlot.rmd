@@ -46,6 +46,15 @@ oecd02[,-1] <- apply(oecd02[,-1],2,function(x)round(x,1))
 sdmxTitle02 <- 'Amplitude adjusted'
 ```
 
+```{r warning = F, error = F, message = F, echo = F, results='hold'}
+yyyy <- 2017;mm <- 12
+# Share Prices, Index 2010=100
+OECD_SharePricesIndex_sdmxURL <-
+  paste0('http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_FIN/SP.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+ISL+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+OECDE+OECD+SDR+NMEC+BRA+CHN+COL+CRI+IND+IDN+LTU+RUS+ZAF.M/all?startTime=1950-01&endTime=',yyyy,'-',mm)
+fun_OECDStatisticData(sdmxURL = OECD_SharePricesIndex_sdmxURL)
+sharePriceIndexData <- allOECDData
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontSize = 15){
   if(output!=0){
@@ -119,18 +128,10 @@ fun_ggboxplotByYear <-
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-pngTitle01 <- 'AMCC-OECD-TS-'
-pngTitle02 <- 'AMCC-OECD-BP-'
-for(iii in 2:ncol(oecd01)){
-  plotData <- na.omit(oecd01[,c(1,iii)])
-  colnames(plotData)[2] <- paste0('Composite Leading Indicators:',
-                                  colnames(plotData)[2],'\n',sdmxTitle01)
-  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
-  fun_ggboxplotByYear(obj = plotData,yearN = 8,pngN = iii-1,pngTitle = pngTitle02,output = 1)
-}
+fun_outputHtmlFile <- function(obj,htmlFile){
 txt <- ''
-for(iii in 2:ncol(oecd01)){
-  colTxt <- colnames(oecd01)[iii]
+for(iii in 2:ncol(obj)){
+  colTxt <- colnames(obj)[iii]
   txt <- 
     paste0(txt,'<b>',colTxt,'</b><br>\n')
   txt <- 
@@ -152,9 +153,33 @@ for(iii in 2:ncol(oecd01)){
   txt <-
     paste0(txt,'Boxplot\n</a>\n<hr>\n')
 }
-htmlFile <-
-  paste0('OECD-olive.html')
 setwd(pathOutput)
 write.table(x = txt,file = htmlFile,append = F,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+pngTitle01 <- 'AMCC-OECD-TS-'
+pngTitle02 <- 'AMCC-OECD-BP-'
+for(iii in 2:ncol(oecd01)){
+  plotData <- na.omit(oecd01[,c(1,iii)])
+  colnames(plotData)[2] <- paste0('Composite Leading Indicators:',
+                                  colnames(plotData)[2],'\n',sdmxTitle01)
+  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
+  fun_ggboxplotByYear(obj = plotData,yearN = 6,pngN = iii-1,pngTitle = pngTitle02,output = 1)
+}
+fun_outputHtmlFile(obj = oecd01,htmlFile = 'OECD-olive.html')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+pngTitle01 <- 'AMCC-OECD-sharePrice-TS-'
+pngTitle02 <- 'AMCC-OECD-sharePrice-BP-'
+for(iii in 2:ncol(sharePriceIndexData)){
+  plotData <- na.omit(sharePriceIndexData[,c(1,iii)])
+  colnames(plotData)[2] <- paste0('OECD Share Prices Index:2010=100:',colnames(plotData)[2])
+  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
+  fun_ggboxplotByYear(obj = plotData,yearN = 6,pngN = iii-1,pngTitle = pngTitle02,output = 1)
+}
+fun_outputHtmlFile(obj = sharePriceIndexData,htmlFile = 'OECD-sharePrice-olive.html')
 ```
