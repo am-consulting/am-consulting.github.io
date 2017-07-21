@@ -2,6 +2,8 @@
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 100)
 library(ggplot2)
+library(ggpubr)
+library(ggsci)
 pngWidth <- 1000
 pngHeight <- 600
 ```
@@ -28,7 +30,7 @@ script <-
 eval(parse(text = script))
 ```
 
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
 yyyy <- 2017
 mm <- 12
 sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOTR_GYSA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=",yyyy,"-",mm)
@@ -80,10 +82,78 @@ fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontS
 }
 ```
 
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_ggboxplotByYear <-
+  function(obj,dateCol = 1,objCol = 2,ggtheme = theme_bw(),palette = "UChicago",
+           add = "jitter",pngN,fontSize = 15,pngTitle,output = 0,yearN = 6){
+    if(output!=0){
+      setwd(pathOutput)
+      pngFile <- paste0(pngTitle,pngN,".png")
+      png(file = pngFile,width = pngWidth,height = pngHeight)
+    }
+    plotData <- obj[,c(dateCol,objCol)]
+    plotData <-
+      plotData[tail(unique(lubridate::year(plotData[,1])),yearN)[1]<=lubridate::year(plotData[,1]),]
+    plotData$Year <-
+      as.factor(lubridate::year(plotData[,1]))
+    colnames(plotData)[2] <- 'Value'
+    if(length(unique(lubridate::day(plotData$Date)))<=5){
+      dateFormat <- '%Y-%m'
+    }else{
+      dateFormat <- '%Y-%m-%d'
+    }
+    dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
+    p <-
+      ggboxplot(plotData,x = "Year",y = 'Value',color = "Year",palette = palette,
+                add = add,shape = "Year",ggtheme = ggtheme,repel = T)
+    p <- p + ylab('') + theme(legend.position = "none")
+    p <- p + ggtitle(paste0(colnames(obj)[objCol],'\n',dateRange,'\nSource:',dataSource))
+    p <- p + theme(plot.title =   element_text(hjust=0.5,family='Meiryo',face='plain',size=fontSize))
+    p <- p + theme(legend.text =  element_text(hjust=0.5,family='Meiryo',face='plain',size=fontSize))
+    p <- p + theme(axis.title.x = element_text(hjust=0.5,family='Meiryo',face='plain',size=fontSize))
+    p <- p + theme(axis.title.y = element_text(hjust=0.5,family='Meiryo',face='plain',size=fontSize))
+    p <- p + theme(axis.text =    element_text(hjust=0.5,family='Meiryo',face='plain',size=fontSize))
+    print(p)
+    if(output!=0){dev.off()}
+}
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
+pngTitle01 <- 'AMCC-OECD-TS-'
+pngTitle02 <- 'AMCC-OECD-BP-'
 for(iii in 2:ncol(oecd01)){
   plotData <- na.omit(oecd01[,c(1,iii)])
-  colnames(plotData)[2] <- paste0('Composite Leading Indicators:',colnames(plotData)[2])
-  fun_ggplot_line(plotData = plotData,pngN = iii,pngTitle = 'AMCC-OECD-TS-')
+  colnames(plotData)[2] <- paste0('Composite Leading Indicators:',
+                                  colnames(plotData)[2],'\n',sdmxTitle01)
+  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
+  fun_ggboxplotByYear(obj = plotData,yearN = 8,pngN = iii-1,pngTitle = pngTitle02,output = 1)
 }
+txt <- ''
+for(iii in 2:ncol(oecd01)){
+  colTxt <- colnames(oecd01)[iii]
+  txt <- 
+    paste0(txt,'<b>',colTxt,'</b><br>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',pngTitle01,iii-1,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',pngTitle01,iii-1,
+           '.png" width="20%" />\n')
+  txt <-
+    paste0(txt,'Timeseries\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',pngTitle02,iii-1,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',pngTitle02,iii-1,
+           '.png" width="20%" />\n')
+  txt <-
+    paste0(txt,'Boxplot\n</a>\n<hr>\n')
+}
+htmlFile <-
+  paste0(format(Sys.Date(),'%Y%m%d'),'-OECD-olive.html')
+write.table(x = txt,file = htmlFile,append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 ```
