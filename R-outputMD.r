@@ -3,7 +3,7 @@ fun_outputMD <-
   function(tags = '貸出約定平均金利,日本銀行',
            title = title,
            objDF = summaryByName,
-           summaryDF = obj,
+           summaryDF = '',
            dateFormat = '%Y-%m-%d',
            dateCol = 1,
            objCol = 2,
@@ -44,6 +44,7 @@ published : true
   write.table(x = txt,file = mdFile,append = F,
               fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   # summary part
+  if(summaryDF!=''){
   obj <- summaryDF[,c(dateCol,objCol)]
   dateRange <-
     paste0(paste0(format(range(obj[,1]),dateFormat),collapse = 'から'),'における')
@@ -76,6 +77,7 @@ published : true
                   minResult[1,grep('mean',colnames(minResult),ignore.case = T)],'\n'))
   write.table(x = txt,file = mdFile,append = T,
               fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  }
   # summary part
   if(image1!=0){
     txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',

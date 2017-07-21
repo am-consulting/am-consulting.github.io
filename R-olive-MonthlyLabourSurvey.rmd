@@ -10,7 +10,21 @@ output:
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -130,27 +144,9 @@ fun_markdownTable(obj = bottom10)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- compareData[,c(7,6)]
@@ -168,12 +164,13 @@ rankingDF <-
   dataDF[order(dataDF[,7],decreasing = T),-c(2:4)]
 fun_outputMD(tags = '厚生労働省,毎月勤労統計調査',
              objDF = rankingDF,
+             summaryDF = '',
              htmlName = htmlName,
-             dataTitle = dataTitle,
-             image = 1,
+             title = dataTitle,
+             image1 = 1,
              tableTitle = '規模:5人以上、性:男女計、形態:一般労働者の時給換算ランキング',
              tableName = '毎月勤労統計調査 全国調査')
-
+fun_updateURLcsv()
 ```
 
 ***
