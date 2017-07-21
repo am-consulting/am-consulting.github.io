@@ -10,7 +10,21 @@ output:
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
+
+```{r setup, include=FALSE}
+# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+insertFile <- file("insertHeader.html")
+writeLines('
+<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
+',
+insertFile)
+close(insertFile)
+```
+
 <link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
 <script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 <style>.main-container {max-width : 1000px;}</style>
@@ -51,8 +65,8 @@ setwd(pathOutput)
 baseURL <- 'http://www.mhlw.go.jp/toukei/itiran/roudou/monthly'
 fileName <- list()
 yyyy <- c(2017)
-mm <- c(3)
-type <- 'p'
+mm <- c(5)
+type <- 'r'
 cnt <- 0
 for(y in 1:length(yyyy)){
   for(m in 1:length(mm)){
@@ -66,6 +80,7 @@ for(y in 1:length(yyyy)){
     # }
   }
 }
+if(type=='r'){dataType <- '確報:'}else{dataType <- '速報:'}
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -139,7 +154,7 @@ fun_writeCSVtoFolder(objData = get(paste0('CashEarnings',iii)),dataType = 1,
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 dataTitle <- 
-  paste0('毎月勤労統計調査:月間現金給与額:',yyyy,'年',mm,'月:',
+  paste0('毎月勤労統計調査:月間現金給与額:',dataType,yyyy,'年',mm,'月:',
          paste0(CashEarnings1[1,1],'(円):',CashEarnings1[1,2],
                 ':前年比(%)',format(CashEarnings1[1,3],big.mark=',')))
 dataSource <- '厚生労働省'
@@ -168,27 +183,9 @@ obj$Col <- ifelse(0<=obj[,2],'blue','red')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 lineColor <- c('black','blue','red')
@@ -201,10 +198,11 @@ dev.off()
 fun_outputMD(tags = '毎月勤労統計調査,月間現金給与額',
              objDF = obj[,1:2],
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = paste0(yyyy,'年',mm,'月'),
              tableName = colnames(obj)[2])
+fun_updateURLcsv()
 ```
 
 <script>MakeNegative()</script>
