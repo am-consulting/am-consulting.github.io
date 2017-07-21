@@ -3,6 +3,10 @@ fun_outputMD <-
   function(tags = '貸出約定平均金利,日本銀行',
            title = title,
            objDF = summaryByName,
+           summaryDF = obj,
+           dateFormat = '%Y-%m-%d',
+           dateCol = 1,
+           objCol = 2,
            htmlName = htmlName,
            tableTitle = tableTitle,
            dataTitle = '',
@@ -39,9 +43,40 @@ published : true
 ---\n\n')
   write.table(x = txt,file = mdFile,append = F,
               fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-  # txt <- paste0('# ',dataTitle,'\n\n')
-  # write.table(x = txt,file = mdFile,append = T,
-  #             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  # summary part
+  obj <- summaryDF[,c(dateCol,objCol)]
+  dateRange <-
+    paste0(paste0(format(range(obj[,1]),dateFormat),collapse = 'から'),'における')
+  indicatorName <- colnames(obj)[2]
+  txt <- paste0('#### Summary\n\n')
+  for(iii in 1:6){
+    statName <- switch(iii,'最小値','第1四分位数','中央値','平均値','第3四分位数','最大値')
+    txt <-
+      paste0(txt,
+             paste0('- ',indicatorName,'の',dateRange,statName,'は',summary(obj[,2])[iii],'\n'))
+  }
+  meanResult <-
+    fun_meanS(objDF = obj,dateCol = 1,objCol = 2,dateFormat = dateFormat)
+  meanResult <- meanResult[-grep('^平均値|^中央値',meanResult[,1]),]
+  for(iii in 1:nrow(meanResult)){
+    txt <-
+      paste0(txt,
+             paste0('- ',indicatorName,'の',dateRange,meanResult[iii,1],'は',meanResult[iii,2],'\n'))
+  }
+  summaryResult <- fun_summaryByName(obj = obj,objColumn = 2,dateFormat = dateFormat)
+  maxResult <- summaryResult[which.max(summaryResult$Mean),]
+  minResult <- summaryResult[which.min(summaryResult$Mean),]
+  txt <-
+    paste0(txt,
+           paste0('- ',indicatorName,'の平均値が最も高い政権は',maxResult[1,1],'政権の',
+                  maxResult[1,grep('mean',colnames(maxResult),ignore.case = T)],'\n'))
+  txt <-
+    paste0(txt,
+           paste0('- ',indicatorName,'の平均値が最も低い政権は',minResult[1,1],'政権の',
+                  minResult[1,grep('mean',colnames(minResult),ignore.case = T)],'\n'))
+  write.table(x = txt,file = mdFile,append = T,
+              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  # summary part
   if(image1!=0){
     txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
                   htmlName,
