@@ -153,7 +153,8 @@ for(iii in 2:ncol(oecd01)){
     paste0(txt,'Boxplot\n</a>\n<hr>\n')
 }
 htmlFile <-
-  paste0(format(Sys.Date(),'%Y%m%d'),'-OECD-olive.html')
+  paste0('OECD-olive.html')
+setwd(pathOutput)
 write.table(x = txt,file = htmlFile,append = F,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 ```
