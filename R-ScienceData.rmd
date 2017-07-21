@@ -130,7 +130,7 @@ fun_ggboxplotByMonth <-
     dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
     p <-
       ggboxplot(plotData,x = "Month",y = 'Value',color = "Month",palette = palette,
-                add = add,shape = "Month",ggtheme = ggtheme,repel = T)
+                add = add,ggtheme = ggtheme,repel = T)
     p <- p + ylab(colnames(obj)[objCol]) + theme(legend.position = "none")
     p <- p + ggtitle(paste0(colnames(obj)[objCol],'\n',dateRange,'\nSource:',dataSource))
     p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
