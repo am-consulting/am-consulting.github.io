@@ -1,5 +1,5 @@
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-library(ggplot2);library(scales)
+library(ggplot2);library(scales);library(ggfortify)
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 100)
 pngWidth <- 1000
@@ -144,6 +144,29 @@ fun_ggboxplotByMonth <-
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_ggplot_acf <- function(obj,objCol = 2,lag.max = 12*30,pngN){
+  setwd(pathOutput)
+  pngFile <- paste0('AMCC-science-ACF-',pngN,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  if(length(unique(lubridate::day(obj$Date)))<=5){
+    dateFormat <- '%Y-%m'
+  }else{
+    dateFormat <- '%Y-%m-%d'
+  }
+  dateRange <- paste0(format(range(obj$Date),dateFormat),collapse = '~')
+  p <- autoplot(acf(x = obj[,objCol],plot = F,lag.max = lag.max))
+  p <- p + ggtitle(paste0(colnames(obj)[objCol],'\n',dateRange,'\nSource:',dataSource))
+  p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(legend.text =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.x = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.y = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.text =    element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  print(p)
+  dev.off()
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
 # http://nsidc.org/data/g02135.html
 datatitleSeaIceIndex <-
   c("Sea Ice Index Data:North",
@@ -185,6 +208,7 @@ print(tail(seaIceIndex[[iii]]))
 for(iii in 1:3){
   fun_ggplot_line(plotData = seaIceIndex[[iii]],pngN = iii)
   fun_ggboxplotByMonth(obj = seaIceIndex[[iii]],pngN = iii)
+  fun_ggplot_acf(obj = seaIceIndex[[iii]],objCol = 2,pngN = iii)
 }
 ```
 
@@ -205,6 +229,7 @@ for(iii in 1:3){
          plotData <- origData_sunspot02[,c(1,5)])
   fun_ggplot_line(plotData = plotData,pngN = iii+3)
   fun_ggboxplotByMonth(obj = plotData,pngN = iii+3)
+  fun_ggplot_acf(obj = plotData,objCol = 2,pngN = iii+3)
 }
 ```
 
@@ -233,6 +258,7 @@ for(iii in 1:length(url_CO2)){
 for(iii in 1:3){
   fun_ggplot_line(plotData = CO2[[iii]],pngN = iii+6)
   fun_ggboxplotByMonth(obj = CO2[[iii]],pngN = iii+6)
+  fun_ggplot_acf(obj = CO2[[iii]],objCol = 2,pngN = iii+6)
 }
 ```
 
@@ -273,6 +299,7 @@ for(iii in 1:length(sourceURL_MMT)){
 for(iii in 1:2){
   fun_ggplot_line(plotData = MMT[[iii]],pngN = iii+9)
   fun_ggboxplotByMonth(obj = MMT[[iii]],pngN = iii+9)
+  fun_ggplot_acf(obj = MMT[[iii]],objCol = 2,pngN = iii+9)
 }
 ```
 
@@ -324,5 +351,6 @@ for (iii in 1:length(url_SST)) {
 for(iii in 1:3){
   fun_ggplot_line(plotData = SST[[iii]],pngN = iii+12)
   fun_ggboxplotByMonth(obj = SST[[iii]],pngN = iii+12)
+  fun_ggplot_acf(obj = SST[[iii]],objCol = 2,pngN = iii+12)
 }
 ```
