@@ -1,0 +1,31 @@
+```{r}
+rFile <- c('importCFTChistoricalData.r')
+for(iii in 1:length(rFile)){
+  script <- 
+    RCurl::getURL(
+      paste0('https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/',rFile[iii]),
+      ssl.verifypeer = F)
+eval(parse(text = script))
+}
+cftc <- fun_CFTChistoricalData(objFirst = 2)
+```
+
+```{r}
+for(iii in seq(length(cftc))){
+  buf0 <- cftc[[iii]]
+  if(2<=nrow(buf0)){
+    if(tail(diff(buf0$Date),1)<14){
+      buf1 <- buf0[,c(9,1,7)]
+      buf2 <- tail(buf1,1)
+      buf2$WoW <- tail(diff(buf1[,3]),1)
+      if(iii==1){latestData <- buf2}else{latestData <- rbind(latestData,buf2)}
+    }
+  }
+}
+obj <- latestData[Sys.Date()-14<=latestData$Date,]
+obj$Trend <-
+  ifelse(obj$WoW<0,
+         '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-down.ico" alt="Decreased">',
+         ifelse(0<obj$WoW,
+                '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-up.ico" alt="Increased">','-'))
+```
