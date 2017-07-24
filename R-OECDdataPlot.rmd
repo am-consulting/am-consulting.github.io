@@ -74,6 +74,14 @@ eval(parse(text = script))
 IMFcommodity <- origData
 ```
 
+```{r,warning=F,error=F,message=F,echo=F}
+script <-
+  RCurl::getURL(
+    url = "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importYield10yearData.r",
+    ssl.verifypeer = FALSE)
+eval(parse(text = script))
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontSize = 15){
   if(output!=0){
@@ -226,4 +234,39 @@ for(iii in 2:ncol(IMFcommodity)){
   fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1,fontSize = 14)
 }
 fun_outputHtmlFile(obj = IMFcommodity,htmlFile = 'IMF-commodity-olive.html')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataSource <- 'OECD,FRED'
+pngTitle01 <- 'AMCC-OECD-LTGB-TS-'
+pngTitle02 <- 'AMCC-OECD-LTGB-BP-'
+cnt <- 0
+plotData <- list()
+for(iii in 2:ncol(yield10yearData)){
+  buf <- na.omit(yield10yearData[,c(1,iii)])
+  diffMonth <- diff(lubridate::year(buf$Date)*12+lubridate::month(buf$Date))
+  if(length(unique(diffMonth))==1){
+    if(unique(diffMonth)==1){
+      cnt <- cnt + 1
+      plotData[[cnt]] <- buf
+      print(tail(plotData[[cnt]]))
+    }
+  }else{
+    tmp <- tail(buf,-tail(which(diffMonth!=1),1))
+    if(12<=nrow(tmp)){
+      cnt <- cnt + 1
+      plotData[[cnt]] <- tmp
+      print(tail(plotData[[cnt]]))
+    }
+  }
+}
+for(iii in seq(length(plotData))){
+  obj <- plotData[[iii]]
+  fun_ggplot_line(plotData = obj,pngN = iii,pngTitle = pngTitle01,output = 1,fontSize = 14)
+  fun_ggboxplotByYear(obj = obj,yearN = yearN,pngN = iii,pngTitle = pngTitle02,output = 1,fontSize = 14)
+  tmp <- data.frame(n=seq(6),tail(obj[,2],n = 6),check.names = F,row.names = NULL)
+  colnames(tmp)[2] <- colnames(obj)[2]
+  if(iii==1){yieldData <- tmp}else{yieldData <- merge(yieldData,tmp)}
+}
+fun_outputHtmlFile(obj = yieldData,htmlFile = 'OECD-LTGB-olive.html')
 ```
