@@ -45,7 +45,7 @@ obj$Trend <-
          '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-down.ico" alt="Decreased">',
          ifelse(0<obj$WoW,
                 '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-up.ico" alt="Increased">','-'))
-colnames(obj)[3] <- 'Positions'
+colnames(obj)[3] <- 'Net'
 colnames(obj)[5] <- ''
 obj$Date <- format(obj$Date,'%Y%m%d')
 ```
