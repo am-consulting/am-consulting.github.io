@@ -1,3 +1,20 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
 ```{r}
 rFile <- c('importCFTChistoricalData.r')
 for(iii in 1:length(rFile)){
@@ -28,4 +45,9 @@ obj$Trend <-
          '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-down.ico" alt="Decreased">',
          ifelse(0<obj$WoW,
                 '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-up.ico" alt="Increased">','-'))
+colnames(obj)[3] <- 'Positions'
+```
+
+```{r}
+fun_writeCSVtoFolder(objData = obj,dataType = 2,csvFileName = 'latestCFTC')
 ```
