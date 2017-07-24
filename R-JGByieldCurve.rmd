@@ -102,3 +102,25 @@ for(rrr in seq(nrow(yieldDF))){
   if(output!=0){dev.off()}
 }
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_outputHtmlFile <- function(obj,htmlFile){
+txt <- ''
+for(rrr in seq(nrow(obj))){
+  num <- formatC(rrr,width = 3,format = "d",flag = "0")
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',num,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',
+           num,'.png" width="10%" />\n')
+  txt <- 
+    paste0(txt,'<b>',obj[rrr,1],'</b></a>\n')
+}
+setwd(pathOutput)
+write.table(x = txt,file = htmlFile,append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+}
+fun_outputHtmlFile(obj = yieldDF[,-2],htmlFile = 'JGByieldCurve.html')
+```
