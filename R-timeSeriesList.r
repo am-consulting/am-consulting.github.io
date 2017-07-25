@@ -74,11 +74,16 @@ figLink <-
          paste0(baseTxt,htmlNameS,'-3.png">03</a>'))
 titleHTML$Figure <- figLink
 titleHTML <- titleHTML[,-6]
+titleHTMLforOlive <- titleHTML[,-5]
 # figure part
 pathOutputTOcsv <-
   paste0("C:/Users/", userName, buf[2,1],'csv/')
 setwd(pathOutputTOcsv)
 write.csv(x = titleHTML,file = 'timeSeriesList.csv',
+          quote = T,row.names = F,
+          append = F,na = '',
+          fileEncoding = 'UTF-8')
+write.csv(x = titleHTMLforOlive,file = 'timeSeriesListForOlive.csv',
           quote = T,row.names = F,
           append = F,na = '',
           fileEncoding = 'UTF-8')
