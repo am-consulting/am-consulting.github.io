@@ -9,11 +9,25 @@ output:
     fig_height: 4
     fig_width: 10
     keep_md: no
-    md_extensions: -ascii_identifiers 
+    md_extensions: -ascii_identifiers
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
+
 <style>.main-container {max-width : 1000px;}</style>
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -103,8 +117,7 @@ r paste(knit(text = c(get(paste0('knit_expanded',n2)))), collapse = '\n')
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = bufDF,lag = 12),
                                                dateFormat = dateFormat,
                                                tailN = 8,
-                                               colName = '国/地域')
-                  )
+                                               colName = '国/地域'),format = 'html')
 ```
 
 ***
@@ -178,6 +191,11 @@ fun_dataTable(obj = tail(numberOfForeignVisitorsToJapan,12*3),
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis',fig.height=5}
+script <- 
+  RCurl::getURL(
+    url = "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importUSDJPYmonthly.r",
+    ssl.verifypeer = F)
+eval(parse(text = script))
 par(mfrow=c(1,1))
 obj <- numberOfForeignVisitorsToJapan[,c(1,2)]
 colnames(obj)[2] <- paste0('訪日外客数(単位:万人):',colnames(obj)[2])
@@ -190,27 +208,9 @@ dammy <- fun_CCF(objDF = mergeData,dateFormat = dateFormat)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = c(10^10,12*5,12*3,12*1))
@@ -221,9 +221,10 @@ dev.off()
 fun_outputMD(tags = '日本政府観光局(JNTO),訪日外客数',
              objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = paste0('国籍/月別 訪日外客数(単位:万人):',colnames(obj)[2]))
+fun_updateURLcsv()
 ```
 
 ***
