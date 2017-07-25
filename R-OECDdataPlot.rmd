@@ -115,7 +115,8 @@ script <-
 eval(parse(text = script))
 colnames(CrudeOilProduction)[-1] <- 
   paste0("Crude Oil Production(1000Barrels/day):",colnames(CrudeOilProduction)[-1])
-oilData <- CrudeOilProduction[,c(1,which(apply(CrudeOilProduction[,-1],2,sum)!=0)+1)]
+# oilData <- CrudeOilProduction[,c(1,which(apply(CrudeOilProduction[,-1],2,sum)!=0)+1)]
+oilData <- CrudeOilProduction
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -132,6 +133,7 @@ fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontS
   }
   dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
   latestData <- paste0(format(tail(plotData,1)[1,1],dateFormat),':',tail(plotData,1)[1,2])
+  if(10<=nrow(plotData[plotData[,2]!=0,])){adfTest <- 1}else{adfTest <- 0}
   g <- ggplot(data = plotData,aes(x = Date,y = plotData[,2]))
   g <- g + geom_line(size = 0.5,col = "black")
   g <- g + geom_point(size = pointSize,col = "black")
@@ -146,7 +148,9 @@ fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontS
   g <- g + ylab('')
   g <- g + ggtitle(paste0(colnames(plotData)[2],'\n',dateRange,
                          '\nSource:',dataSource,
-                         '\nUnit Root Test p-value:',round(tseries::adf.test(plotData[,2])$p.value,3),
+                         if(adfTest==1){
+                           paste0('\nUnit Root Test p-value:',
+                                  round(tseries::adf.test(plotData[,2])$p.value,3))},
                          '\nLatest:',latestData))
   if(needZero!=0){g <- g + geom_hline(yintercept = 0,col = 'blue')}
   print(g)
