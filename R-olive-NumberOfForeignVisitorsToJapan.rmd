@@ -145,8 +145,7 @@ eval(parse(text = paste0('dygraphPlot',n2,' %>% ', event_dygraph_point,' %>%  ',
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = bufDF,lag = 12),
                                                dateFormat = dateFormat,
                                                tailN = 8,
-                                               colName = '国/地域')
-                  )
+                                               colName = '国/地域'),format = 'html')
 ```
 
 ***
