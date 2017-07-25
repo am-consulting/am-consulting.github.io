@@ -1,5 +1,5 @@
 fun_markdownTable <-
-  function(obj, rownames = F, table.attr = "id = 'amcc' width = '100%' class = 'amcc'", format = 'markdown', escape = F){
+  function(obj, rownames = F, table.attr = "width = '100%' class = 'amcc'", format = 'html', escape = F){
   kableText <-
     knitr::kable(obj,
                  row.names = rownames,
