@@ -1,0 +1,92 @@
+```{r}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+pngWidth <- 1500
+pngHeight <- 700
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'UTF8')
+pathOutputIndicator <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/')
+```
+
+```{r}
+library(quantmod);library(PerformanceAnalytics);library(lubridate)
+fromFRED <- 
+  c('Japan / U.S. Foreign Exchange Rate (DEXJPUS)',
+    'U.S. / Euro Foreign Exchange Rate (DEXUSEU)',
+    'Canada / U.S. Foreign Exchange Rate (DEXCAUS)',
+    'U.S. / U.K. Foreign Exchange Rate (DEXUSUK)',
+    'U.S. / Australia Foreign Exchange Rate (DEXUSAL)',
+    'Switzerland / U.S. Foreign Exchange Rate (DEXSZUS)',
+    'South Africa / U.S. Foreign Exchange Rate (DEXSFUS)',
+    'U.S. / New Zealand Foreign Exchange Rate (DEXUSNZ)')
+for(iii in seq(length(fromFRED))){
+  buf <- fromFRED[iii]
+  title <- gsub('(.+)\\((.+)\\)','\\1',buf)
+  symbol <- gsub('(.+)\\((.+)\\)','\\2',buf)
+  tmp0 <- getSymbols(Symbols = symbol,auto.assign = F,src = 'FRED')
+  tmp1 <-
+    data.frame(Date = index(tmp0),tmp0,stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(tmp1)[2] <- gsub('\\s$','',title)
+  tmp1 <- na.omit(tmp1)
+  if(iii==1){allFXdata0 <- tmp1}else{allFXdata0 <- merge(allFXdata0,tmp1,by='Date')}
+  print(tail(tmp1))
+}
+allFXdata <- na.omit(allFXdata0)
+colnames(allFXdata) <- 
+  gsub('\\sforeign exchange rate','',colnames(allFXdata),ignore.case = T)
+allFXdata$YM <- as.Date(paste0(year(allFXdata$Date),'-',month(allFXdata$Date),'-1'))
+```
+
+```{r}
+fun_aggregateData <- function(fun = 'mean'){
+  buf <- aggregate(x = allFXdata[,-1],by = list(allFXdata$YM),FUN = fun)
+  return(buf[,-grep('^ym$',colnames(buf),ignore.case = T)])
+}
+fun_plotCorrelation <- function(fun = 'mean',output = 1){
+  setwd(pathOutputIndicator)
+  obj <- fun_aggregateData(fun = fun)
+  dateRange <- paste0(format(range(obj$Group.1),'%Y-%m'),collapse = '~')
+  if(output!=0){
+    png(file = paste0(fun,'-correlation-level.png'),width = pngWidth,height = pngHeight)
+  }
+  chart.Correlation(R = obj[,-1],
+                    main = paste0(dateRange,'.Level.FUN=',fun),
+                    cex.main = 2.2,cex.labels=2.5)
+  if(output!=0){dev.off();}
+  if(output!=0){
+    png(file = paste0(fun,'-correlation-diff.png'),width = pngWidth,height = pngHeight)
+  }
+  chart.Correlation(R = fun_makeDiffTable(obj = obj,lag = 1)[,-1],
+                    main = paste0(dateRange,'.1st Diff.FUN=',fun),
+                    cex.main = 2.2,cex.labels=2.5)
+  if(output!=0){dev.off();}
+}
+fun_plotCorrelation(fun = 'mean',output = 1)
+fun_plotCorrelation(fun = 'var',output = 1)
+```
