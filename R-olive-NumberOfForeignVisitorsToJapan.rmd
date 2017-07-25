@@ -218,7 +218,7 @@ dev.off()
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '日本政府観光局(JNTO),訪日外客数',
-             objDF = fun_summaryByName(obj = obj),
+             objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
              htmlName = htmlName,
              image1 = 1,
              title = dataTitle,
