@@ -107,29 +107,30 @@ for(rrr in seq(nrow(yieldDF))){
 fun_outputHtmlFile <- function(obj){
   JGByieldDF <- data.frame()
   objRaw <- 0
-  for(rrr in seq(1,nrow(obj),by = 3)){
-    objRaw <- objRaw +1
+  colN <- 4
+  for(rrr in seq(1,nrow(obj),by = colN)){
+    objRaw <- objRaw + 1
     objCol <- 0
-    for(ccc in rrr:(rrr+2)){
+    for(ccc in rrr:(rrr+colN-1)){
       txt <- ''
       num <- formatC(ccc,width = 3,format = "d",flag = "0")
       txt <- 
         paste0(txt,
-               '<a href="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',num,'.png">\n')
+               '<a href="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',num,'.png">')
       txt <- 
         paste0(txt,
                '<img border="2" src="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',
-               num,'.png" width="30%" />\n')
+               num,'.png" width="30%" />')
       txt <- 
-        paste0(txt,'<b>',obj[ccc,1],'</b></a>\n')
+        paste0(txt,'<b>',obj[ccc,1],'</b></a>')
       objCol <- objCol + 1
       JGByieldDF[objRaw,objCol] <- txt
     }
   }
-  colnames(JGByieldDF) <- rep('Yield Curve',3)
+  colnames(JGByieldDF) <- rep('Yield Curve Chart',colN)
   setwd(pathOutputJGB)
   write.csv(x = JGByieldDF,file = 'JGByield.csv',quote = T,
-            row.names = F,append = F,na = '',fileEncoding = 'UTF-8')
+            row.names = F,append = F,na = '',fileEncoding = 'UTF-8',qmethod = 'double')
 }
 fun_outputHtmlFile(obj = yieldDF[,-2])
 ```
