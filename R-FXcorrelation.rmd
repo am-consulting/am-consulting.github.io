@@ -19,10 +19,11 @@ for(iii in 1:nrow(functionList)){
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 100)
 pngWidth <- 1500
-pngHeight <- 700
+pngHeight <- 800
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(quantmod);library(PerformanceAnalytics);library(lubridate)
 userName <- Sys.info()['user']
 fileName <- 'defaultPath.csv'
 pathToFile <-
@@ -35,7 +36,12 @@ pathOutputIndicator <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/'
 ```
 
 ```{r}
-library(quantmod);library(PerformanceAnalytics);library(lubridate)
+sourceSite <- 2
+```
+
+```{r}
+if(sourceSite==1){
+periodN <- 30
 fromFRED <- 
   c('Japan / U.S. Foreign Exchange Rate (DEXJPUS)',
     'U.S. / Euro Foreign Exchange Rate (DEXUSEU)',
@@ -60,30 +66,52 @@ for(iii in seq(length(fromFRED))){
 allFXdata <- na.omit(allFXdata0)
 colnames(allFXdata) <- 
   gsub('\\sforeign exchange rate','',colnames(allFXdata),ignore.case = T)
-allFXdata$YM <- as.Date(paste0(year(allFXdata$Date),'-',month(allFXdata$Date),'-1'))
+allFXdata$dateGroup <- as.Date(paste0(year(allFXdata$Date),'-',month(allFXdata$Date),'-1'))
+}
+```
+
+```{r}
+if(sourceSite!=1){
+periodN <- 7
+fromOANDA <- 
+  c('USD/JPY','EUR/USD','GBP/USD','AUD/USD','NZD/USD',
+    'EUR/GBP','EUR/AUD','GBP/AUD','EUR/CHF','GBP/CHF','USD/CHF')
+for(iii in seq(length(fromOANDA))){
+  tmp0 <- getSymbols(Symbols = fromOANDA[iii],auto.assign = F,src = 'oanda')
+  tmp1 <-
+    data.frame(Date = index(tmp0),tmp0,stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(tmp1) <- gsub('\\.','/',colnames(tmp1))
+  tmp1 <- na.omit(tmp1)
+  if(iii==1){allFXdata0 <- tmp1}else{allFXdata0 <- merge(allFXdata0,tmp1,by='Date')}
+  print(tail(tmp1))
+}
+allFXdata <- na.omit(allFXdata0)
+allFXdata$dateGroup <- ceiling(as.numeric(row.names(allFXdata))/periodN)
+}
 ```
 
 ```{r}
 fun_aggregateData <- function(fun = 'mean'){
-  buf <- aggregate(x = allFXdata[,-1],by = list(allFXdata$YM),FUN = fun)
-  return(buf[,-grep('^ym$',colnames(buf),ignore.case = T)])
+  buf <- aggregate(x = allFXdata[,-1],by = list(allFXdata$dateGroup),FUN = fun)
+  return(buf[,-grep('^dateGroup$',colnames(buf),ignore.case = T)])
 }
 fun_plotCorrelation <- function(fun = 'mean',output = 1){
   setwd(pathOutputIndicator)
+  if(periodN==7){periodTxt <- paste0('By ',periodN,'days')}else{periodTxt <- 'By 1month'}
   obj <- fun_aggregateData(fun = fun)
-  dateRange <- paste0(format(range(obj$Group.1),'%Y-%m'),collapse = '~')
+  dateRange <- paste0(format(range(allFXdata$Date),'%Y-%m-%d'),collapse = '~')
   if(output!=0){
     png(file = paste0(fun,'-correlation-level.png'),width = pngWidth,height = pngHeight)
   }
   chart.Correlation(R = obj[,-1],
-                    main = paste0(dateRange,'.Level.FUN=',fun),
+                    main = paste0(dateRange,'.Level.FUN=',fun,'.Period:',periodTxt),
                     cex.main = 2.2,cex.labels=2.5)
   if(output!=0){dev.off();}
   if(output!=0){
     png(file = paste0(fun,'-correlation-diff.png'),width = pngWidth,height = pngHeight)
   }
   chart.Correlation(R = fun_makeDiffTable(obj = obj,lag = 1)[,-1],
-                    main = paste0(dateRange,'.1st Diff.FUN=',fun),
+                    main = paste0(dateRange,'.1st Diff.FUN=',fun,'.Period:',periodTxt),
                     cex.main = 2.2,cex.labels=2.5)
   if(output!=0){dev.off();}
 }
