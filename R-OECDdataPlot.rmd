@@ -107,6 +107,8 @@ UStresuary <- allData
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
+# https://www.jodidata.org/oil/
+# 2007-01以降
 # JODI Oil World Database → Joint Organisations Data Initiative - Primary (all data) → TIME → ×で全てのチェックを外す → Fromで期間指定 → Search → チェック → Show Table
 script <-
   RCurl::getURL(
@@ -122,7 +124,7 @@ oilData <- CrudeOilProduction
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontSize = 15,pointSize = 1){
   if(output!=0){
-    setwd(pathOutputIndicator)
+    setwd(paste0(pathOutputIndicator,folderName))
     pngFile <- paste0(pngTitle,pngN,".png")
     png(file = pngFile,width = pngWidth,height = pngHeight)
   }
@@ -163,7 +165,7 @@ fun_ggboxplotByYear <-
   function(obj,dateCol = 1,objCol = 2,ggtheme = theme_bw(),palette = "UChicago",
            add = "jitter",pngN,fontSize = 15,pngTitle,output = 0,yearN = 6){
     if(output!=0){
-      setwd(pathOutputIndicator)
+      setwd(paste0(pathOutputIndicator,folderName))
       pngFile <- paste0(pngTitle,pngN,".png")
       png(file = pngFile,width = pngWidth,height = pngHeight)
     }
@@ -203,24 +205,24 @@ for(iii in 2:ncol(obj)){
     paste0(txt,'<b>',colTxt,'</b><br>\n')
   txt <- 
     paste0(txt,
-           '<a href="http://indicator.am-consulting.co.jp/',pngTitle01,iii-1,'.png">\n')
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii-1,'.png">\n')
   txt <- 
     paste0(txt,
-           '<img border="2" src="http://indicator.am-consulting.co.jp/',pngTitle01,iii-1,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii-1,
            '.png" width="20%" />\n')
   txt <-
     paste0(txt,'Timeseries\n</a>\n')
   txt <- 
     paste0(txt,
-           '<a href="http://indicator.am-consulting.co.jp/',pngTitle02,iii-1,'.png">\n')
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii-1,'.png">\n')
   txt <- 
     paste0(txt,
-           '<img border="2" src="http://indicator.am-consulting.co.jp/',pngTitle02,iii-1,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii-1,
            '.png" width="20%" />\n')
   txt <-
     paste0(txt,'Boxplot\n</a>\n<hr>\n')
 }
-setwd(pathOutputIndicator)
+setwd(paste0(pathOutputIndicator,folderName))
 write.table(x = txt,file = htmlFile,append = F,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 }
@@ -229,6 +231,7 @@ write.table(x = txt,file = htmlFile,append = F,
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 pngTitle01 <- 'AMCC-OECD-TS-'
 pngTitle02 <- 'AMCC-OECD-BP-'
+folderName <- 'AMCC-OECD/'
 for(iii in 2:ncol(oecd01)){
   plotData <- na.omit(oecd01[,c(1,iii)])
   colnames(plotData)[2] <- paste0('Composite Leading Indicators:',
@@ -242,6 +245,7 @@ fun_outputHtmlFile(obj = oecd01,htmlFile = 'OECD-olive.html')
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 pngTitle01 <- 'AMCC-OECD-sharePrice-TS-'
 pngTitle02 <- 'AMCC-OECD-sharePrice-BP-'
+folderName <- 'AMCC-OECD/'
 for(iii in 2:ncol(sharePriceIndexData)){
   plotData <- na.omit(sharePriceIndexData[,c(1,iii)])
   colnames(plotData)[2] <- paste0('OECD Share Prices Index:2010=100:',colnames(plotData)[2])
@@ -254,6 +258,7 @@ fun_outputHtmlFile(obj = sharePriceIndexData,htmlFile = 'OECD-sharePrice-olive.h
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 pngTitle01 <- 'AMCC-OECD-unemployment-TS-'
 pngTitle02 <- 'AMCC-OECD-unemployment-BP-'
+folderName <- 'AMCC-OECD/'
 for(iii in 2:ncol(unemploymentData)){
   plotData <- na.omit(unemploymentData[,c(1,iii)])
   colnames(plotData)[2] <- paste0('Unemployment Rate:Quarterly Data:',
@@ -268,6 +273,7 @@ fun_outputHtmlFile(obj = unemploymentData,htmlFile = 'OECD-unemployment-olive.ht
 dataSource <- 'International Monetary Fund'
 pngTitle01 <- 'AMCC-IMF-commodity-TS-'
 pngTitle02 <- 'AMCC-IMF-commodity-BP-'
+folderName <- 'AMCC-IMF/'
 for(iii in 2:ncol(IMFcommodity)){
   plotData <- na.omit(IMFcommodity[,c(1,iii)])
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1,fontSize = 14)
@@ -280,6 +286,7 @@ fun_outputHtmlFile(obj = IMFcommodity,htmlFile = 'IMF-commodity-olive.html')
 dataSource <- 'OECD,FRED'
 pngTitle01 <- 'AMCC-OECD-LTGB-TS-'
 pngTitle02 <- 'AMCC-OECD-LTGB-BP-'
+folderName <- 'AMCC-OECD/'
 cnt <- 0
 plotData <- list()
 for(iii in 2:ncol(yield10yearData)){
@@ -315,6 +322,7 @@ fun_outputHtmlFile(obj = yieldData,htmlFile = 'OECD-LTGB-olive.html')
 dataSource <- '一般社団法人日本鉄鋼連盟'
 pngTitle01 <- 'AMCC-SteelProduction-TS-'
 pngTitle02 <- 'AMCC-SteelProduction-BP-'
+folderName <- 'AMCC-SteelProduction/'
 for(iii in 2:ncol(steelData)){
   plotData <- na.omit(steelData[,c(1,iii)])
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1,
@@ -328,6 +336,7 @@ fun_outputHtmlFile(obj = steelData,htmlFile = 'SteelProduction-olive.html')
 dataSource <- 'U.S. Department of the Treasury'
 pngTitle01 <- 'AMCC-UStresuary-TS-'
 pngTitle02 <- 'AMCC-UStresuary-BP-'
+folderName <- 'AMCC-UStresuary/'
 for(iii in 2:ncol(UStresuary)){
   plotData <- na.omit(UStresuary[,c(1,iii)])
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1,
@@ -341,6 +350,7 @@ fun_outputHtmlFile(obj = UStresuary,htmlFile = 'UStresuary-olive.html')
 dataSource <- ' Joint Organisations Data Initiative (JODI)'
 pngTitle01 <- 'AMCC-CrudeOilProduction-TS-'
 pngTitle02 <- 'AMCC-CrudeOilProduction-BP-'
+folderName <- 'AMCC-CrudeOilProduction/'
 for(iii in 2:ncol(oilData)){
   plotData <- na.omit(oilData[,c(1,iii)])
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1,
