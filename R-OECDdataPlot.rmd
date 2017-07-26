@@ -229,8 +229,8 @@ write.table(x = txt,file = htmlFile,append = F,
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-pngTitle01 <- 'AMCC-OECD-TS-'
-pngTitle02 <- 'AMCC-OECD-BP-'
+pngTitle01 <- 'AMCC-OECD-CLI-TS-'
+pngTitle02 <- 'AMCC-OECD-CLI-BP-'
 folderName <- 'AMCC-OECD/'
 for(iii in 2:ncol(oecd01)){
   plotData <- na.omit(oecd01[,c(1,iii)])
@@ -239,7 +239,7 @@ for(iii in 2:ncol(oecd01)){
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
   fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1)
 }
-fun_outputHtmlFile(obj = oecd01,htmlFile = 'OECD-olive.html')
+fun_outputHtmlFile(obj = oecd01,htmlFile = 'OECD-CLI-olive.html')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
