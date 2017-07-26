@@ -32,7 +32,7 @@ setwd(pathToFile)
 buf0 <-
   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
            fileEncoding = 'UTF8')
-pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/JGByieldCurve/')
+pathOutputJGB <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/JGByieldCurve/')
 ```
 
 ```{r}
@@ -104,23 +104,32 @@ for(rrr in seq(nrow(yieldDF))){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_outputHtmlFile <- function(obj,htmlFile){
-txt <- ''
-for(rrr in seq(nrow(obj))){
-  num <- formatC(rrr,width = 3,format = "d",flag = "0")
-  txt <- 
-    paste0(txt,
-           '<a href="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',num,'.png">\n')
-  txt <- 
-    paste0(txt,
-           '<img border="2" src="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',
-           num,'.png" width="10%" />\n')
-  txt <- 
-    paste0(txt,'<b>',obj[rrr,1],'</b></a>\n')
+fun_outputHtmlFile <- function(obj){
+  JGByieldDF <- data.frame()
+  objRaw <- 0
+  for(rrr in seq(1,nrow(obj),by = 3)){
+    objRaw <- objRaw +1
+    objCol <- 0
+    for(ccc in rrr:(rrr+2)){
+      txt <- ''
+      num <- formatC(ccc,width = 3,format = "d",flag = "0")
+      txt <- 
+        paste0(txt,
+               '<a href="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',num,'.png">\n')
+      txt <- 
+        paste0(txt,
+               '<img border="2" src="http://indicator.am-consulting.co.jp/JGByieldCurve/JGBcurve-',
+               num,'.png" width="30%" />\n')
+      txt <- 
+        paste0(txt,'<b>',obj[ccc,1],'</b></a>\n')
+      objCol <- objCol + 1
+      JGByieldDF[objRaw,objCol] <- txt
+    }
+  }
+  colnames(JGByieldDF) <- rep('Yield Curve',3)
+  setwd(pathOutputJGB)
+  write.csv(x = JGByieldDF,file = 'JGByield.csv',quote = T,
+            row.names = F,append = F,na = '',fileEncoding = 'UTF-8')
 }
-setwd(pathOutput)
-write.table(x = txt,file = htmlFile,append = F,
-            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-}
-fun_outputHtmlFile(obj = yieldDF[,-2],htmlFile = 'JGByieldCurve.html')
+fun_outputHtmlFile(obj = yieldDF[,-2])
 ```
