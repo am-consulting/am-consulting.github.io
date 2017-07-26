@@ -70,7 +70,7 @@ output <- 1
 chartName <- pmName <- vector()
 for(rrr in seq(nrow(yieldDF))){
   if(output!=0){
-    setwd(pathOutput)
+    setwd(pathOutputJGB)
     pngN <- formatC(rrr,width = 3,format = "d",flag = "0")
     pngFile <- paste0('JGBcurve-',pngN,".png")
     png(file = pngFile,width = pngWidth,height = pngHeight)
@@ -134,6 +134,18 @@ fun_outputHtmlFile <- function(obj){
   setwd(pathOutputJGB)
   write.csv(x = JGByieldDF,file = 'JGByield.csv',quote = T,
             row.names = F,append = F,na = '',fileEncoding = 'UTF-8',qmethod = 'double')
+  return(JGByieldDF)
 }
-fun_outputHtmlFile(obj = yieldDF[,-2])
+JGByieldChart <- fun_outputHtmlFile(obj = yieldDF[,-2])
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+setwd(pathOutputJGB)
+JGByieldChart[is.na(JGByieldChart)] <- ''
+tableTxt <-
+  paste0(knitr::kable(x = JGByieldChart,row.names = F,format = 'html',
+               table.attr = "class = 'amcc' width = '100%'",
+               format.args = list(big.mark = ',',drop0trailing = T),escape = F))
+write.table(x = tableTxt,file = 'JGByieldCurve.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 ```
