@@ -108,6 +108,7 @@ fun_outputHtmlFile <- function(obj){
   JGByieldDF <- data.frame()
   objRaw <- 0
   colN <- 4
+  cnt <- 0
   for(rrr in seq(1,nrow(obj),by = colN)){
     objRaw <- objRaw + 1
     objCol <- 0
@@ -125,6 +126,8 @@ fun_outputHtmlFile <- function(obj){
         paste0(txt,'<b>',obj[ccc,1],'</b></a>')
       objCol <- objCol + 1
       JGByieldDF[objRaw,objCol] <- txt
+      cnt <- cnt + 1
+      if(cnt==nrow(yieldDF)){break}
     }
   }
   colnames(JGByieldDF) <- rep('Yield Curve Chart',colN)
