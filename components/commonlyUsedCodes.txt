@@ -148,3 +148,9 @@ return(returnList)
 ```
 
 ***
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>
+<div id="amccJGByieldCurveChart">Loading html data...</div> 
+<script type="text/javascript">
+$('#amccJGByieldCurveChart').load('http://knowledgevault.saecanet.com/charts/indicator/JGByieldCurve/JGByieldCurve.html');
+</script>
