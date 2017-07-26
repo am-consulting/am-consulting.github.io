@@ -429,7 +429,7 @@ setwd(pathToFile)
 buf0 <-
   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
            fileEncoding = 'UTF8')
-pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/')
+pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCC-DailyChart/')
 setwd(pathOutput)
 fun_plot(pngN = 1)
 fun_plot(s = 17,e = 32,pngN = 2)
