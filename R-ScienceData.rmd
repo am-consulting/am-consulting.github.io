@@ -32,7 +32,31 @@ setwd(pathToFile)
 buf0 <-
   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
            fileEncoding = 'UTF8')
-pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/')
+pathOutputScience <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCC-science/')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fun_plotEarthquake <- function(earthQuakeObj,pngN = 1){
+setwd(pathOutputScience)
+pngFile <- paste0('AMCC-science-Earthquake',pngN,".png")
+png(file = pngFile, width = pngWidth, height = pngHeight)
+g <- fun_ggplotWorldMap(ratio = 1.15)
+g <- g + geom_point(data = earthQuakeObj,aes(x = longitude, y = latitude),colour = "red",
+                    alpha = 30/100,size = 4) 
+g <- g + geom_text(data = earthQuakeObj,aes(x = longitude,y = latitude,
+                                             label = paste0(mag,':',magType)),
+                   vjust = 0,hjust = 0,family = "Meiryo",size= 6)
+g <- g + ggtitle(paste0('Earthquakes occurred on ',
+                        unique(earthQuakeObj$JSTDate),'\nMagnitude over ',borderM,
+                        '\nSource:United States Geological Survey'))  
+g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.y = element_text(angle = 90,family = "Meiryo",size = 16))
+print(g)
+dev.off()
+}
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -48,38 +72,46 @@ earthQuakeData$JST <-
 earthQuakeData$JSTDate <- 
   as.Date(earthQuakeData$JST,tz = "Asia/Tokyo")
 # POSIXctをas.Date処理する際、tzを指定しないとGMTとしてマイナス9時間後の日付に変換される
-yesterdayData <- 
-  earthQuakeData[earthQuakeData$JSTDate==(Sys.Date()-1),c(1,2,3,4,5,6,14,24,25)]
-yesterdayDataOver <- 
-  yesterdayData[borderM<=yesterdayData$mag,]
+earthQuakeDataOver <- 
+  earthQuakeData[borderM<=earthQuakeData$mag,]
+earthQuakeDataOver <-
+  earthQuakeDataOver[!is.na(earthQuakeDataOver$mag),]
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-pngN <- 1
-setwd(pathOutput)
-pngFile <- paste0('AMCC-science-',pngN,".png")
-png(file = pngFile, width = pngWidth, height = pngHeight)
-g <- fun_ggplotWorldMap(ratio = 1.15)
-g <- g + geom_point(data = yesterdayDataOver,aes(x = longitude, y = latitude),colour = "red",
-                    alpha = 30/100,size = 4) 
-g <- g + geom_text(data = yesterdayDataOver,aes(x = longitude,y = latitude,
-                                                label = paste0(mag,':',magType)),
-                   vjust = 0,hjust = 0,family = "Meiryo",size= 6)
-g <- g + ggtitle(paste0('Earthquakes occurred on ',
-                        unique(yesterdayDataOver$JSTDate),'\nMagnitude over ',borderM,
-                        '\nSource:United States Geological Survey'))  
-g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
-g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
-g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
-g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16)) 
-g <- g + theme(axis.text.y = element_text(angle = 90,family = "Meiryo",size = 16))
-g
-dev.off()
+dayN <- 1
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 2
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 3
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 4
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 5
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 6
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 7
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_ggplot_line <- function(plotData,pngN){
-  setwd(pathOutput)
+  setwd(pathOutputScience)
   pngFile <- paste0('AMCC-science-TS-',pngN,".png")
   png(file = pngFile, width = pngWidth, height = pngHeight)
   if(length(unique(lubridate::day(plotData$Date)))<=5){
@@ -115,7 +147,7 @@ library(ggsci)
 fun_ggboxplotByMonth <-
   function(obj,dateCol = 1,objCol = 2,ggtheme = theme_bw(),palette = "UChicago",
            add = "jitter",pngN){
-    setwd(pathOutput)
+    setwd(pathOutputScience)
     pngFile <- paste0('AMCC-science-Box-',pngN,".png")
     png(file = pngFile, width = pngWidth, height = pngHeight)
     plotData <- obj[,c(dateCol,objCol)]
@@ -145,7 +177,7 @@ fun_ggboxplotByMonth <-
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_ggplot_acf <- function(obj,objCol = 2,lag.max = 12*30,pngN){
-  setwd(pathOutput)
+  setwd(pathOutputScience)
   pngFile <- paste0('AMCC-science-ACF-',pngN,".png")
   png(file = pngFile, width = pngWidth, height = pngHeight)
   if(length(unique(lubridate::day(obj$Date)))<=5){
