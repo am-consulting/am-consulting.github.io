@@ -1,0 +1,44 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+options(scipen = 100)
+pngWidth <- 1500
+pngHeight <- 800
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+library(ggplot2)
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'UTF8')
+pathOutputIndicator <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCCchartImages/')
+```
+
+```{r}
+output <- 0
+```
+
+```{r}
+obj <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/csv/WhitePaperOnCrime/H28/1-1-1-01.csv',skip = 1,header = T,stringsAsFactors = F,fileEncoding = 'utf8',check.names = F)
+obj[,1] <- as.Date(obj[,1])
+setwd(pathOutputIndicator)
+for(ccc in 2:ncol(obj)){
+  if(output!=0){
+    png(file = paste0('WhitePaperOnCrime-',ccc-1,'.png'),width = pngWidth,height = pngHeight)
+  }
+  g <- ggplot(data = obj,aes(x = obj[,1],y = obj[,ccc]))
+  g <- g + geom_line() + geom_point()# + geom_bar(stat = 'identity',fill = 'red',alpha = 0.5)
+  g <- g + scale_x_date(breaks = scales::pretty_breaks(40))
+  g <- g + geom_smooth()
+  g <- g + xlab('') + ylab('')
+  g <- g + ggtitle(label = paste0('法務省犯罪白書:H28年版:',colnames(obj)[ccc]))
+  g <- g + theme(axis.text.x = element_text(vjust = 0.5,angle = 90,family = "Meiryo",size = 10))
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+  print(g)
+  if(output!=0){dev.off();}
+}
+```
