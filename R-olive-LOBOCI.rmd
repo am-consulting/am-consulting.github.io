@@ -10,9 +10,23 @@ output:
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
+
 <style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
@@ -173,7 +187,11 @@ dev.off();dev.off()
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 fun_outputMD(tags = '日本商工会議所,商工会議所LOBO調査(早期景気観測)',
              objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
-             dataTitle = dataTitle,
+             summaryDF = obj,
+             dateFormat = '%Y-%m',
+             dateCol = 1,
+             objCol = 2,
+             title = dataTitle,
              htmlName = htmlName,
              image1 = 1,image2 = 1,
              tableTitle = colnames(LOBOCI)[objColumn])
