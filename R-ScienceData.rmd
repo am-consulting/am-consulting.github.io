@@ -79,33 +79,38 @@ earthQuakeDataOver <-
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+earthObjCol <- c(1,2,3,4,5,6,14,24,25)
 dayN <- 1
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 dayN <- 2
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 dayN <- 3
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 dayN <- 4
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 dayN <- 5
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 dayN <- 6
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 dayN <- 7
 tmp <- 
-  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),c(1,2,3,4,5,6,14,24,25)]
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
+fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
+dayN <- 8
+tmp <- 
+  earthQuakeDataOver[earthQuakeDataOver$JSTDate==(Sys.Date()-dayN),earthObjCol]
 fun_plotEarthquake(earthQuakeObj = tmp,pngN = dayN)
 ```
 
