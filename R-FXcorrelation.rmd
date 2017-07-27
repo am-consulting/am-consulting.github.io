@@ -118,3 +118,36 @@ fun_plotCorrelation <- function(fun = 'mean',output = 1){
 fun_plotCorrelation(fun = 'mean',output = 1)
 fun_plotCorrelation(fun = 'var',output = 1)
 ```
+
+```{r}
+library(ggplot2);library(ggjoy)
+fromOANDA <- 
+  c('USD/JPY','EUR/JPY','GBP/JPY','AUD/JPY','NZD/JPY','CAD/JPY','CHF/JPY','TRY/JPY','ZAR/JPY',
+    'EUR/USD','GBP/USD','AUD/USD','NZD/USD',
+    'EUR/GBP','EUR/AUD','GBP/AUD','EUR/CHF','GBP/CHF','USD/CHF')
+for(iii in seq(length(fromOANDA))){
+  tmp0 <- getSymbols(Symbols = fromOANDA[iii],auto.assign = F,src = 'oanda')
+  tmp1 <-
+    data.frame(Date = index(tmp0),tmp0,stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(tmp1) <- gsub('\\.','/',colnames(tmp1))
+  tmp1 <- na.omit(tmp1)
+  if(iii==1){allFXdata0 <- tmp1}else{allFXdata0 <- merge(allFXdata0,tmp1,by='Date')}
+  print(tail(tmp1))
+}
+allFXdata <- na.omit(allFXdata0)
+allFXdataDoD <- fun_makeDiffRatioTable(obj = allFXdata,lag = 1,roundDigits = 5)
+for(ccc in 2:ncol(allFXdataDoD)){
+  buf0 <- data.frame(`In comparison with the day before(%)`=allFXdataDoD[,ccc],
+                     Pair=colnames(allFXdataDoD)[ccc],
+                     check.names = F,stringsAsFactors = F)
+  if(ccc==2){reshapeData <- buf0}else{reshapeData <- rbind(reshapeData,buf0)}
+}
+reshapeData$Pair <-
+  factor(x = reshapeData$Pair,levels = unique(reshapeData$Pair))
+```
+
+```{r}
+g <- ggplot(data = reshapeData,aes(y = Pair,x = `In comparison with the day before(%)`))
+g + geom_joy(scale=3,colour = 'white') + geom_vline(xintercept = 0, col = "#ffc1c1")
+# 刈り込み追記
+```
