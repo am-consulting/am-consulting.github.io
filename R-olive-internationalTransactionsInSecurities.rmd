@@ -16,12 +16,14 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
 insertFile <- file("insertHeader.html")
-writeLines('
-<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
-',
-insertFile)
+writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
