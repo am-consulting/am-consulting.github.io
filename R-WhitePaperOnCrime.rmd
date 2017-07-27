@@ -1,4 +1,5 @@
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+# http://hakusyo1.moj.go.jp/jp/nendo_nfm.html
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 100)
 pngWidth <- 1500
