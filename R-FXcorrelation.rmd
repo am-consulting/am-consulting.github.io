@@ -24,6 +24,7 @@ pngHeight <- 800
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 library(quantmod);library(PerformanceAnalytics);library(lubridate)
+library(ggplot2);library(ggjoy)
 userName <- Sys.info()['user']
 fileName <- 'defaultPath.csv'
 pathToFile <-
@@ -120,34 +121,59 @@ fun_plotCorrelation(fun = 'var',output = 1)
 ```
 
 ```{r}
-library(ggplot2);library(ggjoy)
 fromOANDA <- 
   c('USD/JPY','EUR/JPY','GBP/JPY','AUD/JPY','NZD/JPY','CAD/JPY','CHF/JPY','TRY/JPY','ZAR/JPY',
     'EUR/USD','GBP/USD','AUD/USD','NZD/USD',
     'EUR/GBP','EUR/AUD','GBP/AUD','EUR/CHF','GBP/CHF','USD/CHF')
+dateRange <- vector() 
 for(iii in seq(length(fromOANDA))){
-  tmp0 <- getSymbols(Symbols = fromOANDA[iii],auto.assign = F,src = 'oanda')
-  tmp1 <-
-    data.frame(Date = index(tmp0),tmp0,stringsAsFactors = F,check.names = F,row.names = NULL)
-  colnames(tmp1) <- gsub('\\.','/',colnames(tmp1))
-  tmp1 <- na.omit(tmp1)
-  if(iii==1){allFXdata0 <- tmp1}else{allFXdata0 <- merge(allFXdata0,tmp1,by='Date')}
-  print(tail(tmp1))
+  tmp <- getSymbols(Symbols = fromOANDA[iii],auto.assign = F,src = 'oanda')
+  dateRange[iii] <- paste0(range(index(tmp)),collapse = '~')
+  DoD <- (tail(as.vector(tmp[,1]),-1)/head(as.vector(tmp[,1]),-1)-1)*100
+  pairName <- gsub('\\.','/',colnames(tmp))
+  DoDdata0 <- data.frame(DoD,pairName,stringsAsFactors = F,check.names = F,row.names = NULL)
+  colnames(DoDdata0) <- c('dummy1','dummy2')
+  qnt <- 
+    quantile(DoDdata0[,1],probs = c(0.25,0.75),na.rm = T)
+  H <- 
+    1.5*IQR(DoDdata0[,1],na.rm = T)
+  DoDdata1 <- 
+    DoDdata0[qnt[1]-H < DoDdata0[,1] & DoDdata0[,1] < qnt[2]+H,]
+  if(iii==1){
+    allFXdata0 <- DoDdata0
+    allFXdata1 <- DoDdata1
+  }else{
+    allFXdata0 <- rbind(allFXdata0,DoDdata0)
+    allFXdata1 <- rbind(allFXdata1,DoDdata1)
+  }
 }
-allFXdata <- na.omit(allFXdata0)
-allFXdataDoD <- fun_makeDiffRatioTable(obj = allFXdata,lag = 1,roundDigits = 5)
-for(ccc in 2:ncol(allFXdataDoD)){
-  buf0 <- data.frame(`In comparison with the day before(%)`=allFXdataDoD[,ccc],
-                     Pair=colnames(allFXdataDoD)[ccc],
-                     check.names = F,stringsAsFactors = F)
-  if(ccc==2){reshapeData <- buf0}else{reshapeData <- rbind(reshapeData,buf0)}
-}
-reshapeData$Pair <-
-  factor(x = reshapeData$Pair,levels = unique(reshapeData$Pair))
+colnames(allFXdata0) <- colnames(allFXdata1) <- c('In comparison with the day before(%)','Pair')
+allFXdata0$Pair <- factor(x = allFXdata0$Pair,levels = unique(allFXdata0$Pair))
+allFXdata1$Pair <- factor(x = allFXdata1$Pair,levels = unique(allFXdata1$Pair))
 ```
 
 ```{r}
-g <- ggplot(data = reshapeData,aes(y = Pair,x = `In comparison with the day before(%)`))
-g + geom_joy(scale=3,colour = 'white') + geom_vline(xintercept = 0, col = "#ffc1c1")
-# 刈り込み追記
+fun_plotJOY <- function(plotObj,titleAppend = '',joyScale = 3,joyAlpha = 0.5,output = 0,pngN = 1){
+  setwd(pathOutputIndicator)
+  if(output!=0){
+    png(file = paste0('JoyPlot-',pngN,'.png'),width = pngWidth,height = pngHeight)
+  }
+  g <- ggplot(data = plotObj,aes(y = Pair,x = `In comparison with the day before(%)`,fill = Pair))
+  g <- g + geom_joy(scale = joyScale,colour = 'white',alpha = joyAlpha)
+  g <- g + geom_vline(xintercept = 0, col = "#ffc1c1")
+  g <- g + ylab('')
+  g <- g + ggtitle(paste0('Volatility of Exchange Rate(%). FX data source:OANDA\nPeriod:',
+                          unique(dateRange),'\n',titleAppend))
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+  g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 18))
+  g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 18))
+  g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  g <- g + theme(legend.text = element_text(size = 16))
+  g <- g + theme(legend.title = element_text(size = 16))
+  print(g)
+  if(output!=0){dev.off();}
+}
+fun_plotJOY(plotObj = allFXdata0,titleAppend = 'Raw Data',output = 1,pngN = 1,joyScale = 3)
+fun_plotJOY(plotObj = allFXdata1,titleAppend = 'Remove Outlier',output = 1,pngN = 2,joyScale = 3)
 ```
