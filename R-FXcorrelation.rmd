@@ -24,7 +24,7 @@ pngHeight <- 800
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 library(quantmod);library(PerformanceAnalytics);library(lubridate)
-library(ggplot2);library(ggjoy)
+library(ggplot2);library(ggjoy);library(qgraph)
 userName <- Sys.info()['user']
 fileName <- 'defaultPath.csv'
 pathToFile <-
@@ -118,6 +118,31 @@ fun_plotCorrelation <- function(fun = 'mean',output = 1){
 }
 fun_plotCorrelation(fun = 'mean',output = 1)
 fun_plotCorrelation(fun = 'var',output = 1)
+```
+
+```{r}
+fun_undirectedGraph <- function(minimum = 0.2,vsize = 8,cex = 1,output = 0,fun = 'mean',width = 900,height = 900){
+  par(family = 'Meiryo')
+  setwd(pathOutputIndicator)
+  if(output!=0){
+    png(file = paste0('undirectedGraph-Level-',fun,'.png'),width = width,height = height)
+  }
+  obj <- fun_aggregateData(fun = fun)
+  qgraph(cor(obj[,-1]),edge.labels = T,minimum = minimum,label.cex = cex,
+         labels = colnames(obj[,-1]),vsize = vsize)
+  title(main = list(paste0('Level.FUN=',fun,'.Minimum=',minimum),cex = 3),line = 2.0,family = 'Meiryo')
+  if(output!=0){dev.off();}
+  if(output!=0){
+    png(file = paste0('undirectedGraph-1stDiff-',fun,'.png'),width = width,height = height)
+  }
+  objDiff <- fun_makeDiffTable(obj = obj,lag = 1)
+  qgraph(cor(objDiff[,-1]),edge.labels = T,minimum = minimum,label.cex = cex,
+         labels = colnames(objDiff[-1]),vsize = vsize)
+  title(main = list(paste0('1st Diff.FUN=',fun,'.Minimum=',minimum),cex = 3),line = 2.0,family = 'Meiryo')
+  if(output!=0){dev.off();}
+}
+fun_undirectedGraph(output = 1,fun = 'mean',minimum = 0.2)
+fun_undirectedGraph(output = 1,fun = 'var',minimum = 0.2)
 ```
 
 ```{r}
