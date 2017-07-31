@@ -121,8 +121,16 @@ colnames(CrudeOilProduction)[-1] <-
 oilData <- CrudeOilProduction
 ```
 
+```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+script <-
+  RCurl::getURL(
+    url = "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importUSTradeInGoodsByCountry.r",
+    ssl.verifypeer = F)
+eval(parse(text = script))
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontSize = 15,pointSize = 1){
+fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontSize = 15,pointSize = 1,barPlot = 0,breaks = 15){
   if(output!=0){
     setwd(paste0(pathOutputIndicator,folderName))
     pngFile <- paste0(pngTitle,pngN,".png")
@@ -136,16 +144,23 @@ fun_ggplot_line <- function(plotData,pngN,pngTitle,output = 0,needZero = 0,fontS
   dateRange <- paste0(format(range(plotData$Date),dateFormat),collapse = '~')
   latestData <- paste0(format(tail(plotData,1)[1,1],dateFormat),':',tail(plotData,1)[1,2])
   if(10<=nrow(plotData[plotData[,2]!=0,])){adfTest <- 1}else{adfTest <- 0}
+  plotData$colour <- ifelse(0<=plotData[,2],'positive','negative')
   g <- ggplot(data = plotData,aes(x = Date,y = plotData[,2]))
-  g <- g + geom_line(size = 0.5,col = "black")
-  g <- g + geom_point(size = pointSize,col = "black")
+  if(barPlot == 1){
+    g <- g + geom_bar(stat = 'identity',alpha = 0.5,aes(fill = colour))
+    g <- g + scale_fill_manual(values = c(positive = 'steelblue',negative = 'firebrick1'))
+    g <- g + theme(legend.position = 'none')
+  }else{
+    g <- g + geom_line(size = 0.5,col = "black")
+    g <- g + geom_point(size = pointSize,col = "black")
+  }
   g <- g + geom_smooth(method = loess,lwd = 1,col = "red")
-  g <- g + scale_x_date(labels = scales::date_format(dateFormat))
+  g <- g + scale_x_date(labels = scales::date_format(dateFormat),breaks = scales::pretty_breaks(breaks))
   g <- g + theme(plot.title = element_text(family = "Meiryo",hjust = 0.5,size = fontSize))
   g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = fontSize))
   g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = fontSize))
   g <- g + theme(axis.text.x = element_text(family = "Meiryo",size = fontSize, angle = 0))
-  g <- g + theme(axis.text.y = element_text(family = "Meiryo",size = fontSize, angle = 90))
+  g <- g + theme(axis.text.y = element_text(family = "Meiryo",size = fontSize, angle = 0))
   g <- g + xlab('')
   g <- g + ylab('')
   g <- g + ggtitle(paste0(colnames(plotData)[2],'\n',dateRange,
@@ -358,4 +373,20 @@ for(iii in 2:ncol(oilData)){
   fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1,fontSize = 14)
 }
 fun_outputHtmlFile(obj = oilData,htmlFile = 'CrudeOilProduction-olive.html')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+dataSource <- 'U.S. Census Bureau(Unit:Million$(Nominal)、NSA)'
+pngTitle01 <- 'AMCC-USTradeInGoodsByCountry-TS-'
+pngTitle02 <- 'AMCC-USTradeInGoodsByCountry-BP-'
+folderName <- 'AMCC-USTradeInGoodsByCountry/'
+objData <- grandData[,c(1,grep('balance',colnames(grandData),ignore.case = T))]
+objData <- objData[,c(1,which(apply(objData[,-1],2,function(x)1500<=max(abs(na.omit(x)))))+1)]
+for(iii in 2:ncol(objData)){
+  plotData <- tail(na.omit(objData[,c(1,iii)]),12*10)
+  fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1,
+                  fontSize = 14,pointSize = 3,barPlot = 1,breaks = 10)
+  fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1,fontSize = 14)
+}
+fun_outputHtmlFile(obj = objData,htmlFile = 'USTradeInGoods-olive.html')
 ```
