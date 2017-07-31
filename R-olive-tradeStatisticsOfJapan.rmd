@@ -10,9 +10,23 @@ output:
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
+
 <style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
@@ -141,7 +155,7 @@ funSeasonal()
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
 n <- 3
 fun_generateKnit(objDF = dataSet,plotNum = n,group = 0,barPlot = 1,
-                 dygraphTitle = paste0(colnames(dataSet)[-1],collapse = ' × '))
+                 dygraphTitle = paste0(colnames(dataSet)[-1],collapse = ' × '),colors = '#4169e1')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
@@ -153,7 +167,7 @@ cat('<hr>')
 ```{r,warning=F,error=F,message=F,results='asis',echo=F,fig.height=4}
 n <- 4
 fun_generateKnit(objDF = dataSetSA,plotNum = n,group = 0,barPlot = 1,
-                 dygraphTitle = paste0(colnames(dataSet)[-1],collapse = ' × '))
+                 dygraphTitle = paste0(colnames(dataSet)[-1],collapse = ' × '),colors = '#ff6347')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph)))
 cat('<hr>')
 eval(parse(text = paste0('dygraphPlot', n, ' %>% ', boj_dygraph)))
@@ -181,19 +195,19 @@ funPlotBoxplotAmcharts <- function(obj, bigTitle = '') {
 }
 ```
 
-***
+
 
 ```{r,warning=F,error=F,message=F,echo=F} 
-funPlotBoxplotAmcharts(obj = dataSet[, -1],
-                       bigTitle = paste0(
-                       '財務省貿易統計:基本統計量:原数値(単位:兆円)\n',
-                       head(dataSet[, 1], 1),
-                       '~',
-                       tail(dataSet[, 1], 1)
-                       ))
+# funPlotBoxplotAmcharts(obj = dataSet[, -1],
+#                        bigTitle = paste0(
+#                        '財務省貿易統計:基本統計量:原数値(単位:兆円)\n',
+#                        head(dataSet[, 1], 1),
+#                        '~',
+#                        tail(dataSet[, 1], 1)
+#                        ))
 ```
 
-***
+
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
 compareData<-merge(origData1,origData4)
@@ -205,12 +219,12 @@ compareData02[,1]<-format(compareData02[,1],'%Y-%m')
 colnames(compareData01)<-paste0(colnames(compareData01),':民主党政権')
 colnames(compareData02)<-paste0(colnames(compareData02),':自民党政権')
 compareData0<-qpcR:::cbind.na(compareData01[,-1], compareData02[,-1])
-funPlotBoxplotAmcharts(obj = compareData0,
-                       bigTitle = paste0(
-                       '財務省貿易統計:基本統計量:原数値(単位:兆円)\n',
-                       '民主党政権:',head(compareData01[, 1], 1),'~',tail(compareData01[, 1], 1),
-                       '\n自民党政権:',head(compareData02[, 1], 1),'~',tail(compareData02[, 1], 1)
-                       ))
+# funPlotBoxplotAmcharts(obj = compareData0,
+#                        bigTitle = paste0(
+#                        '財務省貿易統計:基本統計量:原数値(単位:兆円)\n',
+#                        '民主党政権:',head(compareData01[, 1], 1),'~',tail(compareData01[, 1], 1),
+#                        '\n自民党政権:',head(compareData02[, 1], 1),'~',tail(compareData02[, 1], 1)
+#                        ))
 ```
 
 ***
@@ -249,12 +263,12 @@ colnames(impItem)[-c(1,2)] <- paste0(colnames(impItem)[-c(1,2)],'(億円)')
 fun_dataTable(obj = impItem,dateFormat = 0,orderDirection = 'asc')
 ```
 
-***
+
 
 ```{r,warning=F,error=F,message=F,results='asis',echo=F}
-fun_turningPoint(obj = origData4,dateFormat = dateFormat)
-cat(paste0('<br><h5>',texInclude0,'</h5><br>'))
-fun_markdownTable(obj = objPNinclude0)
+# fun_turningPoint(obj = origData4,dateFormat = dateFormat)
+# cat(paste0('<br><h5>',texInclude0,'</h5><br>'))
+# fun_markdownTable(obj = objPNinclude0)
 ```
 
 ```{r,warning=F,error=F,message=F,results='hide',echo=F}
@@ -264,27 +278,9 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = mergeData,dateFormat = date
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-username <-
-  Sys.info()['user']
-pathToFile <-
-  paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-setwd(pathToFile)
-fileName <-
-  'defaultPath.csv'
-buf <-
-  read.csv(file = fileName,
-           header = F,
-           skip = 0,
-           stringsAsFactor = F,
-           check.names = F,
-           fileEncoding = 'utf-8',quote = "\"")
-pathOutputTOcsv <-
-  paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-setwd(pathOutputTOcsv)
-getwd()
-par(family = 'Meiryo')
+fun_preparePlot()
 pngFile <-
-  paste0(htmlName, ".png")
+  paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
 obj <- subset(origData1,as.Date('2013-1-1')<=origData1[,1])
@@ -298,10 +294,15 @@ dev.off()
 obj <- origData1[,c(1,2)]
 fun_outputMD(tags = '財務省貿易統計',
              objDF = fun_summaryByName(obj = obj,dateFormat = dateFormat),
+             summaryDF = obj,
+             dateFormat = '%Y-%m',
+             dateCol = 1,
+             objCol = 2,
              htmlName = htmlName,
-             image = 1,
-             dataTitle = dataTitle,
+             image1 = 1,
+             title = dataTitle,
              tableTitle = paste0(colnames(obj)[2],'(兆円)'))
+fun_updateURLcsv()
 ```
 
 ***
