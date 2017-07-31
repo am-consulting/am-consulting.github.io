@@ -376,7 +376,7 @@ fun_outputHtmlFile(obj = oilData,htmlFile = 'CrudeOilProduction-olive.html')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-dataSource <- 'U.S. Census Bureau(Unit:Million$(Nominal)、NSA)'
+dataSource <- 'U.S. Census Bureau(Unit:millions of U.S. dollars,Nominal,NSA)'
 pngTitle01 <- 'AMCC-USTradeInGoodsByCountry-TS-'
 pngTitle02 <- 'AMCC-USTradeInGoodsByCountry-BP-'
 folderName <- 'AMCC-USTradeInGoodsByCountry/'
