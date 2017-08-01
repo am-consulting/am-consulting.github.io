@@ -1,6 +1,8 @@
 ```{r}
 library(quantmod);library(lubridate);library(forecast);library(dplyr);library(ggplot2);library(scales)
-periodN <- 30
+FUN <- 'mean'
+tsData <- list()
+title <- vector()
 fromFRED <- 
   c('Japan / U.S. Foreign Exchange Rate (DEXJPUS)',
     'U.S. / Euro Foreign Exchange Rate (DEXUSEU)',
@@ -14,10 +16,9 @@ fromFRED <-
     'NASDAQ Composite Index© (NASDAQCOM)',
     'Dow Jones Industrial Average© (DJIA)',
     'Nikkei Stock Average, Nikkei 225© (NIKKEI225)')
-FUN <- 'mean'
 for(iii in seq(length(fromFRED))){
   buf <- fromFRED[iii]
-  title <- gsub('(.+)\\((.+)\\)','\\1',buf)
+  title[iii] <- gsub('(.+)\\((.+)\\)','\\1',buf)
   symbol <- gsub('(.+)\\((.+)\\)','\\2',buf)
   tmp0 <- na.omit(getSymbols(Symbols = symbol,auto.assign = F,src = 'FRED'))
   tmp1 <-
@@ -26,20 +27,33 @@ for(iii in seq(length(fromFRED))){
                YM = as.Date(paste0(year(index(tmp0)),'-',month(index(tmp0)),'-1')), 
                stringsAsFactors = F,check.names = F,row.names = NULL)
   tmp2 <- aggregate(x = tmp1[,2],by = list(tmp1$YM),FUN = FUN)
-  colnames(tmp2)[2] <- paste0(title,':',FUN)
-  tsData <- 
-    ts(data = tmp2[,2],start = c(year(head(tmp2$Group.1,1)),month(head(tmp2$Group.1,1))),frequency = 12)
-  arimaResult <- auto.arima(tsData)
-  forecastResult <- forecast(arimaResult,level = c(95),h = 6)
+  tsData[[iii]] <- 
+    ts(data = tmp2[,2],start = c(year(head(tmp2$Group.1,1)),month(head(tmp2$Group.1,1))),
+       frequency = 12)
+}
+```
+
+```{r}
+ci <- c(95)
+tailN <- 12*10
+date_breaks <- '6 month'
+#for(iii in seq(length(fromFRED))){
+for(iii in 1:1){
+  objData <- tsData[[iii]]
+  dateRange <- paste0(format(range(as.Date(time(objData))),'%Y-%m'),collapse = '~')
+  arimaResult <- auto.arima(objData)
+  forecastResult <- forecast(arimaResult,level = ci,h = 6)
+  buf <- forecastResult$residuals
+  residualsData <- 
+    data.frame(Date = as.Date(time(buf)),Residual = buf,stringsAsFactors = F)
   forecasted <- as.data.frame(forecastResult)
   forecasted$Date <- as.Date(time(forecastResult$mean))
   fitted <- 
     data.frame(Date = as.Date(time(forecastResult$fitted)),
                Original = forecastResult$x,
-               Fitted = forecastResult$fitted)
-  plotData <- bind_rows(fitted,forecasted)
-  plotData <- tail(plotData,12*3)
-  g <- ggplot(data = plotData)
+               Fitted = forecastResult$fitted,stringsAsFactors = F)
+  forecastData <- tail(bind_rows(fitted,forecasted),tailN)
+  g <- ggplot(data = forecastData)
   g <- g + geom_line(mapping = aes_string(x = 'Date',y = 'Original'))
   g <- g + geom_point(mapping = aes_string(x = 'Date',y = 'Original'))
   g <- g + geom_line(mapping = aes_string(x = 'Date',y = 'Fitted'),colour='red')
@@ -48,14 +62,30 @@ for(iii in seq(length(fromFRED))){
   g <- g + geom_ribbon(mapping = aes_string(x = 'Date',ymin = '`Lo 95`',ymax = '`Hi 95`'),alpha = 0.2)
   g <- g + geom_point(mapping = aes_string(x = 'Date',y = '`Lo 95`'),colour='blue',size=1)
   g <- g + geom_point(mapping = aes_string(x = 'Date',y = '`Hi 95`'),colour='blue',size=1)
-  g <- g + scale_x_date(name = '',date_breaks = "1 month",labels= date_format("%Y-%m"))
+  g <- g + scale_x_date(name = '',date_breaks = date_breaks,labels= date_format('%Y-%m'))
   g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
-  g <- g + ggtitle(label = title)
+  g <- g + ggtitle(label = paste0(title[iii],'\n',dateRange,'\nMethod:',forecastResult$method,
+                                  '\nC.I.=',paste0(paste0(ci,'%'),collapse = ',')))
   g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
   g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
   g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
   g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
   g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  print(g)
+  g <- ggplot(data = residualsData)
+  g <- g + geom_line(mapping = aes_string(x = 'Date',y = 'Residual'))
+  g <- g + scale_x_date(name = '',date_breaks = '2 year',labels= date_format('%Y-%m'))
+  g <- g + ggtitle(label = paste0(title[iii],'\n',dateRange,'\nMethod:',forecastResult$method,
+                                  '\nC.I.=',paste0(paste0(ci,'%'),collapse = ',')))
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+  g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
+  g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  zeroLine <- data.frame(x = c(head(residualsData[,1],1),tail(residualsData[,1],1)),y = 0)
+  g <- g + geom_line(data = zeroLine,aes(x = x, y = y),colour='red')
+  shapiro.test(residualsData[,2])
+  acf(as.vector(residualsData[,2]))
   print(g)
 }
 ```
