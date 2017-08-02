@@ -6,7 +6,7 @@ cat('<ol>\n')
 for(iii in 1:6){
   statName <- switch(iii,'最小値','第1四分位数','中央値','平均値','第3四分位数','最大値')
   cat(paste0('<li>',indicatorName,'の',dateRange,statName,'は',
-             summary(obj[,dataCol])[iii]),'</li>\n')
+             if(iii!=4){summary(obj[,dataCol])[iii]}else{round(summary(obj[,dataCol])[iii],4)},'</li>\n'))
 }
 meanResult <-
   fun_meanS(objDF = obj,dateCol = dateCol,objCol = dataCol,dateFormat = dateFormat)
