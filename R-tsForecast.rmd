@@ -130,3 +130,39 @@ for(iii in seq(length(fromFRED))){
   print(g);dev.off()
 }
 ```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+txt <- ''
+for(iii in seq(length(title))){
+  txt <- 
+    paste0(txt,'<b>',title[iii],'</b><br>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/AMCC-TSforecast/AMCC-forecast-arima',iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/AMCC-TSforecast/AMCC-forecast-arima',iii,'.png" width="30%" />\n')
+  txt <-
+    paste0(txt,'ARIMA\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/AMCC-TSforecast/AMCC-forecast-residual',iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/AMCC-TSforecast/AMCC-forecast-residual',iii,'.png" width="30%" />\n')
+  txt <-
+    paste0(txt,'Residual\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/AMCC-TSforecast/AMCC-forecast-boxtest',iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/AMCC-TSforecast/AMCC-forecast-boxtest',iii,'.png" width="30%" />\n')
+  txt <-
+    paste0(txt,'Ljung-Box test\n</a>\n<br>')
+}
+  setwd(pathOutputForecast)
+write.table(x = txt,file = 'AMCC-TS-Forecast.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+
+```
