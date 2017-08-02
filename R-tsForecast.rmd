@@ -1,4 +1,20 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+pngWidth <- 1000
+pngHeight <- 600
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'UTF8')
+pathOutputForecast <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCC-TSforecast/')
+```
+
 ```{r}
+# https://stackoverflow.com/questions/17148679/construct-a-manual-legend-for-a-complicated-plot
 library(quantmod);library(lubridate);library(forecast);library(dplyr);library(ggplot2);library(scales)
 FUN <- 'mean'
 tsData <- list()
@@ -37,8 +53,8 @@ for(iii in seq(length(fromFRED))){
 ci <- c(95)
 tailN <- 12*10
 date_breaks <- '6 month'
-#for(iii in seq(length(fromFRED))){
-for(iii in 1:1){
+for(iii in seq(length(fromFRED))){
+  setwd(pathOutputForecast)
   objData <- tsData[[iii]]
   dateRange <- paste0(format(range(as.Date(time(objData))),'%Y-%m'),collapse = '~')
   arimaResult <- auto.arima(objData)
@@ -53,15 +69,16 @@ for(iii in 1:1){
                Original = forecastResult$x,
                Fitted = forecastResult$fitted,stringsAsFactors = F)
   forecastData <- tail(bind_rows(fitted,forecasted),tailN)
-  g <- ggplot(data = forecastData)
-  g <- g + geom_line(mapping = aes_string(x = 'Date',y = 'Original'))
-  g <- g + geom_point(mapping = aes_string(x = 'Date',y = 'Original'))
-  g <- g + geom_line(mapping = aes_string(x = 'Date',y = 'Fitted'),colour='red')
-  g <- g + geom_line(mapping = aes_string(x = 'Date',y = '`Point Forecast`'),colour='blue',size=1)
-  g <- g + geom_point(mapping = aes_string(x = 'Date',y = '`Point Forecast`'),colour='blue',size=1)
-  g <- g + geom_ribbon(mapping = aes_string(x = 'Date',ymin = '`Lo 95`',ymax = '`Hi 95`'),alpha = 0.2)
-  g <- g + geom_point(mapping = aes_string(x = 'Date',y = '`Lo 95`'),colour='blue',size=1)
-  g <- g + geom_point(mapping = aes_string(x = 'Date',y = '`Hi 95`'),colour='blue',size=1)
+  cols <- c("Original" = "black","Fitted" = "red","Forecast" = "blue")
+  pngFile <- paste0('AMCC-forecast-arima',iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  g <- ggplot(data = forecastData,aes(x= Date))
+  g <- g + geom_line(aes(y = Original,colour = 'Original'))
+  g <- g + geom_point(aes(y = Original,colour = 'Original'))
+  g <- g + geom_line(aes(y = Fitted,colour = 'Fitted'))
+  g <- g + geom_line(aes(y = `Point Forecast`,colour = 'Forecast'),size = 1)
+  g <- g + geom_point(aes(y = `Point Forecast`,colour = 'Forecast'),size = 1)
+  g <- g + geom_ribbon(aes(ymin = `Lo 95`,ymax = `Hi 95`),alpha = 0.2)
   g <- g + scale_x_date(name = '',date_breaks = date_breaks,labels= date_format('%Y-%m'))
   g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
   g <- g + ggtitle(label = paste0(title[iii],'\n',dateRange,'\nMethod:',forecastResult$method,
@@ -71,21 +88,45 @@ for(iii in 1:1){
   g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
   g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
   g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
-  print(g)
-  g <- ggplot(data = residualsData)
-  g <- g + geom_line(mapping = aes_string(x = 'Date',y = 'Residual'))
+  g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
+  g <- g + theme(legend.position = "top")
+  g <- g +  scale_colour_manual(name = '',values = cols) 
+  print(g);dev.off()
+  pngFile <- paste0('AMCC-forecast-residual',iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  buf <- shapiro.test(residualsData[,2])
+  g <- ggplot(data = residualsData,aes(x= Date))
+  g <- g + geom_line(aes(y = Residual))
   g <- g + scale_x_date(name = '',date_breaks = '2 year',labels= date_format('%Y-%m'))
   g <- g + ggtitle(label = paste0(title[iii],'\n',dateRange,'\nMethod:',forecastResult$method,
-                                  '\nC.I.=',paste0(paste0(ci,'%'),collapse = ',')))
+                                  '\n',buf$method,'. p=',buf$p.value))
   g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
   g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
   g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
   g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
   g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
-  zeroLine <- data.frame(x = c(head(residualsData[,1],1),tail(residualsData[,1],1)),y = 0)
-  g <- g + geom_line(data = zeroLine,aes(x = x, y = y),colour='red')
-  shapiro.test(residualsData[,2])
-  acf(as.vector(residualsData[,2]))
-  print(g)
+  g <- g + geom_hline(yintercept = 0,colour = 'red')
+  print(g);dev.off()
+  pngFile <- paste0('AMCC-forecast-boxtest',iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  pValue <- data.frame()
+  for(ppp in 1:120) {
+    result <- Box.test(residualsData[,2],lag = ppp,type = "Ljung-Box")
+    pValue[ppp,1] <- ppp
+    pValue[ppp,2] <- result$p.value
+  }
+  g <- ggplot(data = pValue,aes(x = pValue[,1],y = pValue[,2]))
+  g <- g + geom_point(size = 2) + geom_line() 
+  g <- g + geom_hline(yintercept = 0.05,colour = 'blue',linetype="dotted")
+  g <- g + xlab('Lag') + ylab('p value') + ylim(0,1)
+  g <- g + ggtitle(label = paste0(title[iii],'\n',dateRange,
+                                  '\np value of Ljung-Box test for Residual','\nMethod:',
+                                  forecastResult$method))
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+  g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 12,vjust = 0.5)) 
+  g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  print(g);dev.off()
 }
 ```
