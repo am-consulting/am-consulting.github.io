@@ -17,7 +17,7 @@ for(iii in 1:nrow(functionList)){
   )
   eval(parse(text = script))
 }
-fun_plot <- function(s = 1,e = 16,n = 10,tailN = 50,pngN = 1){
+fun_plot <- function(s = 1,e = 16,n = 10,tailN = 150,pngN = 1){
   pngFile <- paste0('AMCC-',pngN,".png")
   png(file = pngFile, width = 1400, height = 900)
   par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,8,1),
@@ -418,6 +418,36 @@ obj <-
 colnames(obj)[2] <- 'St. Louis Fed Financial Stress Index'
 print(tail(obj,2))
 dailyChart[[cnt]] <- obj
+# Nikkei Index
+buf_cnt07 <- cnt
+cnt <- buf_cnt07
+importIndex <- 
+  c('importNikkeiIndexList.r')
+for(jjj in seq(length(importIndex))){
+  script <- 
+    RCurl::getURL(paste0("https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/", 
+                         importIndex[jjj]),
+                  ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+for(rrr in seq(nrow(NikkeiDailyIndexList))){
+  if(length(grep('\\(Nikkei 225\\)',NikkeiDailyIndexList[rrr,2]))==0){
+    cnt <- cnt + 1
+    buf0 <- 
+      read.csv(file = NikkeiDailyIndexList[rrr,3],header = T,check.names = F,stringsAsFactors = F)
+    buf1 <- buf0[,c(1,2)]
+    colnames(buf1) <- gsub('\\(','\n(',colnames(buf1))
+    if(length(grep('^close$',colnames(buf1)[2],ignore.case = T))!=0){
+      colnames(buf1) <- c('Date',paste0(NikkeiDailyIndexList[rrr,2],'\n',colnames(buf1)[2]))
+    }
+    buf1[,1] <- as.Date(buf1[,1])
+    buf1[,2] <- as.numeric(buf1[,2])
+    buf1 <- na.omit(buf1)
+    print(tail(buf1))
+    dailyChart[[cnt]] <- buf1
+  }
+}
+# Nikkei Index
 ```
 
 ```{r}
@@ -431,13 +461,15 @@ buf0 <-
            fileEncoding = 'UTF8')
 pathOutput <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCC-DailyChart/')
 setwd(pathOutput)
-fun_plot(pngN = 1)
-fun_plot(s = 17,e = 32,pngN = 2)
-fun_plot(s = 33,e = 48,pngN = 3)
-fun_plot(s = 49,e = 64,pngN = 4)
-fun_plot(s = 65,e = 80,pngN = 5)
-fun_plot(s = 81,e = 96,pngN = 6)
-fun_plot(s = 97,e = length(dailyChart),pngN = 7)
+pngN <- 1;s <- 1;e <- s + 15;fun_plot(pngN = pngN) # 16
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 32
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 48
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 64
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 80
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 96
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 112
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = e,pngN = pngN) # 128
+pngN <- pngN + 1;s <- e + 1;e <- s + 15;fun_plot(s = s,e = length(dailyChart),pngN = pngN) # 144
 chartName <- data.frame()
 for(iiii in seq(cnt)){
   chartName[iiii,1] <- ceiling(iiii/16)
