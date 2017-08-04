@@ -130,11 +130,30 @@ fun_ggplotLatestData <- function(latestData,pngN = 1,output = 0){
 ```
 
 ```{r}
+baseURL <- 'http://indicator.am-consulting.co.jp/AMCC-CorporateStatistics/'
+fun_outputHtml <- function(txt,iii,baseURL){
+  txt <-
+    paste0(txt,'<tr><td>',colnames(returnList$latestData)[2],'</td>\n')
+  txt <- 
+    paste0(txt,'<td><a href="',baseURL,'AMCC-CorporateStatistics-Latest-',iii,'.png">\n')
+  txt <- 
+    paste0(txt,'<img border="2" src="',baseURL,'AMCC-CorporateStatistics-Latest-',iii,'.png" width="50%" /></td></tr>')
+  return(txt)
+}
+```
+
+```{r}
+txt <- ''
 objCol <- grep('【%】|【月】|【回】',colnames(houjinToukei[[1]]))
 for(iii in seq(length(objCol))){
   keyWord <- gsub('([^\\(]+)\\(.+','\\1',colnames(houjinToukei[[1]])[objCol[iii]])
   returnList <- fun_dataShape(keyWord = keyWord)
   obj <- returnList$allData
   fun_ggplotLatestData(latestData = returnList$latestData,pngN = iii,output = 1)
+  txt <- fun_outputHtml(txt = txt,iii = iii,baseURL = baseURL)
 }
+txt <- paste0('<table class="amcc"><tr><td>項目</td><td>チャート</td></tr>',txt,'</table>')
+setwd(pathOutputCorporateStatistics)
+write.table(x = txt,file = 'AMCC-TS-CorporateStatistics.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 ```
