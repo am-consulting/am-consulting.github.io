@@ -29,4 +29,26 @@ for(iii in seq(length(objRaw)-1)){
   print(tail(tmp3[,1:4]))
   houjinToukei[[iii]] <- tmp3
 }
+dfTitle
+colnames(tmp3)
+```
+
+```{r}
+library(ggplot2);library(scales)
+objCol <- 163
+for(gyoushu in seq(length(houjinToukei))){
+  obj <- na.omit(houjinToukei[[gyoushu]][,c(1,objCol)])
+  dateRange <- paste0(format(range(obj[,1]),'%Y年%m月期'),collapse = '~')
+  colnames(obj)[2] <- paste0(dfTitle[gyoushu],':',colnames(obj)[2])
+  g <- ggplot(data = obj,aes(x = obj[,1],y = obj[,2]))
+  g <- g + geom_line(col='blue') + geom_point(col='blue') + geom_smooth(col='red') + xlab('')
+  g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+  g <- g + ggtitle(label = paste0(colnames(obj)[2],'\n',dateRange,'\nSource:財務省'))
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+  g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16,vjust = 0.5)) 
+  g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  print(g)
+}
 ```
