@@ -133,11 +133,12 @@ fun_ggplotLatestData <- function(latestData,pngN = 1,output = 0){
 baseURL <- 'http://indicator.am-consulting.co.jp/AMCC-CorporateStatistics/'
 fun_outputHtml <- function(txt,iii,baseURL){
   txt <-
-    paste0(txt,'<tr><td>',colnames(returnList$latestData)[2],'</td>\n')
+    paste0(txt,'<tr><td>',colnames(returnList$latestData)[2],'</td>')
   txt <- 
-    paste0(txt,'<td><a href="',baseURL,'AMCC-CorporateStatistics-Latest-',iii,'.png">\n')
+    paste0(txt,'<td><a href="',baseURL,'AMCC-CorporateStatistics-Latest-',iii,'.png">')
   txt <- 
-    paste0(txt,'<img border="2" src="',baseURL,'AMCC-CorporateStatistics-Latest-',iii,'.png" width="50%" /></td></tr>')
+    paste0(txt,'<img border="2" src="',baseURL,'AMCC-CorporateStatistics-Latest-',
+           iii,'.png" width="50%" /></a></td></tr>')
   return(txt)
 }
 ```
