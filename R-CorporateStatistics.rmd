@@ -32,7 +32,8 @@ setwd(pathToFile)
 buf0 <-
   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
            fileEncoding = 'UTF8')
-pathOutputScience <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCC-CorporateStatistics/')
+pathOutputCorporateStatistics <-
+  paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCC-CorporateStatistics/')
 ```
 
 ```{r}
