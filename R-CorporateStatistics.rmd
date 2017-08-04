@@ -138,7 +138,7 @@ fun_outputHtml <- function(txt,iii,baseURL){
     paste0(txt,'<td><a href="',baseURL,'AMCC-CorporateStatistics-Latest-',iii,'.png">')
   txt <- 
     paste0(txt,'<img border="2" src="',baseURL,'AMCC-CorporateStatistics-Latest-',
-           iii,'.png" width="50%" /></a></td></tr>')
+           iii,'.png" width="50%" /></a></td></tr>\n')
   return(txt)
 }
 ```
@@ -153,7 +153,7 @@ for(iii in seq(length(objCol))){
   fun_ggplotLatestData(latestData = returnList$latestData,pngN = iii,output = 1)
   txt <- fun_outputHtml(txt = txt,iii = iii,baseURL = baseURL)
 }
-txt <- paste0('<table class="amcc"><tr><td>項目</td><td>チャート</td></tr>',txt,'</table>')
+txt <- paste0('<table id="amcc">\n<tr><th>項目</th><th>チャート</th></tr>\n',txt,'</table>')
 setwd(pathOutputCorporateStatistics)
 write.table(x = txt,file = 'AMCC-TS-CorporateStatistics.html',append = F,
             fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
