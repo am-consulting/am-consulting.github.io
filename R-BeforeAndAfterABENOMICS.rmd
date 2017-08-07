@@ -1,0 +1,151 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+fileName <- 
+  'functionList.csv'
+baseURL01 <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+baseURL02 <- 
+  'https://raw.githubusercontent.com/am-consulting/Rscript/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL01,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r}
+library(XLConnect);library(Nippon)
+cntList <- 0
+dataDF <- list()
+# マネーストック
+importData <- 'importMoneyStock-2017.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(MoneyStock[,c(1,10,11,13)])
+print(tail(dataDF[[cntList]]))
+# 完全失業率,就業者,非労働力人口
+importData <- 'laborForceSurveyofJapan.r'
+script <-
+  RCurl::getURL(paste0(baseURL02,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(laborforcesurvey[,c(1,5,14,17)])
+print(tail(dataDF[[cntList]]))
+# 有効求人倍率
+importData <- 'importEmploymentReferralsForGeneralWorkers.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(jobOpenings[,c(1,3,4)])
+print(tail(dataDF[[cntList]]))
+# 正規有効求人倍率/正社員労働市場関係指標（実数及び季節調整値）
+# http://www.e-stat.go.jp/SG1/estat/NewList.do?tid=000001020327
+# http://www.e-stat.go.jp/SG1/estat/List.do?lid=000001187823
+pathOutput <- 
+  paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
+setwd(pathOutput)
+targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Xlsdl.do?sinfid=000031605767'
+targetFile <- paste0(gsub('.+=([0-9]+)','\\1',targetURL),'.xls')
+download.file(url = targetURL,targetFile,mode = 'wb')
+sheetName <-
+  getSheets(loadWorkbook(targetFile))
+buf0 <-
+  readWorksheetFromFile(paste0(pathOutput,targetFile),sheet = 1,check.names = F,header = F)
+colnames(buf0) <- paste0(buf0[2,],'(倍):',buf0[3,],':',buf0[1,])
+buf1 <- buf0[-c(1:3),c(1,10,11)]
+colnames(buf1)[1] <- 'Date'
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(buf1)
+print(tail(dataDF[[cntList]]))
+# 日経平均株価
+importData <- 'importNikkeiMonthly.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(head(nikkeiMonthly[,c(1,2)],-1))
+print(tail(dataDF[[cntList]]))
+# ドル円為替レート
+tmp <-
+  read.csv(file = 'http://www.stat-search.boj.or.jp/ssi/mtshtml/csv/fm08_m_1.csv',
+           header = F,fileEncoding = 'shift_jis',stringsAsFactors = F)
+colnames(tmp) <- sapply(gsub('　',' ',paste0(tmp[3,],':',tmp[4,])),Nippon::zen2han)
+obj <- na.omit(tmp[-c(1:9),c(1,3)])
+obj[,1] <- as.Date(paste0(obj[,1],'/1'))
+obj[,2] <- as.numeric(obj[,2])
+colnames(obj)[1] <- 'Date'
+colnames(obj)[2] <- gsub('.+:(.+)','\\1',colnames(obj)[2])
+cntList <- cntList + 1
+dataDF[[cntList]] <- obj
+print(tail(dataDF[[cntList]]))
+# 消費者物価指数
+importData <- 'consumerPriceIndexofJapan.r'
+script <- 
+  RCurl::getURL(paste0(baseURL02,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(consumerPriceIndexofJapan[,c(1,2,3,6,79)])
+print(tail(dataDF[[cntList]]))
+# 旅行者数
+importData <- 'importNumberOfForeignVisitorsToJapan.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+numberOfForeignVisitorsToJapan[,-1] <-
+  apply(numberOfForeignVisitorsToJapan[,-1],2,function(x) x * 10^-4)
+obj <- numberOfForeignVisitorsToJapan[,c(1,2,4,5)]
+colnames(obj)[-1] <- paste0('訪日外客数(万人):',colnames(obj)[-1])
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(obj)
+print(tail(dataDF[[cntList]]))
+# GDP(年率)
+importData <- 'importGDPofJapan.r'
+script <-
+  RCurl::getURL(paste0(baseURL02,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+gdp1[,-1] <- apply(gdp1[,-1],2,function(x)x*10^-3)
+obj <- gdp1[,c(1,2)]
+colnames(obj)[2] <- gsub('支出側','支出側,兆円,四半期',colnames(obj)[2])
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(obj)
+print(tail(dataDF[[cntList]]))
+```
+
+```{r}
+diffObj <- c('%','倍率','万人')
+csvData <- data.frame()
+rrr <- 0
+for(iii in seq(length(dataDF))){
+  obj0 <- dataDF[[iii]]
+  for(ccc in 2:ncol(obj0)){
+    rrr <- rrr + 1
+    obj <- obj0[,c(1,ccc)]
+    b.a <- obj[obj[,1]==as.Date('2012-12-1'),]
+    a.a <- tail(obj,1)
+    csvData[rrr,1] <- rrr
+    csvData[rrr,2] <- colnames(obj)[2]
+    csvData[rrr,3] <- b.a[,2]
+    csvData[rrr,4] <- a.a[,2]
+    csvData[rrr,5] <- format(a.a[,1],'%Y年%m月')
+  }
+}
+csvData[,2] <- sapply(csvData[,2],zen2han)
+csvData[,c(3,4)] <- apply(csvData[,c(3,4)],2,as.numeric)
+csvData[,6] <- round((csvData[,4]/csvData[,3]-1)*100,1)
+objRaw <- grep(paste0(diffObj,collapse = '|'),csvData[,2])
+csvData[objRaw,6] <- csvData[objRaw,4]-csvData[objRaw,3]
+csvData[,7] <- '%'
+csvData[grep('\\(万人\\)',csvData[,2]),7] <- '万人'
+csvData[grep('\\(倍\\)',csvData[,2]),7] <- 'ポイント'
+csvData[grep('\\(%\\)',csvData[,2]),7] <- '%ポイント'
+csvData <- csvData[,c(1,2,3,4,6,7,5)]
+colnames(csvData) <- 
+  c('No.','指標','B.A:2012年12月(月期)','A.A:直近','比較','比較単位','直近月(月期)')
+```
