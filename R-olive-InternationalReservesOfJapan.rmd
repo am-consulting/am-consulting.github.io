@@ -200,7 +200,7 @@ buf0 <- merge(buf0, origData5,by = 'Date')
 fun_plotTimeSeries(obj = buf0,typeL = 'o',typeR = 'o',dateFormat = dateFormat,chartType = 2,
                    mar = c(4,5,5,5),dataSource = dataSource,cex.main = 1.1,cex.lab = 1.1,
                    dataTitle = '日本の外貨準備高(兆ドル)')
-fun_addTxtToChart(obj = buf0,objCol = 3,cexTxt = 1.3)
+fun_addTxtToChart(obj = buf0,objCol = 3,cexTxt = 1.3,funType = 'min',col = 'black')
 dev.off()
 ```
 
