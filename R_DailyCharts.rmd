@@ -17,28 +17,30 @@ for(iii in 1:nrow(functionList)){
   )
   eval(parse(text = script))
 }
-fun_plot <- function(s = 1,e = 16,n = 10,tailN = 150,pngN = 1){
+nValue <- c(50,52) # 1 daily 2 weekly
+fun_plot <- function(s = 1,e = 16,tailN = 150,pngN = 1){
   pngFile <- paste0('AMCC-',pngN,".png")
   png(file = pngFile, width = 1400, height = 900)
   par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,8,1),
       cex.main = 1.5,cex.axis = 1.4)
   for(iii in s:e){
     obj0 <- na.omit(dailyChart[[iii]])
+    if(min(unique(diff(obj0[,1])))==1){label <- 'Daily'}else{label <- 'Weekly'}
+    if(label == 'Daily'){n <- nValue[1]}else{n <- nValue[2]}
     obj <- tail(fun_MovingAverage(obj = obj0,n= n,dateFormat = dateFormat),tailN)
     plot(obj[,1],obj[,2],type = 'o',xaxt = 'n',xlab = '',ylab = '',
-         pch = 20,cex = 1.4,ylim = c(min(obj[,2:3]),max(obj[,2:3])),
+         pch = 20,cex = 1.4,ylim = c(min(obj[,2:3],na.rm = T),max(obj[,2:3],na.rm = T)),
          main = paste0(colnames(obj)[2],'\n',tail(obj,1)[,1],':',round(tail(obj,1)[,2],4),'\n',
                        paste0(range(obj[,1]),collapse = '~')))
     grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
     axis.Date(side = 1,at = obj[,1],format = dateFormat)
     lines(obj[,1],obj[,3],type = 'l',col = 'red',lwd = 1.2)
-    if(min(unique(diff(dailyChart[[iii]][,1])))==1){label <- 'Daily'}else{label <- 'Weekly'}
     text(x = grconvertX(0.5, from = "npc"),
          y = grconvertY(0.5, from = "npc"),
          labels = label,
          cex = 3,font = 2,col = rgb(1,0,0,0.2),srt = 0)
   }
-  mtext(text = paste0('Red Line:Moving Average(Over ',n,' days(weeks))'),
+  mtext(text = paste0('Red Line:Moving Average(Over ',nValue[1],' days or ',nValue[2],' weeks)'),
         side = 1,outer = T,col = 'red',cex = 1.5)
   mtext(text = paste0('Latest ',tailN,
                       ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P,Mizuho Bank, Ltd.,EIA,ECRI'),
