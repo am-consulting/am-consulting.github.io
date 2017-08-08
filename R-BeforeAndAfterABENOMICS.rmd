@@ -111,6 +111,21 @@ colnames(obj)[2] <- gsub('支出側','支出側,兆円,四半期',colnames(obj)[
 cntList <- cntList + 1
 dataDF[[cntList]] <- na.omit(obj)
 print(tail(dataDF[[cntList]]))
+# 財務省貿易統計
+targetURL <- 'http://www.customs.go.jp/toukei/shinbun/trade-st/timeseries_201706.csv'
+buf0 <- read.csv(file = targetURL,fileEncoding = 'shift_jis',header = F,stringsAsFactors = F)
+buf1 <- buf0[-c(1:2,4),]
+colnames(buf1) <- buf1[1,]
+buf2 <- buf1[-1,]
+colnames(buf2)[grep('exp',colnames(buf2),ignore.case = T)] <- '財務省貿易統計:輸出:季節調整値(兆円)'
+colnames(buf2)[grep('imp',colnames(buf2),ignore.case = T)] <- '財務省貿易統計:輸入:季節調整値(兆円)'
+colnames(buf2)[1] <- 'Date'
+buf2[,1] <- as.Date(paste0(substring(buf2[,1],1,4),'-',substring(buf2[,1],6,7),'-1'))
+buf3 <- buf2[!is.na(buf2[,1]),]
+buf3[,-1] <- apply(buf3[,-1],2,function(x)as.numeric(x)*10^-6)
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(buf3)
+print(tail(dataDF[[cntList]]))
 ```
 
 ```{r}
