@@ -34,10 +34,11 @@ indicators <- c(
 ```
 
 ```{r}
-library(XLConnect);library(Nippon);library(lubridate);library(quantmod)
+library(XLConnect);library(Nippon);library(lubridate);library(quantmod);library(rvest)
 cntList <- 0
 dataDF <- list()
 title <- vector()
+unitDF <- data.frame()
 for(iii in seq(length(indicators))){
   title[iii] <- gsub('(.+)\\((.+)\\)','\\1',indicators[iii])
   symbol <- gsub('(.+)\\((.+)\\)','\\2',indicators[iii])
@@ -60,7 +61,18 @@ for(iii in seq(length(indicators))){
   cntList <- cntList + 1
   dataDF[[cntList]] <- na.omit(obj)
   print(tail(dataDF[[cntList]]))
+  # get unit
+  htmlURL <- paste0('https://fred.stlouisfed.org/series/',symbol)
+  htmlMarkup <- read_html(x = htmlURL,encoding = 'utf8')
+  htmlUnit <- 
+    htmlMarkup %>% html_nodes(xpath = "//span[@class = 'series-meta-value']")
+  objUnit <- htmlUnit[[grep('units',htmlUnit,ignore.case = T)[1]]] %>% html_text()
+  objUnit <- gsub('\\s+$','',objUnit)
+  unitDF[iii,1] <- title[iii]
+  unitDF[iii,2] <- objUnit
+  # get unit
 }
+colnames(unitDF) <- c('Index','Unit')
 ```
 
 ```{r}
@@ -98,4 +110,5 @@ csvData[,1] <- gsub('\\s$','',csvData[,1])
 
 ```{r}
 fun_writeCSVtoFolder(objData = csvData,dataType = 2,csvFileName = 'beforeAndAfterTrump')
+fun_writeCSVtoFolder(objData = unitDF,dataType = 2,csvFileName = 'beforeAndAfterTrumpUnitDF')
 ```
