@@ -50,7 +50,9 @@ for(iii in seq(length(indicators))){
     tmp1$YM <- paste0(year(tmp1[,1]),'-',formatC(month(tmp1[,1]),width = 2,flag = '0'),'-01')
     buf <- aggregate(x = tmp1[,2],by=list(c(tmp1$YM)),FUN='mean')
     buf[,1] <- as.Date(buf[,1])
+    buf[,2] <- round(buf[,2],4)
     colnames(buf) <- c('Date',paste0(title[iii],':Average in the Month'))
+    buf <- head(buf,-1)
     obj <- buf
   }else{
     obj <- tmp1
@@ -79,7 +81,7 @@ csvData[,2] <- sapply(csvData[,2],zen2han)
 csvData[,c(3,4)] <- apply(csvData[,c(3,4)],2,as.numeric)
 csvData[,6] <- round((csvData[,4]/csvData[,3]-1)*100,1)
 objRaw <- grep(paste0(diffObj,collapse = '|'),csvData[,2],ignore.case = T)
-csvData[objRaw,6] <- csvData[objRaw,4]-csvData[objRaw,3]
+csvData[objRaw,6] <- round(csvData[objRaw,4]-csvData[objRaw,3],10)
 csvData[,7] <- '%'
 csvData[objRaw,7] <- '%point'
 csvData[,8] <-
