@@ -126,6 +126,18 @@ buf3[,-1] <- apply(buf3[,-1],2,function(x)as.numeric(x)*10^-6)
 cntList <- cntList + 1
 dataDF[[cntList]] <- na.omit(buf3)
 print(tail(dataDF[[cntList]]))
+# 預金貸出動向
+importData <- 'importPrincipalFiguresOfFinancialInstitutions-2017.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+obj <- PrincipalFiguresOfFinancialInstitutions[,c(1,2)]
+colnames(obj) <- gsub('\\([a-z]+\\)','',colnames(obj))
+colnames(obj) <- gsub('億円','兆円',colnames(obj))
+obj[,2] <- obj[,2]*10^-4
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(obj)
+print(tail(dataDF[[cntList]]))
 ```
 
 ```{r}
