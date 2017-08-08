@@ -15,7 +15,7 @@ baseURL02 <-
 
 ```{r}
 indicators <- c(
-'Consumer Price Index for All Urban Consumers: All Items (CPIAUCNS)',
+'Consumer Price Index for All Urban Consumers: All Items (CPIAUCSL)',
 'Civilian Unemployment Rate (UNRATE)',
 'All Employees: Total Nonfarm Payrolls (PAYEMS)',
 'Real Gross Domestic Product (GDPC1)',
@@ -29,7 +29,11 @@ indicators <- c(
 'Dow Jones Industrial Average (DJIA)',
 'S&P 500 (SP500)',
 'NASDAQ Composite Index (NASDAQCOM)',
-'CBOE Volatility Index: VIX (VIXCLS)'
+'CBOE Volatility Index: VIX (VIXCLS)',
+'New Private Housing Units Authorized by Building Permits (PERMIT)',
+'Total Construction Spending (TTLCONS)',
+'Trade Weighted U.S. Dollar Index: Major Currencies (DTWEXM)',
+'Average Hourly Earnings of All Employees: Total Private (CES0500000003)'
 )
 ```
 
