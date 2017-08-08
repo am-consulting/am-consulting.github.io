@@ -132,7 +132,7 @@ published : true
               fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   txt <- paste0('<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
                 htmlName,
-                '.html" width="100%" height="800px"></iframe>')
+                '.html" width="100%" height="1200px"></iframe>')
   write.table(x = txt,file = mdFile,append = T,
               fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   # md作成パート
