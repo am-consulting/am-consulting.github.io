@@ -51,7 +51,7 @@ for(iii in seq(length(indicators))){
     buf <- aggregate(x = tmp1[,2],by=list(c(tmp1$YM)),FUN='mean')
     buf[,1] <- as.Date(buf[,1])
     buf[,2] <- round(buf[,2],4)
-    colnames(buf) <- c('Date',paste0(title[iii],':Average in the Month'))
+    colnames(buf) <- c('Date',paste0(title[iii],'*Average'))
     buf <- head(buf,-1)
     obj <- buf
   }else{
@@ -91,7 +91,7 @@ csvData[,8] <-
                 '<img border="0" src="https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/favicon-arrow-up.ico" alt="Increased">','-'))
 csvData <- csvData[,c(2,3,4,6,8,7,5)]
 colnames(csvData) <- 
-  c('Index','Before<br>TRUMP','After<br>TRUMP','Comparison','','Unit','Latest month(or period)')
+  c('Index','Before<br>TRUMP','After<br>TRUMP','Change','','Unit','Latest')
 csvData[,1] <- gsub('Consumer Price Index','CPI',csvData[,1])
 csvData[,1] <- gsub('\\s$','',csvData[,1])
 ```
