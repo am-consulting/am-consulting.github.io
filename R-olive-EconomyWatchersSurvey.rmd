@@ -10,10 +10,22 @@ output:
     fig_width: 10
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -156,15 +168,25 @@ for(iii in 2:ncol(timeSeriesDF)){
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = tail(dataSet,5*12),dateFormat = dateFormat)
+# fun_dataTable(obj = tail(dataSet,5*12),dateFormat = dateFormat)
 ```
 
-***
+
 #### 前年同月差(ポイント)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dataSet,
                                                                        lag = 12),
+                                               dateFormat = dateFormat))
+```
+
+***
+#### 前月差(ポイント)
+- 注)原数値の前月差である。
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+fun_markdownTable(obj = fun_transposeDataFrame(obj = fun_makeDiffTable(obj = dataSet,
+                                                                       lag = 1),
                                                dateFormat = dateFormat))
 ```
 
