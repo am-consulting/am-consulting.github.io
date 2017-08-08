@@ -1,5 +1,5 @@
 "Index","Unit"
-"Consumer Price Index for All Urban Consumers: All Items ","Index 1982-1984=100,Not Seasonally Adjusted"
+"Consumer Price Index for All Urban Consumers: All Items ","Index 1982-1984=100,Seasonally Adjusted"
 "Civilian Unemployment Rate ","Percent,Seasonally Adjusted"
 "All Employees: Total Nonfarm Payrolls ","Thousands of Persons,Seasonally Adjusted"
 "Real Gross Domestic Product ","Billions of Chained 2009 Dollars,Seasonally Adjusted Annual Rate"
@@ -14,3 +14,6 @@
 "S&P 500 ","Index,Not Seasonally Adjusted"
 "NASDAQ Composite Index ","Index Feb 5, 1971=100,Not Seasonally Adjusted"
 "CBOE Volatility Index: VIX ","Index,Not Seasonally Adjusted"
+"New Private Housing Units Authorized by Building Permits ","Thousands of Units,Seasonally Adjusted Annual Rate"
+"Total Construction Spending ","Millions of Dollars,Seasonally Adjusted Annual Rate"
+"Trade Weighted U.S. Dollar Index: Major Currencies ","Index Mar 1973=100,Not Seasonally Adjusted"
