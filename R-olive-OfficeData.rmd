@@ -222,33 +222,30 @@ fun_preparePlot()
 pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
-##################
-par(mar=c(4,5,5,1),family='Meiryo',font.main=1,cex.main=1.2,cex.lab=1.1)
-obj0 <- 
-  allOfficeData[grep('東京ビジネス地区|大阪ビジネス地区|福岡ビジネス地区',allOfficeData$`地区`),]
+library(ggplot2);library(scales)
+bussinessArea <- allOfficeData[grep('ビジネス地区',allOfficeData$`地区`),]
+bussinessArea <- bussinessArea[,-grep('xlsfile',colnames(bussinessArea),ignore.case = T)]
+bussinessArea <- bussinessArea[!duplicated(bussinessArea),]
+bussinessArea$Date <- as.Date(bussinessArea$Date)
+dateRange <- paste0(format(range(bussinessArea$Date),'%Y年%m月'),collapse = '~')
 objCol <- 8
-ylim <- 
-  c(min(obj0[,objCol]),max(obj0[,objCol]))
-dist <- 
-  unique(obj0$`地区`)
-lineColor <- c('blue','red','green')
-iii <- 1
-obj1 <- subset(obj0,obj0$`地区`==dist[iii])
-plot(x = obj1[,1],y = obj1[,objCol],col = lineColor[iii],ylim = ylim,
-     main = paste0(colnames(obj1)[objCol],'\n',
-                   paste0(format(range(obj1[,1]),dateFormat),collapse = '~'),
-                   '\nSource:',dataSource),
-     type = 'o',pch = 20,cex = 2.5,xaxt = 'n',xlab = '',ylab = colnames(obj1)[objCol],
-     panel.first = grid(nx = NULL,ny = NULL,lty = 2,equilogs = T))
-iii <- 2
-obj1 <- subset(obj0,obj0$`地区`==dist[iii])
-lines(x = obj1[,1],y = obj1[,objCol],col = lineColor[iii],type = 'o',pch = 20,cex = 2.5)
-iii <- 3
-obj1 <- subset(obj0,obj0$`地区`==dist[iii])
-lines(x = obj1[,1],y = obj1[,objCol],col = lineColor[iii],type = 'o',pch = 20,cex = 2.5)
-axis.Date(side = 1,at = obj1[,1],format = dateFormat,padj = 1,cex.axis = 1)
-graphics::legend(x = 'topright',col = lineColor,lty = 1,legend = dist,
-                 cex = 1,bty = 'n',lwd = 2)
+g <- ggplot(data = bussinessArea,
+            aes(x = bussinessArea$Date,y = bussinessArea[,objCol],col = bussinessArea$`地区`))
+g <- g + geom_line()
+g <- g + geom_point(size = 2)
+g <- g + scale_x_date(name = '',date_breaks = '1 month',labels= date_format('%Y-%m'))
+g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(20),sec.axis = dup_axis())
+g <- g + ggtitle(label = paste0(colnames(bussinessArea)[objCol],'\n',
+                                dateRange,'\nSource:',dataSource))
+g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16))
+g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16))
+g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
+g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
+g <- g + theme(legend.position = "right",legend.direction = 'vertical')
+g <- g + scale_color_discrete(name = '')
+print(g)
 dev.off()
 ```
 
