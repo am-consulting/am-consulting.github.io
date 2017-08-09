@@ -7,13 +7,25 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 10
+    fig_width: 9  
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -23,7 +35,7 @@ output:
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-options(width = 1000,scipen = 999)
+options(width = 900,scipen = 999)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -48,7 +60,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-needImport <- 0
+needImport <- 1
 if(needImport==1){
   script <-
     RCurl::getURL(
@@ -105,12 +117,10 @@ allOfficeData[objRaw,ncol(allOfficeData)] <- '福岡'
 
 ```{r,warning=F,error=F,message=F,results='hold',echo=F}
 allOfficeData[,1] <- as.Date(allOfficeData[,1])
-objDate <-
-  as.Date(gsub('[^0-9]+([0-9]{2})([0-9]{2}).+','20\\1-\\2-01',unique(allOfficeData$xlsFile)[1]))
 dateFormat <- 
   '%Y年%m月'
 dataTitle <- 
-  paste0('オフィス空室率(Source:三鬼商事株式会社):',format(objDate,dateFormat)) 
+  paste0('オフィス空室率(Source:三鬼商事株式会社):',format(max(allOfficeData[,1]),dateFormat)) 
 dataSource <- '三鬼商事株式会社'
 ```
 
@@ -130,6 +140,11 @@ fun_plot <- function(iii = 1,objCol = 2){
       mfrow = c(ceiling(length(dist)/2),2))
   for(sss in seq(length(dist))){
     obj1 <- subset(obj0,obj0$`地区`==dist[sss])
+    # 重複行削除処理
+    dupRows <- duplicated(obj1[,-grep('xlsfile',colnames(obj1),ignore.case = T)])
+    obj1 <- obj1[-which(dupRows),]
+    obj1[,1] <- as.Date(obj1[,1])
+    # 重複行削除処理
     plot(x = obj1[,1],y = obj1[,objCol],col = 'blue',
          main = paste0(paste0(area[iii],':',dist[sss]),
                        '\n',paste0(format(range(obj1[,1]),dateFormat),collapse = '~')),
