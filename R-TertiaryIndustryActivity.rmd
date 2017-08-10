@@ -10,11 +10,12 @@ setwd(pathToFile)
 buf0 <-
   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
            fileEncoding = 'UTF8')
-pathOutputForecast <- paste0('C:/Users/',userName,buf0[2,1],'charts/indicator/AMCCchartImages/')
+pathOutputForecast <- paste0('C:/Users/',userName,buf0[2,1],
+                             'charts/indicator/AMCC-TertiaryIndustryActivity/')
 ```
 
 ```{r}
-library(Nippon);library(ggplot2);library(scales)
+library(Nippon);library(ggplot2);library(scales);library(lubridate);library(ggpubr);library(ggsci);library(ggalt)
 pathOutput <- 
   paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
 setwd(pathOutput)
@@ -67,12 +68,12 @@ for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   g <- g + geom_line(aes(y = objA[,3],colour = '季調済指数'))
   g <- g + geom_point(aes(y = objA[,3],colour = '季調済指数'))
   g <- g + geom_smooth(aes(y = objA[,3]),col = 'orange')
-  g <- g + ggtitle(label = paste0(mainTitle,'\n',dateRange,'\nSource:経済産業省'),
+  g <- g + ggtitle(label = paste0('第3次産業活動指数:',mainTitle,'\n',dateRange,'\nSource:経済産業省'),
                    subtitle = '青色サークル:第二次安倍政権発足以降,赤色サークル:民主党政権時')
   g <- g + scale_colour_manual(name = '',values = cols)
   g <- g + scale_x_date(name = '',date_breaks = '3 month',labels= date_format('%Y-%m'))
   g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
-  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 15))
   g <- g + theme(plot.subtitle = element_text(hjust = 0.5,family = "Meiryo",size = 12))
   g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
   g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
@@ -85,5 +86,23 @@ for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   g <- g + geom_encircle(data=minshutou,
                          aes(x=minshutou$Date, y=minshutou$`季調済指数`),color="red",size=1,expand=0.01)
   print(g)
+  dev.off()
+  #boxplot part
+  objA$Year <- year(objA$Date)
+  p <-
+    ggboxplot(data = objA,x = 'Year',y = '季調済指数',color = 'Year',
+              palette = "UChicago",add = "jitter",ggtheme = theme_bw(),repel = T)
+  p <- p + ylab('') + theme(legend.position = "none")
+  p <- p + ggtitle(paste0('第3次産業活動指数:',mainTitle,':季調済指数\n',
+                          dateRange,'\nSource:経済産業省'))
+  p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(legend.text =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.x = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.y = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.text =    element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+  print(p)
+  dev.off()
+  #boxplot part
 }
 ```
