@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 3
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -27,8 +27,6 @@ writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
-<style>.main-container {max-width : 1400px;}</style>
-
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
@@ -37,7 +35,7 @@ close(insertFile)
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -103,14 +101,14 @@ options(scipen = 999)
 #### 受注高(億円)および前年同月比(%)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = receivedOrdersByIndustry,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20)
+fun_dataTable(obj = receivedOrdersByIndustry,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20,leftcolumns = 2)
 ```
 
 ***
 #### T 業種計に対する構成比(%)
 
 ```{r warning=F, error=F, message=F, echo=F, results='asis'}
-fun_dataTable(obj = compositionRatio,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20)
+fun_dataTable(obj = compositionRatio,dateFormat = 0,needID = 1,orderDirection = 'asc',menuLength = 20,leftcolumns = 2)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
@@ -120,6 +118,32 @@ fun_markdownTable(obj = mergeData[,c(1,2,3,12)])
 ```
 
 ```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_preparePlot()
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+ratioDF <- compositionRatio[-grep('再掲|業種計',compositionRatio[,1]),c(1,2)]
+colnames(ratioDF)[2] <- '構成比(%)'
+g <- ggplot(data = ratioDF,aes(x = ratioDF[,1],y = ratioDF[,2])) + geom_bar(stat = 'identity',fill = '#4169e1')
+g <- g + geom_text(aes(label = ratioDF[,2]),vjust = 0.5,hjust = 0,family = "Meiryo",size = 4)
+g <- g + ggtitle(paste0('建設工事受注動態統計調査:業種別受注高構成比(%)\nSource:国土交通省\n',sheetDate))  
+g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 20))
+g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+g + coord_flip() + xlab('') + ylab('')
+dev.off()
+```
+
+```{r warning=F, error=F, message=F, echo=F, results='hide'}
+fun_outputMD(tags = '建設工事受注動態統計調査',
+             objDF = ratioDF,
+             htmlName = htmlName,
+             image1 = 1,image2 = 0,
+             title = dataTitle,
+             tableTitle = sheetDate,
+             tableName = '業種別受注高構成比(%)')
 fun_updateURLcsv()
 ```
 
