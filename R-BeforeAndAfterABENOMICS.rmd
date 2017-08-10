@@ -138,6 +138,17 @@ obj[,2] <- obj[,2]*10^-4
 cntList <- cntList + 1
 dataDF[[cntList]] <- na.omit(obj)
 print(tail(dataDF[[cntList]]))
+# 国内企業物価指数
+importData <- c('importProducerPriceIndex-2017.r')
+script <-
+  RCurl::getURL(paste0(baseURL01,importData),ssl.verifypeer = FALSE)
+eval(parse(text = script))
+buf <- ProducerPriceIndex[,c(1,2)]
+colnames(buf) <-
+  gsub('[^:]+:(.+)','\\1',colnames(buf))
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(buf)
+print(tail(dataDF[[cntList]]))
 ```
 
 ```{r}
