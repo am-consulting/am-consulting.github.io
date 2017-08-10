@@ -16,6 +16,7 @@ baseURL02 <-
 ```{r}
 indicators <- c(
 'Consumer Price Index for All Urban Consumers: All Items (CPIAUCSL)',
+'Consumer Price Index for All Urban Consumers: All Items Less Food and Energy (CPILFESL)',
 'Civilian Unemployment Rate (UNRATE)',
 'All Employees: Total Nonfarm Payrolls (PAYEMS)',
 'Real Gross Domestic Product (GDPC1)',
@@ -30,10 +31,16 @@ indicators <- c(
 'S&P 500 (SP500)',
 'NASDAQ Composite Index (NASDAQCOM)',
 'CBOE Volatility Index: VIX (VIXCLS)',
+'Wilshire 5000 Total Market Full Cap Index (WILL5000INDFC)',
 'New Private Housing Units Authorized by Building Permits (PERMIT)',
 'Total Construction Spending (TTLCONS)',
 'Trade Weighted U.S. Dollar Index: Major Currencies (DTWEXM)',
-'Average Hourly Earnings of All Employees: Total Private (CES0500000003)'
+'Average Hourly Earnings of All Employees: Total Private (CES0500000003)',
+'Job Openings: Total Nonfarm (JTSJOL)',
+'Total Vehicle Sales (TOTALSA)',
+'Retail Sales: Total (Excluding Food Services) (RSXFS)',
+'Retail and Food Services Sales (RSAFS)',
+'Leading Index for the United States (USSLIND)'
 )
 ```
 
@@ -80,7 +87,6 @@ colnames(unitDF) <- c('Index','Unit')
 ```
 
 ```{r}
-diffObj <- c('rate')
 csvData <- data.frame()
 rrr <- 0
 for(iii in seq(length(dataDF))){
@@ -96,7 +102,7 @@ for(iii in seq(length(dataDF))){
 csvData[,2] <- sapply(csvData[,2],zen2han)
 csvData[,c(3,4)] <- apply(csvData[,c(3,4)],2,as.numeric)
 csvData[,6] <- round((csvData[,4]/csvData[,3]-1)*100,1)
-objRaw <- grep(paste0(diffObj,collapse = '|'),csvData[,2],ignore.case = T)
+objRaw <- grep('^percent',unitDF[,2],ignore.case = T)
 csvData[objRaw,6] <- round(csvData[objRaw,4]-csvData[objRaw,3],10)
 csvData[,7] <- '%'
 csvData[objRaw,7] <- '%point'
