@@ -10,7 +10,7 @@ setwd(pathToFile)
 buf0 <-
   read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
            fileEncoding = 'UTF8')
-pathOutputForecast <- paste0('C:/Users/',userName,buf0[2,1],
+pathOutputTertiaryIndustryActivity <- paste0('C:/Users/',userName,buf0[2,1],
                              'charts/indicator/AMCC-TertiaryIndustryActivity/')
 ```
 
@@ -48,6 +48,14 @@ for(iii in seq(length(csvFile))){
 ```
 
 ```{r}
+setwd(pathOutputTertiaryIndustryActivity)
+txt <- ''
+folderName <- 'AMCC-TertiaryIndustryActivity/'
+pngTitle01 <- 'AMCC-TertiaryIndustryActivity-TS-'
+pngTitle02 <- 'AMCC-TertiaryIndustryActivity-BP-'
+```
+
+```{r}
 for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   buf1 <- na.omit(TertiaryIndustryActivity[[1]][,c(1,ccc)])
   buf2 <- na.omit(TertiaryIndustryActivity[[2]][,c(1,ccc)])
@@ -59,19 +67,21 @@ for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   colnames(buf1)[2] <- gsub('(.+\\)):(.+)','\\1',colnames(buf1)[2])
   colnames(buf2)[2] <- gsub('(.+\\)):(.+)','\\1',colnames(buf2)[2])
   objB <- rbind(buf1,buf2)
-  cols <- c("原指数" = "black","季調済指数" = "red")
+  cols <- c("原指数" = "black","季調済指数" = "blue")
   dateRange <- paste0(format(range(objA[,1]),'%Y-%m'),collapse = '~')
   abenomics <- objA[as.Date('2013-1-1')<=objA$Date,]
   minshutou <- objA[as.Date('2009-9-1')<=objA$Date & objA$Date<=as.Date('2012-12-1'),]
+  pngFile <- paste0('AMCC-TertiaryIndustryActivity-TS-',ccc-1,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
   g <- ggplot(data = objA,aes(x = objA[,1]))
-  g <- g + geom_line(aes(y = objA[,2],colour = '原指数'))
+  # g <- g + geom_line(aes(y = objA[,2],colour = '原指数'))
   g <- g + geom_line(aes(y = objA[,3],colour = '季調済指数'))
   g <- g + geom_point(aes(y = objA[,3],colour = '季調済指数'))
   g <- g + geom_smooth(aes(y = objA[,3]),col = 'orange')
   g <- g + ggtitle(label = paste0('第3次産業活動指数:',mainTitle,'\n',dateRange,'\nSource:経済産業省'),
-                   subtitle = '青色サークル:第二次安倍政権発足以降,赤色サークル:民主党政権時')
+                   subtitle = '緑色サークル:第二次安倍政権発足以降,赤色サークル:民主党政権時')
   g <- g + scale_colour_manual(name = '',values = cols)
-  g <- g + scale_x_date(name = '',date_breaks = '3 month',labels= date_format('%Y-%m'))
+  g <- g + scale_x_date(name = '',date_breaks = '6 month',labels= date_format('%Y-%m'))
   g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
   g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 15))
   g <- g + theme(plot.subtitle = element_text(hjust = 0.5,family = "Meiryo",size = 12))
@@ -82,13 +92,15 @@ for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
   g <- g + theme(legend.position = "top")
   g <- g + geom_encircle(data=abenomics,show.legend = F,
-                         aes(x=abenomics$Date, y=abenomics$`季調済指数`),color="blue",size=1,expand=0.01)
+                         aes(x=abenomics$Date, y=abenomics$`季調済指数`),color="green",size=1,expand=0.01)
   g <- g + geom_encircle(data=minshutou,
                          aes(x=minshutou$Date, y=minshutou$`季調済指数`),color="red",size=1,expand=0.01)
   print(g)
   dev.off()
   #boxplot part
   objA$Year <- year(objA$Date)
+  pngFile <- paste0('AMCC-TertiaryIndustryActivity-BP-',ccc-1,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
   p <-
     ggboxplot(data = objA,x = 'Year',y = '季調済指数',color = 'Year',
               palette = "UChicago",add = "jitter",ggtheme = theme_bw(),repel = T)
@@ -104,5 +116,29 @@ for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   print(p)
   dev.off()
   #boxplot part
+  #txt part
+  txt <- paste0(txt,'<b>',mainTitle,'</b><br>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii-1,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii-1,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Timeseries\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii-1,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii-1,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Boxplot\n</a>\n<hr>\n')
+  #txt part
 }
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+write.table(x = txt,file = 'TertiaryIndustryActivity-olive.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 ```
