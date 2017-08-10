@@ -295,13 +295,13 @@ for(iii in 1:length(url_CO2)){
     data.frame(Date = as.Date(paste0(tmp[,1],"-",tmp[,2],"-1")),co2 = tmp[,3])
   colnames(tmp)[2] <- Nippon::zen2han(paste0(colnames(tmp0)[3],':ppm'))
   if(length(grep('_ryo',url_CO2[iii]))!=0){
-    colnames(tmp)[2] <- paste0('CO2 Concentration(ppm):Monthly Average(Ryōri)/',colnames(tmp)[2])
+    colnames(tmp)[2] <- paste0('CO2 Concentration(ppm):Monthly Average(Ryōri)\n',colnames(tmp)[2])
   }
   if(length(grep('_mnm',url_CO2[iii]))!=0){
-    colnames(tmp)[2] <- paste0('CO2 Concentration(ppm):Monthly Average(Minami-Tori-shima)/',colnames(tmp)[2])
+    colnames(tmp)[2] <- paste0('CO2 Concentration(ppm):Monthly Average(Minami-Tori-shima)\n',colnames(tmp)[2])
   }
   if(length(grep('_yon',url_CO2[iii]))!=0){
-    colnames(tmp)[2] <- paste0('CO2 Concentration(ppm):Monthly Average(Yonaguni-jima)/',colnames(tmp)[2])
+    colnames(tmp)[2] <- paste0('CO2 Concentration(ppm):Monthly Average(Yonaguni-jima)\n',colnames(tmp)[2])
   }
   # month diff check
   print(unique(diff(year(tmp$Date)*12+month(tmp$Date))))
