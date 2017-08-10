@@ -1,5 +1,5 @@
 ```{r}
-library(Nippon)
+library(Nippon);library(ggplot2)
 pathOutput <- 
   paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
 setwd(pathOutput)
@@ -18,6 +18,34 @@ for(iii in seq(length(csvFile))){
   Date <- as.Date(paste0(substring(buf2[,1],1,4),'-',substring(buf2[,1],5,6),'-1'))
   TertiaryIndustryActivity[[iii]] <- 
     data.frame(Date,apply(buf2[,-1],2,as.numeric),stringsAsFactors = F,check.names = F,row.names = NULL)
+  if(length(grep('原指数',sheetTitle[iii]))!=0){
+    addTxt <- ':原指数'
+  }else{
+    addTxt <- ':季調済指数'
+  }
+  colnames(TertiaryIndustryActivity[[iii]])[-1] <-
+    paste0(colnames(TertiaryIndustryActivity[[iii]])[-1],addTxt)
+  colnames(TertiaryIndustryActivity[[iii]]) <-
+    gsub('^\\s+','',colnames(TertiaryIndustryActivity[[iii]]))
   print(tail(TertiaryIndustryActivity[[iii]][,1:4]))
+}
+```
+
+```{r}
+for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
+  buf1 <- na.omit(TertiaryIndustryActivity[[1]][,c(1,ccc)])
+  buf2 <- na.omit(TertiaryIndustryActivity[[2]][,c(1,ccc)])
+  objA <- merge(buf1,buf2,by = 'Date')
+  buf1$Type <- gsub('(.+\\)):(.+)','\\2',colnames(buf1)[2])
+  buf2$Type <- gsub('(.+\\)):(.+)','\\2',colnames(buf2)[2])
+  colnames(buf1)[2] <- gsub('(.+\\)):(.+)','\\1',colnames(buf1)[2])
+  colnames(buf2)[2] <- gsub('(.+\\)):(.+)','\\1',colnames(buf2)[2])
+  objB <- rbind(buf1,buf2)
+  g <- ggplot(data = objA,aes(x = objA[,1]))
+  g <- g + geom_line(aes(y = objA[,2]),col = 'blue') + geom_line(aes(y = objA[,3]),col = 'red')
+  g <- g + geom_point(aes(y = objA[,3]),col = 'red')
+  g <- g + geom_smooth(aes(y = objA[,3]),col = 'orange')
+  g <- g + ggtitle(label = gsub('(.+\\)):.+','\\1',colnames(objA)[2]))
+  print(g)
 }
 ```
