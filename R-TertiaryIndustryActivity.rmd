@@ -120,18 +120,18 @@ for(ccc in 2:ncol(TertiaryIndustryActivity[[1]])){
   txt <- paste0(txt,'<b>',mainTitle,'</b><br>\n')
   txt <- 
     paste0(txt,
-           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii-1,'.png">\n')
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,ccc-1,'.png">\n')
   txt <- 
     paste0(txt,
-           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii-1,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,ccc-1,
            '.png" width="20%" />\n')
   txt <- paste0(txt,'Timeseries\n</a>\n')
   txt <- 
     paste0(txt,
-           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii-1,'.png">\n')
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,ccc-1,'.png">\n')
   txt <- 
     paste0(txt,
-           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii-1,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,ccc-1,
            '.png" width="20%" />\n')
   txt <- paste0(txt,'Boxplot\n</a>\n<hr>\n')
   #txt part
