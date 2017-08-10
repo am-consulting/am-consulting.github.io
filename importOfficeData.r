@@ -11,7 +11,11 @@ xlsFiles <- gsub('.+/([^/]+\\.xls)','\\1',unique(hrefS[grep('\\.xls',hrefS)]))
 baseURL <- 'https://www.e-miki.com/market/download/office/'
 cnt <- 1
 for(iii in seq(length(xlsFiles))){
-  download.file(url = paste0(baseURL,xlsFiles[iii]),xlsFiles[iii],mode = 'wb')
+  # download.file(url = paste0(baseURL,xlsFiles[iii]),xlsFiles[iii],mode = 'wb')
+  errorCheck <-
+    tryCatch(expr = download.file(url = paste0(baseURL,xlsFiles[iii]),xlsFiles[iii],mode = 'wb'),
+             error = function(e){conditionMessage(e)})
+  if(errorCheck==0){
   sheetName <-
     getSheets(loadWorkbook(xlsFiles[iii]))
   for(ccc in seq(length(sheetName))){
@@ -32,6 +36,7 @@ for(iii in seq(length(xlsFiles))){
       if(cnt == 1){officeData <- buf4}else{officeData <- rbind(officeData,buf4)}
       cnt <- cnt + 1
     }
+  }
   }
 }
 addTxt <- gsub('[^0-9]+([0-9]+).+','\\1',xlsFiles[1])
