@@ -15,6 +15,7 @@ for(iii in 1:nrow(meanResult)){
   cat(paste0('<li>',indicatorName,'の',dateRange,meanResult[iii,1],'は',
              meanResult[iii,2]),'</li>\n')
 }
+if(nrow(obj[obj[,1]<as.Date('2013-1-1'),])!=0){
 summaryResult <- fun_summaryByName(obj = obj,objColumn = dataCol,dateFormat = dateFormat)
 maxResult <- summaryResult[which.max(summaryResult$Mean),]
 minResult <- summaryResult[which.min(summaryResult$Mean),]
@@ -25,4 +26,5 @@ cat(paste0('<li>',indicatorName,'の平均値が最も低い政権は',
            minResult[1,1],'政権の',
            minResult[1,grep('mean',colnames(minResult),ignore.case = T)],'</li>\n'))
 cat('</ol>\n')
+}
 }
