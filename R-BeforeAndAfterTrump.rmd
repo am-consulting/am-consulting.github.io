@@ -51,7 +51,8 @@ indicators <- c(
 'Personal Saving Rate (PSAVERT)',
 'University of Michigan: Consumer Sentiment (UMCSENT)',
 'Japan / U.S. Foreign Exchange Rate (EXJPUS)',
-'St. Louis Fed Financial Stress Index© (STLFSI)'
+'St. Louis Fed Financial Stress Index (STLFSI)',
+'Producer Price Index for All Commodities (PPIACO)'
 )
 ```
 
