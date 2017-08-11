@@ -7,7 +7,7 @@
 統計種別・カテゴリ(英字),Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt,Public Finance/National Government Debt
 変換方法,END,END,END,END,END,END,END,END,END,END,END,END,END,END,END,END
 収録開始期,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04,1982/04
-収録終了期,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04,2017/04
+収録終了期,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06,2017/06
 期種,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次,月次
 備考,,,,,,,,,,,,,,,,
 備考（英字）,,,,,,,,,,,,,,,,
@@ -580,8 +580,8 @@
 2017/02,10813202,9117032,0,1156431,404953,134786,234679,2046,39,232595,4102303,3659068,443235,6476220,5455918,713158
 2017/03,10715594,9019263,0,1152132,544200,0,239677,3084,39,236555,4049411,3654217,395194,6426506,5361962,756900
 2017/04,10775029,9095550,0,1139756,405830,133893,232601,1484,39,231078,4146744,3754936,391808,6395684,5339131,747909
-2017/05,        ,       ,   ,       ,       ,      ,       ,       ,      ,       ,       ,       ,      ,       ,       ,
-2017/06,        ,       ,   ,       ,       ,      ,       ,       ,      ,       ,       ,       ,      ,       ,       ,
+2017/05,10839208,9168419,0,1130450,364671,175668,232047,1387,39,230622,4173502,3803426,370076,6433658,5363605,760336
+2017/06,10789664,9131572,0,1119932,322464,215696,229009,1528,39,227443,4170439,3821146,349293,6390217,5308898,770601
 2017/07,        ,       ,   ,       ,       ,      ,       ,       ,      ,       ,       ,       ,      ,       ,       ,
 2017/08,        ,       ,   ,       ,       ,      ,       ,       ,      ,       ,       ,       ,      ,       ,       ,
 2017/09,        ,       ,   ,       ,       ,      ,       ,       ,      ,       ,       ,       ,      ,       ,       ,
