@@ -43,7 +43,7 @@ fun_plot <- function(s = 1,e = 16,tailN = 150,pngN = 1){
   mtext(text = paste0('Red Line:Moving Average(Over ',nValue[1],' days or ',nValue[2],' weeks)'),
         side = 1,outer = T,col = 'red',cex = 1.5)
   mtext(text = paste0('Latest ',tailN,
-                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P,Mizuho Bank, Ltd.,EIA,ECRI'),
+                      ' days(weeks).Source:Oanda,FRED,MOF,CBOE,NIKKEI,IIMA,EIA,JSDA,S&P,Mizuho Bank, Ltd.,EIA,ECRI,NAAIM'),
         side = 3,outer = T,col = 'black',cex = 1.8,line = 1)
   dev.off()
 }
@@ -450,6 +450,21 @@ for(rrr in seq(nrow(NikkeiDailyIndexList))){
   }
 }
 # Nikkei Index
+# NAAIM Exposure Index
+buf_cnt08 <- cnt
+cnt <- buf_cnt08
+buf <- 
+  read.csv(file = 'http://www.naaim.org/wp-content/plugins/ip-chart/export.php',
+           header = T,stringsAsFactors = F,check.names = F)
+buf[,1] <-
+  as.Date(paste0(gsub('(\\d+)\\/(\\d+)\\/(\\d+)','\\3',buf[,1]),'-',
+                 gsub('(\\d+)\\/(\\d+)\\/(\\d+)','\\1',buf[,1]),'-',
+                 gsub('(\\d+)\\/(\\d+)\\/(\\d+)','\\2',buf[,1])))
+tmp <- buf[order(buf[,1],decreasing = F),]
+NAAIM_ExposureIndex <- tmp[-which(10<diff(tmp[,1])),c(1,9)]
+cnt <- cnt + 1
+dailyChart[[cnt]] <- NAAIM_ExposureIndex
+# NAAIM Exposure Index
 ```
 
 ```{r}
