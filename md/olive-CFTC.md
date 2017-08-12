@@ -1,15 +1,15 @@
 ---
 tags : [CFTC,投機筋,IMM] 
 published : true
-title : CFTC投機筋ポジション-2017年08月01日分.Net 日本円:-112196, ユーロ:82637, 英ポンド:-29452, 豪ドル:60713, スイスフラン:1440, Gold:129672
+title : CFTC投機筋ポジション-2017年08月08日分.Net 日本円:-95813, ユーロ:93685, 英ポンド:-25160, 豪ドル:58010, スイスフラン:-1402, Gold:148837
 ---
 
 <a href="http://knowledgevault.saecanet.com/charts/chartImages/CFTC.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/CFTC.png" width="100%" /></a>
 
 ## 統計データ概要
-1. 日本円のネットはショート、ネットショートポジション数は前週より減少。2016年11月29日以降、36週連続でネットショート。
-1. ユーロのネットはロング、ネットロングポジション数は前週より減少。2017年05月09日以降、13週連続でネットロング。
-1. 英ポンドのネットはショート、ネットショートポジションは前週より増加。2015年11月10日以降、91週連続でネットショート。
+1. 日本円のネットはショート、ネットショートポジション数は前週より減少。2016年11月29日以降、37週連続でネットショート。
+1. ユーロのネットはロング、ネットロングポジション数は前週より増加。2017年05月09日以降、14週連続でネットロング。
+1. 英ポンドのネットはショート、ネットショートポジションは前週より減少。2015年11月10日以降、92週連続でネットショート。
 1. 参考
 	1. 日本銀行による追加緩和(金融緩和第2弾)は2014年10月31日。
 	1. イギリスのEU離脱是非を問う国民投票は2016年06月23日。
@@ -32,4 +32,4 @@ title : CFTC投機筋ポジション-2017年08月01日分.Net 日本円:-112196,
 ## データテーブル･チャート
 Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html)
 
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html" width="100%" height="800px"></iframe>
+<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html" width="100%" height="1500px"></iframe>
