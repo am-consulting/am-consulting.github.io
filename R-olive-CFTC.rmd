@@ -7,27 +7,25 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 10
+    fig_width: 9
     keep_md: no
-    md_extensions: -ascii_identifiers
+    md_extensions: -ascii_identifiers 
     includes:
        in_header: insertHeader.html
     self_contained: false
 ---
 
 ```{r setup, include=FALSE}
-# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
 insertFile <- file("insertHeader.html")
-writeLines('
-<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
-',
-insertFile)
+writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
-
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;} </style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -36,7 +34,7 @@ close(insertFile)
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
