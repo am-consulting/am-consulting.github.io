@@ -111,6 +111,17 @@ colnames(obj)[2] <- gsub('支出側','支出側,兆円,四半期',colnames(obj)[
 cntList <- cntList + 1
 dataDF[[cntList]] <- na.omit(obj)
 print(tail(dataDF[[cntList]]))
+gdp2[,-1] <- apply(gdp2[,-1],2,function(x)x*10^-3)
+obj <- gdp2[,c(1,2)]
+colnames(obj)[2] <- gsub('支出側','支出側,兆円,四半期',colnames(obj)[2])
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(obj)
+print(tail(dataDF[[cntList]]))
+obj <- gdp5[,c(1,2)]
+colnames(obj)[2] <- gsub('支出側','支出側,四半期',colnames(obj)[2])
+cntList <- cntList + 1
+dataDF[[cntList]] <- na.omit(obj)
+print(tail(dataDF[[cntList]]))
 # 財務省貿易統計
 targetURL <- 'http://www.customs.go.jp/toukei/shinbun/trade-st/timeseries_201706.csv'
 buf0 <- read.csv(file = targetURL,fileEncoding = 'shift_jis',header = F,stringsAsFactors = F)
