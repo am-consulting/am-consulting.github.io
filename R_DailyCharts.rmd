@@ -28,17 +28,42 @@ fun_plot <- function(s = 1,e = 16,tailN = 150,pngN = 1){
     if(min(unique(diff(obj0[,1])))==1){label <- 'Daily'}else{label <- 'Weekly'}
     if(label == 'Daily'){n <- nValue[1]}else{n <- nValue[2]}
     obj <- tail(fun_MovingAverage(obj = obj0,n= n,dateFormat = dateFormat),tailN)
+    # chart colour
+    diff <- diff(na.omit(obj[,2]))
+    PN <- ifelse(0<diff,1,ifelse(diff<0,-1,0))
+    x <- cumsum(rev(PN))
+    if(x[1]==0){
+      change <- 0
+      col <- rgb(red = 1,green = 1,blue = 1)
+    }else{
+      neg <- x[max(which(x==(seq(length(PN))*-1)))]
+      pos <- x[max(which(x==seq(length(PN))))]
+      change <- max(pos,neg,na.rm = T)
+      if(10<change){change <- 10}
+      if(0<change){
+        col <- rgb(red = 0,green = 0,blue = 1,alpha = 0.1*abs(change))
+      }else{
+        col <- rgb(red = 1,green = 0,blue = 1,alpha = 0.1*abs(change))
+      }
+    }
+    # chart colour
+    # chart backgroundcolour
+    ylim <- c(min(obj[,2:3],na.rm = T),max(obj[,2:3],na.rm = T))
+    plot(obj[,1],obj[,2],ylim = ylim,xaxt = 'n',yaxt = 'n',xlab = '',ylab = '')
+    rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4],col = col)
+    par(new = T)
+    # chart backgroundcolour
     plot(obj[,1],obj[,2],type = 'o',xaxt = 'n',xlab = '',ylab = '',
-         pch = 20,cex = 1.4,ylim = c(min(obj[,2:3],na.rm = T),max(obj[,2:3],na.rm = T)),
+         pch = 20,cex = 1.4,ylim = ylim,
          main = paste0(colnames(obj)[2],'\n',tail(obj,1)[,1],':',round(tail(obj,1)[,2],4),'\n',
                        paste0(range(obj[,1]),collapse = '~')))
-    grid(nx = NULL, ny = NULL, col = "lightgray", lty = "dotted")
+    grid(nx = NULL, ny = NULL, col = "dimgray", lty = "dotted",lwd = 1)
     axis.Date(side = 1,at = obj[,1],format = dateFormat)
-    lines(obj[,1],obj[,3],type = 'l',col = 'red',lwd = 1.2)
+    lines(obj[,1],obj[,3],type = 'l',col = 'red',lwd = 2)
     text(x = grconvertX(0.5, from = "npc"),
          y = grconvertY(0.5, from = "npc"),
          labels = label,
-         cex = 3,font = 2,col = rgb(1,0,0,0.2),srt = 0)
+         cex = 3,font = 2,col = rgb(1,0,0,0.4),srt = 0)
   }
   mtext(text = paste0('Red Line:Moving Average(Over ',nValue[1],' days or ',nValue[2],' weeks)'),
         side = 1,outer = T,col = 'red',cex = 1.5)
