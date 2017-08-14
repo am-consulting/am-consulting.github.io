@@ -53,9 +53,19 @@ fun_plot <- function(s = 1,e = 16,tailN = 150,pngN = 1){
     rect(par("usr")[1],par("usr")[3],par("usr")[2],par("usr")[4],col = col)
     par(new = T)
     # chart backgroundcolour
+    # 前日(週)差
+    latestDiff <- round(tail(diff(na.omit(obj[,2])),1),8)
+    if(0<latestDiff){
+      diffTxt <- paste0('+',latestDiff)
+    }else if(latestDiff<0){
+      diffTxt <- latestDiff
+    }else{
+      diffTxt <- '±0'
+    }    
+    # 前日(週)差
     plot(obj[,1],obj[,2],type = 'o',xaxt = 'n',xlab = '',ylab = '',
          pch = 20,cex = 1.4,ylim = ylim,
-         main = paste0(colnames(obj)[2],'\n',tail(obj,1)[,1],':',round(tail(obj,1)[,2],4),'\n',
+         main = paste0(colnames(obj)[2],'\n',tail(obj,1)[,1],':',round(tail(obj,1)[,2],4),', ',diffTxt,'\n',
                        paste0(range(obj[,1]),collapse = '~')))
     grid(nx = NULL, ny = NULL, col = "dimgray", lty = "dotted",lwd = 1)
     axis.Date(side = 1,at = obj[,1],format = dateFormat)
@@ -489,6 +499,7 @@ tmp <- buf[order(buf[,1],decreasing = F),]
 NAAIM_ExposureIndex <- tmp[-which(10<diff(tmp[,1])),c(1,9)]
 cnt <- cnt + 1
 dailyChart[[cnt]] <- NAAIM_ExposureIndex
+print(tail(NAAIM_ExposureIndex))
 # NAAIM Exposure Index
 ```
 
