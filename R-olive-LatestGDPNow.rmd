@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 11
+    fig_width: 9  
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -27,7 +27,6 @@ writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
-<style>.main-container {max-width : 1100px;}</style>
 <style>table:not(#amcc) {font-size: 85%;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
@@ -37,7 +36,7 @@ close(insertFile)
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -193,10 +192,12 @@ contributionsGDPNow <- GDPNow0[grep('contributions to',GDPNow0[,1],ignore.case =
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = componentGDPNow,
-              title = paste0('GDPNow. Nowcast'),
-              dateFormat = 0,
-              orderDirection = 'asc')
+# fun_dataTable(obj = componentGDPNow,
+#               title = paste0('GDPNow. Nowcast'),
+#               dateFormat = 0,
+#               orderDirection = 'asc')
+cat('#### GDPNow. Nowcast\n\n')
+fun_markdownTable(obj = componentGDPNow)
 ```
 
 - Unit：Percent Change at Annual Rate,Seasonally Adjusted Annual Rate.
@@ -204,10 +205,12 @@ fun_dataTable(obj = componentGDPNow,
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = contributionsGDPNow,
-              title = paste0('GDPNow. Contributions'),
-              dateFormat = 0,
-              orderDirection = 'asc')
+# fun_dataTable(obj = contributionsGDPNow,
+#               title = paste0('GDPNow. Contributions'),
+#               dateFormat = 0,
+#               orderDirection = 'asc')
+cat('#### GDPNow. Contributions\n\n')
+fun_markdownTable(obj = contributionsGDPNow)
 ```
 
 - Unit：Percentage Points,Seasonally Adjusted.
