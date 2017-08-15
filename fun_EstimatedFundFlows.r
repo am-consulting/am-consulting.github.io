@@ -30,6 +30,9 @@ fun_EstimatedFundFlows <- function(type = 'weekly'){
   buf3[,-1] <- data.frame(apply(buf3[,-1],2,function(x)as.numeric(gsub(',','',x))),
                           stringsAsFactors = F,check.names = F)
   row.names(buf3) <- NULL
-  return(buf3)
+  returnList <-
+    list('tsData' = buf3,
+         'sheet.title' = sheet.title,
+         'sheet.unit' = sheet.unit)
+  return(returnList)
 }
-estimated.fund.flows <- fun_EstimatedFundFlows(type = 'weekly')
