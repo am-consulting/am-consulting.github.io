@@ -1,0 +1,226 @@
+```{r}
+fileName <- 
+  'functionList.csv'
+baseURL <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+functionList <- 
+  read.csv(
+    file = paste0(baseURL,'csv/',fileName),
+    header = F,
+    as.is = T)
+for(iii in 1:nrow(functionList)){
+  script <- 
+    RCurl::getURL(paste0(baseURL,functionList[iii,1]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+baseURL01 <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+baseURL02 <- 
+  'https://raw.githubusercontent.com/am-consulting/Rscript/master/'
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+pngWidth <- 1000
+pngHeight <- 600
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'UTF8')
+pathOutputCurrentSurveyOfCommerce <- paste0('C:/Users/',userName,buf0[2,1],
+                             'charts/indicator/AMCC-CurrentSurveyOfCommerce/')
+```
+
+```{r}
+library(Nippon);library(ggplot2);library(scales);library(lubridate);library(ggpubr);library(ggsci);library(ggalt)
+cnt <- 0
+CurrentSurveyOfCommerce <- list()
+importAMCC <- 'importCurrentSurveyOfCommerce.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,importAMCC),ssl.verifypeer = F)
+eval(parse(text = script))
+# 百貨店
+returnList <- fun_CurrentSurveyOfCommerce(sheet = '百貨店　販売額　月次')
+tmp <- returnList$CurrentSurveyOfCommerce
+tmp[,-1] <- apply(tmp[,-1],2,function(x)x*10^-2)
+departmentStore <- tmp
+for(ccc in 2:ncol(departmentStore)){
+  cnt <- cnt + 1
+  obj <- na.omit(departmentStore[,c(1,ccc)])
+  colnames(obj)[2] <- paste0('百貨店販売額(億円):',colnames(obj)[2])
+  CurrentSurveyOfCommerce[[cnt]] <- obj
+  print(tail(CurrentSurveyOfCommerce[[cnt]]))
+}
+# スーパー
+returnList <- fun_CurrentSurveyOfCommerce(sheet = 'スーパー　販売額　月次')
+tmp <- returnList$CurrentSurveyOfCommerce
+tmp[,-1] <- apply(tmp[,-1],2,function(x)x*10^-2)
+superMarket <- tmp
+for(ccc in 2:ncol(superMarket)){
+  cnt <- cnt + 1
+  obj <- na.omit(superMarket[,c(1,ccc)])
+  colnames(obj)[2] <- paste0('スーパー販売額(億円):',colnames(obj)[2])
+  CurrentSurveyOfCommerce[[cnt]] <- obj
+  print(tail(CurrentSurveyOfCommerce[[cnt]]))
+}
+# 合計
+returnList <- fun_CurrentSurveyOfCommerce(sheet = '合計　販売額　月次')
+tmp <- returnList$CurrentSurveyOfCommerce
+tmp[,-1] <- apply(tmp[,-1],2,function(x)x*10^-2)
+totalSales <- tmp
+for(ccc in 2:ncol(totalSales)){
+  cnt <- cnt + 1
+  obj <- na.omit(totalSales[,c(1,ccc)])
+  colnames(obj)[2] <- paste0('百貨店･スーパー合計販売額(億円):',colnames(obj)[2])
+  CurrentSurveyOfCommerce[[cnt]] <- obj
+  print(tail(CurrentSurveyOfCommerce[[cnt]]))
+}
+# csv出力パート
+scriptFile <- 'R-writeCSVtoFolder.r'
+script <-
+  RCurl::getURL(paste0(baseURL01,scriptFile),ssl.verifypeer = F)
+eval(parse(text = script))
+fun_writeCSVtoFolder(objData = departmentStore,dataType = 1,csvFileName = '商業動態統計調査_百貨店')
+fun_writeCSVtoFolder(objData = superMarket,dataType = 1,csvFileName = '商業動態統計調査_スーパー')
+fun_writeCSVtoFolder(objData = totalSales,dataType = 1,csvFileName = '商業動態統計調査_百貨店スーパー合計')
+# csv出力パート
+```
+
+```{r}
+setwd(pathOutputCurrentSurveyOfCommerce)
+txt <- ''
+folderName <- 'AMCC-CurrentSurveyOfCommerce/'
+pngTitle01 <- 'AMCC-CurrentSurveyOfCommerce-TS-'
+pngTitle02 <- 'AMCC-CurrentSurveyOfCommerce-BP1-'
+pngTitle03 <- 'AMCC-CurrentSurveyOfCommerce-BP2-'
+vline <- c(as.Date('2009-9-16'),as.Date('2012-12-26'))
+vlineCol <- c('red','blue')
+vlineTxt <- c('民主党政権発足','第2次安倍政権発足')
+dataSource <- '経済産業省'
+dateFormat <- '%Y年%m月'
+```
+
+```{r}
+for(iii in seq(length(CurrentSurveyOfCommerce))){
+  obj <- CurrentSurveyOfCommerce[[iii]]
+  mainTitle <- colnames(obj)[2]
+  colnames(obj)[2] <- 'Value'
+  pngFile <- paste0(pngTitle01,iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  obj0 <- obj
+  dateRange <- paste0(format(range(obj0$Date),dateFormat),collapse = '~')
+  obj0$col <- ifelse(vline[1]<=obj0$Date & obj0$Date<vline[2],'red',ifelse(vline[2]<=obj0$Date,'blue','black'))
+  g <- ggplot(data = obj0,aes(x = obj0$Date,y = obj0$Value))
+  if(sum(abs(obj0$Value))==sum(obj0$Value)){
+    g <- g + geom_line(colour = obj0$col)
+    g <- g + geom_point(colour = obj0$col,size = 2)
+  }else{
+    g <- g + geom_bar(stat = 'identity',aes(fill = obj0$col))
+    g <- g + scale_fill_manual(values = c(black = 'black',blue = 'blue',red = 'red'))
+  }
+  g <- g + geom_smooth(col = 'orange',size = 2)
+  g <- g + ggtitle(label = paste0(mainTitle,'\n',dateRange,'\nSource:',dataSource))
+  g <- g + scale_x_date(name = '',date_breaks = '12 month',labels= date_format(dateFormat))
+  g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 15))
+  g <- g + theme(plot.subtitle = element_text(hjust = 0.5,family = "Meiryo",size = 12))
+  g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
+  g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
+  g <- g + theme(legend.position = "none")
+  g <- g + geom_vline(xintercept = as.numeric(vline),col = vlineCol,linetype = 2,size = 1)
+  g <- g + annotate("text",x = vline,y = min(obj0[,2]),label= vlineTxt,
+                    angle = 90,vjust = -0.7,hjust = 0,size = 6,col = vlineCol)
+  print(g)
+  dev.off()
+  #boxplot part
+  pngFile <- paste0(pngTitle02,iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  obj1 <- obj
+  obj1$Year <- year(obj1$Date)
+  obj1 <-
+    obj1[head(which(obj1$Year == tail(unique(obj1$Year),10)[1]),1):nrow(obj1),]
+  dateRange <- paste0(format(range(obj1$Date),dateFormat),collapse = '~')
+  p <-
+    ggboxplot(data = obj1,x = 'Year',y = 'Value',color = 'Year',
+              palette = "UChicago",add = "jitter",ggtheme = theme_bw(),repel = T)
+  p <- p + xlab('') + ylab('') + theme(legend.position = "none")
+  p <- p + ggtitle(paste0(mainTitle,'\n',dateRange,'\nSource:',dataSource))
+  p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(legend.text =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.x = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.y = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.text.x =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15,angle = 90,
+                                             vjust = 0.5))
+  p <- p + theme(axis.text.y =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15,angle = 0))
+  p <- p + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+  print(p)
+  dev.off()
+  #boxplot part
+  #boxplot part
+  pngFile <- paste0(pngTitle03,iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  fun_withList(obj = obj)
+  obj2 <- dfWithList
+  obj2 <-
+    obj2[head(which(obj2$PRIMEMINISTEROFJAPAN == tail(unique(obj2$PRIMEMINISTEROFJAPAN),10)[1]),1):nrow(obj2),]
+  dateRange <- paste0(format(range(obj2$Date),dateFormat),collapse = '~')
+  p <-
+    ggboxplot(data = obj2,x = 'PRIMEMINISTEROFJAPAN',y = 'Value',color = 'PRIMEMINISTEROFJAPAN',
+              palette = "UChicago",add = "jitter",ggtheme = theme_bw(),repel = T)
+  p <- p + xlab('') + ylab('') + theme(legend.position = "none")
+  p <- p + ggtitle(paste0(mainTitle,'\n',dateRange,'\nSource:',dataSource))
+  p <- p + theme(plot.title =   element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(legend.text =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.x = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.title.y = element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15))
+  p <- p + theme(axis.text.x =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15,angle = 90,
+                                             vjust = 0.5))
+  p <- p + theme(axis.text.y =  element_text(hjust = 0.5,family = 'Meiryo',face = 'plain',size = 15,angle = 0))
+  p <- p + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+  print(p)
+  dev.off()
+  #boxplot part
+  #txt part
+  txt <- paste0(txt,'<b>',mainTitle,'</b><br>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Timeseries\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Boxplot By Year\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle03,iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle03,iii,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Boxplot By Primeminister\n</a>\n<hr>\n')
+  #txt part
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+write.table(x = txt,file = 'CurrentSurveyOfCommerce.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+```
