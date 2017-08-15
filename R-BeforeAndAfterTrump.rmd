@@ -50,7 +50,8 @@ indicators <- c(
 'Working Age Population: Aged 15-64<br>All Persons for the United States (LFWA64TTUSM647S)',
 'Personal Saving Rate (PSAVERT)',
 'University of Michigan: Consumer Sentiment (UMCSENT)',
-'Japan / U.S. Foreign Exchange Rate (EXJPUS)',
+'Japan / U.S. Foreign Exchange Rate (DEXJPUS)',
+'U.S. / Euro Foreign Exchange Rate (DEXUSEU)',
 'St. Louis Fed Financial Stress Index (STLFSI)',
 'Producer Price Index for All Commodities (PPIACO)'
 )
