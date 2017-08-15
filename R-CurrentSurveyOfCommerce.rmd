@@ -207,7 +207,7 @@ for(iii in seq(length(CurrentSurveyOfCommerce))){
     paste0(txt,
            '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii,
            '.png" width="20%" />\n')
-  txt <- paste0(txt,'Boxplot By Year\n</a>\n')
+  txt <- paste0(txt,'By Year\n</a>\n')
   txt <- 
     paste0(txt,
            '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle03,iii,'.png">\n')
@@ -215,7 +215,7 @@ for(iii in seq(length(CurrentSurveyOfCommerce))){
     paste0(txt,
            '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle03,iii,
            '.png" width="20%" />\n')
-  txt <- paste0(txt,'Boxplot By Primeminister\n</a>\n<hr>\n')
+  txt <- paste0(txt,'By Primeminister\n</a>\n<hr>\n')
   #txt part
 }
 ```
