@@ -504,6 +504,12 @@ print(tail(NAAIM_ExposureIndex))
 ```
 
 ```{r}
+for(iii in seq(length(dailyChart))){
+  print(nrow(dailyChart[[iii]]))
+}
+```
+
+```{r}
 userName <- Sys.info()['user']
 fileName <- 'defaultPath.csv'
 pathToFile <-
