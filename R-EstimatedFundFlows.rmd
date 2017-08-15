@@ -1,0 +1,134 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+baseURL01 <- 
+  'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+baseURL02 <- 
+  'https://raw.githubusercontent.com/am-consulting/Rscript/master/'
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+script <- 
+  RCurl::getURL(paste0(baseURL01,'fun_EstimatedFundFlows.r'),ssl.verifypeer = F)
+eval(parse(text = script))
+estimated.fund.flows.monthly <- fun_EstimatedFundFlows(type = 'monthly')
+estimated.fund.flows.weekly <- fun_EstimatedFundFlows(type = 'weekly')
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+pngWidth <- 1000
+pngHeight <- 600
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'UTF8')
+pathOutputEstimatedFundFlows <- paste0('C:/Users/',userName,buf0[2,1],
+                                       'charts/indicator/AMCC-EstimatedFundFlows/')
+```
+
+```{r}
+library(Nippon);library(ggplot2);library(scales);
+library(lubridate);library(ggpubr);library(ggsci);library(ggalt)
+cnt <- 0
+EstimatedFundFlows.monthly <- list()
+obj <- estimated.fund.flows.monthly$tsData
+for(ccc in 2:ncol(obj)){
+  cnt <- cnt + 1
+  buf <- obj[,c(1,ccc)]
+#  buf[,1] <- as.Date(paste0(year(buf[,1]),'-',month(buf[,1]),'-1'))
+  EstimatedFundFlows.monthly[[cnt]] <- buf
+  print(tail(EstimatedFundFlows.monthly[[cnt]]))
+}
+cnt <- 0
+EstimatedFundFlows.weekly <- list()
+obj <- estimated.fund.flows.weekly$tsData
+for(ccc in 2:ncol(obj)){
+  cnt <- cnt + 1
+  buf <- obj[,c(1,ccc)]
+  EstimatedFundFlows.weekly[[cnt]] <- buf
+  print(tail(EstimatedFundFlows.weekly[[cnt]]))
+}
+```
+
+```{r}
+setwd(pathOutputEstimatedFundFlows)
+txt <- ''
+folderName <- 'AMCC-EstimatedFundFlows/'
+pngTitle01 <- 'AMCC-EstimatedFundFlows-monthly-TS-'
+pngTitle02 <- 'AMCC-EstimatedFundFlows-weekly-TS-'
+dataSource <- 'Investment Company Institute'
+dateFormat <- '%Y-%m-%d'
+```
+
+```{r}
+fun_Barplot <- function(){
+  mainTitle <- colnames(obj)[2]
+  colnames(obj)[2] <- 'Value'
+  dateRange <- paste0(format(range(obj$Date),dateFormat),collapse = '~')
+  obj$col <- ifelse(0<=obj$Value,'blue','red')
+  obj$Date <- as.character(obj$Date)
+  g <- ggplot(data = obj,aes(x = obj$Date,y = obj$Value))
+  g <- g + geom_bar(stat = 'identity',aes(fill = obj$col))
+  g <- g + scale_fill_manual(values = c(black = 'black',blue = 'blue',red = 'red'))
+  g <- g + ggtitle(label = paste0(mainTitle,periodTxt,dateRange,'\n',unitTxt,'\nSource:',dataSource))
+  g <- g + xlab(label = '')
+  g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+  g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 15))
+  g <- g + theme(plot.subtitle = element_text(hjust = 0.5,family = "Meiryo",size = 12))
+  g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+  g <- g + theme(axis.text.x = element_text(angle = 90,family = "Meiryo",size = 12,vjust = 0.5)) 
+  g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+  g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
+  g <- g + theme(legend.position = "none")
+  print(g)
+  dev.off()
+}
+```
+
+```{r}
+for(iii in seq(length(EstimatedFundFlows.monthly))){
+  # monthly part
+  pngFile <- paste0(pngTitle01,iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  obj <- EstimatedFundFlows.monthly[[iii]]
+  periodTxt <- ':Monthly\n'
+  unitTxt <- estimated.fund.flows.monthly$sheet.unit
+  fun_Barplot()
+  # monthly part
+  # weekly part
+  pngFile <- paste0(pngTitle02,iii,".png")
+  png(file = pngFile, width = pngWidth, height = pngHeight)
+  obj <- EstimatedFundFlows.weekly[[iii]]
+  periodTxt <- ':Weekly\n'
+  unitTxt <- estimated.fund.flows.weekly$sheet.unit
+  fun_Barplot()
+  #txt part
+  txt <- paste0(txt,'<b>',colnames(obj)[2],'</b><br>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle01,iii,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Monthly\n</a>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/',folderName,pngTitle02,iii,
+           '.png" width="20%" />\n')
+  txt <- paste0(txt,'Weekly\n</a>\n<hr>\n')
+  #txt part
+}
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='asis'}
+write.table(x = txt,file = 'EstimatedFundFlows.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+```
