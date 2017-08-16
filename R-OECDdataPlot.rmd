@@ -34,17 +34,17 @@ eval(parse(text = script))
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 yyyy <- 2017
 mm <- 12
-sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOTR_GYSA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=",yyyy,"-",mm)
-fun_OECDStatisticData(sdmxURL = sdmxURL)
-oecd01 <- allOECDData
-oecd01[,-1] <- apply(oecd01[,-1],2,function(x)round(x,1))
-sdmxTitle01 <- '12-month rate of change of the trend restored CLI'
+# sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOTR_GYSA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=",yyyy,"-",mm)
+# fun_OECDStatisticData(sdmxURL = sdmxURL)
+# oecd01 <- allOECDData
+# oecd01[,-1] <- apply(oecd01[,-1],2,function(x)round(x,1))
+# sdmxTitle01 <- '12-month rate of change of the trend restored CLI'
 
 sdmxURL <- paste0("http://stats.oecd.org/restsdmx/sdmx.ashx/GetData/MEI_CLI/LOLITOAA.AUS+AUT+BEL+CAN+CHL+CZE+DNK+EST+FIN+FRA+DEU+GRC+HUN+IRL+ISR+ITA+JPN+KOR+LVA+LUX+MEX+NLD+NZL+NOR+POL+PRT+SVK+SVN+ESP+SWE+CHE+TUR+GBR+USA+EA19+G4E+G-7+NAFTA+OECDE+OECD+ONM+A5M+NMEC+BRA+CHN+IND+IDN+RUS+ZAF.M/all?startTime=1947-02&endTime=",yyyy,"-",mm)
 fun_OECDStatisticData(sdmxURL = sdmxURL)
-oecd02 <- allOECDData
-oecd02[,-1] <- apply(oecd02[,-1],2,function(x)round(x,1))
-sdmxTitle02 <- 'Amplitude adjusted'
+CLI <- allOECDData
+CLI[,-1] <- apply(CLI[,-1],2,function(x)round(x,1))
+CLItype <- 'Amplitude adjusted'
 ```
 
 ```{r warning = F, error = F, message = F, echo = F, results='hold'}
@@ -248,15 +248,15 @@ write.table(x = txt,file = htmlFile,append = F,
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 pngTitle01 <- 'AMCC-OECD-CLI-TS-'
 pngTitle02 <- 'AMCC-OECD-CLI-BP-'
-folderName <- 'AMCC-OECD/'
-for(iii in 2:ncol(oecd01)){
-  plotData <- na.omit(oecd01[,c(1,iii)])
+folderName <- 'AMCC-OECD/CLI/'
+for(iii in 2:ncol(CLI)){
+  plotData <- na.omit(CLI[,c(1,iii)])
   colnames(plotData)[2] <- paste0('Composite Leading Indicators:',
-                                  colnames(plotData)[2],'\n',sdmxTitle01)
+                                  colnames(plotData)[2],'\n',CLItype)
   fun_ggplot_line(plotData = plotData,pngN = iii-1,pngTitle = pngTitle01,output = 1)
   fun_ggboxplotByYear(obj = plotData,yearN = yearN,pngN = iii-1,pngTitle = pngTitle02,output = 1)
 }
-fun_outputHtmlFile(obj = oecd01,htmlFile = 'OECD-CLI-olive.html')
+fun_outputHtmlFile(obj = CLI,htmlFile = 'OECD-CLI-olive.html')
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
