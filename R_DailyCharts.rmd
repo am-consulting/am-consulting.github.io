@@ -82,10 +82,10 @@ fun_plot <- function(s = 1,e = 16,tailN = 150,pngN = 1){
         side = 3,outer = T,col = 'black',cex = 1.8,line = 1)
   dev.off()
 }
+dailyChart <- list()
 ```
 
 ```{r}
-dailyChart <- list()
 cnt <- 1
 dateFormat <- '%Y%m%d'
 fromOANDA <- c('USD/JPY','EUR/USD','CNY/USD','TWD/USD','CHF/USD','USD/KRW','BTC/USD','XAU/USD','XAU/XAG','XAU/XPT','BTC/XAU','ZAR/USD')
@@ -163,6 +163,9 @@ obj[,1] <-
 print(tail(obj))
 dailyChart[[cnt]] <- obj
 buf_cnt01 <- cnt
+```
+
+```{r}
 importIndex <- 
   c('importPutCallRatios.r','importSkew.r','importTokyoRepoRate.r',
     'importHenryHubNaturalGasSpotPrice.r','importGMVI.r','importREIT.r',
@@ -176,6 +179,9 @@ for(jjj in seq(length(importIndex))){
   eval(parse(text = script))
   gc();gc();
 }
+```
+
+```{r}
 cnt <- buf_cnt01
 for(put in 1:5){
   cnt <- cnt + 1
@@ -188,7 +194,11 @@ for(put in 1:5){
   obj[,1] <- 
     as.Date(obj[,1])
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
+```
+
+```{r}
 cnt <- cnt + 1
 obj <- 
   na.omit(skewCBOE)
@@ -203,7 +213,11 @@ for(ccccc in 2:ncol(TokyoRepoRate)){
     as.Date(obj[,1])
   colnames(obj)[2] <- paste0('Tokyo Repo Rate\n',colnames(obj)[2])
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
+```
+
+```{r}
 cnt <- cnt + 1
 obj <- 
   na.omit(HenryHubNaturalGasSpotPrice[[1]])
@@ -212,6 +226,7 @@ obj[,1] <-
 colnames(obj)[2] <- 
   gsub('price\\s','Price\n',colnames(obj)[2],ignore.case = T)
 dailyChart[[cnt]] <- obj
+print(tail(dailyChart[[cnt]]))
 tmp <- NaturalGasPrice[[2]]
 tmp[,1] <- as.Date(tmp[,1])
 for(cccc in 2:ncol(tmp)){
@@ -220,7 +235,11 @@ for(cccc in 2:ncol(tmp)){
   colnames(obj)[2] <- 
     gsub('\\s\\(Dollars','\n(Dollars',colnames(obj)[2],ignore.case = T)
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
+```
+
+```{r}
 for(nnnn in c(1,3,4)){
   tmp <- NYMEXFuturesPrices[[nnnn]]
   tmp[,1] <- as.Date(tmp[,1])
@@ -232,9 +251,13 @@ for(nnnn in c(1,3,4)){
     colnames(obj)[2] <- 
       gsub('Harbor\\s','Harbor\n',colnames(obj)[2],ignore.case = T)
     dailyChart[[cnt]] <- obj
+    print(tail(dailyChart[[cnt]]))
   }
 }
 buf_cnt02 <- cnt
+```
+
+```{r}
 cnt <- buf_cnt02
 for(cccc in 2:ncol(LIBOR)){
   cnt <- cnt + 1
@@ -242,6 +265,7 @@ for(cccc in 2:ncol(LIBOR)){
   colnames(obj)[2] <- 
     gsub('\\s\\(LIBOR','\n(LIBOR',colnames(obj)[2],ignore.case = T)
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
 for(gggg in c(2:5,7)){
   cnt <- cnt + 1
@@ -250,6 +274,7 @@ for(gggg in c(2:5,7)){
   obj[,1] <- 
     as.Date(obj[,1])
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
 for(gggg in c(2:9)){
   cnt <- cnt + 1
@@ -259,7 +284,11 @@ for(gggg in c(2:9)){
   obj[,1] <- 
     as.Date(obj[,1])
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
+```
+
+```{r}
 cnt <- cnt + 1
 obj <- 
   na.omit(`sp-global-reit-us-dollar`[,c(1,3)])
@@ -268,6 +297,7 @@ obj[,1] <-
 obj[,2] <- 
   as.numeric(obj[,2])
 dailyChart[[cnt]] <- obj
+print(tail(dailyChart[[cnt]]))
 cnt <- cnt + 1
 obj <- 
   na.omit(`sp-united-states-reit-us-dollar`[,c(1,3)])
@@ -276,6 +306,7 @@ obj[,1] <-
 obj[,2] <- 
   as.numeric(obj[,2])
 dailyChart[[cnt]] <- obj
+print(tail(dailyChart[[cnt]]))
 cnt <- cnt + 1
 obj <- 
   na.omit(`sp-developed-reit-us-dollar`[,c(1,3)])
@@ -284,6 +315,10 @@ obj[,1] <-
 obj[,2] <- 
   as.numeric(obj[,2])
 dailyChart[[cnt]] <- obj
+print(tail(dailyChart[[cnt]]))
+```
+
+```{r}
 for(gggg in c(2:3)){
   cnt <- cnt + 1
   obj <- 
@@ -293,9 +328,16 @@ for(gggg in c(2:3)){
     as.Date(obj[,1])
   print(tail(obj,2))
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
-# effective FX
 buf_cnt03 <- cnt
+```
+
+```{r}
+# effective FX
+# http://www.bis.org/statistics/full_data_sets.htm
+# http://www.bis.org/statistics/eer.htm
+gc();gc();
 cnt <- buf_cnt03
 fun_effectiveFX <- function(){
   pathOutput <- paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
@@ -337,10 +379,14 @@ for(cccc in objCol){
   colnames(obj)[2] <- paste0('Effective Exchange Rate\n',colnames(obj)[2])
   print(tail(obj,2))
   dailyChart[[cnt]] <- obj
+  print(tail(dailyChart[[cnt]]))
 }
 # effective FX
-# historical FX
 buf_cnt04 <- cnt
+```
+
+```{r}
+# historical FX
 cnt <- buf_cnt04
 objCurrency <- 
   c('Date','米ドル','英ポンド','ユーロ','カナダ','スイス','オーストラリア','ニュージーランド','南アフリカ','中国')
@@ -358,6 +404,9 @@ for(ccc in 2:ncol(buf)){
   gc();gc();
 }
 # historical FX
+```
+
+```{r}
 fromYahoo <- 
   c('TREAST','U.S.Treasury securities\nheld by the Federal Reserve\nAll Maturities:T$',
     'MBST','Mortgage-backed securities\nheld by the Federal Reserve\nAll Maturities:T$')
@@ -372,6 +421,9 @@ for(iii in seq(1,length(fromYahoo),by = 2)){
   dailyChart[[cnt]] <- obj
   print(tail(dailyChart[[cnt]]))
 }
+```
+
+```{r}
 # weekly leading index
 cnt <- cnt + 1
 library(excel.link)
@@ -398,6 +450,9 @@ print(tail(obj,2))
 dailyChart[[cnt]] <- obj
 # weekly leading index
 buf_cnt05 <- cnt
+```
+
+```{r}
 cnt <- buf_cnt05
 # EIA
 pathOutput <-
@@ -445,6 +500,9 @@ for(iii in 1:length(colnameTxt)){
 }
 # EIA
 buf_cnt06 <- cnt
+```
+
+```{r}
 cnt <- buf_cnt06
 cnt <- cnt + 1
 buf0 <- 
@@ -454,8 +512,11 @@ obj <-
 colnames(obj)[2] <- 'St. Louis Fed Financial Stress Index'
 print(tail(obj,2))
 dailyChart[[cnt]] <- obj
-# Nikkei Index
 buf_cnt07 <- cnt
+```
+
+```{r}
+# Nikkei Index
 cnt <- buf_cnt07
 importIndex <- 
   c('importNikkeiIndexList.r')
@@ -481,11 +542,15 @@ for(rrr in seq(nrow(NikkeiDailyIndexList))){
     buf1 <- na.omit(buf1)
     print(tail(buf1))
     dailyChart[[cnt]] <- buf1
+    gc();gc();
   }
 }
 # Nikkei Index
-# NAAIM Exposure Index
 buf_cnt08 <- cnt
+```
+
+```{r}
+# NAAIM Exposure Index
 cnt <- buf_cnt08
 buf <- 
   read.csv(file = 'http://www.naaim.org/wp-content/plugins/ip-chart/export.php',
