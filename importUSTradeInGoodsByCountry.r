@@ -5,9 +5,13 @@ pathOutput <-
 setwd(pathOutput)
 fileName <- 'country.xlsx'
 if(!file.exists(paste0(pathOutput, fileName))) {
-  download.file(url = paste0('https://www.census.gov/foreign-trade/balance/',fileName),
-                destfile = fileName,
-                mode = 'wb')
+  # download.file(url = paste0('https://www.census.gov/foreign-trade/balance/',fileName),
+  #               destfile = fileName,
+  #               mode = 'wb')
+  # https://yokekeong.com/download-files-over-https-in-r-with-httr/
+  library(httr)
+  GET(url = paste0('https://www.census.gov/foreign-trade/balance/',fileName),
+      write_disk(fileName, overwrite=T))
 }
 sheetNo <- 1
 buf0 <-
