@@ -122,6 +122,8 @@ oilData <- CrudeOilProduction
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F,results='hide'}
+# URL 'https://www.census.gov/foreign-trade/balance/country.xlsx': status was 'SSL connect error'
+# https://www.census.gov/foreign-trade/balance/index.html
 script <-
   RCurl::getURL(
     url = "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importUSTradeInGoodsByCountry.r",
