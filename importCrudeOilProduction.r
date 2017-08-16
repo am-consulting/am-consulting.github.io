@@ -1,7 +1,7 @@
 username <-
   Sys.info()['user']
 pathOutput <-
-  paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
+  paste0("C:/Users/", username, "/Desktop/CrudeOilProduction/")
 setwd(pathOutput)
 csvList <-
   dir(pattern = 'world_primary',ignore.case = T)
