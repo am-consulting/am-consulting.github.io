@@ -52,9 +52,15 @@ published : true
   txt <- paste0('#### Summary\n\n')
   for(iii in 1:6){
     statName <- switch(iii,'最小値','第1四分位数','中央値','平均値','第3四分位数','最大値')
-    txt <-
-      paste0(txt,
-             paste0('- ',indicatorName,'の',dateRange,statName,'は',summary(obj[,2])[iii],'\n'))
+    if(iii != 4){
+      txt <-
+        paste0(txt,
+               paste0('- ',indicatorName,'の',dateRange,statName,'は',summary(obj[,2])[iii],'\n'))
+    }else{
+      txt <-
+        paste0(txt,
+               paste0('- ',indicatorName,'の',dateRange,statName,'は',round(summary(obj[,2])[iii],4),'\n'))
+    }
   }
   meanResult <-
     fun_meanS(objDF = obj,dateCol = 1,objCol = 2,dateFormat = dateFormat)
