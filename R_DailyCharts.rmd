@@ -18,7 +18,7 @@ for(iii in 1:nrow(functionList)){
   eval(parse(text = script))
 }
 nValue <- c(50,52) # 1 daily 2 weekly
-fun_plot <- function(s = 1,e = 16,tailN = 150,pngN = 1){
+fun_plot <- function(s = 1,e = 16,tailN = 100,pngN = 1){
   pngFile <- paste0('AMCC-',pngN,".png")
   png(file = pngFile, width = 1400, height = 900)
   par(mfrow = c(4,4),oma = c(2,0,5,0),family = 'Meiryo',font.main = 2,mar = c(4,3,8,1),
