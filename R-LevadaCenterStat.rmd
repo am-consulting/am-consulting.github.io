@@ -1,0 +1,60 @@
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+pngWidth <- 1000
+pngHeight <- 600
+userName <- Sys.info()['user']
+fileName <- 'defaultPath.csv'
+pathToFile <-
+  paste0('C:/Users/',userName,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+buf0 <-
+  read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'UTF8')
+pathOutputLEVADA <- paste0('C:/Users/',userName,buf0[2,1],
+                             'charts/indicator/AMCC-LEVADA/')
+```
+
+```{r}
+script <-
+  RCurl::getURL(
+    url = "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importLEVADA.r",
+    ssl.verifypeer = FALSE)
+eval(parse(text = script))
+```
+
+```{r}
+library(ggplot2)
+vlineDate <- c(as.Date('2001-1-20'),as.Date('2009-1-20'),as.Date('2017-1-20'))
+vlineTxt <- c('George W. Bush','Barack Obama','Donald Trump')
+annRect <- data.frame(S=vlineDate,E=c(tail(vlineDate,-1),Sys.Date()),P=vlineTxt,C=c('red','blue','red'))
+```
+
+```{r}
+iii <- 1
+obj <- levada[[iii]]
+annObj <- head(obj$Date,1)<=vlineDate
+cols <- c('Approve'='blue','Disapprove'='red')
+dateRange <- paste0(format(range(obj[,1]),'%Y-%m'),collapse = '~')
+g <- ggplot(data = obj,aes(x = obj$Date))
+g <- g + geom_line(aes(y = obj$Approve,colour = 'Approve'))
+g <- g + geom_point(aes(y = obj$Approve,colour = 'Approve'),size = 1)
+g <- g + geom_line(aes(y = obj$Disapprove,colour = 'Disapprove'))
+g <- g + geom_point(aes(y = obj$Disapprove,colour = 'Disapprove'),size = 1)
+g <- g + scale_colour_manual(name = '',values = cols)
+g <- g + annotate("rect",xmin=annRect[annObj,]$S,xmax=annRect[annObj,]$E,
+                  ymin=-Inf,ymax=Inf,alpha=0.2,fill=annRect[annObj,]$C)
+g <- g + ggtitle(label = paste0(titleList[iii],'\n',dateRange,'\nSource:Levada-Center'))
+g <- g + xlab(label = '')
+g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(10),sec.axis = dup_axis())
+g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 15))
+g <- g + theme(plot.subtitle = element_text(hjust = 0.5,family = "Meiryo",size = 12))
+g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 12,vjust = 0.5)) 
+g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
+g <- g + theme(legend.position = "top")
+g <- g + annotate("text",x = vlineDate[annObj],y = -Inf,label= vlineTxt[annObj],
+                  angle = 90,vjust = 1,hjust = 0,size = 4,col = 'black',family = 'Meiryo')
+print(g)
+```
