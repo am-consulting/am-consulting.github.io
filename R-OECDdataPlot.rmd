@@ -262,7 +262,7 @@ fun_outputHtmlFile(obj = CLI,htmlFile = 'OECD-CLI-olive.html')
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 pngTitle01 <- 'AMCC-OECD-sharePrice-TS-'
 pngTitle02 <- 'AMCC-OECD-sharePrice-BP-'
-folderName <- 'AMCC-OECD/'
+folderName <- 'AMCC-OECD/SharePrice/'
 for(iii in 2:ncol(sharePriceIndexData)){
   plotData <- na.omit(sharePriceIndexData[,c(1,iii)])
   colnames(plotData)[2] <- paste0('OECD Share Prices Index:2010=100:',colnames(plotData)[2])
