@@ -21,7 +21,7 @@ script <-
     ssl.verifypeer = FALSE)
 eval(parse(text = script))
 for(iii in seq(length(levada))){
-  print(tail(levada[[iii]]))
+  print(tail(levada[[iii]],2))
 }
 ```
 
@@ -33,41 +33,25 @@ annRect <- data.frame(S=vlineDate,E=c(tail(vlineDate,-1),Sys.Date()),P=vlineTxt,
 ```
 
 ```{r}
-cols <- c('Approve'='blue','Disapprove'='red')
-fun_plot(iii = 1)
-
-cols <- c('In the right direction'='blue','On the wrong track'='red')
-fun_plot(iii = 4)
-
-cols <- c('Safe'='blue','Tense'='green','Dangerous'='red')
-fun_plot(iii = 5)
-
-cols <- c('Positive'='blue','Negative'='red')
-fun_plot(iii = 7)
-
-cols <- c('Social Sentiment Index'='blue')
-fun_plot(iii = 8)
-
-cols <- c('Consumer Sentimet Index'='blue')
-fun_plot(iii = 9)
-
-cols <- c('Unemployment Index'='blue')
-fun_plot(iii = 10)
-
-fun_plot <- function(iii){
+fun_plot <- function(iii,output = 0){
+if(output!=0){
+  setwd(pathOutputLEVADA)
+  pngFile <- paste0('AMCC-LEVADA-',iii,".png")
+  png(file = pngFile,width = pngWidth,height = pngHeight)
+}
 obj <- na.omit(levada[[iii]])
 annObj <- head(obj$Date,1)<=vlineDate
 dateRange <- paste0(format(range(obj[,1]),'%Y-%m'),collapse = '~')
 g <- ggplot(data = obj,aes(x = obj$Date))
 g <- g + geom_line(aes(y = obj[,2],colour = colnames(obj)[2]))
-g <- g + geom_point(aes(y = obj[,2],colour = colnames(obj)[2]),size = 1)
+g <- g + geom_point(aes(y = obj[,2],colour = colnames(obj)[2]),size = 2)
 if(iii<=7){
   g <- g + geom_line(aes(y = obj[,3],colour = colnames(obj)[3]))
-  g <- g + geom_point(aes(y = obj[,3],colour = colnames(obj)[3]),size = 1)
+  g <- g + geom_point(aes(y = obj[,3],colour = colnames(obj)[3]),size = 2)
 }
 if(iii == 5){
   g <- g + geom_line(aes(y = obj[,4],colour = colnames(obj)[4]))
-  g <- g + geom_point(aes(y = obj[,4],colour = colnames(obj)[4]),size = 1)
+  g <- g + geom_point(aes(y = obj[,4],colour = colnames(obj)[4]),size = 2)
 }
 g <- g + scale_colour_manual(name = '',values = cols)
 g <- g + annotate("rect",xmin=annRect[annObj,]$S,xmax=annRect[annObj,]$E,
@@ -84,7 +68,47 @@ g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16)
 g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
 g <- g + theme(legend.position = "top")
 g <- g + annotate("text",x = vlineDate[annObj],y = -Inf,label= vlineTxt[annObj],
-                  angle = 90,vjust = 1,hjust = 0,size = 4,col = 'black',family = 'Meiryo')
+                  angle = 90,vjust = 1,hjust = 0,size = 6,col = 'black',family = 'Meiryo')
 print(g)
+if(output!=0){dev.off()}
 }
+```
+
+```{r}
+cols <- c('Approve'='blue','Disapprove'='red')
+fun_plot(iii = 1,output = 1)
+fun_plot(iii = 2,output = 1)
+fun_plot(iii = 3,output = 1)
+cols <- c('In the right direction'='blue','On the wrong track'='red')
+fun_plot(iii = 4,output = 1)
+cols <- c('Safe'='blue','Tense'='orange','Dangerous'='red')
+fun_plot(iii = 5,output = 1)
+cols <- c('Positive'='blue','Negative'='red')
+fun_plot(iii = 6,output = 1)
+fun_plot(iii = 7,output = 1)
+cols <- c('Social Sentiment Index'='blue')
+fun_plot(iii = 8,output = 1)
+cols <- c('Consumer Sentimet Index'='blue')
+fun_plot(iii = 9,output = 1)
+cols <- c('Unemployment Index'='blue')
+fun_plot(iii = 10,output = 1)
+```
+
+```{r}
+txt <- ''
+for(iii in seq(length(levada))){
+  txt <- paste0(txt,'<b>',titleList[iii],'</b><br>\n')
+  txt <- 
+    paste0(txt,
+           '<a href="http://indicator.am-consulting.co.jp/AMCC-LEVADA/AMCC-LEVADA-',iii,'.png">\n')
+  txt <- 
+    paste0(txt,
+           '<img border="2" src="http://indicator.am-consulting.co.jp/AMCC-LEVADA/AMCC-LEVADA-',iii,
+           '.png" width="40%" />\n')
+  txt <-
+    paste0(txt,'Timeseries\n</a>\n<hr>\n')
+}
+setwd(pathOutputLEVADA)
+write.table(x = txt,file = 'AMCC-LEVADA.html',append = F,
+            fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
 ```
