@@ -20,26 +20,55 @@ script <-
     url = "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importLEVADA.r",
     ssl.verifypeer = FALSE)
 eval(parse(text = script))
+for(iii in seq(length(levada))){
+  print(tail(levada[[iii]]))
+}
 ```
 
 ```{r}
 library(ggplot2)
-vlineDate <- c(as.Date('2001-1-20'),as.Date('2009-1-20'),as.Date('2017-1-20'))
-vlineTxt <- c('George W. Bush','Barack Obama','Donald Trump')
-annRect <- data.frame(S=vlineDate,E=c(tail(vlineDate,-1),Sys.Date()),P=vlineTxt,C=c('red','blue','red'))
+vlineDate <- c(as.Date('1993-1-20'),as.Date('2001-1-20'),as.Date('2009-1-20'),as.Date('2017-1-20'))
+vlineTxt <- c('Bill Clinton','George W. Bush','Barack Obama','Donald Trump')
+annRect <- data.frame(S=vlineDate,E=c(tail(vlineDate,-1),Sys.Date()),P=vlineTxt,C=c('blue','red','blue','red'))
 ```
 
 ```{r}
-iii <- 1
-obj <- levada[[iii]]
-annObj <- head(obj$Date,1)<=vlineDate
 cols <- c('Approve'='blue','Disapprove'='red')
+fun_plot(iii = 1)
+
+cols <- c('In the right direction'='blue','On the wrong track'='red')
+fun_plot(iii = 4)
+
+cols <- c('Safe'='blue','Tense'='green','Dangerous'='red')
+fun_plot(iii = 5)
+
+cols <- c('Positive'='blue','Negative'='red')
+fun_plot(iii = 7)
+
+cols <- c('Social Sentiment Index'='blue')
+fun_plot(iii = 8)
+
+cols <- c('Consumer Sentimet Index'='blue')
+fun_plot(iii = 9)
+
+cols <- c('Unemployment Index'='blue')
+fun_plot(iii = 10)
+
+fun_plot <- function(iii){
+obj <- na.omit(levada[[iii]])
+annObj <- head(obj$Date,1)<=vlineDate
 dateRange <- paste0(format(range(obj[,1]),'%Y-%m'),collapse = '~')
 g <- ggplot(data = obj,aes(x = obj$Date))
-g <- g + geom_line(aes(y = obj$Approve,colour = 'Approve'))
-g <- g + geom_point(aes(y = obj$Approve,colour = 'Approve'),size = 1)
-g <- g + geom_line(aes(y = obj$Disapprove,colour = 'Disapprove'))
-g <- g + geom_point(aes(y = obj$Disapprove,colour = 'Disapprove'),size = 1)
+g <- g + geom_line(aes(y = obj[,2],colour = colnames(obj)[2]))
+g <- g + geom_point(aes(y = obj[,2],colour = colnames(obj)[2]),size = 1)
+if(iii<=7){
+  g <- g + geom_line(aes(y = obj[,3],colour = colnames(obj)[3]))
+  g <- g + geom_point(aes(y = obj[,3],colour = colnames(obj)[3]),size = 1)
+}
+if(iii == 5){
+  g <- g + geom_line(aes(y = obj[,4],colour = colnames(obj)[4]))
+  g <- g + geom_point(aes(y = obj[,4],colour = colnames(obj)[4]),size = 1)
+}
 g <- g + scale_colour_manual(name = '',values = cols)
 g <- g + annotate("rect",xmin=annRect[annObj,]$S,xmax=annRect[annObj,]$E,
                   ymin=-Inf,ymax=Inf,alpha=0.2,fill=annRect[annObj,]$C)
@@ -57,4 +86,5 @@ g <- g + theme(legend.position = "top")
 g <- g + annotate("text",x = vlineDate[annObj],y = -Inf,label= vlineTxt[annObj],
                   angle = 90,vjust = 1,hjust = 0,size = 4,col = 'black',family = 'Meiryo')
 print(g)
+}
 ```
