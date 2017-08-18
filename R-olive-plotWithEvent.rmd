@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 6
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers
     includes:
@@ -16,18 +16,16 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-# https://stackoverflow.com/questions/43329230/r-markdown-add-tag-to-head-of-html-output/43334558#43334558
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
 insertFile <- file("insertHeader.html")
-writeLines('
-<link rel="shortcut icon" href="http://knowledgevault.saecanet.com/charts/indicator/favicon-bar-chart.ico">
-',
-insertFile)
+writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
-
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -528,14 +526,33 @@ pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
 ##################
-obj <- tail(dataSet[,c(1,2)],14)
-par(mar=c(4,6.5,2,1),family='Meiryo',mfrow=c(1,1))
-barplot(height = obj[,2],
-        names.arg = obj[,1],
-        horiz = T,
-        las = 1,
-        col = '#dc143c',
-        main = '中国公船等による尖閣諸島周辺の接続水域内入域数(隻):直近14日分')
+# obj <- tail(dataSet[,c(1,2)],14)
+# par(mar=c(4,6.5,2,1),family='Meiryo',mfrow=c(1,1))
+# barplot(height = obj[,2],
+#         names.arg = obj[,1],
+#         horiz = T,
+#         las = 1,
+#         col = '#dc143c',
+#         main = '中国公船等による尖閣諸島周辺の接続水域内入域数(隻):直近14日分')
+# ggplot
+obj <- dataSet[,c(1,2)]
+dateRange <- paste0(range(obj[,1]),collapse = '~')
+g <- ggplot(data = obj,aes(x = obj[,1],y = obj[,2]))
+g <- g + geom_bar(stat = 'identity',col = '#4169e1') + geom_point(col = '#4169e1',size = 1)
+g <- g + ggtitle(label = paste0('中国公船等による尖閣諸島周辺の接続水域内入域数(隻)\n',
+                                dateRange,'\nSource:海上保安庁'))
+g <- g + xlab(label = '')
+g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(20),sec.axis = dup_axis())
+g <- g + theme(plot.title = element_text(hjust = 0.5,family = "Meiryo",size = 15))
+g <- g + theme(plot.subtitle = element_text(hjust = 0.5,family = "Meiryo",size = 12))
+g <- g + theme(axis.title.x = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.title.y = element_text(family = "Meiryo",size = 16)) 
+g <- g + theme(axis.text.x = element_text(angle = 0,family = "Meiryo",size = 12,vjust = 0.5)) 
+g <- g + theme(axis.text.y = element_text(angle = 0,family = "Meiryo",size = 16))
+g <- g + theme(legend.text = element_text(angle = 0,family = "Meiryo",size = 16))
+g <- g + theme(legend.position = "none")
+print(g)
+# ggplot
 dev.off()
 ```
 
