@@ -275,7 +275,7 @@ fun_outputHtmlFile(obj = sharePriceIndexData,htmlFile = 'OECD-sharePrice-olive.h
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
 pngTitle01 <- 'AMCC-OECD-unemployment-TS-'
 pngTitle02 <- 'AMCC-OECD-unemployment-BP-'
-folderName <- 'AMCC-OECD/'
+folderName <- 'AMCC-OECD/Unemployment/'
 for(iii in 2:ncol(unemploymentData)){
   plotData <- na.omit(unemploymentData[,c(1,iii)])
   colnames(plotData)[2] <- paste0('Unemployment Rate:Quarterly Data:',
