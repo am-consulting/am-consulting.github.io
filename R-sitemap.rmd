@@ -13,7 +13,7 @@ pathToCharts <-
   paste0("C:/Users/", userName, buf[2,1],'charts/indicator/')
 setwd(pathToCharts)
 targetHTML <- dir(pathToCharts)
-targetHTML <- targetHTML[grep('am-consulting.co.jp-[0-9]{5}.html',targetHTML)]
+targetHTML <- targetHTML[grep('am-consulting.co.jp-[0-9]{5}.html|.+.html',targetHTML)]
 templateTxt <- '<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
  {{#sitemapXML}}
