@@ -614,3 +614,7 @@ write.csv(x = chartName,file = 'chartName.csv',
 #NIKKEI , #10YrJGB , #10YrBond , #USDJPY , #VIX, #EURUSD, #Bitcoin, #Gold, #SKEW, #Put, #Call, #TokyoRepoRate, #Henryhub, #REIT
 # 1400 * 900
 ```
+
+```{r}
+beepr::beep(5)
+```
