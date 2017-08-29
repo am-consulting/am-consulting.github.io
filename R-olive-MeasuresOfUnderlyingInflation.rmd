@@ -6,8 +6,8 @@ author: "アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_height: 4
-    fig_width: 10
+    fig_height: 5
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -27,8 +27,6 @@ writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
-<style>.main-container {max-width : 1000px;}</style>
-
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
@@ -36,7 +34,7 @@ close(insertFile)
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
@@ -95,15 +93,19 @@ fun_plotTimeSeries0 <- function(obj,objColumn){
   yMin <- min(obj[,objColumn],na.rm = T)
   titleText <- 
     substring(colnames(obj)[objColumn][1], 1, regexpr(':[0-9]+?',colnames(obj)[objColumn][1])-1)
-  plot(NULL, xlim= range(obj[,1]), ylim=c(yMin,yMax), ylab="", xlab="", xaxt = 'n',
+  plot(obj[,c(1,2)],xlim= range(obj[,1]), ylim=c(yMin,yMax), ylab="", xlab="", type='l',col = 'white',
        main = paste0(titleText, '\n', paste0(format(range(obj[,1]), dateFormat), collapse = '~')))
+  grid(nx = NA, ny = NULL, lty = 2, equilogs = T)
+  ticks <- as.Date(c(paste0(unique(year(obj[,1])),'-1-1'),
+                     paste0(unique(year(obj[,1])),'-6-30')))
+  abline(v = ticks,col = "lightgray",lty = 2)
   cnt <- 1
   for(iii in objColumn){
-    lines(obj[,1],obj[,iii],type='h',col=cnt)
+    lines(obj[,1],obj[,iii],type='h',col=cnt,xaxt='n')
     cnt <- cnt +1
   }
-  axis.Date(side=1, at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0) 
-  panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
+  # axis.Date(side=1, at=obj[,1],format=dateFormat,padj=1,cex.axis=1.0) 
+  # panel.first = grid(nx = NULL, ny = NULL, lty = 2, equilogs = T)
   graphics::legend('bottomleft',col=1:cnt,lty=1,
                    legend=colnames(obj)[objColumn],cex=1,bty='n',lwd = 2)
   # rect part
