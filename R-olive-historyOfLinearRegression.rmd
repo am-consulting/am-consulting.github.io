@@ -6,7 +6,7 @@ author: 'アセット･マネジメント･コンサルティング株式会�
 date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -29,7 +29,7 @@ close(insertFile)
 <style>.main-container {max-width : 1000px;}</style>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000,scipen = 999)
+options(width = 900,scipen = 999)
 ```
 
 ```{r warning=F, error=F, message=F, echo=F}
