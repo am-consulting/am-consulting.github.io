@@ -1,0 +1,55 @@
+```{r}
+library(ggplot2)
+github.url.01 <- 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/'
+github.url.02 <- 'https://raw.githubusercontent.com/am-consulting/Rscript/master/'
+script <- 
+  RCurl::getURL(paste0(github.url.01,'importNorthKoreaMissileTest.r'),ssl.verifypeer = F)
+eval(parse(text = script))
+load.function <- c('R-withList.r')
+for(iii in seq(length(load.function))){
+  script <-
+    RCurl::getURL(paste0(github.url.01,load.function[iii]),ssl.verifypeer = F)
+  eval(parse(text = script))
+}
+windowsFonts(Meiryo = windowsFont("Meiryo"))
+```
+
+```{r}
+base_size <- 12
+plot.text.size <- 11
+caption.subtitle.size <- 11
+vline.date <- c(as.Date('2009-9-16'),as.Date('2012-12-26'))
+vline.txt <- c('民主党政権','第2次安倍政権発足以降')
+fun_withList(obj = agg.data)
+date.range <- paste0(range(agg.data[,1]),collapse = '~')
+dfWithList$PRIMEMINISTEROFJAPAN <- 
+  factor(dfWithList$PRIMEMINISTEROFJAPAN,levels = unique(dfWithList$PRIMEMINISTEROFJAPAN))
+g <- ggplot(data = dfWithList,aes(x = dfWithList[,1],y = dfWithList[,2],col = dfWithList[,3]))
+g <- g + theme_grey(base_size = base_size,base_family = 'Meiryo')
+g <- g + geom_point(size=2) + xlab('') + ylab(label = 'Number of missile launch/ミサイル発射数')
+g <- g + scale_y_continuous(breaks = scales::pretty_breaks(5),sec.axis = dup_axis())
+g <- g + scale_x_date(name = '',date_breaks = '1 year',date_labels = '%Y')
+g <- g + ggtitle(label = paste0('North Korea Missile Testing/北朝鮮ミサイルテスト\n',date.range,'\nSource:',data.source))
+g <- g + scale_color_discrete("")
+g <- g + labs(subtitle = '凡例:ミサイルテスト時の内閣総理大臣', 
+              caption = "http://am-consulting.co.jp")
+g <- g + theme(plot.title = element_text(hjust = 0.5))
+g <- g + theme(legend.position = 'top')
+g <- g + theme(plot.subtitle = element_text(size = caption.subtitle.size,angle = 0))
+g <- g + theme(plot.caption = element_text(size = caption.subtitle.size,angle = 0))
+g <- g + theme(axis.text.x = element_text(size = plot.text.size,angle = 90,vjust = 0.5))
+g <- g + theme(axis.text.y = element_text(size = plot.text.size,angle = 0))
+g <- g + theme(legend.text = element_text(size = plot.text.size,angle = 0))
+g <- g + annotate("rect",
+                  xmin = vline.date,xmax = c(vline.date[2],Sys.Date()),
+                  ymin = -Inf,ymax = Inf,alpha = 0.1,fill = c('red','blue'))
+g <- g + annotate("text",
+                  x = vline.date,y = Inf,
+                  label = vline.txt,
+                  angle = 90,vjust = 1,hjust = 1,size = 5,col = '#696969',family = 'Meiryo')
+g <- g + geom_vline(xintercept = as.numeric(as.Date('2011-12-17')),col = 'red',linetype = 2)
+g <- g + annotate("text",
+                  x = as.Date('2011-12-17'),y = -Inf,label = '金正恩体制発足',
+                  family = 'Meiryo',angle = 0,vjust = -0.7,hjust = 0,size = 5,col = '#696969')
+print(g)
+```
