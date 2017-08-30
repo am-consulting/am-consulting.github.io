@@ -45,7 +45,7 @@ print(tail(dataDF[[cntList]]))
 pathOutput <- 
   paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
 setwd(pathOutput)
-targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Xlsdl.do?sinfid=000031605767'
+targetURL <- 'http://www.e-stat.go.jp/SG1/estat/Xlsdl.do?sinfid=000031616607'
 targetFile <- paste0(gsub('.+=([0-9]+)','\\1',targetURL),'.xls')
 download.file(url = targetURL,targetFile,mode = 'wb')
 sheetName <-
