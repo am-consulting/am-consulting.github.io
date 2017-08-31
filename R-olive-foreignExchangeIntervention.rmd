@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -27,7 +27,7 @@ writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
-<style>.main-container {max-width : 1000px;}</style>
+
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -54,7 +54,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r warning=F,error=F,message=F,echo=F}
