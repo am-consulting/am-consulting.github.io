@@ -1,7 +1,7 @@
 
 ---
 tags : [日本銀行,国債買入]
-title : 日本銀行:当面の長期国債等の買入れの運営について:2017年8月適用分
+title : 日本銀行:当面の長期国債等の買入れの運営について:2017年9月適用分
 published : true
 ---
 
@@ -13,8 +13,8 @@ published : true
  <thead>
   <tr>
    <th style="text-align:right;"> 残存期間 </th>
-   <th style="text-align:right;"> 2017年7月適用 </th>
    <th style="text-align:right;"> 2017年8月適用 </th>
+   <th style="text-align:right;"> 2017年9月適用 </th>
   </tr>
  </thead>
 <tbody>
@@ -36,7 +36,7 @@ published : true
   <tr>
    <td style="text-align:right;"> 5年超10年以下 </td>
    <td style="text-align:right;"> 3500-5500 </td>
-   <td style="text-align:right;"> 3500-5500 </td>
+   <td style="text-align:right;"> 3000-5000 </td>
   </tr>
   <tr>
    <td style="text-align:right;"> 10年超25年以下 </td>
@@ -67,4 +67,20 @@ published : true
 #### 前月からの変更点
 
 
-<div style="text-align:center">なし</div>
+<table id = 'amcc' width = '100%'>
+ <thead>
+  <tr>
+   <th style="text-align:right;"> 残存期間 </th>
+   <th style="text-align:right;"> 2017年8月適用 </th>
+   <th style="text-align:right;"> 2017年9月適用 </th>
+  </tr>
+ </thead>
+<tbody>
+  <tr>
+   <td style="text-align:right;"> 5年超10年以下 </td>
+   <td style="text-align:right;"> 3500-5500 </td>
+   <td style="text-align:right;"> 3000-5000 </td>
+  </tr>
+</tbody>
+</table>
+
