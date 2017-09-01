@@ -23,8 +23,9 @@ pathOutputCorporateStatistics <-
 # https://www.e-stat.go.jp/SG1/toukeidb/GH07010101Forward.do
 # [時系列データ]金融業、保険業以外の業種(原数値)
 library(Nippon)
-csvFile <- 'FEH_00350600_170804121934.csv'
-baseURL <- 'https://github.com/am-consulting/am-consulting.github.io/raw/master/csv/csvData/TSdata/'
+folder.name <- 'FEH_00350600_170901162544'
+csvFile <- paste0(folder.name,'.csv')
+baseURL <- paste0('https://github.com/am-consulting/am-consulting.github.io/raw/master/csv/csvData/TSdata/',folder.name,'/')
 pathToDownloadFolder <-
   paste0("C:/Users/",Sys.info()['user'],"/Desktop/R_Data_Write/")
 setwd(pathToDownloadFolder)
