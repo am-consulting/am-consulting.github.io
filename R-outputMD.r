@@ -13,37 +13,34 @@ fun_outputMD <-
            image1 = 0,
            image2 = 0,
            image3 = 0,
-           tableName = '内閣総理大臣毎の基本統計量'){
-    username <-
-      Sys.info()['user']
-    pathToFile <-
-      paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+           tableName = '内閣総理大臣毎の基本統計量',
+           buf.row = 2){
+    username <- Sys.info()['user']
+    pathToFile <- paste0('C:/Users/',username,'/Desktop/pathToCSV/')
     setwd(pathToFile)
-    fileName <-
-      'defaultPath.csv'
-  buf <-
-    read.csv(file = fileName,
-             header = F,
-             skip = 0,
-             stringsAsFactor = F,
-             check.names = F,
-             fileEncoding = 'utf-8',quote = "\"")
-  pathOutputTOcsv <-
-    paste0("C:/Users/", username, buf[2,1],'md/')
-  setwd(pathOutputTOcsv)
-  getwd()
-  mdFile <-
-    paste0(format(Sys.Date(),'%Y%m%d'),'-olive.md')
-  # md作成パート
-  txt <- paste0('
+    fileName <- 'defaultPath.csv'
+    buf <-
+      read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8',quote = "\"")
+    # md作成パート
+    mdFile <- paste0(format(Sys.Date(),'%Y%m%d'),'-olive.md')
+    if(buf.row==2){
+      common.url <- 'http://knowledgevault.saecanet.com/charts/chartImages/'
+      pathOutputTOcsv <- paste0("C:/Users/",username,buf[buf.row,1],'md/')
+    }else{
+      common.url <- 'http://olive.am-consulting.co.jp/'
+      pathOutputTOcsv <- paste0("C:/Users/",username,buf[buf.row,1])
+    }
+    setwd(pathOutputTOcsv);getwd()
+    write.table <-
+      'write.table(x = txt,file = mdFile,append = T,fileEncoding = \'utf8\',col.names = F,row.names = F,quote = F)'
+    txt <- paste0('
 ---
 tags : [',tags,']
 title : ',title,'
 published : true
 ---\n\n')
-  write.table(x = txt,file = mdFile,append = F,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-  # summary part
+    write.table(x = txt,file = mdFile,append = F,fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+    # summary part
   if(nrow(summaryDF)!=1){
   obj <- summaryDF[,c(dateCol,objCol)]
   dateRange <-
@@ -81,65 +78,39 @@ published : true
     paste0(txt,
            paste0('- ',indicatorName,'の平均値が最も低い政権は',minResult[1,1],'政権の',
                   minResult[1,grep('mean',colnames(minResult),ignore.case = T)],'\n'))
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  eval(parse(text = write.table))
   }
-  # summary part
+    # summary part
   if(image1!=0){
-    txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
-                  htmlName,
-                  '1.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
-                  htmlName,
-                  '1.png" width="100%" /></a>\n\n')
-    write.table(x = txt,file = mdFile,append = T,
-                fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+    txt <- paste0('<a href="',common.url,htmlName,'1.png">
+                  <img border="0" src="',common.url,htmlName,'1.png" width="100%" /></a>\n***\n')
+    eval(parse(text = write.table))
   }
   if(image2!=0){
-    txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
-                  htmlName,
-                  '2.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
-                  htmlName,
-                  '2.png" width="100%" /></a>\n\n')
-    write.table(x = txt,file = mdFile,append = T,
-                fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+    txt <- paste0('<a href="',common.url,htmlName,'2.png">
+                  <img border="0" src="',common.url,htmlName,'2.png" width="100%" /></a>\n***\n')
+    eval(parse(text = write.table))
   }
   if(image3!=0){
-    txt <- paste0('<a href="http://knowledgevault.saecanet.com/charts/chartImages/',
-                  htmlName,
-                  '3.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/',
-                  htmlName,
-                  '3.png" width="100%" /></a>\n\n')
-    write.table(x = txt,file = mdFile,append = T,
-                fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+    txt <- paste0('<a href="',common.url,htmlName,'3.png">
+                  <img border="0" src="',common.url,htmlName,'3.png" width="100%" /></a>\n***\n')
+    eval(parse(text = write.table))
   }
-  txt <- paste0('***','\n\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
   txt <- paste0('#### ',tableName,'','\n\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  eval(parse(text = write.table))
   txt <- paste0('- ',tableTitle,'','\n\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-  txt <- paste0(knitr::kable(x = objDF,
-                             row.names = F,
-                             format = 'html',
+  eval(parse(text = write.table))
+  txt <- paste0(knitr::kable(x = objDF,row.names = F,format = 'html',
                              # align = 'r',
                              table.attr = "id = 'amcc' width = '100%'",
                              format.args = list(big.mark = ',',drop0trailing = T),
                              escape = F),'\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  eval(parse(text = write.table))
   txt <- paste0('## データテーブル･チャート','\n\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-  txt <- paste0('Link : [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',htmlName,'.html)\n\n')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
-  txt <- paste0('<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-',
-                htmlName,
-                '.html" width="100%" height="1200px"></iframe>')
-  write.table(x = txt,file = mdFile,append = T,
-              fileEncoding = 'utf8',col.names = F,row.names = F,quote = F)
+  eval(parse(text = write.table))
+  txt <- paste0('Link : [データテーブル･チャート](',common.url,'am-consulting.co.jp-',htmlName,'.html)\n\n')
+  eval(parse(text = write.table))
+  txt <- paste0('<iframe src="',common.url,'am-consulting.co.jp-',htmlName,'.html" width="100%" height="1200px"></iframe>')
+  eval(parse(text = write.table))
   # md作成パート
   }
