@@ -82,18 +82,15 @@ published : true
   }
     # summary part
   if(image1!=0){
-    txt <- paste0('<a href="',common.url,htmlName,'1.png">
-                  <img border="0" src="',common.url,htmlName,'1.png" width="100%" /></a>\n***\n')
+    txt <- paste0('<a href="',common.url,htmlName,'1.png"><img border="0" src="',common.url,htmlName,'1.png" width="100%" /></a>\n***\n')
     eval(parse(text = write.table))
   }
   if(image2!=0){
-    txt <- paste0('<a href="',common.url,htmlName,'2.png">
-                  <img border="0" src="',common.url,htmlName,'2.png" width="100%" /></a>\n***\n')
+    txt <- paste0('<a href="',common.url,htmlName,'2.png"><img border="0" src="',common.url,htmlName,'2.png" width="100%" /></a>\n***\n')
     eval(parse(text = write.table))
   }
   if(image3!=0){
-    txt <- paste0('<a href="',common.url,htmlName,'3.png">
-                  <img border="0" src="',common.url,htmlName,'3.png" width="100%" /></a>\n***\n')
+    txt <- paste0('<a href="',common.url,htmlName,'3.png"><img border="0" src="',common.url,htmlName,'3.png" width="100%" /></a>\n***\n')
     eval(parse(text = write.table))
   }
   txt <- paste0('#### ',tableName,'','\n\n')
