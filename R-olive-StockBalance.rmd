@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'StockBalance';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'StockBalance';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[4,1],'am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Balance In Margin Transactions'
 author: 'アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp'
@@ -7,13 +7,25 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 3
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1000px;}</style>
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -22,7 +34,7 @@ output:
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -53,9 +65,10 @@ eval(parse(text = script))
 ```
 
 ```{r warning=F,error=F,message=F,results='hold',echo=F}
+date.range <- paste0(unique(stockBalance[[length(stockBalance)]][,1]),' ~ ',unique(stockBalance[[1]][,1]))
 dateFormat <- '%Y年%m月%d日'
 dataTitle <- 
-  paste0(fileTitle[1],"(出所:日本証券金融株式会社):",format(unique(stockBalance[[1]][,1]),dateFormat))
+  paste0(unique(fileTitle),"(出所:日本証券金融株式会社):",date.range)
 dataSource <- "日本証券金融株式会社"
 windowsFonts(Meiryo = windowsFont("Meiryo"))
 options(scipen = 999)
@@ -114,50 +127,17 @@ for(iii in seq(length(stockBalance))){
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-# username <-
-#   Sys.info()['user']
-# pathToFile <-
-#   paste0('C:/Users/', username,'/Desktop/pathToCSV/')
-# setwd(pathToFile)
-# fileName <-
-#   'defaultPath.csv'
-# buf <-
-#   read.csv(file = fileName,
-#            header = F,
-#            skip = 0,
-#            stringsAsFactor = F,
-#            check.names = F,
-#            fileEncoding = 'utf-8',quote = "\"")
-# pathOutputTOcsv <-
-#   paste0("C:/Users/", username, buf[2,1],'charts/chartImages/')
-# setwd(pathOutputTOcsv)
-# getwd()
-# par(family = 'Meiryo')
-# pngFile <-
-#   paste0(htmlName, ".png")
-# png(file = pngFile, width = 1000, height = 600)
-# ##################
-# obj <- SAData[,1:2]
-# dateRange <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
-# fun_plotTimeSeries(obj = obj,
-#                    dateFormat = dateFormat,
-#                    chartType = 0,
-#                    dataSource = dataSource,
-#                    fitLcolor = 2,dataTitle = dataTitle,fitlwdL = 2,mar = c(5,5,6,2),cex.main = 1.2)
-# abline(h = 0,col = 'red',lwd = 2)
-# dev.off()
-```
-
-```{r warning=F,error=F,message=F,echo=F,results='hide'}
 obj0 <- mdTable[,c(1,2,3,7,10,11)]
 tableTitle <- paste0('差引残高:融資残高超過Top30:',format(unique(obj0[,1]),dateFormat))
 fun_outputMD(tags = '日本証券金融株式会社,貸借取引銘柄',
              objDF = head(obj0[order(obj0$`差引残高`,decreasing = T),],30),
              htmlName = htmlName,
-             image = 0,
-             dataTitle = dataTitle,
-             tableTitle = tableTitle,
-             tableName = tableTitle)
+             image1 = 0,
+             title = dataTitle,
+             tableTitle = paste0('データ出所:', dataSource),
+             tableName = tableTitle,
+             buf.row = 4)
+fun_updateURLcsv.olive()
 ```
 
 <script>MakeNegative();</script>
