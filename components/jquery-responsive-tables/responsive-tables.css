@@ -6,4 +6,4 @@
  * http://www.opensource.org/licenses/mit-license.php
 */
 
-@media only screen and (max-width: 800px){table.amcc table,table.amcc thead,table.amcc tbody,table.amcc th,table.amcc td,table.amcc tr{display:block;text-align:right}table.amcc thead tr{position:absolute;top:-9999px;left:-9999px}table.amcc tr{border:1px solid #ccc}table.amcc td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%;font-weight:400}table.amcc td:before{position:absolute;top:8px;left:6px;width:45%;text-align:right!important;padding-right:0;font-weight:700}}
+@media only screen and (max-width: 800px){table.amccrespontable table,table.amccrespontable thead,table.amccrespontable tbody,table.amccrespontable th,table.amccrespontable td,table.amccrespontable tr{display:block;text-align:right}table.amccrespontable thead tr{position:absolute;top:-9999px;left:-9999px}table.amccrespontable tr{border:1px solid #ccc}table.amccrespontable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%;font-weight:400}table.amccrespontable td:before{position:absolute;top:8px;left:6px;width:45%;text-align:right!important;padding-right:0;font-weight:700}}
