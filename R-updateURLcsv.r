@@ -12,7 +12,7 @@ fun_updateURLcsv <- function(){
     paste0("C:/Users/", username, buf000[2,1],'csv/')
   setwd(pathOutput)
   fileName <-
-    dir(pathOutput)[grep('knowledgevault',dir(pathOutput),ignore.case = T)]
+    dir(pathOutput)[grep('knowledgevaultURL_List.csv',dir(pathOutput),ignore.case = T)]
   tmp0 <-
     read.table(fileName, sep = ',', fileEncoding = 'utf8', header = T)
   buf <-
