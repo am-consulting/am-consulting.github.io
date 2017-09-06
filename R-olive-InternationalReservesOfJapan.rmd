@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'internationalReservesOfJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'internationalReservesOfJapan';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[4,1],'am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'International Reserves of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -27,8 +27,6 @@ writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
-<style>.main-container {max-width : 1000px;}</style>
-
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
@@ -37,7 +35,7 @@ close(insertFile)
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -190,7 +188,16 @@ cat(paste0(tail(origData4[,2],1),
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_preparePlot()
+username <- Sys.info()['user']
+pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <- 'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOchart <- paste0("C:/Users/", username, buf[4,1])
+setwd(pathOutputTOchart)
+#---------------------------------------------------
 pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
@@ -211,8 +218,9 @@ fun_outputMD(tags = '外貨準備高',
              image1 = 1,
              title = dataTitle,
              tableTitle = '直近2ヶ月分',
-             tableName = '日本の外貨準備高(兆ドル)')
-fun_updateURLcsv()
+             tableName = '日本の外貨準備高(兆ドル)',
+             buf.row = 4)
+fun_updateURLcsv.olive()
 ```
 
 ***
