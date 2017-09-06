@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-PortfolioGPIF.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');htmlName<-'PortfolioGPIF';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[4,1],'am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Portfolio GPIF'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -7,13 +7,25 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 10
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
+    includes:
+       in_header: insertHeader.html
+    self_contained: false
 ---
-<link href="http://knowledgevault.saecanet.com/components/rmarkdown-html.css" rel="stylesheet">
-<script src="http://knowledgevault.saecanet.com/components/JavascriptCode.js"></script>
-<style>.main-container {max-width : 1100px;}</style>
+
+```{r setup, include=FALSE}
+tag <-
+  read.csv(file = 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/components/insertHeader.csv',header = F,fileEncoding = 'UTF8')
+tagTxt <- ''
+for(rrr in 1:nrow(tag)){
+  tagTxt <- paste0(tagTxt,tag[rrr,1],'\n')
+}
+insertFile <- file("insertHeader.html")
+writeLines(text = tagTxt,con = insertFile)
+close(insertFile)
+```
 
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
@@ -22,7 +34,7 @@ output:
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
 
 ```{r set-options, echo=F, cache=F}
-options(width = 500)
+options(width = 900)
 ```
 
 ```{r warning = F, error = F, message = F, echo = F}
@@ -44,6 +56,7 @@ for(iii in 1:nrow(functionList)){
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
+fileName <- 'unyoujoukyou_h28_15.xlsx' # http://www.gpif.go.jp/operation/state/index.html
 script <-
   getURL(
     "https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/importPortfolioGPIF.r",
@@ -80,10 +93,11 @@ colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
 cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
 obj$`構成比(%)` <- 
   round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
-fun_dataTable(obj = obj,
+obj.portfolio.01 <- obj[,-3]
+fun_dataTable(obj = obj.portfolio.01,orderColumn = 3,
               dateFormat = 0,
               needID = 0,
-              orderDirection = 'asc',
+              orderDirection = 'desc',
               leftcolumns = 2,
               bigmarkColumn = c(1:3))
 grandTotal <- grandTotal + sum(obj[,objColumn])
@@ -113,10 +127,11 @@ obj[,2] <-
          '" target="_blank">',
          obj[,2],
          '</a>')
-fun_dataTable(obj = obj,
+obj.portfolio.02 <- obj[,-4]
+fun_dataTable(obj = obj.portfolio.02,orderColumn = 5,
               dateFormat = 0,
               needID = 0,
-              orderDirection = 'asc',
+              orderDirection = 'desc',
               leftcolumns = 2,
               bigmarkColumn = c(1:4))
 grandTotal <- grandTotal + sum(obj[,objColumn])
@@ -138,10 +153,11 @@ colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
 cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
 obj$`構成比(%)` <- 
   round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
-fun_dataTable(obj = obj,
+obj.portfolio.03 <- obj
+fun_dataTable(obj = obj,orderColumn = 3,
               dateFormat = 0,
               needID = 0,
-              orderDirection = 'asc',
+              orderDirection = 'desc',
               leftcolumns = 2,
               bigmarkColumn = c(1:2))
 grandTotal <- grandTotal + sum(obj[,objColumn])
@@ -163,10 +179,11 @@ colnames(obj)[objColumn] <- gsub('円','億円',colnames(obj)[objColumn])
 cat(paste0('<b>時価総額合計(億円):', format(sum(obj[,objColumn]),big.mark = ',') ,'</b><br>'))
 obj$`構成比(%)` <- 
   round(obj[,objColumn]/sum(obj[,objColumn])*100,3)
-fun_dataTable(obj = obj,
+obj.portfolio.04 <- obj[,-2]
+fun_dataTable(obj = obj.portfolio.04,orderColumn = 4,
               dateFormat = 0,
               needID = 0,
-              orderDirection = 'asc',
+              orderDirection = 'desc',
               leftcolumns = 2,
               bigmarkColumn = c(1:3))
 grandTotal <- grandTotal + sum(obj[,objColumn])
@@ -181,7 +198,38 @@ fun_markdownTable(obj = head(obj[order(obj[,objColumn],decreasing = T),][,-2],5)
 #### 国内債券、国内株式、外国債券および外国株式の総計
 
 ```{r,warning=F,error=F,message=F,echo=F,results='asis'}
-cat(paste0('<h4>',grandTotal*10^-4,' 兆円</h4>'))
+cat(paste0('- ',round(grandTotal*10^-4,4),' 兆円\n\n'))
+```
+
+```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj.col <- grep('発行体名|銘柄名|時価総額',colnames(obj.portfolio.01))
+buf01 <- obj.portfolio.01[,obj.col]
+colnames(buf01)[1] <- '発行体･銘柄'
+obj.col <- grep('発行体名|銘柄名|時価総額',colnames(obj.portfolio.02))
+buf02 <- obj.portfolio.02[,obj.col]
+colnames(buf02)[1] <- '発行体･銘柄'
+obj.col <- grep('発行体名|銘柄名|時価総額',colnames(obj.portfolio.03))
+buf03 <- obj.portfolio.03[,obj.col]
+colnames(buf03)[1] <- '発行体･銘柄'
+obj.col <- grep('発行体名|銘柄名|時価総額',colnames(obj.portfolio.04))
+buf04 <- obj.portfolio.04[,obj.col]
+colnames(buf04)[1] <- '発行体･銘柄'
+total.value <- rbind(buf01,buf02,buf03,buf04)
+total.value$`構成比(%)` <- 
+  round(total.value$`時価総額（億円）`/sum(total.value$`時価総額（億円）`)*100,3)
+row.names(total.value) <- NULL
+sum(total.value$`時価総額（億円）`)
+sum(total.value$`構成比(%)`)
+total.value <- total.value[order(total.value$`構成比(%)`,decreasing = T),]
+fun_outputMD(tags = 'GPIF',
+             objDF = head(total.value,30),
+             htmlName = htmlName,
+             image1 = 1,
+             title = dataTitle,
+             tableTitle = paste0('時価総額合計(兆円):',sum(total.value$`時価総額（億円）`)*10^-4),
+             tableName = '年金積立金管理運用独立行政法人保有銘柄時価総額Top30',
+             buf.row = 4)
+fun_updateURLcsv.olive()
 ```
 
 ***
