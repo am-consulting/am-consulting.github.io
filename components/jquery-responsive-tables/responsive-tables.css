@@ -1,94 +1,9 @@
 /*
- * Responsive Tables plugin 2.0.0
+ * Responsive Tables plugin 1.0
  * Ryan Wells 
- * Copyright 2017, Ryan Wells (http://ryanwells.com)
+ * Copyright 2015, Ryan Wells (http://ryanwells.com)
  * Free to use under the MIT license.
  * http://www.opensource.org/licenses/mit-license.php
 */
 
-/* change media query width to suit needs */
-/* force table markup to behave like divs */
-/* hide table headers (but not display: none;, for accessibility) */
-/* behave  like a "row" */
-/* becomes the table header */
-/* top/left values mimic padding */
-/* mimic padding top */
-/* mimic padding left */
-
-/* Original
-
-@media only screen and (max-width: 800px) {
-    .jrt table,
-    .jrt thead,
-    .jrt tbody,
-    .jrt th,
-    .jrt td,
-    .jrt tr {
-        display: block;
-        text-align: left
-    }
-    .jrt thead tr {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-    }
-    .jrt tr {
-        border: 1px solid #ccc;
-    }
-    .jrt td {
-        border: none;
-        border-bottom: 1px solid #eee;
-        position: relative;
-        padding-left: 50%;
-        font-weight: normal;
-    }
-    .jrt td:before {
-        position: absolute;
-        top: 8px;
-        left: 6px;
-        width: 45%;
-        text-align: left!important;
-        padding-right: 0;
-        font-weight: bold;
-    }
-}
-*/
-
-@media only screen and (max-width: 800px){
-	table.amcc table,
-	table.amcc thead,
-	table.amcc tbody,
-	table.amcc td,
-	table.amcc tr {
-		display:block;
-		text-align:right
-	}
-	table.amcc th {
-		display:block;
-		text-align:center
-	}
-	table.amcc thead tr {
-		position:absolute;
-		top:-9999px;
-		left:-9999px
-	}
-	table.amcc tr {
-		border:1px solid #ccc
-	}
-	table.amcc td {
-		border:none;
-		border-bottom:1px solid #eee;
-		position:relative;
-		padding-left:50%;
-		font-weight:400
-	}
-	table.amcc td:before {
-		position:absolute;
-		top:8px;
-		left:6px;
-		width:45%;
-		text-align:right!important;
-		padding-right:0;
-		font-weight:700
-	}
-}
+@media only screen and (max-width: 800px){table.amcc table,table.amcc thead,table.amcc tbody,table.amcc th,table.amcc td,table.amcc tr{display:block;text-align:left}table.amcc thead tr{position:absolute;top:-9999px;left:-9999px}table.amcc tr{border:1px solid #ccc}table.amcc td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%;font-weight:400}table.amcc td:before{position:absolute;top:8px;left:6px;width:45%;text-align:left!important;padding-right:0;font-weight:700}}
