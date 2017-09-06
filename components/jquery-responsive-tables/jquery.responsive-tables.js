@@ -1,4 +1,4 @@
-﻿/*
+/*
  * Responsive Tables plugin 1.1
  * Ryan Wells 
  * Copyright 2015, Ryan Wells (http://ryanwells.com)
