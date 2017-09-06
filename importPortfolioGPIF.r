@@ -5,8 +5,8 @@ username <-
 pathOutput <-
   paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
-fileName <-
-  'unyoujoukyou_h28_14.xlsx'
+# fileName <-
+#   'unyoujoukyou_h28_14.xlsx'
 baseURL <-
   'http://www.gpif.go.jp/operation/state/pdf/'
 if(!file.exists(paste0(pathOutput, fileName))) {
@@ -41,5 +41,6 @@ for(sss in 2:5){
     c(1,grep('時価総額|数量',colnames(buf1)))
   buf1[,objColumn] <-
     apply(buf1[,objColumn,drop=F],2,function(x)as.numeric(gsub(',','',x)))
+  row.names(buf1) <- NULL
   assign(paste0('Portfolio',sss-1),buf1,envir = .GlobalEnv)
 }
