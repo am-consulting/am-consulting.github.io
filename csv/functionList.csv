@@ -51,3 +51,4 @@ fun_TimeSeriesSummary.r
 fun_ggplotWorldMap.r
 R-writeCSVtoFolder.r
 R-updateURLcsv.olive.r
+fun.html.table.r
