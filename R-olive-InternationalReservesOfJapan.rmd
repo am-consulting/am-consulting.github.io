@@ -220,6 +220,7 @@ fun_outputMD(tags = '外貨準備高',
              tableTitle = '直近2ヶ月分',
              tableName = '日本の外貨準備高(兆ドル)',
              buf.row = 4)
+fun_updateURLcsv()
 fun_updateURLcsv.olive()
 ```
 
