@@ -7,3 +7,68 @@
 */
 
 @media only screen and (max-width: 800px){table.amccrespontable table,table.amccrespontable thead,table.amccrespontable tbody,table.amccrespontable th,table.amccrespontable td,table.amccrespontable tr{display:block;text-align:right}table.amccrespontable thead tr{position:absolute;top:-9999px;left:-9999px}table.amccrespontable tr{border:1px solid #ccc}table.amccrespontable td{border:none;border-bottom:1px solid #eee;position:relative;padding-left:50%;font-weight:400}table.amccrespontable td:before{position:absolute;top:0px;left:6px;width:45%;text-align:right!important;padding-right:0;font-weight:700}}
+
+/* 
+ * http://tsukiyomiloveseverything.blogspot.jp/2017/01/stackeditblogger.html 
+ * tableAMCC.cssの違いはwidth: auto;/width: 100%;のみ
+*/
+
+table.amccrespontable {
+  width: 100%;
+  border-spacing: 0;
+  font-size:14px;
+  margin-left: auto;
+  margin-right: auto;
+  text-align: right;
+}
+table.amccrespontable th {
+  color: #fff;
+  padding: 4px 10px;
+  background: #258;
+  background:-moz-linear-gradient(rgba(34,85,136,0.7), rgba(34,85,136,0.9) 50%);
+  background:-webkit-gradient(linear, 100% 0%, 100% 50%, from(rgba(34,85,136,0.7)), to(rgba(34,85,136,0.9)));
+  font-weight: bold;
+  border-left:1px solid #258;
+  border-top:1px solid #258;
+  border-bottom:1px solid #258;
+  line-height: 110%;
+  text-align: center;
+  text-shadow:0 -1px 0 rgba(34,85,136,0.9);
+  box-shadow: 0px 1px 1px rgba(255,255,255,0.3) inset;
+}
+table.amccrespontable th:first-child {
+  border-radius: 5px 0 0 0; 
+}
+table.amccrespontable th:last-child {
+  border-radius:0 5px 0 0;
+  border-right:1px solid #258;
+  box-shadow: 2px 2px 1px rgba(0,0,0,0.1),0px 1px 1px rgba(255,255,255,0.3) inset;
+}
+table.amccrespontable tr td {
+  padding: 0px 10px 0px 10px;
+  border-bottom: 1px solid #84b2e0;
+  border-left: 1px solid #84b2e0;
+}
+table.amccrespontable tr td:last-child {
+  border-right: 1px solid #84b2e0;
+  box-shadow: 2px 2px 1px rgba(0,0,0,0.1);
+}
+table.amccrespontable tr {
+  background: #fff;
+}
+table.amccrespontable tr:nth-child(2n+1) {
+  background: #f1f6fc;
+}
+table.amccrespontable tr:last-child td {
+  box-shadow: 2px 2px 1px rgba(0,0,0,0.1);
+}
+table.amccrespontable tr:last-child td:first-child {
+  border-radius: 0 0 0 5px;
+}
+table.amccrespontable tr:last-child td:last-child {
+  border-radius: 0 0 5px 0;
+}
+table.amccrespontable tr:hover {
+  background: #bbd4ee;
+  cursor:pointer;
+}
