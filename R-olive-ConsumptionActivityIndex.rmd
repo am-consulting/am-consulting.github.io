@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ConsumptionActivityIndex';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'ConsumptionActivityIndex';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[4,1],'am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Consumption Activity Index'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -27,13 +27,13 @@ writeLines(text = tagTxt,con = insertFile)
 close(insertFile)
 ```
 
-<style>table:not(#amcc) {font-size: 85%;}</style>
-
 - アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp
 - SaECaNet http://saecanet.com/
 - Olive http://olive.saecanet.com/
 - twitter https://twitter.com/AMC2_Japan
 - 本ページへのリンクを共有:<a href="https://twitter.com/share" class="twitter-share-button" data-via="AMC2_Japan" data-size="large">Tweet</a> <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?'http':'https';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+'://platform.twitter.com/widgets.js';fjs.parentNode.insertBefore(js,fjs);}}(document, 'script', 'twitter-wjs');</script>
+
+<link rel="stylesheet" href="http://rawgit.com/am-consulting/am-consulting.github.io/master/components/jquery-responsive-tables/responsive-tables.css" type="text/css">
 
 ```{r set-options, echo=F, cache=F}
 options(width = 1000)
@@ -113,8 +113,11 @@ for(iii in 2:ncol(timeSeriesDF)){
 
 `r paste(knitr::knit(text = sapply(texDygraph,get)), collapse = '\n')`
 
+#### レベル
+
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_dataTable(obj = tail(ConsumptionActivityIndex,5*12),dateFormat = dateFormat)
+obj <- fun_transposeDataFrame(obj = ConsumptionActivityIndex,dateFormat = dateFormat,tailN = 3)
+cat(fun.html.table(obj = obj))
 ```
 
 ***
@@ -122,28 +125,68 @@ fun_dataTable(obj = tail(ConsumptionActivityIndex,5*12),dateFormat = dateFormat)
 #### 前月比(%)
 
 ```{r warning=F,error=F,message=F,echo=F,results='asis'}
-fun_markdownTable(obj = 
-                    fun_transposeDataFrame(obj = 
-                                             fun_makeDiffRatioTable(obj = 
-                                                                      ConsumptionActivityIndex,lag = 1),
-                                           tailN = 5,dateFormat = dateFormat))
+obj <- fun_transposeDataFrame(obj = fun_makeDiffRatioTable(obj = ConsumptionActivityIndex,lag = 1),
+                              tailN = 3,dateFormat = dateFormat)
+cat(fun.html.table(obj = obj))
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-obj <- na.omit(ConsumptionActivityIndex[,c(1,5)])
-fun_PlotStrawAnd4charts(obj = obj)
-dev.off();dev.off()
+username <- Sys.info()['user']
+pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <- 'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOchart <- paste0("C:/Users/", username, buf[4,1])
+setwd(pathOutputTOchart)
+#---------------------------------------------------
+library(ggplot2)
+obj <- na.omit(ConsumptionActivityIndex[,c(1,2,3)])
+for(ccc in 2:ncol(obj)){
+  tmp <- obj[,c(1,ccc)]
+  tmp$name <- colnames(tmp)[2]
+  colnames(tmp)[2] <- 'value'
+  if(ccc == 2){data.set <- tmp}else{data.set <- rbind(data.set,tmp)}
+}
+caption.subtitle.size <- 14
+plot.text.size <- 13
+base.size <- 11
+date.range <- paste0(format(range(data.set[,1]),dateFormat),collapse = '~')
+g <- ggplot(data = data.set,aes(x = Date,y = value,col = name))
+g <- g + geom_line() + geom_point(size = 1) + geom_smooth()
+g <- g + theme_grey(base_size = base.size,base_family = 'Meiryo')
+g <- g + ggtitle(label = paste0('消費活動指数\n',date.range,'\nSource:',dataSource))
+g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(20),sec.axis = dup_axis())
+g <- g + xlab(label = '')
+g <- g + theme(plot.title = element_text(hjust = 0.5))
+g <- g + theme(axis.text.x = element_text(size = plot.text.size,angle = 0))
+g <- g + theme(axis.text.y = element_text(size = plot.text.size,angle = 0))
+g <- g + theme(plot.subtitle = element_text(size = caption.subtitle.size,angle = 0))
+g <- g + theme(plot.caption = element_text(size = caption.subtitle.size,angle = 0))
+g <- g + theme(legend.position = 'top')
+g <- g + theme(legend.text = element_text(size = plot.text.size,angle = 0))
+pngFile <- paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+print(g)
+dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+obj <- ConsumptionActivityIndex[,c(1,2)]
 fun_outputMD(tags = '消費活動指数',
              objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
+             image1 = 1,image2 = 0,
              title = dataTitle,
-             tableTitle = colnames(obj)[2])
+             tableTitle = colnames(obj)[2],
+             buf.row = 4)
 fun_updateURLcsv()
+fun_updateURLcsv.olive()
 ```
+
+<script src="http://rawgit.com/am-consulting/am-consulting.github.io/master/components/jquery-responsive-tables/jquery.responsive-tables.js"></script>
+<script src="http://rawgit.com/am-consulting/am-consulting.github.io/master/components/jquery-responsive-tables/app.js"></script>
 
 ***
 <script>MakeNegative();</script>
