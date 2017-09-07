@@ -266,6 +266,12 @@ dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+objCol0 <- 
+  grep('japan',colnames(dataSet),ignore.case = T)
+obj0 <- dataSet[,c(1,objCol0)]
+objCol <- 
+  grep(titleN[4],colnames(obj0),ignore.case = T)
+obj <- na.omit(obj0[,c(1,objCol)])
 fun_outputMD(tags = '非金融部門債務残高対国内総生産比,BIS',
              objDF = fun_summaryByName(obj = obj),
              htmlName = htmlName,
