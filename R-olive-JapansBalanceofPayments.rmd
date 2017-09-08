@@ -359,7 +359,7 @@ dev.off()
 fun_outputMD(tags = '国際収支,経常収支,貿易収支',
              objDF = fun_summaryByName(obj = obj,omitFirst = 1,dateFormat = dateFormat),
              htmlName = htmlName,
-             image1 = 1,image2 = 1,
+             image1 = 1,image2 = 0,
              title = dataTitle,
              tableTitle = colnames(obj)[2],
              buf.row = 4)
