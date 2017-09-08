@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'InternationalBalanceofPayments';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'InternationalBalanceofPayments';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[4,1],'am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'International Balance of Payments of Japan'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -7,7 +7,7 @@ date: "`r format(Sys.time(), '%Y-%m-%d %H:%M:%S')`"
 output: 
   html_document:
     fig_height: 4
-    fig_width: 10
+    fig_width: 9
     keep_md: no
     md_extensions: -ascii_identifiers 
     includes:
@@ -35,7 +35,7 @@ close(insertFile)
 
 ```{r set-options, echo=F, cache=F}
 # ―,ソ,噂,欺,圭,構,蚕,十,申,貼,能,表,暴,予,禄,兔
-options(width = 1000)
+options(width = 900)
 ```
 
 ```{r,warning=F,error=F,message=F,echo=F}
@@ -315,10 +315,44 @@ fun_markdownTable(obj = fun_transposeDataFrame(obj = obj2,dateFormat = dateForma
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
+username <- Sys.info()['user']
+pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <- 'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOchart <- paste0("C:/Users/", username, buf[4,1])
+setwd(pathOutputTOchart)
+pngFile <-
+  paste0(htmlName, "1.png")
+png(file = pngFile, width = 1000, height = 600)
+#---------------------------------------------------
 obj <- na.omit(origData1[,c(1,5)])
-colnames(obj)[2] <- paste0(colnames(obj)[2],'(億円)')
-fun_PlotStrawAnd4charts(obj = obj,varType = 1,dateFormat = dateFormat,startYear = 2011)
-dev.off();dev.off()
+obj[,2] <- obj[,2]*10^-4
+colnames(obj)[2] <- paste0(colnames(obj)[2],'(兆円)')
+caption.subtitle.size <- 14
+plot.text.size <- 13
+base.size <- 11
+col <- c('#4169e1','#00008b','#6495ed')
+fun_plot <- function(obj.col = 2){
+  date.range <- paste0(format(range(obj[,1]),dateFormat),collapse = '~')
+  g <- ggplot(data = obj,aes(x = obj[,1],y = obj[,obj.col]))
+  g <- g + theme_grey(base_size = base.size,base_family = 'Meiryo')
+  g <- g + geom_line(col=col[obj.col-1]) + geom_point(col=col[obj.col-1]) + geom_smooth(col='red')
+  g <- g + ggtitle(label = paste0(colnames(obj)[obj.col],
+                                  '\n',date.range,'\nSource:',dataSource))
+  g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(20),sec.axis = dup_axis())
+  g <- g + xlab(label = '')
+  g <- g + theme(plot.title = element_text(hjust = 0.5))
+  g <- g + theme(axis.text.x = element_text(size = plot.text.size,angle = 0))
+  g <- g + theme(axis.text.y = element_text(size = plot.text.size,angle = 0))
+  g <- g + theme(plot.subtitle = element_text(size = caption.subtitle.size,angle = 0))
+  g <- g + theme(plot.caption = element_text(size = caption.subtitle.size,angle = 0))
+  print(g)
+}
+fun_plot()
+dev.off()
 ```
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
@@ -327,8 +361,10 @@ fun_outputMD(tags = '国際収支,経常収支,貿易収支',
              htmlName = htmlName,
              image1 = 1,image2 = 1,
              title = dataTitle,
-             tableTitle = colnames(obj)[2])
+             tableTitle = colnames(obj)[2],
+             buf.row = 4)
 fun_updateURLcsv()
+fun_updateURLcsv.olive()
 ```
 
 ***
