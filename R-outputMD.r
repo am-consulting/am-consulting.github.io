@@ -103,6 +103,7 @@ published : true
                              format.args = list(big.mark = ',',drop0trailing = T),
                              escape = F),'\n')
   eval(parse(text = write.table))
+  common.url <- gsub('(.+/)chartimages/','\\1',common.url,ignore.case = T)
   txt <- paste0('## データテーブル･チャート','\n\n')
   eval(parse(text = write.table))
   txt <- paste0('Link : [データテーブル･チャート](',common.url,'am-consulting.co.jp-',htmlName,'.html)\n\n')
