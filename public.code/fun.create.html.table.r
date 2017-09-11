@@ -1,4 +1,4 @@
-fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'table'",order.col = 2,decreasing = T,scientific = F){
+fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'table'",order.col = 2,decreasing = T,scientific = F,escape = F){
   obj <- obj[order(obj[,order.col],decreasing = decreasing),]
   buf <- ''
   for(rrr in seq(nrow(obj))){
@@ -12,5 +12,6 @@ fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'tabl
   table.top <- paste0('<table ',table.attr,'>\n')
   table.bottom <- '\n</table>\n'
   table.html <-  paste0(table.top,table.th,table.tb,table.bottom)
+  if(escape == T){table.html <- htmltools::htmlEscape(text = table.html, attribute = F)}
   return(table.html)
 }
