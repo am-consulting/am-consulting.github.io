@@ -1,0 +1,17 @@
+body{
+	background-color : #f5f5f5;
+	}
+	
+.time-frame {
+	color : #000000; width : 100%; font-family : Consolas;}
+
+.time-frame > div {
+	width : 100%; text-align : center;}
+	
+#date-part {
+	font-size: 1.2em;
+	}
+
+#time-part {
+	font-size: 2em;
+	}
