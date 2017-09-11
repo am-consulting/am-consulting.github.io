@@ -3,7 +3,7 @@ fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'tabl
   buf <- ''
   for(rrr in seq(nrow(obj))){
     obj.col <- !is.na(as.numeric(obj[rrr,]))
-    obj[rrr,obj.col] <- format(obj[rrr,obj.col],big.mark = ',',scientific = scientific)
+    obj[rrr,obj.col] <- format(as.numeric(obj[rrr,obj.col]),big.mark = ',',scientific = scientific)
     buf <- paste0(buf,paste0('<tr>',paste0(paste0('<td>',obj[rrr,],'</td>'),collapse = ''),'</tr>\n'))
   }
   table.tb <- paste0('<tbody>\n',buf,'</tbody>')
