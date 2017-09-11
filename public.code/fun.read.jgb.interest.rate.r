@@ -8,7 +8,7 @@ fun.read.jgb.interest.rate <- function(){
       read.csv(file = paste0(base.url,csv.file[iii]),header = T,skip = 1,stringsAsFactor = F,
                check.names = F,na.strings = '-')
   }
-  if(colnames(data.set[[1]]) == colnames(data.set[[2]])){
+  if(all(colnames(data.set[[1]]) == colnames(data.set[[2]]))){
     tmp <- rbind(data.set[[1]],data.set[[2]])
     tmp[,1] <- as.Date(tmp[,1])
     jgb.interest.rate <-
