@@ -25,3 +25,7 @@ td.negative {
 #time-part {
 	font-size: 2em;
 	}
+
+code, pre {
+   font-family:Consolas, 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Monaco, monospace, 'MS Gothic';
+   }
