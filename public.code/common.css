@@ -1,5 +1,15 @@
 body{
 	background-color : #f5f5f5;
+	font-family:'Meiryo UI','Hiragino Kaku Gothic Pro',Verdana,sans-serif;
+	}
+	
+table {
+	white-space : nowrap;
+	width : 100%;
+	}
+
+td.negative {
+	color : red;
 	}
 	
 .time-frame {
