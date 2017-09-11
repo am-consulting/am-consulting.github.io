@@ -27,5 +27,10 @@ td.negative {
 	}
 
 code, pre {
-   font-family:Consolas, 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Monaco, monospace, 'MS Gothic';
+   font-family : Consolas, 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Monaco, monospace, 'MS Gothic';
    }
+   
+img{
+    width : 100%;
+    max-width : 1000px;
+	}
