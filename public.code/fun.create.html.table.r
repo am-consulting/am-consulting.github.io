@@ -1,8 +1,10 @@
 fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'table'",order.col = 2,decreasing = T,scientific = F,escape = F){
-  obj <- obj[order(obj[,order.col],decreasing = decreasing),]
+  obj <- obj[order(obj[,order.col],decreasing = decreasing),,drop = F]
+  col.date <- which(lapply(obj,class)=='Date')
+  obj[,col.date] <-as.character(obj[,col.date])
   buf <- ''
   for(rrr in seq(nrow(obj))){
-    obj.col <- !is.na(as.numeric(obj[rrr,]))
+    obj.col <- setdiff(which(!is.na(as.numeric(obj[rrr,]))),col.date)
     obj[rrr,obj.col] <- format(as.numeric(obj[rrr,obj.col]),big.mark = ',',scientific = scientific)
     buf <- paste0(buf,paste0('<tr>',paste0(paste0('<td>',obj[rrr,],'</td>'),collapse = ''),'</tr>\n'))
   }
