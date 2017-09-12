@@ -1,9 +1,9 @@
-fun.plot.ggplot.boxplot <- function(obj,y.breaks = 10,lab.caption = '',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size = 10,base.family = 'Meiryo'){
+fun.plot.ggplot.boxplot <- function(obj,x.col = 3,y.breaks = 10,lab.caption = '',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size = 10,base.family = 'Meiryo'){
   return.list <- fun.date.format(obj = obj)
   obj$year <- year(obj$Date)
-  obj$month <- month(obj$Date)
+  obj$month <- month.abb[month(obj$Date)]
   g <-
-    ggboxplot(data = obj,x = colnames(obj)[3],y = colnames(obj)[2],color = colnames(obj)[3],
+    ggboxplot(data = obj,x = colnames(obj)[x.col],y = colnames(obj)[2],color = colnames(obj)[x.col],
               palette = "UChicago",add = "jitter",
               ggtheme = theme_gray(base_size = base.size,base_family = 'Meiryo'),repel = T)
   g <- g + xlab('') + theme(legend.position = "none")
