@@ -7,6 +7,7 @@ fun.read.boj.tsdata <- function(){
   file.name <- gsub('.+/([^/]+)\\.html','\\1', data.page)
   base.url <- 'http://www.stat-search.boj.or.jp/ssi/mtshtml/csv/'
   for(iii in seq(length(file.name))){
+    Sys.sleep(1) # To prevent server overload
     buf0 <-
       read.csv(file = paste0(base.url,file.name[iii],'.csv'),check.names = F,header = F,stringsAsFactors = F)
     row.name <- grep('系列名称',buf0[,1])

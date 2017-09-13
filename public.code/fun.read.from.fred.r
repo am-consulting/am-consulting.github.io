@@ -1,4 +1,5 @@
 fun.read.from.fred <- function(index = 'Dow Jones Industrial Average (DJIA)'){
+  Sys.sleep(1) # To prevent server overload
   index.title <-
     gsub('(.+)\\((.+)\\)','\\1',index)
   index.symbol <-
