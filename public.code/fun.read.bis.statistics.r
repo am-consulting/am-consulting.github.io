@@ -1,7 +1,7 @@
-fun.read.ilbs.icbs <- function(path.to.folder = '/Desktop/R_Data_Write/'){
+fun.read.ilbs.icbs <- function(load.library = F,path.to.folder = '/Desktop/R_Data_Write/',sheet = 2){
   # The Results of BIS International Locational Banking Statistics and International Consolidated Banking Statistics in Japan
   # https://www.boj.or.jp/statistics/bis/ibs/index.htm/
-  # required package:XLConnect,Nippon,lubridate
+  if(load.library==T){lapply(c('XLConnect','Nippon','lubridate'),require,character.only = T)}
   buf.wd <- getwd()
   path.to.folder <- paste0('C:/Users/',Sys.info()['user'],path.to.folder)
   setwd(path.to.folder)
@@ -9,7 +9,7 @@ fun.read.ilbs.icbs <- function(path.to.folder = '/Desktop/R_Data_Write/'){
   xls.file <- gsub('.+/([^/]+)','\\1',target.url)
   download.file(url = target.url,xls.file,mode = 'wb')
   sheet.name <- getSheets(loadWorkbook(xls.file))
-  buf0 <- readWorksheetFromFile(xls.file,sheet = 2,check.names = F,header = F)
+  buf0 <- readWorksheetFromFile(xls.file,sheet = sheet,check.names = F,header = F)
   sheet.title <- zen2han(buf0[1,1]);sheet.unit <- zen2han(buf0[2,1])
   region.col.s <- which(!is.na(buf0[3,]))
   region.col.e <- c(region.col.s[-1]-1,ncol(buf0))
