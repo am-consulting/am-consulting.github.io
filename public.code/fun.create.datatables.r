@@ -7,7 +7,7 @@ fun.write.table <- function(append = F){
 
 fun.create.datatables <- function(obj,title,file.name,data.source){
   html.file <- paste0(file.name,'.html')
-  txt <- '<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>\n<link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">\n<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>\n<script>$(document).ready(function(){$(\'#table\').DataTable();});</script>\n\n\n'
+  txt <- '<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.4/jquery.min.js"></script>\n<link href="https://cdn.datatables.net/1.10.16/css/jquery.dataTables.min.css" rel="stylesheet">\n<script src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>\n<script>$(document).ready(function(){$(\'#table\').DataTable();});</script>\n<style>table.display tr td {text-align:right};</style>\n\n'
   eval(parse(text = fun.write.table(append = F)))
   txt <-
     paste0('<div align="left">Date and time of creation or update:',Sys.time(),'</div>')
