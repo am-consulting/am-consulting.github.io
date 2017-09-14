@@ -1,7 +1,8 @@
-fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'table'",order.col = 2,decreasing = T,scientific = F,escape = F){
+fun.create.html.table <- function(obj,table.attr = "width = '100%' class = 'table'",order.col = 1,decreasing = F,scientific = F,escape = F){
   obj <- obj[order(obj[,order.col],decreasing = decreasing),,drop = F]
   col.date <- which(lapply(obj,class)=='Date')
-  obj[,col.date] <-as.character(obj[,col.date])
+  col.factior <- which(lapply(obj,class)=='factor')
+  obj[,c(col.date,col.factior)] <-as.character(obj[,c(col.date,col.factior)])
   buf <- ''
   for(rrr in seq(nrow(obj))){
     obj.col <- setdiff(which(!is.na(as.numeric(obj[rrr,]))),col.date)
