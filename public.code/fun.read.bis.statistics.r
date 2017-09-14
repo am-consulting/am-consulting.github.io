@@ -10,7 +10,7 @@ fun.read.ilbs.icbs <- function(load.library = F,path.to.folder = '/Desktop/R_Dat
   download.file(url = target.url,xls.file,mode = 'wb')
   sheet.name <- getSheets(loadWorkbook(xls.file))
   buf0 <- readWorksheetFromFile(xls.file,sheet = sheet,check.names = F,header = F)
-  sheet.title <- zen2han(buf0[1,1]);sheet.unit <- zen2han(buf0[2,1])
+  sheet.title <- zen2han(buf0[1,1]);sheet.unit <- gsub('百万','兆',zen2han(buf0[2,1]))
   region.col.s <- which(!is.na(buf0[3,]))
   region.col.e <- c(region.col.s[-1]-1,ncol(buf0))
   cnt <- 0
@@ -35,7 +35,7 @@ fun.read.ilbs.icbs <- function(load.library = F,path.to.folder = '/Desktop/R_Dat
       colnames(buf4)[1] <- 'Date'
       cnt <- cnt + 1
       bis.data[[cnt]] <-
-        data.frame(buf4[,1,drop=F],apply(buf4[,-1],2,function(x)as.numeric(gsub(',','',x))),
+        data.frame(buf4[,1,drop=F],apply(buf4[,-1],2,function(x)as.numeric(gsub(',','',x))*10^-6),
                    stringsAsFactors = F,check.names = F,row.names = NULL)
     }
   }
