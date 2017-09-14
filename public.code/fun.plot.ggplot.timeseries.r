@@ -21,5 +21,5 @@ fun.plot.ggplot.timeseries <- function(obj,col.date = 1,x.breaks = 10,y.breaks =
   if(length(unique(obj$Index))<=length(manual.color)){
     g <- g + scale_color_manual(values = manual.color)
   }
-  print(g)
+  return(g)
 }
