@@ -22,3 +22,8 @@ fun.plot.ggplot.text.repel <- function(data,size=6){
   g <- g + geom_text_repel(data = data,aes(x = data[,1],y = data[,2],label = data[,2]),size = size)
   return(g)
 }
+
+fun.plot.ggplot.encircle <- function(data,size=1,expand=0.1,color='red',legend=F){
+  g <- g + geom_encircle(data = data,aes(x = data$x, y = data$y),show.legend = legend,
+                         color = color,size = size,expand = expand)
+}
