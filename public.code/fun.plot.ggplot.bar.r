@@ -1,4 +1,4 @@
-fun.plot.ggplot.bar <- function(load.library = F,obj,col.date = 1,col.data = 2,tail.n = 5*12,y.breaks = 10,lab.caption = '',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size.x = 10,axis.size.y.left = 10,axis.size.y.right = 10,base.family = 'Meiryo'){
+fun.plot.ggplot.bar <- function(load.library = F,obj,col.date = 1,col.data = 2,tail.n = 5*12,y.breaks = 10,lab.caption = '',base.size = 12,subtitle.size = 12,caption.size = 12,axis.size.x = 12,axis.size.y.left = 12,axis.size.y.right = 12,base.family = 'Meiryo'){
   if(load.library==T){lapply(c('lubridate','ggplot2'),require,character.only = T)}
   obj <- tail(obj[,c(col.date,col.data)],tail.n)
   date.format <- '%Y-%m-%d'
