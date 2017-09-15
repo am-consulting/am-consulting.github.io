@@ -23,13 +23,14 @@ fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.break
   g <- g + theme(plot.caption = element_text(size = caption.size,angle = 0))
   g <- g + theme(legend.text = element_text(size = legend.size))
   if(length(unique(obj$Index)) <= length(manual.color)){
-    g <- g + scale_color_manual(values = manual.color)
+    if(remove.legend.title == T){
+      g <- g + scale_color_manual('',values = manual.color)
+    }else{
+      g <- g + scale_color_manual(values = manual.color)
+    }
   }
   if(point == T){
     g <- g + geom_point(size = point.size)
-  }
-  if(remove.legend.title == T){
-    g <- g + scale_color_discrete('')
   }
   if(hline == T){
     g <- g + geom_hline(yintercept = 0,col = '#c0c0c0')
