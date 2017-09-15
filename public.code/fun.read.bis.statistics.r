@@ -7,6 +7,7 @@ fun.read.ilbs.icbs <- function(load.library = F,path.to.folder = '/Desktop/R_Dat
   setwd(path.to.folder)
   target.url <- 'https://www.boj.or.jp/statistics/bis/ibs/hbis11.xlsx'
   xls.file <- gsub('.+/([^/]+)','\\1',target.url)
+  Sys.sleep(1) # To prevent server overload
   download.file(url = target.url,xls.file,mode = 'wb')
   sheet.name <- getSheets(loadWorkbook(xls.file))
   buf0 <- readWorksheetFromFile(xls.file,sheet = sheet,check.names = F,header = F)
