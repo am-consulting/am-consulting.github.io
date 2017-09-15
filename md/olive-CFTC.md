@@ -4,7 +4,13 @@ published : true
 title : CFTC投機筋ポジション-2017年09月05日分.Net 日本円:-72945, ユーロ:96309, 英ポンド:-52927, 豪ドル:64904, スイスフラン:-2171, Gold:245298
 ---
 
-<a href="http://knowledgevault.saecanet.com/charts/chartImages/CFTC.png"><img border="0" src="http://knowledgevault.saecanet.com/charts/chartImages/CFTC.png" width="100%" /></a>
+<a href="http://olive.am-consulting.co.jp/CFTC1.png"><img border="0" src="http://olive.am-consulting.co.jp/CFTC1.png" width="100%" /></a>
+<hr>
+<a href="http://olive.am-consulting.co.jp/CFTC2.png"><img border="0" src="http://olive.am-consulting.co.jp/CFTC2.png" width="100%" /></a>
+<hr>
+<a href="http://olive.am-consulting.co.jp/CFTC3.png"><img border="0" src="http://olive.am-consulting.co.jp/CFTC3.png" width="100%" /></a>
+<hr>
+<a href="http://olive.am-consulting.co.jp/CFTC4.png"><img border="0" src="http://olive.am-consulting.co.jp/CFTC4.png" width="100%" /></a>
 
 ## 統計データ概要
 1. 日本円のネットはショート、ネットショートポジション数は前週より増加。2016年11月29日以降、41週連続でネットショート。
@@ -30,6 +36,6 @@ title : CFTC投機筋ポジション-2017年09月05日分.Net 日本円:-72945, 
 	1. 2017年06月08日、イギリス総選挙。与党保守党が第一党維持、議席数過半数割れ。
 
 ## データテーブル･チャート
-Link - [データテーブル･チャート](http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html)
+Link - [データテーブル･チャート](http://olive.am-consulting.co.jp/am-consulting.co.jp-CFTC.html)
 
-<iframe src="http://knowledgevault.saecanet.com/charts/am-consulting.co.jp-CFTC.html" width="100%" height="1500px"></iframe>
+<iframe src="http://olive.am-consulting.co.jp/am-consulting.co.jp-CFTC.html" width="100%" height="1500px"></iframe>
