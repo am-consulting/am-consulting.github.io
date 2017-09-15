@@ -165,8 +165,8 @@ dataSet0 <- merge(dataSet0, dataSet1, by = 'Date',all = T)
 ```
 
 ```{r results='asis'}
-cat(fun.create.html.table(obj = dataSet,escape = F,
-                          table.attr = "hidden width = '100%' class = 'table' id = 'OrigData'"))
+# cat(fun.create.html.table(obj = dataSet,escape = F,
+#                           table.attr = "hidden width = '100%' class = 'table' id = 'OrigData'"))
 ```
 
 ```{r results='asis'}
