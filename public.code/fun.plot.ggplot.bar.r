@@ -6,7 +6,7 @@ fun.plot.ggplot.bar <- function(load.library = F,obj,col.date = 1,col.data = 2,t
   if(length(unique(day(obj[,1])))<=4){date.format <- '%Y-%m'}
   date.range <- paste0(format(range(obj[,1]),date.format),collapse = ' ~ ')
   obj$col <- ifelse(obj[,2]<0,'red','blue')
-  obj[,1] <- as.character(obj[,1])
+  obj[,1] <- as.character(format(obj[,1],date.format))
   g <- ggplot(data = obj,aes(x = obj[,1],y = obj[,2]))
   g <- g + theme_grey(base_size = base.size,base_family = base.family)
   g <- g + geom_bar(stat = 'identity',aes(fill = obj$col))
