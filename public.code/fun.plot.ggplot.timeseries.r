@@ -1,4 +1,4 @@
-fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.breaks = 10,y.breaks = 10,lab.title = '',lab.caption = '',x.label.date.format = '%Y',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size.x = 10,axis.size.y.left = 10,axis.size.y.right = 10,manual.color = NULL,base.family = 'Meiryo',hline = F,point = T,remove.legend.title = T){
+fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.breaks = 10,y.breaks = 10,lab.title = '',lab.caption = '',x.label.date.format = '%Y',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size.x = 10,axis.size.y.left = 10,axis.size.y.right = 10,manual.color = NULL,base.family = 'Meiryo',hline = F,point = T,point.size = 1,remove.legend.title = T){
   if(load.library==T){lapply(c('tidyr','lubridate','ggplot2'),require,character.only = T)}
   colnames(obj)[col.date] <- 'Date'
   obj <- gather(data = obj,key = Index,value = Value,colnames(obj)[-col.date],convert = T)
@@ -25,7 +25,7 @@ fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.break
     g <- g + scale_color_manual(values = manual.color)
   }
   if(point == T){
-    g <- g + geom_point(size = 0.8)
+    g <- g + geom_point(size = point.size)
   }
   if(remove.legend.title == T){
     g <- g + scale_color_discrete('')
