@@ -1,4 +1,4 @@
-fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.breaks = 10,y.breaks = 10,lab.title = '',lab.caption = '',x.label.date.format = '%Y',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size.x = 10,axis.size.y.left = 10,axis.size.y.right = 10,manual.color = NULL,base.family = 'Meiryo',hline = F,point = T,point.size = 1,remove.legend.title = T){
+fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.breaks = 10,y.breaks = 10,lab.title = '',lab.caption = '',x.label.date.format = '%Y',base.size = 11,subtitle.size = 11,caption.size = 11,axis.size.x = 10,axis.size.y.left = 10,axis.size.y.right = 10,manual.color = NULL,base.family = 'Meiryo',hline = F,point = T,point.size = 1,remove.legend.title = T,legend.size = 11){
   if(load.library==T){lapply(c('tidyr','lubridate','ggplot2'),require,character.only = T)}
   colnames(obj)[col.date] <- 'Date'
   obj <- gather(data = obj,key = Index,value = Value,colnames(obj)[-col.date],convert = T)
@@ -21,6 +21,7 @@ fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.break
   g <- g + theme(axis.text.y.right = element_text(size = axis.size.y.right,angle = 0))
   g <- g + theme(plot.subtitle = element_text(size = subtitle.size,angle = 0))
   g <- g + theme(plot.caption = element_text(size = caption.size,angle = 0))
+  g <- g + theme(legend.text = element_text(size = legend.size))
   if(length(unique(obj$Index)) <= length(manual.color)){
     g <- g + scale_color_manual(values = manual.color)
   }
