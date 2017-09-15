@@ -423,6 +423,15 @@ fun_plotACF(obj = diffRatioDF[,2],
             drop0 = T)
 ```
 
+```{r warning=F,error=F,message=F,echo=F}
+read.fun <- 
+  c('fun.plot.ggplot.timeseries.r','fun.create.html.table.r','fun.plot.ggplot.ann.line.text.r','fun.create.diff.ma.data.r','fun.plot.ggplot.bar.r')
+base.url <- 'https://raw.githubusercontent.com/am-consulting/am-consulting.github.io/master/public.code/'
+for(iii in seq(length(read.fun))){
+  code <- RCurl::getURL(url = paste0(base.url,read.fun[iii]),ssl.verifypeer = F);eval(parse(text = code))
+}
+```
+
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
 username <- Sys.info()['user']
 pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
@@ -434,29 +443,24 @@ buf <-
 pathOutputTOchart <- paste0("C:/Users/", username, buf[4,1])
 setwd(pathOutputTOchart)
 #---------------------------------------------------
-obj <- bitCoin
-varType <- 1
-dateFormat <- '%Y-%m-%d'
-startYear <- 2014
-tailN <- c(10^10,30*6,30*3,7*2)
-chartType <- 'o'
 pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
-par(mfrow = c(1,1),family = 'Meiryo')
-tmp0 <- fun_tsDataByYear(objDF = obj,dateCol = 1,dataCol = 2)
-tmp1 <- fun_strawBroomData(objDF = tmp0,varType = varType)
-fun_plotStrawBroomByYear(strawData = tmp1$strawData,
-                         lastDate = tmp1$lastDate,
-                         variation = tmp1$variation,
-                         dateFormat = dateFormat,
-                         startYear = startYear)
+obj <- mergeData[2016<=year(mergeData$Date),]
+g <- fun.plot.ggplot.timeseries(load.library = T,obj = obj,y.breaks = 30,lab.title = 'The crypto currency is a revolutionary asset or a tulip 400 years ago?',lab.caption = 'Unit:$\nData source:OANDA Corporation',x.label.date.format = '%Y-%m-%d',point = F,x.breaks = 6)
+data <- rbind(bitCoin[which.max(bitCoin[,2]),],tail(bitCoin,1))
+data[,2] <- round(data[,2])
+g <- fun.plot.ggplot.text.repel(data = data,load.library = T,size = 5,col = '#696969')
+print(g)
 dev.off()
 pngFile <-
   paste0(htmlName, "2.png")
 png(file = pngFile, width = 1000, height = 600)
-par(mfrow = c(1,1),family = 'Meiryo')
-fun_plot4charts(obj = obj,dateFormat = dateFormat,tailN = tailN,type = chartType)
+diff.df0 <- fun.create.diff.ma.data(obj = obj)
+diff.df <- tail(diff.df0[,c(1,7)],40)
+colnames(diff.df)[2] <- gsub('\\(比,1,1\\)','\\(comparison with the previous day,%\\)',colnames(diff.df)[2])
+g <- fun.plot.ggplot.bar(load.library = T,obj = diff.df)
+print(g)
 dev.off()
 ```
 
