@@ -18,8 +18,9 @@ fun.plot.ggplot.hline <- function(yintercept,col='red',linetype=2){
   return(g)
 }
 
-fun.plot.ggplot.text.repel <- function(data,size=6){
-  g <- g + geom_text_repel(data = data,aes(x = data[,1],y = data[,2],label = data[,2]),size = size)
+fun.plot.ggplot.text.repel <- function(data,size=6,load.library=F,col = 'red'){
+  if(load.library==T){lapply(c('ggrepel'),require,character.only = T)}
+  g <- g + geom_text_repel(data = data,aes(x = data[,1],y = data[,2],label = data[,2]),size = size,col = col)
   return(g)
 }
 
