@@ -1,12 +1,18 @@
-library(excel.link);library(XML)
+# library(XML)
+library(excel.link)
+library(rvest)
 username <- Sys.info()['user']
 pathOutput <- paste0("C:/Users/", username, "/Desktop/R_Data_Write/")
 setwd(pathOutput)
 fileName <- 'NorthAmericaRotaryRigCount.xlsb'
 url <- "http://phx.corporate-ir.net/phoenix.zhtml?c=79687&p=irol-reportsother"
-htmlMarkup <- htmlParse(url)
-links <- xpathSApply(htmlMarkup, "//a/@href")
-urlToData <- links[[grep('External.File\\?item=',links)[1]]]
+# htmlMarkup <- htmlParse(url)
+# links <- xpathSApply(htmlMarkup, "//a/@href")
+# urlToData <- links[[grep('External.File\\?item=',links)[1]]]
+html.markup <- read_html(x = url,encoding = 'utf8')
+tag.a <- html.markup %>% html_nodes('a')
+key.word <- 'North America Rotary Rig Count \\(Jan 2000 - Current\\)'
+urlToData <- tag.a[grep(key.word,tag.a)] %>% html_attr('href')
 download.file(urlToData, fileName, mode = "wb")
 buf0 <- xl.read.file(fileName, header=F, top.left.cell = "A10", xl.sheet = 2, excel.visible = F)
 buf1 <- buf0[, c(1, grep('total', buf0[1,], ignore.case = T):ncol(buf0))]
