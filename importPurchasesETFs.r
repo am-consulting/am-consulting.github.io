@@ -7,22 +7,14 @@ setwd(pathOutput)
 target.url <- 'http://www3.boj.or.jp/market/jp/menu_etf.htm'
 html.markup <- read_html(x = target.url,encoding = 'shift_jis')
 tag.a <- html.markup %>% html_nodes('a')
-target.file.url <- tail(tag.a[grep('.xls',tag.a)] %>% html_attr('href'),1)
-xls.file <-
-  gsub('.+/([^/]+)','\\1',target.file.url)
+target.file.url <- tail(tag.a[grep('.xls',tag.a)] %>% html_attr('href'),3)
 base.url <- 'http://www3.boj.or.jp/market/jp/'
+for(iii in seq(length(target.file.url))){
+xls.file <-
+  gsub('.+/([^/]+)','\\1',target.file.url[iii])
 download.file(url = paste0(base.url,xls.file),xls.file,mode = 'wb')
 buf0 <-
   readWorksheetFromFile(paste0(pathOutput,xls.file), sheet = 1, check.names = F, header = F)
-# urlToData <-
-#   'http://www3.boj.or.jp/market/jp/etfreit.zip'
-# fileName <-
-#   gsub('.+/([^/]+)','\\1',urlToData)
-# download.file(url = urlToData,destfile = fileName, mode = 'wb')
-# unzip(fileName)
-# xlsFile <- dir(pathOutput)[grep('\\.xls',dir(pathOutput))]
-# buf0 <-
-#   readWorksheetFromFile(paste0(pathOutput,xlsFile), sheet = 1, check.names = F, header = F)
 buf1 <- buf0
 sheetUnit <- zen2han(buf1[5,4])
 keyWord <- '約定日'
@@ -43,7 +35,10 @@ buf4[,1] <- as.Date(buf4[,1])
 colnames(buf4)[-1] <- paste0(colnames(buf4)[-1],sheetUnit)
 buf4[,-1] <- data.frame(apply(buf4[,-1],2,as.numeric),check.names = F,stringsAsFactors = F)
 colnames(buf4) <- gsub('右記以外','企業支援ETF以外',colnames(buf4))
-PurchasesETFs <- buf4
+if(iii==1){buf5 <- buf4}else{buf5 <- rbind(buf5,buf4)}
+}
+row.names(buf5) <- NULL
+PurchasesETFs <- buf5
 # csv出力パート
 scriptFile <- 'R-writeCSVtoFolder.r'
 script <-
