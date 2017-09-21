@@ -18,9 +18,14 @@ fun.plot.ggplot.hline <- function(yintercept,col='#696969',linetype=2){
   return(g)
 }
 
-fun.plot.ggplot.text.repel <- function(data,size=6,load.library=F,col = '#696969'){
-  if(load.library==T){lapply(c('ggrepel'),require,character.only = T)}
-  g <- g + geom_text_repel(data = data,aes(x = data[,1],y = data[,2],label = data[,2]),size = size,col = col)
+fun.plot.ggplot.text.repel <- function(data,size=6,load.library=F,col='#696969'){
+  if(load.library==T){lapply(c('ggrepel','tidyr'),require,character.only = T)}
+  gathered.df <- gather(data = data,key = Index,value = Value,colnames(data)[-1],convert = T)
+  assign('gathered.df',gathered.df,envir = .GlobalEnv)
+  g <- g + geom_text_repel(data = gathered.df,
+                           aes(x = gathered.df[,1],y = gathered.df[,3],label = gathered.df[,3]),
+                           size = size,col = col)
+  remove(gathered.df)
   return(g)
 }
 
