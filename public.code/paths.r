@@ -5,8 +5,8 @@ file.name <- 'defaultPath.csv'
 buf <-
   read.csv(file = file.name,header = F,skip = 0,
            stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8')
-path.to.r.functions <- paste0('C:/Users/',user.name,buf[7,1])
-path.to.twitter.apps.csv <- paste0('C:/Users/',user.name,buf[6,1])
-path.to.website <- paste0('C:/Users/',user.name,buf[5,1])
-path.to.olive <- paste0('C:/Users/',user.name,buf[4,1])
-path.to.io <- paste0('C:/Users/',user.name,buf[2,1])
+for(rrr in seq(nrow(buf))){
+  tmp <- buf[rrr,1]
+  target <- gsub('.+/([^/]+)','\\1',gsub('\\/$','',tmp))
+  assign(paste0('path.to.',target),paste0('C:/Users/',user.name,buf[rrr,1]))
+}
