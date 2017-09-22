@@ -14,7 +14,13 @@ fun.read.jgb.interest.rate <- function(){
     jgb.interest.rate <-
       data.frame(Date = tmp[,1],apply(tmp[,-1,drop = F],2,as.numeric),stringsAsFactors = F,
                  check.names = F,row.names = NULL)
-    return(jgb.interest.rate)
+    colnames(jgb.interest.rate)[-1] <-
+      paste0('日本国債金利(%):',gsub('Y','年',colnames(jgb.interest.rate)[-1]))
+    return.list <-
+      list('jgb.interest.rate' = jgb.interest.rate,
+           'lab.title' = '日本国債金利情報',
+           'data.source' = '財務省')
+    return(return.list)
   }else{
     stop('There is a difference in the column names of Current Data and Historical Data.')
   }
