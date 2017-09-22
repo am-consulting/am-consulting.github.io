@@ -33,6 +33,8 @@ fun.read.eia <- function(load.library = F,path.to.folder = '/Desktop/R_Data_Writ
   eia.data.extract <- eia.data[,c(1,sapply(colname.txt,function(x)grep(x,colnames(eia.data))))]
   return.list <-
     list('eia.data' = eia.data,
-         'eia.data.extract' = eia.data.extract)
+         'eia.data.extract' = eia.data.extract,
+         'lab.title' = 'Weekly Petroleum Status Report',
+         'data.source' = 'EIA')
   return(return.list)
 }
