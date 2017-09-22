@@ -1,4 +1,5 @@
-fun.read.from.fred <- function(index = 'Dow Jones Industrial Average (DJIA)'){
+fun.read.from.fred <- function(load.library = F,index = 'Dow Jones Industrial Average (DJIA)'){
+  if(load.library==T){lapply(c('quantmod','rvest'),require,character.only = T)}
   Sys.sleep(1) # To prevent server overload
   index.title <-
     gsub('(.+)\\((.+)\\)','\\1',index)
@@ -23,6 +24,7 @@ fun.read.from.fred <- function(index = 'Dow Jones Industrial Average (DJIA)'){
   returnList <-
     list('data.set.xts' = data.set.xts,
          'index.unit' = index.unit,
-         'index.freq' = index.freq)
+         'index.freq' = index.freq,
+         'index.title' = index.title)
   return(returnList)
 }
