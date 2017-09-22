@@ -1,4 +1,4 @@
-fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.breaks = 10,y.breaks = 10,lab.title = '',lab.caption = '',x.label.date.format = '%Y',base.size = 12,subtitle.size = 12,caption.size = 12,axis.size.x = 12,axis.size.y.left = 12,axis.size.y.right = 12,manual.color = NULL,base.family = 'Meiryo',hline = F,point = T,point.size = 1,remove.legend.title = T,legend.size = 12){
+fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.breaks = 10,y.breaks = 10,lab.title = '',lab.caption = '',x.label.date.format = '%Y',base.size = 12,subtitle.size = 12,caption.size = 12,axis.size.x = 12,axis.size.y.left = 12,axis.size.y.right = 12,manual.color = NULL,base.family = 'Meiryo',hline = F,point = T,point.size = 1,remove.legend.title = T,legend.size = 12,smoothed = F,smoothed.size = 0.5){
   if(load.library==T){lapply(c('tidyr','lubridate','ggplot2'),require,character.only = T)}
   colnames(obj)[col.date] <- 'Date'
   obj <- gather(data = obj,key = Index,value = Value,colnames(obj)[-col.date],convert = T)
@@ -8,7 +8,8 @@ fun.plot.ggplot.timeseries <- function(load.library = F,obj,col.date = 1,x.break
   date.range <- paste0(format(range(obj$Date),date.format),collapse = ' ~ ')
   g <- ggplot(data = obj,aes(x = Date,y = Value,col = Index))
   g <- g + theme_grey(base_size = base.size,base_family = base.family)
-  g <- g + geom_line() + geom_smooth(size = 0.5)
+  g <- g + geom_line()
+  if(smoothed == T){g <- g + geom_smooth(size = smoothed.size)}
   g <- g + scale_x_date(labels = scales::date_format(x.label.date.format),breaks = scales::pretty_breaks(x.breaks))
   g <- g + xlab(label = '')
   g <- g + scale_y_continuous(name = '',breaks = scales::pretty_breaks(y.breaks),
