@@ -1,5 +1,5 @@
 ---
-knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'foreignExchangeIntervention';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[2,1],'charts/','am-consulting.co.jp-',htmlName,'.html')) })
+knit: (function(inputFile, encoding) {username<-Sys.info()['user'];fileName<-'defaultPath.csv';pathToFile <-paste0('C:/Users/', username,'/Desktop/pathToCSV/');setwd(pathToFile);buf0<-read.csv(fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,fileEncoding = 'utf-8');timeStamp<-format(Sys.time(),'%Y%m%d%H%M%S');htmlName<-'foreignExchangeIntervention';rmarkdown::render(inputFile, encoding = encoding, output_file = paste0('C:/Users/',username,buf0[4,1],'am-consulting.co.jp-',htmlName,'.html')) })
 
 title : 'Foreign Exchange Intervention Operations'
 author: "アセット･マネジメント･コンサルティング株式会社 http://am-consulting.co.jp"
@@ -174,7 +174,16 @@ eval(parse(text = paste0('dygraphPlot', n, ' %>% ', primeMinisterOfJapan_dygraph
 ***
 
 ```{r warning=F,error=F,message=F,echo=F,results='hide'}
-fun_preparePlot()
+username <- Sys.info()['user']
+pathToFile <- paste0('C:/Users/', username,'/Desktop/pathToCSV/')
+setwd(pathToFile)
+fileName <- 'defaultPath.csv'
+buf <-
+  read.csv(file = fileName,header = F,skip = 0,stringsAsFactor = F,check.names = F,
+           fileEncoding = 'utf-8',quote = "\"")
+pathOutputTOchart <- paste0("C:/Users/", username, buf[4,1])
+setwd(pathOutputTOchart)
+#---------------------------------------------------
 pngFile <-
   paste0(htmlName, "1.png")
 png(file = pngFile, width = 1000, height = 600)
@@ -194,8 +203,10 @@ fun_outputMD(tags = '財務省,外国為替平衡操作,為替介入',
              image1 = 1,image2 = 0,
              title = dataTitle,
              tableTitle = '外国為替平衡操作実施月とその操作額(億円)',
-             tableName = '外国為替平衡操作実施月とその操作額(億円)')
+             tableName = '外国為替平衡操作実施月とその操作額(億円)',
+             buf.row = 4)
 fun_updateURLcsv()
+fun_updateURLcsv.olive()
 ```
 
 <script>MakeNegative()</script>
