@@ -63,8 +63,8 @@ setwd(pathOutput)
 baseURL <- 'http://www.mhlw.go.jp/toukei/itiran/roudou/monthly'
 fileName <- list()
 yyyy <- c(2017)
-mm <- c(7)
-type <- 'r'
+mm <- c(8)
+type <- 'p'
 cnt <- 0
 for(y in 1:length(yyyy)){
   for(m in 1:length(mm)){
