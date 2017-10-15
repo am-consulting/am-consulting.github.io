@@ -69,3 +69,6 @@ table.amcc tr:hover {
   background: #bbd4ee;
   cursor:pointer;
 }
+table.amcc td.negative {
+  color: red;
+}
