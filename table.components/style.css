@@ -1,3 +1,7 @@
+.main-container {
+	max-width: 100%;
+}
+
 /*
 参照
 StackEditの表をBloggerできれいに表示
@@ -9,7 +13,7 @@ csvToTableのデフォルトではIDを付加することが出来ない。
 よって全てclass対応とする。
 */
 
-table.amcc {
+table {
   width: auto;
   border-spacing: 0;
   font-size:14px;
@@ -18,7 +22,7 @@ table.amcc {
   text-align: right;
   white-space: nowrap;
 }
-table.amcc th {
+table th {
   color: #fff;
   padding: 4px 10px;
   background: #258;
@@ -33,42 +37,42 @@ table.amcc th {
   text-shadow:0 -1px 0 rgba(34,85,136,0.9);
   box-shadow: 0px 1px 1px rgba(255,255,255,0.3) inset;
 }
-table.amcc th:first-child {
+table th:first-child {
   border-radius: 5px 0 0 0; 
 }
-table.amcc th:last-child {
+table th:last-child {
   border-radius:0 5px 0 0;
   border-right:1px solid #258;
   box-shadow: 2px 2px 1px rgba(0,0,0,0.1),0px 1px 1px rgba(255,255,255,0.3) inset;
 }
-table.amcc tr td {
+table tr td {
   padding: 0px 10px 0px 10px;
   border-bottom: 1px solid #84b2e0;
   border-left: 1px solid #84b2e0;
 }
-table.amcc tr td:last-child {
+table tr td:last-child {
   border-right: 1px solid #84b2e0;
   box-shadow: 2px 2px 1px rgba(0,0,0,0.1);
 }
-table.amcc tr {
+table tr {
   background: #fff;
 }
-table.amcc tr:nth-child(2n+1) {
+table tr:nth-child(2n+1) {
   background: #f1f6fc;
 }
-table.amcc tr:last-child td {
+table tr:last-child td {
   box-shadow: 2px 2px 1px rgba(0,0,0,0.1);
 }
-table.amcc tr:last-child td:first-child {
+table tr:last-child td:first-child {
   border-radius: 0 0 0 5px;
 }
-table.amcc tr:last-child td:last-child {
+table tr:last-child td:last-child {
   border-radius: 0 0 5px 0;
 }
-table.amcc tr:hover {
+table tr:hover {
   background: #bbd4ee;
   cursor:pointer;
 }
-table.amcc td.negative {
+table td.negative {
   color: red;
 }
